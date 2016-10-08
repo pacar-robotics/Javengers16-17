@@ -8,10 +8,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-
 /**
  * Created by thomas on 9/25/2016.
  */
@@ -53,14 +49,14 @@ public class vv_Robot
 
     public void setPower(vv_Constants.MotorEnum motorEnum, float power) {
         switch (motorEnum){
-            case frontLeftMotor:
+            case FrontLeftMotor:
                 frontLeftMotor.setPower(power);
                 break;
             case frontRightMotor:
                 frontRightMotor.setPower(power);
                 break;
             case backLeftMotor:Motor:
-                backLeftMotor.setPower(power);
+            backLeftMotor.setPower(power);
                 break;
             case backRightMotor:
                 backRightMotor.setPower(power);
@@ -89,7 +85,7 @@ public class vv_Robot
     public void runRobotToPosition(LinearOpMode Aop, float fl_Power , float fr_Power,
                                    float bl_Power , float br_Power , int fl_Position ,
                                    int fr_Position, int bl_Position , int br_Position )
-                                   throws InterruptedException{
+            throws InterruptedException{
         //reset motor encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -111,7 +107,7 @@ public class vv_Robot
         backRightMotor.setTargetPosition(br_Position);
 
         //sets the the power of all motors
-        setPower(vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
+        setPower(vv_Constants.MotorEnum.FrontLeftMotor, fl_Power);
         setPower(vv_Constants.MotorEnum.frontRightMotor, fr_Power);
         setPower(vv_Constants.MotorEnum.backLeftMotor, bl_Power);
         setPower(vv_Constants.MotorEnum.backRightMotor, br_Power);
@@ -137,9 +133,9 @@ public class vv_Robot
     }
 
     public void runRobotToPositionWithAngle(float fl_Power , float fr_Power,
-                                   float bl_Power , float br_Power , int fl_Position ,
+                                            float bl_Power , float br_Power , int fl_Position ,
                                             int fr_Position, int bl_Position , int br_Position , float angle)
-                                    throws InterruptedException{
+            throws InterruptedException{
 
         //reset motor encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -162,7 +158,7 @@ public class vv_Robot
         backRightMotor.setTargetPosition(br_Position);
 
         //sets the the power of all motors
-        setPower(vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
+        setPower(vv_Constants.MotorEnum.FrontLeftMotor, fl_Power);
         setPower(vv_Constants.MotorEnum.frontRightMotor, fr_Power);
         setPower(vv_Constants.MotorEnum.backLeftMotor, bl_Power);
         setPower(vv_Constants.MotorEnum.backRightMotor, br_Power);
@@ -175,7 +171,7 @@ public class vv_Robot
                 || (Math.abs(backRightMotor.getCurrentPosition()) < Math.abs(br_Position)-vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN) ||
                 (Math.abs(backLeftMotor.getCurrentPosition()) < Math.abs(bl_Position)-vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN)){
             //report motor positions for debugging
-            /*((TestOpMode)Aop).telemetryAddData("Motor FL","Values", ""+frontLeftMotor.getCurrentPosition());
+            /*((TestOpMode)Aop).telemetryAddData("Motor FL","Values", ""+FrontLeftMotor.getCurrentPosition());
             ((TestOpMode)Aop).telemetryAddData("Motor FR","Values", ""+frontRightMotor.getCurrentPosition());
             ((TestOpMode)Aop).telemetryAddData("Motor BL","Values", ""+backLeftMotor.getCurrentPosition());
             ((TestOpMode)Aop).telemetryAddData("Motor BR","Values", ""+backRightMotor.getCurrentPosition());
@@ -209,7 +205,7 @@ public class vv_Robot
         backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //sets the the power of all motors
-        setPower(vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
+        setPower(vv_Constants.MotorEnum.FrontLeftMotor, fl_Power);
         setPower(vv_Constants.MotorEnum.frontRightMotor, fr_Power);
         setPower(vv_Constants.MotorEnum.backLeftMotor, bl_Power);
         setPower(vv_Constants.MotorEnum.backRightMotor, br_Power);
