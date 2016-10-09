@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import android.hardware.Sensor;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -21,7 +25,11 @@ public class vv_Robot
     private DcMotor frontLeftMotor   = null;
     private DcMotor  frontRightMotor  = null;
     private DcMotor backLeftMotor   = null;
-    private DcMotor  backRightMotor  = null;
+    private DcMotor backRightMotor  = null;
+
+    private Servo buttonServo  = null;
+
+    private TouchSensor buttonSensor;
 
     HardwareMap hwMap  = null;
     private ElapsedTime period  = new ElapsedTime();
@@ -37,6 +45,13 @@ public class vv_Robot
         frontRightMotor = hwMap.dcMotor.get("motor_front_right");
         backLeftMotor   = hwMap.dcMotor.get("motor_back_left");
         backRightMotor  = hwMap.dcMotor.get("motor_back_right");
+
+
+        buttonServo = hwMap.servo.get("button_servo");
+
+        buttonSensor = hwMap.touchSensor.get("touch_button_sensor");
+
+        buttonServo.setPosition(0.65);
 
         frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -59,7 +74,7 @@ public class vv_Robot
             case frontRightMotor:
                 frontRightMotor.setPower(power);
                 break;
-            case backLeftMotor:Motor:
+            case backLeftMotor:
                 backLeftMotor.setPower(power);
                 break;
             case backRightMotor:
@@ -124,11 +139,13 @@ public class vv_Robot
                 || (Math.abs(backRightMotor.getCurrentPosition()) < Math.abs(br_Position)-vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN) ||
                 (Math.abs(backLeftMotor.getCurrentPosition()) < Math.abs(bl_Position)-vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN)){
             //report motor positions for debugging
-            ((TestOpMode)Aop).telemetryAddData("Motor FL","Values", ""+frontLeftMotor.getCurrentPosition());
+
+            // TODO: UNCOMMENT THIS!!!!
+            /*((TestOpMode)Aop).telemetryAddData("Motor FL","Values", ""+frontLeftMotor.getCurrentPosition());
             ((TestOpMode)Aop).telemetryAddData("Motor FR","Values", ""+frontRightMotor.getCurrentPosition());
             ((TestOpMode)Aop).telemetryAddData("Motor BL","Values", ""+backLeftMotor.getCurrentPosition());
             ((TestOpMode)Aop).telemetryAddData("Motor BR","Values", ""+backRightMotor.getCurrentPosition());
-            ((TestOpMode)Aop).telemetryUpdate();
+            ((TestOpMode)Aop).telemetryUpdate();*/
 
         }
         stopMotors();
@@ -200,6 +217,7 @@ public class vv_Robot
         runMotors(-Power,Power,Power,-Power);
     }
 
+
     public void runMotors(float fl_Power , float fr_Power, float bl_Power , float br_Power)
             throws InterruptedException{
 
@@ -225,6 +243,23 @@ public class vv_Robot
         backRightMotor.setPower(0);
     }
 
+    public void pushButton(vv_Constants.ButtonEnum buttonEnum) {
+
+        switch(buttonEnum) {
+
+            case Left:
+            buttonServo.setPosition(vv_Constants.BUTTON_SERVO_MAX_POS);
+                break;
+
+            case Right:
+            buttonServo.setPosition(vv_Constants.BUTTON_SERVO_MIN_POS);
+                break;
+        }
+    }
+
+    public boolean getButtonTouchValue() throws InterruptedException{
+        return buttonSensor.isPressed();
+    }
 
     public void waitForTick(long periodMs)  throws InterruptedException {
 

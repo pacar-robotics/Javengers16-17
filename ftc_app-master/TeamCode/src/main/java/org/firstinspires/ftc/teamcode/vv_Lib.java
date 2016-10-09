@@ -43,6 +43,11 @@ public class vv_Lib
         //code
     }
 
+    public void pushAButton (vv_Robot robot, vv_Constants.ButtonEnum buttonEnum)
+    {
+        robot.pushButton(buttonEnum);
+    }
+
     public void turnUsingGyro (LinearOpMode AOp, vv_Robot robot, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection)
     {
         // do we need direction?
@@ -57,20 +62,26 @@ public class vv_Lib
         return 0;
     }
 
-    public boolean senseTouch (LinearOpMode AOp, vv_Robot robot, TouchSensor ts)
+    public boolean senseTouch (vv_Robot robot) throws InterruptedException
     {
-        return true;
+         return robot.getButtonTouchValue();
     }
 
-    public int moveTillColor (LinearOpMode AOp, vv_Robot robot, ColorSensor cs)
+    public void moveTillTouch (vv_Robot robot) throws InterruptedException
     {
-        // three color sensors (left, right, line)
-        // arguments?
-
+        while(!senseTouch(robot))
+        {
+            robot.runMotors(.3f, .3f, .3f, .3f);
+        }
+        robot.stopMotors();
+    }
+    public int moveTillColor (LinearOpMode AOp, vv_Robot robot, ColorSensor cs) throws InterruptedException
+    {
         return 0;
     }
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
-    private void moveForwardToPosition(LinearOpMode AOp, vv_Robot robot, float distance, float Power) throws InterruptedException{
+    private void moveForwardToPosition(LinearOpMode AOp, vv_Robot robot, float distance, float Power) throws InterruptedException
+    {
         //we need to store the encoder target position
         int targetPosition = 0;
         //calculate target position from the input distance in cm

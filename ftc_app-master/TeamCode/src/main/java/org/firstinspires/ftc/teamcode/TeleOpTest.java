@@ -32,29 +32,26 @@ public class TeleOpTest extends LinearOpMode {
 
         vv_Lib vvLib = new vv_Lib();
 
-
+        vvLib.moveTillTouch(robot);
         while(opModeIsActive()) {
-//            if(gamepad1.left_stick_x > vv_Constants.ANALOG_STICK_THRESHOLD) {
-//                vvLib.moveSidewaysRight(robot, gamepad1.left_stick_x);
-//            }else if(gamepad1.left_stick_x < -vv_Constants.ANALOG_STICK_THRESHOLD) {
-//                vvLib.moveSidewaysLeft(robot, -gamepad1.left_stick_x);
-//            }else if(gamepad1.left_stick_y > vv_Constants.ANALOG_STICK_THRESHOLD) {
-//                vvLib.moveForward(robot, -gamepad1.left_stick_y);
-//            }else if(gamepad1.left_stick_y < -vv_Constants.ANALOG_STICK_THRESHOLD) {
-//                vvLib.moveBackward(robot, gamepad1.left_stick_y);
-//            }else{
-//                robot.stopMotors();
-//            }
-            if (Math.abs(gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
+
+            /*if (Math.abs(gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
                 robot.runMotors(gamepad1.right_stick_x, -gamepad1.right_stick_x, gamepad1.right_stick_x, -gamepad1.right_stick_x);
             }else if (Math.abs(gamepad1.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
                     Math.abs(gamepad1.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
-                robot.runMotors((float)((Math.pow(gamepad1.left_stick_x,2.0) - (Math.pow(gamepad1.left_stick_y,2.0)))),
-                        (float)(-(Math.pow(gamepad1.left_stick_x,2.0) - (Math.pow(gamepad1.left_stick_y,2.0)))),
-                        (float)(-(Math.pow(gamepad1.left_stick_x,2.0) - (Math.pow(gamepad1.left_stick_y,2.0)))),
-                        (float)((Math.pow(gamepad1.left_stick_x,2.0) - (Math.pow(gamepad1.left_stick_y,2.0)))));
+                robot.runMotors((float)(gamepad1.left_stick_x*(Math.abs(Math.pow(gamepad1.left_stick_x,2.0)) - gamepad1.left_stick_y*(Math.abs(Math.pow(gamepad1.left_stick_y,2.0))))),
+                        (float)(-gamepad1.left_stick_x*(Math.abs(Math.pow(gamepad1.left_stick_x,2.0)) - gamepad1.left_stick_y*(Math.abs(Math.pow(gamepad1.left_stick_y,2.0))))),
+                        (float)(-gamepad1.left_stick_x*(Math.abs(Math.pow(gamepad1.left_stick_x,2.0)) - gamepad1.left_stick_y*(Math.abs(Math.pow(gamepad1.left_stick_y,2.0))))),
+                        (float)(gamepad1.left_stick_x*(Math.abs(Math.pow(gamepad1.left_stick_x,2.0)) - gamepad1.left_stick_y*(Math.abs(Math.pow(gamepad1.left_stick_y,2.0))))));
             }else{
+
                 robot.stopMotors();
+            }*/
+
+            if(gamepad1.x){
+                vvLib.pushAButton(robot, vv_Constants.ButtonEnum.Left);
+            }else if(gamepad1.b){
+                vvLib.pushAButton(robot, vv_Constants.ButtonEnum.Right);
             }
 
 
