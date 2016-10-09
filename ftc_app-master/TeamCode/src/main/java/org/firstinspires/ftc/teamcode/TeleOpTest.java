@@ -8,7 +8,7 @@ import static java.lang.Math.pow;
 
 @TeleOp(name="TeleOpTest", group="Test")
 
-public class TeleOpTest extends LinearOpMode {
+public class TeleOpTest extends vv_OpMode {
 
     /* Declare OpMode members. */
     vv_Robot robot           = new vv_Robot();
@@ -32,7 +32,7 @@ public class TeleOpTest extends LinearOpMode {
 
         vv_Lib vvLib = new vv_Lib();
 
-        vvLib.moveTillTouch(robot);
+        vvLib.moveTillTouch();
         while(opModeIsActive()) {
 
             /*if (Math.abs(gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
@@ -49,9 +49,9 @@ public class TeleOpTest extends LinearOpMode {
             }*/
 
             if(gamepad1.x){
-                vvLib.pushAButton(robot, vv_Constants.ButtonEnum.Left);
+                vvLib.pushAButton(vv_Constants.ButtonEnum.Left);
             }else if(gamepad1.b){
-                vvLib.pushAButton(robot, vv_Constants.ButtonEnum.Right);
+                vvLib.pushAButton(vv_Constants.ButtonEnum.Right);
             }
 
 

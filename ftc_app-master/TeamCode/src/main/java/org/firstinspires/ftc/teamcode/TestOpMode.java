@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name="TestOp", group="Test")
 
-public class TestOpMode extends LinearOpMode {
+public class TestOpMode extends vv_OpMode {
 
     /* Declare OpMode members. */
     vv_Robot robot           = new vv_Robot();
@@ -19,7 +19,6 @@ public class TestOpMode extends LinearOpMode {
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
-        robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hello Driver");    //
@@ -31,8 +30,10 @@ public class TestOpMode extends LinearOpMode {
 
         vv_Lib vvLib = new vv_Lib();
 
+        vvLib.robotInit(this);
+
         //AGAIN DO NOT CALL THIS METHOD
-        vvLib.moveAtAngle(robot, 20.0, .5f, 45);
+        vvLib.moveAtAngle(this, 20.0, .5f, 45);
     }
 
     public void telemetryAddData(String caption, String key, String message){
