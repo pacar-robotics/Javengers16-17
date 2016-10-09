@@ -28,19 +28,9 @@ public class TestOpMode extends vv_OpMode {
         waitForStart();
 
 
-        vv_Lib vvLib = new vv_Lib();
-
-        vvLib.robotInit(this);
-
-        //AGAIN DO NOT CALL THIS METHOD
-        vvLib.moveAtAngle(this, 20.0, .5f, 45);
+        //Initialize library which in turn initializes the robot plus its hardware map
+        //We need to pass the this pointer into vv_Lib in order to call some value added functions
+        //in vv_Opmode
+        vv_Lib vvLib = new vv_Lib(this);
     }
-
-    public void telemetryAddData(String caption, String key, String message){
-        telemetry.addLine(caption).addData(key,message);
-    }
-    public void telemetryUpdate() {
-        telemetry.update();
-    }
-
 }

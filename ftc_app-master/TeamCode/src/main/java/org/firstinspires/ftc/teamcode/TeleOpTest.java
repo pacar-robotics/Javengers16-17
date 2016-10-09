@@ -10,8 +10,6 @@ import static java.lang.Math.pow;
 
 public class TeleOpTest extends vv_OpMode {
 
-    /* Declare OpMode members. */
-    vv_Robot robot           = new vv_Robot();
 
 
     @Override
@@ -20,7 +18,6 @@ public class TeleOpTest extends vv_OpMode {
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
-        robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hello Driver");    //
@@ -30,7 +27,7 @@ public class TeleOpTest extends vv_OpMode {
         waitForStart();
 
 
-        vv_Lib vvLib = new vv_Lib();
+        vv_Lib vvLib = new vv_Lib(this);
 
         vvLib.moveTillTouch();
         while(opModeIsActive()) {
@@ -59,12 +56,4 @@ public class TeleOpTest extends vv_OpMode {
             idle();
         }
     }
-
-    public void telemetryAddData(String caption, String key, String message){
-        telemetry.addLine(caption).addData(key,message);
-    }
-    public void telemetryUpdate() {
-        telemetry.update();
-    }
-
 }

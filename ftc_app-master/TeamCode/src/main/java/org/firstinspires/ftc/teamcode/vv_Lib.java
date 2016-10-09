@@ -17,28 +17,26 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class vv_Lib
 {
     vv_Robot robot;
-    public vv_Lib()
+    public vv_Lib(vv_OpMode aOpMode)
     {
         robot = new vv_Robot();
+        robot.init(aOpMode.hardwareMap);
     }
-    public void robotInit(vv_OpMode exampleOp)
-    {
-        robot.init(exampleOp.hardwareMap);
-    }
-    public void moveWheels(vv_OpMode exampleOp, float distance, float Power, vv_Constants.DirectionEnum Direction) throws InterruptedException
+
+    public void moveWheels(vv_OpMode aOpMode, float distance, float Power, vv_Constants.DirectionEnum Direction) throws InterruptedException
     {
         if (Direction == vv_Constants.DirectionEnum.Forward){
             // moving the robot forward
-            moveForwardToPosition(exampleOp, distance, Power);
+            moveForwardToPosition(aOpMode, distance, Power);
         }else if (Direction == vv_Constants.DirectionEnum.Backward){
             // moving the robot forward
-            moveBackwardToPosition(exampleOp, distance, Power);
+            moveBackwardToPosition(aOpMode, distance, Power);
         }else if (Direction == vv_Constants.DirectionEnum.SidewaysLeft){
             // moving the robot forward
-            moveSidewaysLeftToPosition(exampleOp, distance, Power);
+            moveSidewaysLeftToPosition(aOpMode, distance, Power);
         }else if (Direction == vv_Constants.DirectionEnum.SidewaysRight){
             // moving the robot forward
-            moveSidewaysRightToPosition(exampleOp, distance, Power);
+            moveSidewaysRightToPosition(aOpMode, distance, Power);
         }
 
 
@@ -47,7 +45,7 @@ public class vv_Lib
     }
 
 
-    public void turnUsingEncoders (vv_OpMode exampleOp, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection)
+    public void turnUsingEncoders (vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection)
     {
         //code
     }
@@ -57,13 +55,13 @@ public class vv_Lib
         robot.pushButton(buttonEnum);
     }
 
-    public void turnUsingGyro (vv_OpMode exampleOp, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection)
+    public void turnUsingGyro (vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection)
     {
         // do we need direction?
         // absolute vs. relative turns
     }
 
-    public int senseColor (vv_OpMode exampleOp, ColorSensor cs)
+    public int senseColor (vv_OpMode aOpMode, ColorSensor cs)
     {
         // three color sensors (left, right, line)
         // arguments?
@@ -84,54 +82,54 @@ public class vv_Lib
         }
         robot.stopMotors();
     }
-    public int moveTillColor (vv_OpMode exampleOp, ColorSensor cs) throws InterruptedException
+    public int moveTillColor (vv_OpMode aOpMode, ColorSensor cs) throws InterruptedException
     {
         return 0;
     }
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
-    private void moveForwardToPosition(vv_OpMode exampleOp, float distance, float Power) throws InterruptedException
+    private void moveForwardToPosition(vv_OpMode aOpMode, float distance, float Power) throws InterruptedException
     {
         //we need to store the encoder target position
-        int targetPosition = 0;
+        int targetPosition;
         //calculate target position from the input distance in cm
         targetPosition = (int)((distance / (Math.PI*vv_Constants.MECCANUM_WHEEL_DIAMETER))*vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position
-        robot.runRobotToPositionFB(exampleOp, targetPosition,Power);
+        robot.runRobotToPositionFB(aOpMode, targetPosition,Power);
     }
     //Moves robot backward with a distance supplied in centimeters and power between 0 and 1
-    private void moveBackwardToPosition(vv_OpMode exampleOp, float distance, float Power) throws InterruptedException{
+    private void moveBackwardToPosition(vv_OpMode aOpMode, float distance, float Power) throws InterruptedException{
         //we need to store the encoder target position
-        int targetPosition = 0;
+        int targetPosition;
         //calculate target position from the input distance in cm
         targetPosition = -(int)((distance / (Math.PI*vv_Constants.MECCANUM_WHEEL_DIAMETER))*vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position with negative power
-        robot.runRobotToPositionFB(exampleOp, targetPosition,-Power);
+        robot.runRobotToPositionFB(aOpMode, targetPosition,-Power);
     }
-    private void moveSidewaysLeftToPosition(vv_OpMode exampleOp, float distance, float Power) throws InterruptedException{
+    private void moveSidewaysLeftToPosition(vv_OpMode aOpMode, float distance, float Power) throws InterruptedException{
         //we need to store the encoder target position
-        int targetPosition = 0;
+        int targetPosition;
         //calculate target position from the input distance in cm
         targetPosition = (int)((distance / (Math.PI*vv_Constants.MECCANUM_WHEEL_DIAMETER))*vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position with negative power
-        robot.runRobotToPositionSideways(exampleOp, targetPosition, Power);
+        robot.runRobotToPositionSideways(aOpMode, targetPosition, Power);
     }
-    private void moveSidewaysRightToPosition(vv_OpMode exampleOp, float distance, float Power) throws InterruptedException{
+    private void moveSidewaysRightToPosition(vv_OpMode aOpMode, float distance, float Power) throws InterruptedException{
         //we need to store the encoder target position
-        int targetPosition = 0;
+        int targetPosition;
         //calculate target position from the input distance in cm
         targetPosition = -(int)((distance / (Math.PI*vv_Constants.MECCANUM_WHEEL_DIAMETER))*vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position with negative power
-        robot.runRobotToPositionSideways(exampleOp, targetPosition, -Power);
+        robot.runRobotToPositionSideways(aOpMode, targetPosition, -Power);
     }
 
 
     //DO NOT USE THIS METHOD
     //IT IS NOT COMPLETED
-    public void moveAtAngle(vv_OpMode exampleOp, double distance, float Power, float Angle)
+    public void moveAtAngle(vv_OpMode aOpMode, double distance, float Power, float Angle)
             throws InterruptedException{
         //we need to store the encoder target position
-        int VldtargetPosition = 0;
-        int VrdtargetPosition = 0;
+        int VldtargetPosition;
+        int VrdtargetPosition;
         double Vld_distance = 0;
         double Vrd_distance = 0;
 
@@ -209,7 +207,7 @@ public class vv_Lib
 
 
             //runs the robot to position with negative power
-            robot.runRobotToPositionWithAngle(exampleOp, fl_Power*Power , fr_Power*Power , bl_Power*Power ,
+            robot.runRobotToPositionWithAngle(aOpMode, fl_Power*Power , fr_Power*Power , bl_Power*Power ,
                     br_Power*Power, VrdtargetPosition, VldtargetPosition, VldtargetPosition,
                     VrdtargetPosition, Angle);
     }

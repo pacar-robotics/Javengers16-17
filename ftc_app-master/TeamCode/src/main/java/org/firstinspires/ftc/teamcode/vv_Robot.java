@@ -90,18 +90,18 @@ public class vv_Robot
         backRightMotor.setMode(runMode);
     }
 
-    public void runRobotToPositionFB(vv_OpMode exampleOp, int position, float Power) throws InterruptedException{
+    public void runRobotToPositionFB(vv_OpMode aOpMode, int position, float Power) throws InterruptedException{
         //using the generic method with all powers set to the same value and all positions set to the same position
-        runRobotToPosition(exampleOp, Power, Power, Power, Power, position, position, position, position);
+        runRobotToPosition(aOpMode, Power, Power, Power, Power, position, position, position, position);
     }
 
-    public void runRobotToPositionSideways(vv_OpMode exampleOp, int position, float Power) throws InterruptedException{
+    public void runRobotToPositionSideways(vv_OpMode aOpMode, int position, float Power) throws InterruptedException{
         //using the generic method with all powers set to the same value and all positions set to the same position
-        runRobotToPosition(exampleOp, -Power, Power, Power, -Power, -position, position, position, -position);
+        runRobotToPosition(aOpMode, -Power, Power, Power, -Power, -position, position, position, -position);
     }
 
 
-    public void runRobotToPosition(vv_OpMode exampleOp, float fl_Power , float fr_Power,
+    public void runRobotToPosition(vv_OpMode aOpMode, float fl_Power , float fr_Power,
                                    float bl_Power , float br_Power , int fl_Position ,
                                    int fr_Position, int bl_Position , int br_Position )
                                    throws InterruptedException{
@@ -141,11 +141,11 @@ public class vv_Robot
             //report motor positions for debugging
 
             // TODO: UNCOMMENT THIS!!!!
-            exampleOp.telemetryAddData("Motor FL","Values", ""+frontLeftMotor.getCurrentPosition());
-            exampleOp.telemetryAddData("Motor FR","Values", ""+frontRightMotor.getCurrentPosition());
-            exampleOp.telemetryAddData("Motor BL","Values", ""+backLeftMotor.getCurrentPosition());
-            exampleOp.telemetryAddData("Motor BR","Values", ""+backRightMotor.getCurrentPosition());
-            exampleOp.telemetryUpdate();
+            aOpMode.telemetryAddData("Motor FL","Values", ""+frontLeftMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor FR","Values", ""+frontRightMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor BL","Values", ""+backLeftMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor BR","Values", ""+backRightMotor.getCurrentPosition());
+            aOpMode.telemetryUpdate();
 
         }
         stopMotors();
@@ -153,7 +153,7 @@ public class vv_Robot
         Thread.sleep(100);
     }
 
-    public void runRobotToPositionWithAngle(vv_OpMode exampleOp, float fl_Power , float fr_Power,
+    public void runRobotToPositionWithAngle(vv_OpMode aOpMode, float fl_Power , float fr_Power,
                                    float bl_Power , float br_Power , int fl_Position ,
                                             int fr_Position, int bl_Position , int br_Position , float angle)
                                     throws InterruptedException{
@@ -192,11 +192,11 @@ public class vv_Robot
                 || (Math.abs(backRightMotor.getCurrentPosition()) < Math.abs(br_Position)-vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN) ||
                 (Math.abs(backLeftMotor.getCurrentPosition()) < Math.abs(bl_Position)-vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN)){
             //report motor positions for debugging
-            exampleOp.telemetryAddData("Motor FL","Values", ""+frontLeftMotor.getCurrentPosition());
-            exampleOp.telemetryAddData("Motor FR","Values", ""+frontRightMotor.getCurrentPosition());
-            exampleOp.telemetryAddData("Motor BL","Values", ""+backLeftMotor.getCurrentPosition());
-            exampleOp.telemetryAddData("Motor BR","Values", ""+backRightMotor.getCurrentPosition());
-            exampleOp.telemetryUpdate();
+            aOpMode.telemetryAddData("Motor FL","Values", ""+frontLeftMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor FR","Values", ""+frontRightMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor BL","Values", ""+backLeftMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor BR","Values", ""+backRightMotor.getCurrentPosition());
+            aOpMode.telemetryUpdate();
 
         }
         stopMotors();
