@@ -8,11 +8,9 @@ import static java.lang.Math.pow;
 
 @TeleOp(name="TeleOpTest", group="Test")
 
-public class TeleOpTest extends LinearOpMode {
+public class TeleOpTest extends vv_OpMode {
 
-    /* Declare OpMode members. */
-    vv_Robot robot           = new vv_Robot();
-
+	vv_Lib vvLib;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -20,7 +18,6 @@ public class TeleOpTest extends LinearOpMode {
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
-        robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hello Driver");    //
@@ -28,12 +25,16 @@ public class TeleOpTest extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
+	    vvLib = new vv_Lib(this);
 
-
-        vv_Lib vvLib = new vv_Lib();
-
-
+        vvLib.moveTillTouch();
         while(opModeIsActive()) {
+
+            if(gamepad1.x){
+                vvLib.pushAButton(vv_Constants.ButtonEnum.Left);
+            }else if(gamepad1.b){
+                vvLib.pushAButton(vv_Constants.ButtonEnum.Right);
+            }
 
             processDriveRobot();
 
@@ -66,24 +67,23 @@ public class TeleOpTest extends LinearOpMode {
 //            }
         if (Math.abs(gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD)
         {
-            robot.runMotors(gamepad1.right_stick_x, -gamepad1.right_stick_x, gamepad1.right_stick_x, -gamepad1.right_stick_x);
+            vvLib.runAllMotors(this, gamepad1.right_stick_x, -gamepad1.right_stick_x, gamepad1.right_stick_x, -gamepad1.right_stick_x);
         }
         else if (Math.abs(gamepad1.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
                 Math.abs(gamepad1.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD)
         {
-            robot.runMotors(((Math.abs(gamepad1.left_stick_x) * gamepad1.left_stick_x) - ((Math.abs(gamepad1.left_stick_y)) * gamepad1.left_stick_y)),
+            vvLib.runAllMotors(this, ((Math.abs(gamepad1.left_stick_x) * gamepad1.left_stick_x) - ((Math.abs(gamepad1.left_stick_y)) * gamepad1.left_stick_y)),
                     (-(gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x)) -((Math.abs(gamepad1.left_stick_y) * gamepad1.left_stick_y))),
                     (-(gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x)) -((Math.abs(gamepad1.left_stick_y) * gamepad1.left_stick_y))),
                     ((Math.abs(gamepad1.left_stick_x) * gamepad1.left_stick_x) - ((Math.abs(gamepad1.left_stick_y)) * gamepad1.left_stick_y)));
         }else{
-            robot.stopMotors();
+            vvLib.stopAllMotors();
         }
     }
 
     private void processBeacon() {
         // Changes Beacon Mechanism to left position in order to score the beacon
         if (gamepad1.dpad_left) {
-
         }
         // Changes Beacon Mechanism to right position in order to score the beacon
         if (gamepad1.dpad_right) {

@@ -16,24 +16,31 @@ public class vv_Constants
 	final static float MECCANUM_WHEEL_ENCODER_MARGIN = 20;
 	final static float ANALOG_STICK_THRESHOLD = .25f;
 
-	DirectionEnum Direction;
-	TurnDirectionEnum TurnDirection;
+    static final double BUTTON_SERVO_MAX_POS     =  0.8f;     // Maximum rotational position
+    static final double BUTTON_SERVO_MIN_POS     =  0.45f;
 
-	enum DirectionEnum
-	{
-		Forward, Backward, SidewaysLeft, SidewaysRight
-	}
-	enum MotorEnum
-	{
-		FrontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor
-	}
-	enum TurnDirectionEnum
-	{
-		Clockwise, Counterclockwise
-	}
+    DirectionEnum Direction;
+    TurnDirectionEnum TurnDirection;
 
-	enum StateOfLift
-	{
-		Rest, ScorePosition
-	}
+    enum DirectionEnum
+    {
+        Forward, Backward, SidewaysLeft, SidewaysRight;
+    }
+    enum MotorEnum
+    {
+        frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
+    }
+    enum TurnDirectionEnum
+    {
+        Clockwise, Counterclockwise;
+    }
+    enum ButtonEnum
+    {
+        Left, Right;
+    }
+    enum TouchSensorEnum
+    {
+        buttonSensor;
+    }
+
 }

@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import android.hardware.Sensor;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -17,7 +21,11 @@ public class vv_Robot
     private DcMotor frontLeftMotor   = null;
     private DcMotor  frontRightMotor  = null;
     private DcMotor backLeftMotor   = null;
-    private DcMotor  backRightMotor  = null;
+    private DcMotor backRightMotor  = null;
+
+    private Servo buttonServo  = null;
+
+    private TouchSensor buttonSensor;
 
     HardwareMap hwMap  = null;
     private ElapsedTime period  = new ElapsedTime();
@@ -34,6 +42,13 @@ public class vv_Robot
         backLeftMotor   = hwMap.dcMotor.get("motor_back_left");
         backRightMotor  = hwMap.dcMotor.get("motor_back_right");
 
+
+        buttonServo = hwMap.servo.get("button_servo");
+
+        buttonSensor = hwMap.touchSensor.get("touch_button_sensor");
+
+        buttonServo.setPosition(0.65);
+
         frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -49,14 +64,14 @@ public class vv_Robot
 
     public void setPower(vv_Constants.MotorEnum motorEnum, float power) {
         switch (motorEnum){
-            case FrontLeftMotor:
+            case frontLeftMotor:
                 frontLeftMotor.setPower(power);
                 break;
             case frontRightMotor:
                 frontRightMotor.setPower(power);
                 break;
-            case backLeftMotor:Motor:
-            backLeftMotor.setPower(power);
+            case backLeftMotor:
+                backLeftMotor.setPower(power);
                 break;
             case backRightMotor:
                 backRightMotor.setPower(power);
@@ -71,18 +86,18 @@ public class vv_Robot
         backRightMotor.setMode(runMode);
     }
 
-    public void runRobotToPositionFB(LinearOpMode Aop, int position, float Power) throws InterruptedException{
+    public void runRobotToPositionFB(vv_OpMode aOpMode, int position, float Power) throws InterruptedException{
         //using the generic method with all powers set to the same value and all positions set to the same position
-        runRobotToPosition(Aop, Power, Power, Power, Power, position, position, position, position);
+        runRobotToPosition(aOpMode, Power, Power, Power, Power, position, position, position, position);
     }
 
-    public void runRobotToPositionSideways(LinearOpMode Aop, int position, float Power) throws InterruptedException{
+    public void runRobotToPositionSideways(vv_OpMode aOpMode, int position, float Power) throws InterruptedException{
         //using the generic method with all powers set to the same value and all positions set to the same position
-        runRobotToPosition(Aop, -Power, Power, Power, -Power, -position, position, position, -position);
+        runRobotToPosition(aOpMode, -Power, Power, Power, -Power, -position, position, position, -position);
     }
 
 
-    public void runRobotToPosition(LinearOpMode Aop, float fl_Power , float fr_Power,
+    public void runRobotToPosition(vv_OpMode aOpMode, float fl_Power , float fr_Power,
                                    float bl_Power , float br_Power , int fl_Position ,
                                    int fr_Position, int bl_Position , int br_Position )
             throws InterruptedException{
@@ -107,7 +122,7 @@ public class vv_Robot
         backRightMotor.setTargetPosition(br_Position);
 
         //sets the the power of all motors
-        setPower(vv_Constants.MotorEnum.FrontLeftMotor, fl_Power);
+        setPower(vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
         setPower(vv_Constants.MotorEnum.frontRightMotor, fr_Power);
         setPower(vv_Constants.MotorEnum.backLeftMotor, bl_Power);
         setPower(vv_Constants.MotorEnum.backRightMotor, br_Power);
@@ -120,11 +135,13 @@ public class vv_Robot
                 || (Math.abs(backRightMotor.getCurrentPosition()) < Math.abs(br_Position)-vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN) ||
                 (Math.abs(backLeftMotor.getCurrentPosition()) < Math.abs(bl_Position)-vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN)){
             //report motor positions for debugging
-            ((TestOpMode)Aop).telemetryAddData("Motor FL","Values", ""+frontLeftMotor.getCurrentPosition());
-            ((TestOpMode)Aop).telemetryAddData("Motor FR","Values", ""+frontRightMotor.getCurrentPosition());
-            ((TestOpMode)Aop).telemetryAddData("Motor BL","Values", ""+backLeftMotor.getCurrentPosition());
-            ((TestOpMode)Aop).telemetryAddData("Motor BR","Values", ""+backRightMotor.getCurrentPosition());
-            ((TestOpMode)Aop).telemetryUpdate();
+
+            // TODO: UNCOMMENT THIS!!!!
+            aOpMode.telemetryAddData("Motor FL","Values", ""+frontLeftMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor FR","Values", ""+frontRightMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor BL","Values", ""+backLeftMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor BR","Values", ""+backRightMotor.getCurrentPosition());
+            aOpMode.telemetryUpdate();
 
         }
         stopMotors();
@@ -132,8 +149,9 @@ public class vv_Robot
         Thread.sleep(100);
     }
 
-    public void runRobotToPositionWithAngle(float fl_Power , float fr_Power,
-                                            float bl_Power , float br_Power , int fl_Position ,
+
+    public void runRobotToPositionWithAngle(vv_OpMode aOpMode, float fl_Power , float fr_Power,
+                                   float bl_Power , float br_Power , int fl_Position ,
                                             int fr_Position, int bl_Position , int br_Position , float angle)
             throws InterruptedException{
 
@@ -158,7 +176,7 @@ public class vv_Robot
         backRightMotor.setTargetPosition(br_Position);
 
         //sets the the power of all motors
-        setPower(vv_Constants.MotorEnum.FrontLeftMotor, fl_Power);
+        setPower(vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
         setPower(vv_Constants.MotorEnum.frontRightMotor, fr_Power);
         setPower(vv_Constants.MotorEnum.backLeftMotor, bl_Power);
         setPower(vv_Constants.MotorEnum.backRightMotor, br_Power);
@@ -171,11 +189,11 @@ public class vv_Robot
                 || (Math.abs(backRightMotor.getCurrentPosition()) < Math.abs(br_Position)-vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN) ||
                 (Math.abs(backLeftMotor.getCurrentPosition()) < Math.abs(bl_Position)-vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN)){
             //report motor positions for debugging
-            /*((TestOpMode)Aop).telemetryAddData("Motor FL","Values", ""+FrontLeftMotor.getCurrentPosition());
-            ((TestOpMode)Aop).telemetryAddData("Motor FR","Values", ""+frontRightMotor.getCurrentPosition());
-            ((TestOpMode)Aop).telemetryAddData("Motor BL","Values", ""+backLeftMotor.getCurrentPosition());
-            ((TestOpMode)Aop).telemetryAddData("Motor BR","Values", ""+backRightMotor.getCurrentPosition());
-            ((TestOpMode)Aop).telemetryUpdate();*/
+            aOpMode.telemetryAddData("Motor FL","Values", ""+frontLeftMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor FR","Values", ""+frontRightMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor BL","Values", ""+backLeftMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor BR","Values", ""+backRightMotor.getCurrentPosition());
+            aOpMode.telemetryUpdate();
 
         }
         stopMotors();
@@ -196,7 +214,8 @@ public class vv_Robot
         runMotors(-Power,Power,Power,-Power);
     }
 
-    public void runMotors(float fl_Power , float fr_Power, float bl_Power , float br_Power)
+
+    public void runMotors(vv_OpMode aOpMode, float fl_Power , float fr_Power, float bl_Power , float br_Power)
             throws InterruptedException{
 
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -205,7 +224,7 @@ public class vv_Robot
         backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //sets the the power of all motors
-        setPower(vv_Constants.MotorEnum.FrontLeftMotor, fl_Power);
+        setPower(vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
         setPower(vv_Constants.MotorEnum.frontRightMotor, fr_Power);
         setPower(vv_Constants.MotorEnum.backLeftMotor, bl_Power);
         setPower(vv_Constants.MotorEnum.backRightMotor, br_Power);
@@ -221,6 +240,23 @@ public class vv_Robot
         backRightMotor.setPower(0);
     }
 
+    public void pushButton(vv_Constants.ButtonEnum buttonEnum) {
+
+        switch(buttonEnum) {
+
+            case Left:
+            buttonServo.setPosition(vv_Constants.BUTTON_SERVO_MAX_POS);
+                break;
+
+            case Right:
+            buttonServo.setPosition(vv_Constants.BUTTON_SERVO_MIN_POS);
+                break;
+        }
+    }
+
+    public boolean getButtonTouchValue() throws InterruptedException{
+        return buttonSensor.isPressed();
+    }
 
     public void waitForTick(long periodMs)  throws InterruptedException {
 
