@@ -9,10 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 public class TeleOpTest extends vv_OpMode {
 
-<<<<<<< HEAD
-=======
 	vv_Lib vvLib;
->>>>>>> origin/common-dev
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -31,8 +28,6 @@ public class TeleOpTest extends vv_OpMode {
 
         vvLib.moveTillTouch();
         while (opModeIsActive()) {
-
-<<<<<<< HEAD
             /*if (Math.abs(gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
                 robot.runMotors(gamepad1.right_stick_x, -gamepad1.right_stick_x, gamepad1.right_stick_x, -gamepad1.right_stick_x);
             }else if (Math.abs(gamepad1.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
@@ -48,9 +43,6 @@ public class TeleOpTest extends vv_OpMode {
 
 
             if (gamepad1.x) {
-=======
-            if(gamepad1.x){
->>>>>>> origin/common-dev
                 vvLib.pushAButton(vv_Constants.ButtonEnum.Left);
             } else if (gamepad1.b) {
                 vvLib.pushAButton(vv_Constants.ButtonEnum.Right);
@@ -62,15 +54,12 @@ public class TeleOpTest extends vv_OpMode {
 
             processCapBall();
 
-<<<<<<< HEAD
-=======
             processBallCollection();
 
             processShootingAngle();
 
             processShooting();
 
->>>>>>> origin/common-dev
             idle();
         }
     }
