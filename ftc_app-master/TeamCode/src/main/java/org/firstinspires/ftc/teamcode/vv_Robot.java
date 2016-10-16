@@ -12,10 +12,6 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-
 /**
  * Created by thomas on 9/25/2016.
  */
@@ -115,7 +111,7 @@ public class vv_Robot {
     public void runRobotToPosition(vv_OpMode aOpMode, float fl_Power , float fr_Power,
                                    float bl_Power , float br_Power , int fl_Position ,
                                    int fr_Position, int bl_Position , int br_Position )
-                                   throws InterruptedException{
+            throws InterruptedException{
         //reset motor encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -164,6 +160,62 @@ public class vv_Robot {
         Thread.sleep(100);
     }
 
+<<<<<<< HEAD
+=======
+
+    public void runRobotToPositionWithAngle(vv_OpMode aOpMode, float fl_Power , float fr_Power,
+                                   float bl_Power , float br_Power , int fl_Position ,
+                                            int fr_Position, int bl_Position , int br_Position , float angle)
+            throws InterruptedException{
+
+        //reset motor encoders
+        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        while (frontLeftMotor.getCurrentPosition() != 0){
+            //wait until motors are reset
+            Thread.sleep(20);
+        }
+
+        //sets all motors to run to a position
+        setRobotMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //reset encoder for 1 wheel
+        frontLeftMotor.setTargetPosition(fl_Position);
+        frontRightMotor.setTargetPosition(fr_Position);
+        backLeftMotor.setTargetPosition(bl_Position);
+        backRightMotor.setTargetPosition(br_Position);
+
+        //sets the the power of all motors
+        setPower(vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
+        setPower(vv_Constants.MotorEnum.frontRightMotor, fr_Power);
+        setPower(vv_Constants.MotorEnum.backLeftMotor, bl_Power);
+        setPower(vv_Constants.MotorEnum.backRightMotor, br_Power);
+
+        //wait until robot reaches target position
+        //testing the wheels on the opposite sides of the robot because each might have a different position for sideways movements
+
+        while((Math.abs(frontLeftMotor.getCurrentPosition()) < Math.abs(fl_Position)-vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN) ||
+                (Math.abs(frontRightMotor.getCurrentPosition()) < Math.abs(fr_Position)-vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN)
+                || (Math.abs(backRightMotor.getCurrentPosition()) < Math.abs(br_Position)-vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN) ||
+                (Math.abs(backLeftMotor.getCurrentPosition()) < Math.abs(bl_Position)-vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN)){
+            //report motor positions for debugging
+            aOpMode.telemetryAddData("Motor FL","Values", ""+frontLeftMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor FR","Values", ""+frontRightMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor BL","Values", ""+backLeftMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor BR","Values", ""+backRightMotor.getCurrentPosition());
+            aOpMode.telemetryUpdate();
+
+        }
+        stopMotors();
+
+        Thread.sleep(100);
+    }
+
+
+>>>>>>> origin/common-dev
     public void runMotorsFB(float Power)
             throws InterruptedException {
 
@@ -177,7 +229,7 @@ public class vv_Robot {
     }
 
 
-    public void runMotors(float fl_Power , float fr_Power, float bl_Power , float br_Power)
+    public void runMotors(vv_OpMode aOpMode, float fl_Power , float fr_Power, float bl_Power , float br_Power)
             throws InterruptedException{
 
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
