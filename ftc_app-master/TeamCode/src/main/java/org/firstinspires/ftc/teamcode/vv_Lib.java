@@ -214,7 +214,13 @@ public class vv_Lib
 
 
 
+    public void runAllMotors (vv_OpMode aOpMode, float FLPower, float FRPower, float BLPower, float BRPower) throws InterruptedException{
+        robot.runMotors(aOpMode, FLPower, FRPower, BLPower, BRPower);
+    }
 
+    public void stopAllMotors() {
+        robot.stopMotors();
+    }
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
     public void moveForward(float Power) throws InterruptedException{
