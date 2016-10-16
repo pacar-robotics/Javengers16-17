@@ -12,10 +12,6 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-
 /**
  * Created by thomas on 9/25/2016.
  */
@@ -104,7 +100,7 @@ public class vv_Robot
     public void runRobotToPosition(vv_OpMode aOpMode, float fl_Power , float fr_Power,
                                    float bl_Power , float br_Power , int fl_Position ,
                                    int fr_Position, int bl_Position , int br_Position )
-                                   throws InterruptedException{
+            throws InterruptedException{
         //reset motor encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -153,10 +149,11 @@ public class vv_Robot
         Thread.sleep(100);
     }
 
+
     public void runRobotToPositionWithAngle(vv_OpMode aOpMode, float fl_Power , float fr_Power,
                                    float bl_Power , float br_Power , int fl_Position ,
                                             int fr_Position, int bl_Position , int br_Position , float angle)
-                                    throws InterruptedException{
+            throws InterruptedException{
 
         //reset motor encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -218,7 +215,7 @@ public class vv_Robot
     }
 
 
-    public void runMotors(float fl_Power , float fr_Power, float bl_Power , float br_Power)
+    public void runMotors(vv_OpMode aOpMode, float fl_Power , float fr_Power, float bl_Power , float br_Power)
             throws InterruptedException{
 
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
