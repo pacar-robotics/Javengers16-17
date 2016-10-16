@@ -16,11 +16,20 @@ public class vv_Constants
 	final static float MECCANUM_WHEEL_ENCODER_MARGIN = 20;
 	final static float ANALOG_STICK_THRESHOLD = .25f;
 
-    static final double BUTTON_SERVO_MAX_POS     =  0.8f;     // Maximum rotational position
-    static final double BUTTON_SERVO_MIN_POS     =  0.45f;
+    //Beacon Servo Positions
+    static final double BUTTON_SERVO_LEFT_POS =  0.8f;     // Maximum rotational position
+    static final double BUTTON_SERVO_RIGHT_POS =  0.45f;
+    static final double BUTTON_SERVO_NEUTRAL_POS = 0.0f; //TODO: CHANGE VALUE
+
+    //CapBall Constants //TODO: CHANGE VALUES
+    static final int CAP_BALL_LIFT_REST = 0;
+    static final int CAP_BALL_LIFT_SCORE = 5000;
+    static final int CAP_BALL_LIFT_MAX = 5050;
+    static final int CAP_BALL_LIFT_MIN = 0;
 
     DirectionEnum Direction;
     TurnDirectionEnum TurnDirection;
+    CapBallStateEnum CapBallState;
 
     enum DirectionEnum
     {
@@ -34,13 +43,21 @@ public class vv_Constants
     {
         Clockwise, Counterclockwise;
     }
-    enum ButtonEnum
-    {
-        Left, Right;
-    }
+
     enum TouchSensorEnum
     {
         buttonSensor;
     }
+
+    enum BeaconServoStateEnum
+    {
+        Left, Right, Neutral
+    }
+
+    enum CapBallStateEnum
+    {
+        Rest, Scoring_Position
+    }
+
 
 }

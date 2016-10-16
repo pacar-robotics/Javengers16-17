@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.configuration.MotorConfiguration;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -21,6 +22,43 @@ public class vv_Lib
     {
         robot = new vv_Robot();
         robot.init(aOpMode.hardwareMap);
+    }
+
+
+    public void processDriveRobotWithPowerFactor(vv_OpMode aOpMode, float powerFactor) throws InterruptedException
+    {
+        //            if(gamepad1.left_stick_x > vv_Constants.ANALOG_STICK_THRESHOLD) {
+//                vvLib.moveSidewaysRight(robot, gamepad1.left_stick_x);
+//            }else if(gamepad1.left_stick_x < -vv_Constants.ANALOG_STICK_THRESHOLD) {
+//                vvLib.moveSidewaysLeft(robot, -gamepad1.left_stick_x);
+//            }else if(gamepad1.left_stick_y > vv_Constants.ANALOG_STICK_THRESHOLD) {
+//                vvLib.moveForward(robot, -gamepad1.left_stick_y);
+//            }else if(gamepad1.left_stick_y < -vv_Constants.ANALOG_STICK_THRESHOLD) {
+//                vvLib.moveBackward(robot, gamepad1.left_stick_y);
+//            }else{
+//                robot.stopMotors();
+//            }
+
+        // takes the x and y cooridinates of the joystick and calculates the power for each motor that allows the robot to turn in that direction
+        float forwardLeftPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
+        float forwardRightPower = -(aOpMode.gamepad1.left_stick_x * Math.abs(aOpMode.gamepad1.left_stick_x)) -((Math.abs(aOpMode.gamepad1.left_stick_y) * aOpMode.gamepad1.left_stick_y));
+        float backLeftPower = -(aOpMode.gamepad1.left_stick_x * Math.abs(aOpMode.gamepad1.left_stick_x)) -((Math.abs(aOpMode.gamepad1.left_stick_y) * aOpMode.gamepad1.left_stick_y));
+        float backRightPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
+
+
+        //rotates/turns the robot
+        if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD)
+        {
+            runAllMotors(aOpMode, aOpMode.gamepad1.right_stick_x, -aOpMode.gamepad1.right_stick_x, aOpMode.gamepad1.right_stick_x, -aOpMode.gamepad1.right_stick_x);
+        }
+        //translates the robot using the mecanum wheels
+        else if (Math.abs(aOpMode.gamepad1.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
+                Math.abs(aOpMode.gamepad1.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD)
+        {
+            runAllMotors(aOpMode, (forwardLeftPower * powerFactor), (forwardRightPower * powerFactor), (backLeftPower * powerFactor), (backRightPower * powerFactor));
+        }else{
+            stopAllMotors();
+        }
     }
 
     public void moveWheels(vv_OpMode aOpMode, float distance, float Power, vv_Constants.DirectionEnum Direction) throws InterruptedException
@@ -50,9 +88,9 @@ public class vv_Lib
         //code
     }
 
-    public void pushAButton (vv_Constants.ButtonEnum buttonEnum)
+    public void pushAButton (vv_Constants.BeaconServoStateEnum beaconState)
     {
-        robot.pushButton(buttonEnum);
+        robot.pushButton(beaconState);
     }
 
     public void turnUsingGyro (vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection)
@@ -74,11 +112,11 @@ public class vv_Lib
          return robot.getButtonTouchValue();
     }
 
-    public void moveTillTouch () throws InterruptedException
+    public void moveTillTouch (vv_OpMode aOpMode) throws InterruptedException
     {
         while(!senseTouch())
         {
-            robot.runMotors(.3f, .3f, .3f, .3f);
+            robot.runMotors(aOpMode, .3f, .3f, .3f, .3f);
         }
         robot.stopMotors();
     }
@@ -223,18 +261,18 @@ public class vv_Lib
     }
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
-    public void moveForward(float Power) throws InterruptedException{
-       robot.runMotorsFB(Power);
+    public void moveForward(vv_OpMode aOpMode,float Power) throws InterruptedException{
+       robot.runMotorsFB(aOpMode, Power);
     }
     //Moves robot backward with a distance supplied in centimeters and power between 0 and 1
-    public void moveBackward(float Power) throws InterruptedException{
-        robot.runMotorsFB(-Power);
+    public void moveBackward(vv_OpMode aOpMode,float Power) throws InterruptedException{
+        robot.runMotorsFB(aOpMode, -Power);
     }
-    public void moveSidewaysLeft(float Power) throws InterruptedException{
-        robot.runMotorsSideways(Power);
+    public void moveSidewaysLeft(vv_OpMode aOpMode,float Power) throws InterruptedException{
+        robot.runMotorsSideways(aOpMode, Power);
     }
-    public void moveSidewaysRight(float Power) throws InterruptedException{
-        robot.runMotorsSideways(-Power);
+    public void moveSidewaysRight(vv_OpMode aOpMode,float Power) throws InterruptedException{
+        robot.runMotorsSideways(aOpMode, -Power);
     }
 
 }
