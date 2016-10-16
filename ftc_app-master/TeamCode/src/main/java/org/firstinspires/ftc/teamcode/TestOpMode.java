@@ -4,13 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-
-@TeleOp(name="TestOp", group="Test")
+@TeleOp(name = "TestOp", group = "Test")
 
 public class TestOpMode extends vv_OpMode {
-
-    /* Declare OpMode members. */
-    vv_Robot robot           = new vv_Robot();
 
 
     @Override
