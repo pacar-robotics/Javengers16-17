@@ -13,7 +13,7 @@ public class vv_Constants
 	final static float MOTOR_SLOW_START_THRESHOLD = 0.30f;
 	final static int GYRO_ERROR = 8;
 	final static float MECCANUM_WHEEL_DIAMETER = 9.95f;   //in centimeters
-	final static float MECCANUM_WHEEL_ENCODER_MARGIN = 20;
+	final static float DC_MOTOR_ENCODER_MARGIN = 20;
 	final static float ANALOG_STICK_THRESHOLD = .25f;
 
     //Beacon Servo Positions
@@ -26,10 +26,9 @@ public class vv_Constants
     static final int CAP_BALL_LIFT_SCORE = 5000;
     static final int CAP_BALL_LIFT_MAX = 5050;
     static final int CAP_BALL_LIFT_MIN = 0;
+    static final float CAP_BALL_SCORE_POWER_FACTOR = .5f; //TODO: CHANGE
 
-    DirectionEnum Direction;
-    TurnDirectionEnum TurnDirection;
-    CapBallStateEnum CapBallState;
+    static final float BALL_COLLECTOR_POWER = .3f; //TODO: CHANGE
 
     enum DirectionEnum
     {
@@ -59,5 +58,9 @@ public class vv_Constants
         Rest, Scoring_Position
     }
 
+    enum BallCollectorStateEnum
+    {
+        Off, Intake, Outtake
+    }
 
 }

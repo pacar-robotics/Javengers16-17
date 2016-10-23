@@ -20,6 +20,7 @@ public class vv_Robot
 	private DcMotor backLeftMotor = null;
 	private DcMotor backRightMotor = null;
 	private DcMotor capBallLift = null;
+	private DcMotor ballCollector = null;
 
 	private Servo buttonServo = null;
 
@@ -28,6 +29,10 @@ public class vv_Robot
 	HardwareMap hwMap = null;
 	private ElapsedTime period = new ElapsedTime();
 
+	public vv_Constants.DirectionEnum Direction;
+	public vv_Constants.TurnDirectionEnum TurnDirection;
+	public vv_Constants.CapBallStateEnum CapBallState = vv_Constants.CapBallStateEnum.Rest;
+	public vv_Constants.BallCollectorStateEnum BallCollectorState = vv_Constants.BallCollectorStateEnum.Off;
 
 	public void init(HardwareMap ahwMap)
 	{
@@ -62,14 +67,16 @@ public class vv_Robot
 	}
 
     //moves cap ball lift to preset position
-    public void moveCapBallLiftToPosition (vv_Constants.CapBallStateEnum capBallState)
+    public void moveCapBallLift (vv_OpMode anOp, int Position, float Power) throws InterruptedException
     {
-        switch (capBallState)
-        {
-            case Rest
-
-        }
+      		moveMotorUsingEncoderLimits(anOp, capBallLift, Position, Power,
+					vv_Constants.CAP_BALL_LIFT_MAX, vv_Constants.CAP_BALL_LIFT_MIN);
     }
+
+	public void setPowerToBallCollector (vv_OpMode aOpMode, float Power)
+	{
+		ballCollector.setPower(Power);
+	}
 
 	public void setPower(vv_Constants.MotorEnum motorEnum, float power)
 	{
@@ -146,10 +153,10 @@ public class vv_Robot
 		//wait until robot reaches target position
 		//testing the wheels on the opposite sides of the robot because each might have a different position for sideways movements
 
-		while ((Math.abs(frontLeftMotor.getCurrentPosition()) < Math.abs(fl_Position) - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN) ||
-				(Math.abs(frontRightMotor.getCurrentPosition()) < Math.abs(fr_Position) - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN)
-				|| (Math.abs(backRightMotor.getCurrentPosition()) < Math.abs(br_Position) - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN) ||
-				(Math.abs(backLeftMotor.getCurrentPosition()) < Math.abs(bl_Position) - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN))
+		while ((Math.abs(frontLeftMotor.getCurrentPosition()) < Math.abs(fl_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN) ||
+				(Math.abs(frontRightMotor.getCurrentPosition()) < Math.abs(fr_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN)
+				|| (Math.abs(backRightMotor.getCurrentPosition()) < Math.abs(br_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN) ||
+				(Math.abs(backLeftMotor.getCurrentPosition()) < Math.abs(bl_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN))
 		{
 			//report motor positions for debugging
 
@@ -203,10 +210,10 @@ public class vv_Robot
 		//wait until robot reaches target position
 		//testing the wheels on the opposite sides of the robot because each might have a different position for sideways movements
 
-		while ((Math.abs(frontLeftMotor.getCurrentPosition()) < Math.abs(fl_Position) - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN) ||
-				(Math.abs(frontRightMotor.getCurrentPosition()) < Math.abs(fr_Position) - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN)
-				|| (Math.abs(backRightMotor.getCurrentPosition()) < Math.abs(br_Position) - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN) ||
-				(Math.abs(backLeftMotor.getCurrentPosition()) < Math.abs(bl_Position) - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN))
+		while ((Math.abs(frontLeftMotor.getCurrentPosition()) < Math.abs(fl_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN) ||
+				(Math.abs(frontRightMotor.getCurrentPosition()) < Math.abs(fr_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN)
+				|| (Math.abs(backRightMotor.getCurrentPosition()) < Math.abs(br_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN) ||
+				(Math.abs(backLeftMotor.getCurrentPosition()) < Math.abs(bl_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN))
 		{
 			//report motor positions for debugging
 			aOpMode.telemetryAddData("Motor FL", "Values", "" + frontLeftMotor.getCurrentPosition());
@@ -298,17 +305,21 @@ public class vv_Robot
 		period.reset();
 	}
 
-    //TODO: FINISH
-    public void moveMotorUsingEncoderLimits(DcMotor motor, int targetPosition, float power, int maxEncoder, int minEncoder) throws InterruptedException
+    public void moveMotorUsingEncoderLimits(vv_OpMode anOp, DcMotor motor, int targetPosition, float power, int maxEncoder, int minEncoder) throws InterruptedException
     {
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motor.setTargetPosition(targetPosition);
         motor.setPower(Math.abs(power));
 
-        while (motor.isBusy() || (Math.abs(motor.getCurrentPosition() - (targetPosition)) > vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN)
-            && !(motor.getCurrentPosition() > Math.abs(maxEncoder - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN)
-                && !(motor.getCurrentPosition() < Math.abs(minEncoder - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN)) {
+        while (motor.isBusy() || (Math.abs(motor.getCurrentPosition() - (targetPosition)) > vv_Constants.DC_MOTOR_ENCODER_MARGIN)
+            && !(motor.getCurrentPosition() > Math.abs(maxEncoder - vv_Constants.DC_MOTOR_ENCODER_MARGIN))
+                && !(motor.getCurrentPosition() < vv_Constants.DC_MOTOR_ENCODER_MARGIN)) {
 
+			//runs till it approaches target position
         }
+
+		motor.setPower(0);
+
+		motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 }

@@ -88,7 +88,7 @@ public class vv_Lib
         //code
     }
 
-    public void pushAButton (vv_Constants.BeaconServoStateEnum beaconState)
+    public void pushABeaconButton(vv_Constants.BeaconServoStateEnum beaconState)
     {
         robot.pushButton(beaconState);
     }
@@ -275,4 +275,52 @@ public class vv_Lib
         robot.runMotorsSideways(aOpMode, -Power);
     }
 
+    //moves CapBall Lift to preset position determined by enum
+    public void moveCapBallLiftToPosition(vv_OpMode anOp, vv_Constants.CapBallStateEnum capBallState, float Power) throws InterruptedException
+    {
+        switch (capBallState)
+        {
+            //moves the CapBall Lift to Rest Position
+            case Rest:
+                robot.moveCapBallLift(anOp, vv_Constants.CAP_BALL_LIFT_REST, Power);
+                robot.CapBallState = vv_Constants.CapBallStateEnum.Rest;
+                break;
+            //Move the CapBall Lift to the Scoring Position
+            case Scoring_Position:
+                robot.moveCapBallLift(anOp, vv_Constants.CAP_BALL_LIFT_SCORE, Power);
+                robot.CapBallState = vv_Constants.CapBallStateEnum.Scoring_Position;
+                break;
+        }
+    }
+
+    public void toggleOuttake (vv_OpMode anOp) throws InterruptedException {
+        if (robot.BallCollectorState == vv_Constants.BallCollectorStateEnum.Outtake) {
+            robot.setPowerToBallCollector(anOp, 0.0f);
+            robot.BallCollectorState = vv_Constants.BallCollectorStateEnum.Off;
+        } else {
+            robot.setPowerToBallCollector(anOp, vv_Constants.BALL_COLLECTOR_POWER); //TODO: Check negate
+            robot.BallCollectorState = vv_Constants.BallCollectorStateEnum.Outtake;
+        }
+    }
+
+    public void toggleIntake (vv_OpMode anOp) throws InterruptedException {
+        if (robot.BallCollectorState == vv_Constants.BallCollectorStateEnum.Intake) {
+            robot.setPowerToBallCollector(anOp, 0.0f);
+            robot.BallCollectorState = vv_Constants.BallCollectorStateEnum.Off;
+        } else {
+            robot.setPowerToBallCollector(anOp, -vv_Constants.BALL_COLLECTOR_POWER); //TODO: Check negate
+            robot.BallCollectorState = vv_Constants.BallCollectorStateEnum.Intake;
+        }
+    }
+
+    //changes the current power factor if the lift is in Scoring Position or not
+    public float powerFactorBasedOnCapBall () {
+        if(robot.CapBallState == vv_Constants.CapBallStateEnum.Rest) {
+            return 1.0f;
+        }
+        else
+        {
+            return vv_Constants.CAP_BALL_SCORE_POWER_FACTOR;
+        }
+    }
 }
