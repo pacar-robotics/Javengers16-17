@@ -91,12 +91,34 @@ public class vv_Robot
         runRobotToPosition(aOpMode, Power, Power, Power, Power, position, position, position, position);
     }
 
+    /**
+     *Runs robot to a specific position while driving sideways.
+
+     *@param aOpMode an object of the vv_OpMode class
+     *@param position generic position of the motors
+     *@param Power generic power of the motors
+     *@return void
+     */
     public void runRobotToPositionSideways(vv_OpMode aOpMode, int position, float Power) throws InterruptedException{
         //using the generic method with all powers set to the same value and all positions set to the same position
         runRobotToPosition(aOpMode, -Power, Power, Power, -Power, -position, position, position, -position);
     }
 
 
+    /**
+     *Runs robot to a specific position. Can be called by other, more specific methods to move forwards and backwards or sideways.
+
+     *@param aOpMode an object of the vv_OpMode class
+     *@param fl_Power front right motor power
+     *@param fr_Power front left motor power
+     *@param bl_Power back left motor power
+     *@param br_Power back right motor power
+     *@param fl_Position front left motor position
+     *@param fr_Position front left motor position
+     *@param bl_Position back left motor position
+     *@param br_Position back right motor position
+     *@return void
+     */
     public void runRobotToPosition(vv_OpMode aOpMode, float fl_Power , float fr_Power,
                                    float bl_Power , float br_Power , int fl_Position ,
                                    int fr_Position, int bl_Position , int br_Position )
@@ -201,20 +223,39 @@ public class vv_Robot
         Thread.sleep(100);
     }
 
+    /**
+     Runs motors forwards and backwards.
 
-    public void runMotorsFB(float Power)
+     @param Power each motor will run at the same float value
+     @return void
+     */
+    public void runMotorsFB(vv_OpMode aOpMode, float Power)
             throws InterruptedException {
 
-        runMotors(Power,Power,Power,Power);
+        runMotors(aOpMode, Power,Power,Power,Power);
     }
+    /**
+     *Runs motors sideways (right and left).
 
-    public void runMotorsSideways(float Power)
+     *@param Power each motor will run at the same float value
+     *@return void
+     */
+    public void runMotorsSideways(vv_OpMode aOpMode, float Power)
             throws InterruptedException{
 
-        runMotors(-Power,Power,Power,-Power);
+        runMotors(aOpMode, -Power,Power,Power,-Power);
     }
 
+    /**
+     *Runs motors. Can be called by a more specific method to move forwards and backwards or sideways.
 
+     *@param aOpMode object of vv_OpMode class so we can use telemetry
+     *@param fl_Power power of front left motor
+     *@param fr_Power power of front right motor
+     *@param bl_Power power of back left motor
+     *@param br_Power power of back right motor
+     *@return void
+     */
     public void runMotors(vv_OpMode aOpMode, float fl_Power , float fr_Power, float bl_Power , float br_Power)
             throws InterruptedException{
 
