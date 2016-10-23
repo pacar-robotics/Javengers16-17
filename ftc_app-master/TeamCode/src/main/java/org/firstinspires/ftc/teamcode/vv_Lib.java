@@ -50,7 +50,7 @@ public class vv_Lib
         //code
     }
 
-    public void pushAButton (vv_Constants.ButtonEnum buttonEnum)
+    public void pushAButton (vv_OpMode aOpMode, vv_Constants.ButtonEnum buttonEnum)
     {
         robot.pushButton(buttonEnum);
     }
@@ -69,16 +69,16 @@ public class vv_Lib
         return 0;
     }
 
-    public boolean senseTouch () throws InterruptedException
+    public boolean senseTouch (vv_OpMode aOpMode) throws InterruptedException
     {
          return robot.getButtonTouchValue();
     }
 
-    public void moveTillTouch () throws InterruptedException
+    public void moveTillTouch (vv_OpMode aOpMode) throws InterruptedException
     {
-        while(!senseTouch())
+        while(!senseTouch(aOpMode))
         {
-            robot.runMotors(.3f, .3f, .3f, .3f);
+            robot.runMotors(aOpMode, .3f, .3f, .3f, .3f);
         }
         robot.stopMotors();
     }
@@ -218,23 +218,23 @@ public class vv_Lib
         robot.runMotors(aOpMode, FLPower, FRPower, BLPower, BRPower);
     }
 
-    public void stopAllMotors() {
+    public void stopAllMotors(vv_OpMode aOpMode) {
         robot.stopMotors();
     }
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
-    public void moveForward(float Power) throws InterruptedException{
-       robot.runMotorsFB(Power);
+    public void moveForward(vv_OpMode aOpMode, float Power) throws InterruptedException{
+       robot.runMotorsFB(aOpMode, Power);
     }
     //Moves robot backward with a distance supplied in centimeters and power between 0 and 1
-    public void moveBackward(float Power) throws InterruptedException{
-        robot.runMotorsFB(-Power);
+    public void moveBackward(vv_OpMode aOpMode, float Power) throws InterruptedException{
+        robot.runMotorsFB(aOpMode, -Power);
     }
-    public void moveSidewaysLeft(float Power) throws InterruptedException{
-        robot.runMotorsSideways(Power);
+    public void moveSidewaysLeft(vv_OpMode aOpMode, float Power) throws InterruptedException{
+        robot.runMotorsSideways(aOpMode, Power);
     }
-    public void moveSidewaysRight(float Power) throws InterruptedException{
-        robot.runMotorsSideways(-Power);
+    public void moveSidewaysRight(vv_OpMode aOpMode, float Power) throws InterruptedException{
+        robot.runMotorsSideways(aOpMode, -Power);
     }
 
 }
