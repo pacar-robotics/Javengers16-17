@@ -1,3 +1,10 @@
 <resources>
 	<string name="app_name">Choices</string>
+
+	<string name="choice_1">Both Beacons and Park on Base Partially</string>
+	<string name="choice_2">Attempt 2nd Beacon then Block Opposing team</string>
+	<string name="choice_3">First Beacon, Cap Ball, and Parking On Center Base</string>
+
+	<string name="delay">Delay in Seconds</string>
+	<string name="save_to_file">Save Choices</string>
 </resources>

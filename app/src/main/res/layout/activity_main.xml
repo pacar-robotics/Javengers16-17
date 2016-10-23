@@ -1,19 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/activity_main"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:paddingTop="16dp"
-	android:paddingBottom="16dp"
-	android:paddingLeft="16dp"
-	android:paddingRight="16dp"
+	android:orientation="vertical"
+	android:padding="16dp"
 	tools:context="org.pacar_robotics.choices.MainActivity">
 
-	<TextView
+	<RadioGroup
+		android:id="@+id/radio_choices"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="Hello World!"/>
+		android:layout_marginBottom="8dp">
 
-</RelativeLayout>
+		<RadioButton
+			android:id="@+id/radio_choice1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/choice_1"/>
+
+		<RadioButton
+			android:id="@+id/radio_choice2"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/choice_2"/>
+
+		<RadioButton
+			android:id="@+id/radio_choice_3"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/choice_3"/>
+	</RadioGroup>
+
+	<EditText
+		android:layout_marginBottom="8dp"
+		android:inputType="number"
+		android:id="@+id/edit_delay"
+		android:layout_width="wrap_content"
+		android:hint="@string/delay"
+		android:layout_height="wrap_content"/>
+
+	<Button
+		android:text="@string/save_to_file"
+		android:id="@+id/btn_save"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"/>
+
+</LinearLayout>
