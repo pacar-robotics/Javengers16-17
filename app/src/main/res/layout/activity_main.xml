@@ -35,17 +35,17 @@
 	</RadioGroup>
 
 	<EditText
-		android:layout_marginBottom="8dp"
-		android:inputType="number"
 		android:id="@+id/edit_delay"
 		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="8dp"
 		android:hint="@string/delay"
-		android:layout_height="wrap_content"/>
+		android:inputType="number"/>
 
 	<Button
-		android:text="@string/save_to_file"
 		android:id="@+id/btn_save"
 		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"/>
+		android:layout_height="wrap_content"
+		android:text="@string/save_to_file"/>
 
 </LinearLayout>
