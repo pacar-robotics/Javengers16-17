@@ -20,7 +20,7 @@ public class vv_Lib
     public vv_Lib(vv_OpMode aOpMode)
     {
         robot = new vv_Robot();
-        robot.init(aOpMode.hardwareMap);
+        robot.init(aOpMode.hardwareMap, aOpMode);
     }
 
     public void moveWheels(vv_OpMode aOpMode, float distance, float Power, vv_Constants.DirectionEnum Direction) throws InterruptedException
@@ -38,9 +38,6 @@ public class vv_Lib
             // moving the robot forward
             moveSidewaysRightToPosition(aOpMode, distance, Power);
         }
-
-
-
         // code for moving forward, backward, sideways
     }
 
@@ -52,7 +49,7 @@ public class vv_Lib
 
     public void pushAButton (vv_OpMode aOpMode, vv_Constants.ButtonEnum buttonEnum)
     {
-        robot.pushButton(buttonEnum);
+        robot.pushButton(aOpMode, buttonEnum);
     }
 
     public void turnUsingGyro (vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection)
@@ -71,7 +68,7 @@ public class vv_Lib
 
     public boolean senseTouch (vv_OpMode aOpMode) throws InterruptedException
     {
-         return robot.getButtonTouchValue();
+         return robot.getButtonTouchValue(aOpMode);
     }
 
     public void moveTillTouch (vv_OpMode aOpMode) throws InterruptedException
@@ -80,7 +77,7 @@ public class vv_Lib
         {
             robot.runMotors(aOpMode, .3f, .3f, .3f, .3f);
         }
-        robot.stopMotors();
+        robot.stopMotors(aOpMode);
     }
     public int moveTillColor (vv_OpMode aOpMode, ColorSensor cs) throws InterruptedException
     {
@@ -219,7 +216,7 @@ public class vv_Lib
     }
 
     public void stopAllMotors(vv_OpMode aOpMode) {
-        robot.stopMotors();
+        robot.stopMotors(aOpMode);
     }
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1

@@ -27,13 +27,13 @@ public class TeleOpTest extends vv_OpMode {
         waitForStart();
 	    vvLib = new vv_Lib(this);
 
-        vvLib.moveTillTouch();
+        vvLib.moveTillTouch(this);
         while(opModeIsActive()) {
 
             if(gamepad1.x){
-                vvLib.pushAButton(vv_Constants.ButtonEnum.Left);
+                vvLib.pushAButton(this, vv_Constants.ButtonEnum.Left);
             }else if(gamepad1.b){
-                vvLib.pushAButton(vv_Constants.ButtonEnum.Right);
+                vvLib.pushAButton(this, vv_Constants.ButtonEnum.Right);
             }
 
             processDriveRobot();
@@ -77,7 +77,7 @@ public class TeleOpTest extends vv_OpMode {
                     (-(gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x)) -((Math.abs(gamepad1.left_stick_y) * gamepad1.left_stick_y))),
                     ((Math.abs(gamepad1.left_stick_x) * gamepad1.left_stick_x) - ((Math.abs(gamepad1.left_stick_y)) * gamepad1.left_stick_y)));
         }else{
-            vvLib.stopAllMotors();
+            vvLib.stopAllMotors(this);
         }
     }
 

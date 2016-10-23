@@ -19,7 +19,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class vv_Robot
 {
     private DcMotor frontLeftMotor   = null;
-    private DcMotor  frontRightMotor  = null;
+    private DcMotor frontRightMotor  = null;
     private DcMotor backLeftMotor   = null;
     private DcMotor backRightMotor  = null;
 
@@ -31,8 +31,7 @@ public class vv_Robot
     private ElapsedTime period  = new ElapsedTime();
 
 
-
-    public void init(HardwareMap ahwMap) {
+    public void init(HardwareMap ahwMap, vv_OpMode aOpMode) {
         // save reference to HW Map
         hwMap = ahwMap;
 
@@ -55,14 +54,14 @@ public class vv_Robot
         backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Set all motors to zero power
-        stopMotors();
+        stopMotors(aOpMode);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
 
     }
 
-    public void setPower(vv_Constants.MotorEnum motorEnum, float power) {
+    public void setPower(vv_OpMode aOpMode, vv_Constants.MotorEnum motorEnum, float power) {
         switch (motorEnum){
             case frontLeftMotor:
                 frontLeftMotor.setPower(power);
@@ -79,7 +78,7 @@ public class vv_Robot
         }
     }
 
-    public void setRobotMode(DcMotor.RunMode runMode) {
+    public void setRobotMode(vv_OpMode aOpMode, DcMotor.RunMode runMode) {
         frontLeftMotor.setMode(runMode);
         frontRightMotor.setMode(runMode);
         backLeftMotor.setMode(runMode);
@@ -135,7 +134,7 @@ public class vv_Robot
         }
 
         //sets all motors to run to a position
-        setRobotMode(DcMotor.RunMode.RUN_TO_POSITION);
+        setRobotMode(aOpMode, DcMotor.RunMode.RUN_TO_POSITION);
 
         //reset encoder for 1 wheel
         frontLeftMotor.setTargetPosition(fl_Position);
@@ -144,10 +143,10 @@ public class vv_Robot
         backRightMotor.setTargetPosition(br_Position);
 
         //sets the the power of all motors
-        setPower(vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
-        setPower(vv_Constants.MotorEnum.frontRightMotor, fr_Power);
-        setPower(vv_Constants.MotorEnum.backLeftMotor, bl_Power);
-        setPower(vv_Constants.MotorEnum.backRightMotor, br_Power);
+        setPower(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
+        setPower(aOpMode, vv_Constants.MotorEnum.frontRightMotor, fr_Power);
+        setPower(aOpMode, vv_Constants.MotorEnum.backLeftMotor, bl_Power);
+        setPower(aOpMode, vv_Constants.MotorEnum.backRightMotor, br_Power);
 
         //wait until robot reaches target position
         //testing the wheels on the opposite sides of the robot because each might have a different position for sideways movements
@@ -166,7 +165,7 @@ public class vv_Robot
             aOpMode.telemetryUpdate();
 
         }
-        stopMotors();
+        stopMotors(aOpMode);
 
         Thread.sleep(100);
     }
@@ -189,7 +188,7 @@ public class vv_Robot
         }
 
         //sets all motors to run to a position
-        setRobotMode(DcMotor.RunMode.RUN_TO_POSITION);
+        setRobotMode(aOpMode, DcMotor.RunMode.RUN_TO_POSITION);
 
         //reset encoder for 1 wheel
         frontLeftMotor.setTargetPosition(fl_Position);
@@ -198,10 +197,10 @@ public class vv_Robot
         backRightMotor.setTargetPosition(br_Position);
 
         //sets the the power of all motors
-        setPower(vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
-        setPower(vv_Constants.MotorEnum.frontRightMotor, fr_Power);
-        setPower(vv_Constants.MotorEnum.backLeftMotor, bl_Power);
-        setPower(vv_Constants.MotorEnum.backRightMotor, br_Power);
+        setPower(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
+        setPower(aOpMode, vv_Constants.MotorEnum.frontRightMotor, fr_Power);
+        setPower(aOpMode, vv_Constants.MotorEnum.backLeftMotor, bl_Power);
+        setPower(aOpMode, vv_Constants.MotorEnum.backRightMotor, br_Power);
 
         //wait until robot reaches target position
         //testing the wheels on the opposite sides of the robot because each might have a different position for sideways movements
@@ -218,7 +217,7 @@ public class vv_Robot
             aOpMode.telemetryUpdate();
 
         }
-        stopMotors();
+        stopMotors(aOpMode);
 
         Thread.sleep(100);
     }
@@ -265,23 +264,23 @@ public class vv_Robot
         backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //sets the the power of all motors
-        setPower(vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
-        setPower(vv_Constants.MotorEnum.frontRightMotor, fr_Power);
-        setPower(vv_Constants.MotorEnum.backLeftMotor, bl_Power);
-        setPower(vv_Constants.MotorEnum.backRightMotor, br_Power);
+        setPower(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
+        setPower(aOpMode, vv_Constants.MotorEnum.frontRightMotor, fr_Power);
+        setPower(aOpMode, vv_Constants.MotorEnum.backLeftMotor, bl_Power);
+        setPower(aOpMode, vv_Constants.MotorEnum.backRightMotor, br_Power);
     }
 
 
 
 
-    public void stopMotors() {
+    public void stopMotors(vv_OpMode aOpMode) {
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
     }
 
-    public void pushButton(vv_Constants.ButtonEnum buttonEnum) {
+    public void pushButton(vv_OpMode aOpMode, vv_Constants.ButtonEnum buttonEnum) {
 
         switch(buttonEnum) {
 
@@ -295,11 +294,11 @@ public class vv_Robot
         }
     }
 
-    public boolean getButtonTouchValue() throws InterruptedException{
+    public boolean getButtonTouchValue(vv_OpMode aOpMode) throws InterruptedException{
         return buttonSensor.isPressed();
     }
 
-    public void waitForTick(long periodMs)  throws InterruptedException {
+    public void waitForTick(vv_OpMode aOpMode, long periodMs)  throws InterruptedException {
 
         long  remaining = periodMs - (long)period.milliseconds();
 
