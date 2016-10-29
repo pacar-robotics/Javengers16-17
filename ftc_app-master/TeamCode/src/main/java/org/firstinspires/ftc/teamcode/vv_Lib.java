@@ -51,9 +51,35 @@ public class vv_Lib {
         // code for moving forward, backward, sideways
     }
 
+<<<<<<< HEAD
 
     public void turnUsingEncoders(vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection) {
         //code
+=======
+    /**
+     * Using encoders, this method turns the Robot clockwise or counter clockwise based on angle given.
+     Calculates the turn distance by multiplying the angle by conversion factors to get to an encoder value
+     *
+     * @param aOpMode an object of the vv_OpMode class
+     * @param power power in which to apply to each motor
+     * @param angle angle in which the robot will turn to based on the current position as 0 degree
+     * @param TurnDirection Turns either Clockwise or Counterclockwise
+     * @throws InterruptedException
+     */
+    public void turnUsingEncoders (vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection) throws InterruptedException
+    {
+        int turnDistance = (int) (angle * ((vv_Constants.ROBOT_TRACK * Math.PI) / 360)
+                * (vv_Constants.TETRIX_MOTOR_ENCODER_COUNTS_PER_REVOLUTION / (vv_Constants.MECCANUM_WHEEL_DIAMETER * Math.PI)));
+
+        switch (TurnDirection) {
+            case Clockwise:
+                robot.runRobotToPosition(aOpMode, power, -power, power, -power, turnDistance, turnDistance, turnDistance, turnDistance);
+                break;
+            case Counterclockwise:
+                robot.runRobotToPosition(aOpMode, -power, power, -power, power, turnDistance, turnDistance, turnDistance, turnDistance);
+                break;
+        }
+>>>>>>> origin/common-dev
     }
 
     public void pushAButton(vv_OpMode aOpMode, vv_Constants.ButtonEnum buttonEnum) {
