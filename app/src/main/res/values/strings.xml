@@ -1,14 +1,13 @@
 <resources>
 	<string name="app_name">Choices</string>
 
-	<string name="profiles_header">Profiles</string>
+	<string name="alliance_header">Alliances</string>
 	<string name="delay_header">Delay in Seconds</string>
 	<string name="starting_position_header">Starting Position</string>
 	<string name="choices_header">Choices</string>
 
-	<string name="choice_1">Both beacons and park on base partially</string>
-	<string name="choice_2">Attempt second beacon then block opposing team</string>
-	<string name="choice_3">First beacon, cap ball, and parking on center base</string>
+	<string name="blue_alliance">Blue alliance</string>
+	<string name="red_alliance">Red alliance</string>
 
 	<string name="starting_position_1">Starting position 1</string>
 	<string name="starting_position_2">Starting position 2</string>
