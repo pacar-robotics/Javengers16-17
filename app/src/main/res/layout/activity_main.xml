@@ -2,121 +2,95 @@
 <ScrollView
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/activity_main"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	tools:context="org.pacar_robotics.choices.MainActivity">
 
 	<LinearLayout
-
-		android:id="@+id/activity_main"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
+		android:layout_height="wrap_content"
 		android:orientation="vertical"
 		android:padding="16dp">
 
 		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="4dp"
+			style="@style/HeaderTextView"
 			android:text="@string/profiles_header"/>
 
 		<RadioGroup
 			android:id="@+id/radio_choices"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="16dp">
+			style="@style/EncapsulatingView">
 
 			<RadioButton
 				android:id="@+id/radio_choice1"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
+				style="@style/RadioCheckBox"
 				android:text="@string/choice_1"/>
 
 			<RadioButton
 				android:id="@+id/radio_choice2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
+				style="@style/RadioCheckBox"
 				android:text="@string/choice_2"/>
 
 			<RadioButton
 				android:id="@+id/radio_choice_3"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
+				style="@style/RadioCheckBox"
 				android:text="@string/choice_3"/>
 		</RadioGroup>
 
 
 		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="4dp"
+			style="@style/HeaderTextView"
 			android:text="@string/starting_position_header"/>
 
 		<RadioGroup
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="16dp">
+			style="@style/EncapsulatingView">
 
 			<RadioButton
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
+				style="@style/RadioCheckBox"
 				android:text="@string/starting_position_1"/>
 
 			<RadioButton
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
+				style="@style/RadioCheckBox"
 				android:text="@string/starting_position_2"/>
 		</RadioGroup>
 
 
 		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="4dp"
+			style="@style/HeaderTextView"
 			android:text="@string/choices_header"/>
 
 		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="16dp"
+			style="@style/EncapsulatingView"
 			android:orientation="vertical">
 
 			<CheckBox
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
+				style="@style/RadioCheckBox"
 				android:text="@string/beacon_1"/>
 
 			<CheckBox
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
+				style="@style/RadioCheckBox"
 				android:text="@string/beacon_2"/>
 
 			<CheckBox
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
+				style="@style/RadioCheckBox"
 				android:text="@string/park_on_center_vortex_partially"/>
 
 			<CheckBox
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
+				style="@style/RadioCheckBox"
 				android:text="@string/park_on_corner_vortex"/>
 
 			<CheckBox
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
+				style="@style/RadioCheckBox"
 				android:text="@string/block_opposing_team"/>
 		</LinearLayout>
 
+
 		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="4dp"
+			style="@style/HeaderTextView"
 			android:text="@string/delay_header"/>
 
 		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="16dp"
+			style="@style/EncapsulatingView"
 			android:orientation="horizontal">
 
 			<SeekBar
@@ -136,7 +110,7 @@
 
 		<Button
 			android:id="@+id/btn_save"
-			android:layout_width="wrap_content"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:text="@string/save_to_file"/>
 
