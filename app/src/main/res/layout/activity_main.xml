@@ -1,138 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/activity_main"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical"
-	android:padding="16dp"
+	android:layout_height="wrap_content"
 	tools:context="org.pacar_robotics.choices.MainActivity">
 
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="4dp"
-		android:text="@string/profiles_header"/>
-
-	<RadioGroup
-		android:id="@+id/radio_choices"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="16dp">
-
-		<RadioButton
-			android:id="@+id/radio_choice1"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/choice_1"/>
-
-		<RadioButton
-			android:id="@+id/radio_choice2"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/choice_2"/>
-
-		<RadioButton
-			android:id="@+id/radio_choice_3"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/choice_3"/>
-	</RadioGroup>
-
-
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/starting_position_header"
-		android:layout_marginBottom="4dp"/>
-	
-	<RadioGroup
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="16dp">
-		
-		<RadioButton
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/starting_position_1"/>
-
-		<RadioButton
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/starting_position_2"/>
-	</RadioGroup>
-
-
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/choices_header"
-		android:layout_marginBottom="4dp"/>
-
 	<LinearLayout
+
+		android:id="@+id/activity_main"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
+		android:layout_height="match_parent"
 		android:orientation="vertical"
-		android:layout_marginBottom="16dp">
-
-		<CheckBox
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/beacon_1"/>
-
-		<CheckBox
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/beacon_2"/>
-
-		<CheckBox
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/park_on_center_vortex_partially"/>
-
-		<CheckBox
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/park_on_corner_vortex"/>
-
-		<CheckBox
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/block_opposing_team"/>
-	</LinearLayout>
-
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="4dp"
-		android:text="@string/delay_header"/>
-
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="16dp"
-		android:orientation="horizontal">
-
-		<SeekBar
-			android:id="@+id/seek_delay"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:max="30"/>
+		android:padding="16dp">
 
 		<TextView
-			android:id="@+id/text_delay"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/default_delay_value"/>
+			android:layout_marginBottom="4dp"
+			android:text="@string/profiles_header"/>
+
+		<RadioGroup
+			android:id="@+id/radio_choices"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="16dp">
+
+			<RadioButton
+				android:id="@+id/radio_choice1"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/choice_1"/>
+
+			<RadioButton
+				android:id="@+id/radio_choice2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/choice_2"/>
+
+			<RadioButton
+				android:id="@+id/radio_choice_3"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/choice_3"/>
+		</RadioGroup>
+
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="4dp"
+			android:text="@string/starting_position_header"/>
+
+		<RadioGroup
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="16dp">
+
+			<RadioButton
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/starting_position_1"/>
+
+			<RadioButton
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/starting_position_2"/>
+		</RadioGroup>
+
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="4dp"
+			android:text="@string/choices_header"/>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="16dp"
+			android:orientation="vertical">
+
+			<CheckBox
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/beacon_1"/>
+
+			<CheckBox
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/beacon_2"/>
+
+			<CheckBox
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/park_on_center_vortex_partially"/>
+
+			<CheckBox
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/park_on_corner_vortex"/>
+
+			<CheckBox
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/block_opposing_team"/>
+		</LinearLayout>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="4dp"
+			android:text="@string/delay_header"/>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="16dp"
+			android:orientation="horizontal">
+
+			<SeekBar
+				android:id="@+id/seek_delay"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:max="30"/>
+
+			<TextView
+				android:id="@+id/text_delay"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/default_delay_value"/>
+		</LinearLayout>
+
+
+		<Button
+			android:id="@+id/btn_save"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/save_to_file"/>
+
 	</LinearLayout>
-
-
-	<Button
-		android:id="@+id/btn_save"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/save_to_file"/>
-
-</LinearLayout>
+</ScrollView>
