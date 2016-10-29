@@ -23,6 +23,7 @@ public class vv_Constants
 
 	final static int GYRO_ERROR = 8;
 
+
     // Mecanum wheel properties
 	final static float MECCANUM_WHEEL_DIAMETER = 9.95f;   //in centimeters
 	final static float MECCANUM_WHEEL_ENCODER_MARGIN = 20;
@@ -32,6 +33,9 @@ public class vv_Constants
     // Extremes for servo that pushes beacon buttons
     static final double BUTTON_SERVO_MAX_POS     =  0.8f;     // Maximum rotational position
     static final double BUTTON_SERVO_MIN_POS     =  0.45f;
+
+    //Robot Dimensions
+    static final double ROBOT_TRACK = 0.0; //TODO: CHANGE VALUE
 
     DirectionEnum Direction;
     TurnDirectionEnum TurnDirection;
