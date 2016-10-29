@@ -17,25 +17,25 @@
 
 	<RadioGroup
 		android:id="@+id/radio_choices"
-		android:layout_width="wrap_content"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_marginBottom="16dp">
 
 		<RadioButton
 			android:id="@+id/radio_choice1"
-			android:layout_width="wrap_content"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:text="@string/choice_1"/>
 
 		<RadioButton
 			android:id="@+id/radio_choice2"
-			android:layout_width="wrap_content"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:text="@string/choice_2"/>
 
 		<RadioButton
 			android:id="@+id/radio_choice_3"
-			android:layout_width="wrap_content"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:text="@string/choice_3"/>
 	</RadioGroup>
