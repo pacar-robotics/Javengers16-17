@@ -41,6 +41,31 @@ public class vv_Lib
         // code for moving forward, backward, sideways
     }
 
+    public void setupShot(vv_OpMode aOpMode) throws InterruptedException
+    {
+
+
+        robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        while(!robot.isArmAtLimit(aOpMode)){
+            robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 1.0f);
+        }
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.0f);
+
+        Thread.sleep(100);
+
+    }
+
+    public void shootBall(vv_OpMode aOpMode) throws InterruptedException
+    {
+        robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 1.0f);
+
+        Thread.sleep(500);
+
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.0f);
+    }
 
     public void turnUsingEncoders (vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection)
     {

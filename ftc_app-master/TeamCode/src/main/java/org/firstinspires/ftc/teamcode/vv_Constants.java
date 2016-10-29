@@ -28,7 +28,7 @@ public class vv_Constants
     }
     enum MotorEnum
     {
-        frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
+        frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, armMotor;
     }
     enum TurnDirectionEnum
     {

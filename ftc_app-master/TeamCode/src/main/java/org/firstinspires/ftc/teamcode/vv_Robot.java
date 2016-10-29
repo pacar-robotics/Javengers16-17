@@ -22,10 +22,12 @@ public class vv_Robot
     private DcMotor frontRightMotor  = null;
     private DcMotor backLeftMotor   = null;
     private DcMotor backRightMotor  = null;
+    private DcMotor armMotor  = null;
 
     private Servo buttonServo  = null;
 
     private TouchSensor buttonSensor;
+    private TouchSensor armSensor;
 
     HardwareMap hwMap  = null;
     private ElapsedTime period  = new ElapsedTime();
@@ -36,15 +38,18 @@ public class vv_Robot
         hwMap = ahwMap;
 
         // Define and Initialize Motors
+
         frontLeftMotor  = hwMap.dcMotor.get("motor_front_left");
         frontRightMotor = hwMap.dcMotor.get("motor_front_right");
         backLeftMotor   = hwMap.dcMotor.get("motor_back_left");
         backRightMotor  = hwMap.dcMotor.get("motor_back_right");
+        armMotor  = hwMap.dcMotor.get("motor_arm");
 
 
         buttonServo = hwMap.servo.get("button_servo");
 
         buttonSensor = hwMap.touchSensor.get("touch_button_sensor");
+        armSensor = hwMap.touchSensor.get("touch_arm_sensor");
 
         buttonServo.setPosition(0.65);
 
@@ -75,14 +80,22 @@ public class vv_Robot
             case backRightMotor:
                 backRightMotor.setPower(power);
                 break;
+            case armMotor:
+                armMotor.setPower(power);
+                break;
         }
     }
 
-    public void setRobotMode(vv_OpMode aOpMode, DcMotor.RunMode runMode) {
-        frontLeftMotor.setMode(runMode);
-        frontRightMotor.setMode(runMode);
-        backLeftMotor.setMode(runMode);
-        backRightMotor.setMode(runMode);
+    public void setMotorMode(vv_OpMode aOpMode, vv_Constants.MotorEnum motorEnum, DcMotor.RunMode runMode) {
+       if (motorEnum.equals("armMotor")){
+           armMotor.setMode(runMode);
+       }
+        //TODO: Finish this emthod up
+    }
+
+    public boolean isArmAtLimit  (vv_OpMode aOpMode) {
+        return armSensor.isPressed();
+        //TODO: Finish this emthod up
     }
 
     public void runRobotToPositionFB(vv_OpMode aOpMode, int position, float Power) throws InterruptedException{
@@ -134,7 +147,10 @@ public class vv_Robot
         }
 
         //sets all motors to run to a position
-        setRobotMode(aOpMode, DcMotor.RunMode.RUN_TO_POSITION);
+        setMotorMode(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
+        setMotorMode(aOpMode, vv_Constants.MotorEnum.frontRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
+        setMotorMode(aOpMode, vv_Constants.MotorEnum.backLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
+        setMotorMode(aOpMode, vv_Constants.MotorEnum.backRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
 
         //reset encoder for 1 wheel
         frontLeftMotor.setTargetPosition(fl_Position);
@@ -188,7 +204,10 @@ public class vv_Robot
         }
 
         //sets all motors to run to a position
-        setRobotMode(aOpMode, DcMotor.RunMode.RUN_TO_POSITION);
+        setMotorMode(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
+        setMotorMode(aOpMode, vv_Constants.MotorEnum.frontRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
+        setMotorMode(aOpMode, vv_Constants.MotorEnum.backLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
+        setMotorMode(aOpMode, vv_Constants.MotorEnum.backRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
 
         //reset encoder for 1 wheel
         frontLeftMotor.setTargetPosition(fl_Position);
