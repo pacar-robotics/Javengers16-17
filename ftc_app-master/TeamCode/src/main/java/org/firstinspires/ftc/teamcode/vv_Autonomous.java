@@ -10,15 +10,4 @@ public class vv_Autonomous extends vv_OpMode {
     public void runOpMode() throws InterruptedException {
         vvLib = new vv_Lib(this);
     }
-
-    public void turnCumulative() throws InterruptedException {
-        //using gyro sensor
-        //stub
-    }
-
-    public void moveTillLine() throws InterruptedException {
-        //stub
-    }
-
-
 }
