@@ -50,12 +50,7 @@ public class vv_Lib {
         }
         // code for moving forward, backward, sideways
     }
-
-<<<<<<< HEAD
-
-    public void turnUsingEncoders(vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection) {
-        //code
-=======
+         //code
     /**
      * Using encoders, this method turns the Robot clockwise or counter clockwise based on angle given.
      Calculates the turn distance by multiplying the angle by conversion factors to get to an encoder value
@@ -79,7 +74,6 @@ public class vv_Lib {
                 robot.runRobotToPosition(aOpMode, -power, power, -power, power, turnDistance, turnDistance, turnDistance, turnDistance);
                 break;
         }
->>>>>>> origin/common-dev
     }
 
     public void pushAButton(vv_OpMode aOpMode, vv_Constants.ButtonEnum buttonEnum) {
