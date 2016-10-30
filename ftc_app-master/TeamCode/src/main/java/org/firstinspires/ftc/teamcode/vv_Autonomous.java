@@ -12,14 +12,16 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public class vv_Autonomous extends vv_OpMode
 {
     vv_Lib vvLib;
+    vv_Robot vvRobot;
 
     public void runOpMode() throws InterruptedException
     {
         waitForStart();
 
         vvLib = new vv_Lib(this);
+        vvRobot = new vv_Robot();
 
-        vvLib.moveTillColor(this, vvLib.robot.getColorSensor(this));
+        vvLib.moveTillColor(this, vvRobot.getColorSensor(this));
     }
 
 
