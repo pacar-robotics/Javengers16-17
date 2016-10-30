@@ -3,7 +3,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 /**
- * created by Kenneth on 10/1/2016
+ * Class vv_TeleOp is the class that contains the runOpMode () which runs during the Tele Op session
+ * in the 2016-2017 FTC Season. It runs a series of processes which controls certain mechanisms in
+ * the robot when a certain button is pressed.
+ *
+ * @author Kenneth Kannampully
  */
 
 @TeleOp(name = "TeleOp", group = "TeleOp")
@@ -33,22 +37,28 @@ public class vv_TeleOp extends vv_OpMode {
 
             vvLib.processDriveRobotWithPowerFactor(this, vvLib.powerFactorBasedOnCapBall());
 
-            processBeacon();
+            processBeacon(this);
 
-            processCapBall();
+            processCapBall(this);
 
             processBallCollection(this);
 
-            processShootingAngle();
+            processShootingAngle(this);
 
-            processShooting();
+            processShooting(this);
 
             idle();
         }
     }
 
 
-    private void processBeacon() {
+    /**
+     * Changes the state of the Beacon Button Mechanism depending on the D-PAD Button Pressed
+     *
+     * gamepad1.dpad_left = changes mechanism to left position gamepad1.dpad_right = changes
+     * mechanism to right position gamepad1.dpad_down = changes mechanism to neutral position
+     */
+    private void processBeacon(vv_OpMode anOpMode) {
         // Changes Beacon Mechanism to left position in order to score the beacon
         if (gamepad1.dpad_left) {
             vvLib.pushABeaconButton(vv_Constants.BeaconServoStateEnum.Left);
@@ -63,7 +73,14 @@ public class vv_TeleOp extends vv_OpMode {
         }
     }
 
-    private void processCapBall() throws InterruptedException{
+    /**
+     * Controls the Cap Ball Mechanism by either raising the lift, lowering the lift, or grabbing
+     * the ball
+     *
+     * gamepad1.y = raises the lift to scoring position gamepad1.a = lowers the lift to the resting
+     * position gamepad.x = graps/releases the cap ball
+     */
+    private void processCapBall(vv_OpMode anOpMode) throws InterruptedException {
         // Semi-Autonomously Raises the Cap Ball Lift Mechanism to the Scoring Height
         if (gamepad1.y) {
             vvLib.moveCapBallLiftToPosition(this, vv_Constants.CapBallStateEnum.Scoring_Position, 0.5f);
@@ -79,7 +96,15 @@ public class vv_TeleOp extends vv_OpMode {
         }
     }
 
-    private void processBallCollection(vv_OpMode anOp) throws InterruptedException{
+    /**
+     * Controls the Ball Collector Motor
+     *
+     * gamepad1.right_bumper = turns the motor either to off or to the intake power
+     * gamepad1.left_bumper = turns the motor either to off or to the outtake power
+     *
+     * @param anOp an object of vv_OpMode
+     */
+    private void processBallCollection(vv_OpMode anOp) throws InterruptedException {
         //Changes state of Ball Collection mechanism to Outtake [Toggles On or Off]
         if (gamepad1.right_bumper) {
             vvLib.toggleIntake(anOp);
@@ -90,7 +115,16 @@ public class vv_TeleOp extends vv_OpMode {
         }
     }
 
-    private void processShootingAngle() {
+    /**
+     * Changes the angle of the Shooting Mechanism
+     *
+     * gamepad2.a = changes the mechanism to position 1 (___ Tiles away) gamepad2.x = changes the
+     * mechanism to position 2 (___ Tiles away) gamepad2.y = changes the mechanism to position 3
+     * (___ Tiles away) gamepad2.b = changes the mechanism to position 4 (___ Tiles away)
+     *
+     * @param anOpMode an object of vv_OpMode
+     */
+    private void processShootingAngle(vv_OpMode anOpMode) {
         //Changes Angle of the Shooting Mechanism to Position 1
         if (gamepad2.a) {
 
@@ -111,7 +145,13 @@ public class vv_TeleOp extends vv_OpMode {
         //TODO Change the Angle slowly using Joystick Y Values
     }
 
-    private void processShooting() {
+    /**
+     * If the gamepad2.left_bumper is pressed x amount of times, the mechanism shoots the ball x
+     * amount of times
+     *
+     * @param anOpMode object of vv_OpMode
+     */
+    private void processShooting(vv_OpMode anOpMode) {
         //Loads and Shoots one Ball
         if (gamepad2.left_bumper) {
 
