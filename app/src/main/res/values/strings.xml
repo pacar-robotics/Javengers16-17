@@ -9,12 +9,12 @@
 	<string name="blue_alliance">Blue alliance</string>
 	<string name="red_alliance">Red alliance</string>
 
-	<string name="starting_position_1">Starting position 1</string>
-	<string name="starting_position_2">Starting position 2</string>
+	<string name="starting_position_1">Left starting position</string>
+	<string name="starting_position_2">Right starting position</string>
 
 	<string name="beacon_1">Beacon 1</string>
 	<string name="beacon_2">Beacon 2</string>
-	<string name="park_on_center_vortex_partially">Park on center vortex partially</string>
+	<string name="park_on_center_vortex_partially">Park on center vortex partially and hit cap ball</string>
 	<string name="park_on_corner_vortex">Park on corner vortex</string>
 	<string name="block_opposing_team">Block opposing team</string>
 
