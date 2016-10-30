@@ -13,313 +13,320 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Created by thomas on 9/25/2016.
  */
 
-public class vv_Robot
-{
-	private DcMotor frontLeftMotor = null;
-	private DcMotor frontRightMotor = null;
-	private DcMotor backLeftMotor = null;
-	private DcMotor backRightMotor = null;
-	private DcMotor capBallLift = null;
-	private DcMotor ballCollector = null;
+public class vv_Robot {
+    private DcMotor frontLeftMotor = null;
+    private DcMotor frontRightMotor = null;
+    private DcMotor backLeftMotor = null;
+    private DcMotor backRightMotor = null;
+    private DcMotor capBallLift = null;
+    private DcMotor ballCollector = null;
 
-	private Servo buttonServo = null;
+    private Servo buttonServo = null;
 
-	private TouchSensor buttonSensor;
+    private TouchSensor buttonSensor;
 
-	HardwareMap hwMap = null;
-	private ElapsedTime period = new ElapsedTime();
+    HardwareMap hwMap = null;
+    private ElapsedTime period = new ElapsedTime();
 
-	public vv_Constants.DirectionEnum Direction;
-	public vv_Constants.TurnDirectionEnum TurnDirection;
-	public vv_Constants.CapBallStateEnum CapBallState = vv_Constants.CapBallStateEnum.Rest;
-	public vv_Constants.BallCollectorStateEnum BallCollectorState = vv_Constants.BallCollectorStateEnum.Off;
+    public vv_Constants.DirectionEnum Direction;
+    public vv_Constants.TurnDirectionEnum TurnDirection;
+    public vv_Constants.CapBallStateEnum CapBallState;
+    public vv_Constants.BallCollectorStateEnum BallCollectorState;
 
-	public void init(HardwareMap ahwMap)
-	{
-		// save reference to HW Map
-		hwMap = ahwMap;
+    public void init(HardwareMap ahwMap) {
+        // save reference to HW Map
+        hwMap = ahwMap;
 
-		// Define and Initialize Motors
-		frontLeftMotor = hwMap.dcMotor.get("motor_front_left");
-		frontRightMotor = hwMap.dcMotor.get("motor_front_right");
-		backLeftMotor = hwMap.dcMotor.get("motor_back_left");
-		backRightMotor = hwMap.dcMotor.get("motor_back_right");
-		//TODO: Map Cap Ball Lift, and Direction, and mode
+        // Define and Initialize Motors
+        frontLeftMotor = hwMap.dcMotor.get("motor_front_left");
+        frontRightMotor = hwMap.dcMotor.get("motor_front_right");
+        backLeftMotor = hwMap.dcMotor.get("motor_back_left");
+        backRightMotor = hwMap.dcMotor.get("motor_back_right");
+        //TODO: Map Cap Ball Lift, and Direction, and mode
 
 
-		buttonServo = hwMap.servo.get("button_servo");
+        buttonServo = hwMap.servo.get("button_servo");
 
-		buttonSensor = hwMap.touchSensor.get("touch_button_sensor");
+        buttonSensor = hwMap.touchSensor.get("touch_button_sensor");
 
-		buttonServo.setPosition(0.65);
+        buttonServo.setPosition(0.65);
 
-		frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-		frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-		backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-		backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-		// Set all motors to zero power
-		stopMotors();
+        // Set all motors to zero power
+        stopMotors();
 
-		// Set all motors to run without encoders.
-		// May want to use RUN_USING_ENCODERS if encoders are installed.
+        // Set all motors to run without encoders.
+        // May want to use RUN_USING_ENCODERS if encoders are installed.
 
-	}
+        //Set enumerations
 
-    //moves cap ball lift to preset position
-    public void moveCapBallLift (vv_OpMode anOp, int Position, float Power) throws InterruptedException
-    {
-      		moveMotorUsingEncoderLimits(anOp, capBallLift, Position, Power,
-					vv_Constants.CAP_BALL_LIFT_MAX, vv_Constants.CAP_BALL_LIFT_MIN);
+        CapBallState = vv_Constants.CapBallStateEnum.Rest;
+        BallCollectorState = vv_Constants.BallCollectorStateEnum.Off;
+
     }
 
-	public void setPowerToBallCollector (vv_OpMode aOpMode, float Power)
-	{
-		ballCollector.setPower(Power);
-	}
+    /**
+     * Moves the cap ball lift to a preset position
+     *
+     * @param anOp     an object of vv_OpMode
+     * @param Position Encoder Position to move Cap Ball Lift to
+     * @param Power    the power in which the motor runs
+     */
+    public void moveCapBallLift(vv_OpMode anOp, int Position, float Power) throws InterruptedException {
+        moveMotorUsingEncoderLimits(anOp, capBallLift, Position, Power,
+                vv_Constants.CAP_BALL_LIFT_MAX, vv_Constants.CAP_BALL_LIFT_MIN);
+    }
 
-	public void setPower(vv_Constants.MotorEnum motorEnum, float power)
-	{
-		switch (motorEnum)
-		{
-			case frontLeftMotor:
-				frontLeftMotor.setPower(power);
-				break;
-			case frontRightMotor:
-				frontRightMotor.setPower(power);
-				break;
-			case backLeftMotor:
-				backLeftMotor.setPower(power);
-				break;
-			case backRightMotor:
-				backRightMotor.setPower(power);
-				break;
-		}
-	}
+    /**
+     * Sets Power to the Ball Collector
+     *
+     * @param aOpMode an object of vv_OpMode
+     * @param Power   the power in which the Ball Collector motor runs
+     */
+    public void setPowerToBallCollector(vv_OpMode aOpMode, float Power) {
+        ballCollector.setPower(Power);
+    }
 
-	public void setRobotMode(DcMotor.RunMode runMode)
-	{
-		frontLeftMotor.setMode(runMode);
-		frontRightMotor.setMode(runMode);
-		backLeftMotor.setMode(runMode);
-		backRightMotor.setMode(runMode);
-	}
+    public void setPower(vv_Constants.MotorEnum motorEnum, float power) {
+        switch (motorEnum) {
+            case frontLeftMotor:
+                frontLeftMotor.setPower(power);
+                break;
+            case frontRightMotor:
+                frontRightMotor.setPower(power);
+                break;
+            case backLeftMotor:
+                backLeftMotor.setPower(power);
+                break;
+            case backRightMotor:
+                backRightMotor.setPower(power);
+                break;
+        }
+    }
 
-	public void runRobotToPositionFB(vv_OpMode aOpMode, int position, float Power) throws InterruptedException
-	{
-		//using the generic method with all powers set to the same value and all positions set to the same position
-		runRobotToPosition(aOpMode, Power, Power, Power, Power, position, position, position, position);
-	}
+    public void setRobotMode(DcMotor.RunMode runMode) {
+        frontLeftMotor.setMode(runMode);
+        frontRightMotor.setMode(runMode);
+        backLeftMotor.setMode(runMode);
+        backRightMotor.setMode(runMode);
+    }
 
-	public void runRobotToPositionSideways(vv_OpMode aOpMode, int position, float Power) throws InterruptedException
-	{
-		//using the generic method with all powers set to the same value and all positions set to the same position
-		runRobotToPosition(aOpMode, -Power, Power, Power, -Power, -position, position, position, -position);
-	}
+    public void runRobotToPositionFB(vv_OpMode aOpMode, int position, float Power) throws InterruptedException {
+        //using the generic method with all powers set to the same value and all positions set to the same position
+        runRobotToPosition(aOpMode, Power, Power, Power, Power, position, position, position, position);
+    }
 
-
-	public void runRobotToPosition(vv_OpMode aOpMode, float fl_Power, float fr_Power,
-	                               float bl_Power, float br_Power, int fl_Position,
-	                               int fr_Position, int bl_Position, int br_Position)
-			throws InterruptedException
-	{
-		//reset motor encoders
-		frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-		while (frontLeftMotor.getCurrentPosition() != 0)
-		{
-			//wait until motors are reset
-			Thread.sleep(20);
-		}
-
-		//sets all motors to run to a position
-		setRobotMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-		//reset encoder for 1 wheel
-		frontLeftMotor.setTargetPosition(fl_Position);
-		frontRightMotor.setTargetPosition(fr_Position);
-		backLeftMotor.setTargetPosition(bl_Position);
-		backRightMotor.setTargetPosition(br_Position);
-
-		//sets the the power of all motors
-		setPower(vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
-		setPower(vv_Constants.MotorEnum.frontRightMotor, fr_Power);
-		setPower(vv_Constants.MotorEnum.backLeftMotor, bl_Power);
-		setPower(vv_Constants.MotorEnum.backRightMotor, br_Power);
-
-		//wait until robot reaches target position
-		//testing the wheels on the opposite sides of the robot because each might have a different position for sideways movements
-
-		while ((Math.abs(frontLeftMotor.getCurrentPosition()) < Math.abs(fl_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN) ||
-				(Math.abs(frontRightMotor.getCurrentPosition()) < Math.abs(fr_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN)
-				|| (Math.abs(backRightMotor.getCurrentPosition()) < Math.abs(br_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN) ||
-				(Math.abs(backLeftMotor.getCurrentPosition()) < Math.abs(bl_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN))
-		{
-			//report motor positions for debugging
-
-			// TODO: UNCOMMENT THIS!!!!
-			aOpMode.telemetryAddData("Motor FL", "Values", "" + frontLeftMotor.getCurrentPosition());
-			aOpMode.telemetryAddData("Motor FR", "Values", "" + frontRightMotor.getCurrentPosition());
-			aOpMode.telemetryAddData("Motor BL", "Values", "" + backLeftMotor.getCurrentPosition());
-			aOpMode.telemetryAddData("Motor BR", "Values", "" + backRightMotor.getCurrentPosition());
-			aOpMode.telemetryUpdate();
-
-		}
-		stopMotors();
-
-		Thread.sleep(100);
-	}
+    public void runRobotToPositionSideways(vv_OpMode aOpMode, int position, float Power) throws InterruptedException {
+        //using the generic method with all powers set to the same value and all positions set to the same position
+        runRobotToPosition(aOpMode, -Power, Power, Power, -Power, -position, position, position, -position);
+    }
 
 
-	public void runRobotToPositionWithAngle(vv_OpMode aOpMode, float fl_Power, float fr_Power,
-	                                        float bl_Power, float br_Power, int fl_Position,
-	                                        int fr_Position, int bl_Position, int br_Position, float angle)
-			throws InterruptedException
-	{
+    public void runRobotToPosition(vv_OpMode aOpMode, float fl_Power, float fr_Power,
+                                   float bl_Power, float br_Power, int fl_Position,
+                                   int fr_Position, int bl_Position, int br_Position)
+            throws InterruptedException {
+        //reset motor encoders
+        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-		//reset motor encoders
-		frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        while (frontLeftMotor.getCurrentPosition() != 0) {
+            //wait until motors are reset
+            Thread.sleep(20);
+        }
 
-		while (frontLeftMotor.getCurrentPosition() != 0)
-		{
-			//wait until motors are reset
-			Thread.sleep(20);
-		}
+        //sets all motors to run to a position
+        setRobotMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-		//sets all motors to run to a position
-		setRobotMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //reset encoder for 1 wheel
+        frontLeftMotor.setTargetPosition(fl_Position);
+        frontRightMotor.setTargetPosition(fr_Position);
+        backLeftMotor.setTargetPosition(bl_Position);
+        backRightMotor.setTargetPosition(br_Position);
 
-		//reset encoder for 1 wheel
-		frontLeftMotor.setTargetPosition(fl_Position);
-		frontRightMotor.setTargetPosition(fr_Position);
-		backLeftMotor.setTargetPosition(bl_Position);
-		backRightMotor.setTargetPosition(br_Position);
+        //sets the the power of all motors
+        setPower(vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
+        setPower(vv_Constants.MotorEnum.frontRightMotor, fr_Power);
+        setPower(vv_Constants.MotorEnum.backLeftMotor, bl_Power);
+        setPower(vv_Constants.MotorEnum.backRightMotor, br_Power);
 
-		//sets the the power of all motors
-		setPower(vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
-		setPower(vv_Constants.MotorEnum.frontRightMotor, fr_Power);
-		setPower(vv_Constants.MotorEnum.backLeftMotor, bl_Power);
-		setPower(vv_Constants.MotorEnum.backRightMotor, br_Power);
+        //wait until robot reaches target position
+        //testing the wheels on the opposite sides of the robot because each might have a different position for sideways movements
 
-		//wait until robot reaches target position
-		//testing the wheels on the opposite sides of the robot because each might have a different position for sideways movements
+        while ((Math.abs(frontLeftMotor.getCurrentPosition()) < Math.abs(fl_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN) ||
+                (Math.abs(frontRightMotor.getCurrentPosition()) < Math.abs(fr_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN)
+                || (Math.abs(backRightMotor.getCurrentPosition()) < Math.abs(br_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN) ||
+                (Math.abs(backLeftMotor.getCurrentPosition()) < Math.abs(bl_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN)) {
+            //report motor positions for debugging
 
-		while ((Math.abs(frontLeftMotor.getCurrentPosition()) < Math.abs(fl_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN) ||
-				(Math.abs(frontRightMotor.getCurrentPosition()) < Math.abs(fr_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN)
-				|| (Math.abs(backRightMotor.getCurrentPosition()) < Math.abs(br_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN) ||
-				(Math.abs(backLeftMotor.getCurrentPosition()) < Math.abs(bl_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN))
-		{
-			//report motor positions for debugging
-			aOpMode.telemetryAddData("Motor FL", "Values", "" + frontLeftMotor.getCurrentPosition());
-			aOpMode.telemetryAddData("Motor FR", "Values", "" + frontRightMotor.getCurrentPosition());
-			aOpMode.telemetryAddData("Motor BL", "Values", "" + backLeftMotor.getCurrentPosition());
-			aOpMode.telemetryAddData("Motor BR", "Values", "" + backRightMotor.getCurrentPosition());
-			aOpMode.telemetryUpdate();
+            // TODO: UNCOMMENT THIS!!!!
+            aOpMode.telemetryAddData("Motor FL", "Values", "" + frontLeftMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor FR", "Values", "" + frontRightMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor BL", "Values", "" + backLeftMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor BR", "Values", "" + backRightMotor.getCurrentPosition());
+            aOpMode.telemetryUpdate();
 
-		}
-		stopMotors();
+        }
+        stopMotors();
 
-		Thread.sleep(100);
-	}
+        Thread.sleep(100);
+    }
 
 
-	public void runMotorsFB(vv_OpMode aOpMode, float Power)
-			throws InterruptedException
-	{
+    public void runRobotToPositionWithAngle(vv_OpMode aOpMode, float fl_Power, float fr_Power,
+                                            float bl_Power, float br_Power, int fl_Position,
+                                            int fr_Position, int bl_Position, int br_Position, float angle)
+            throws InterruptedException {
 
-		runMotors(aOpMode, Power, Power, Power, Power);
-	}
+        //reset motor encoders
+        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-	public void runMotorsSideways(vv_OpMode aOpMode, float Power)
-			throws InterruptedException
-	{
+        while (frontLeftMotor.getCurrentPosition() != 0) {
+            //wait until motors are reset
+            Thread.sleep(20);
+        }
 
-		runMotors(aOpMode, -Power, Power, Power, -Power);
-	}
+        //sets all motors to run to a position
+        setRobotMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //reset encoder for 1 wheel
+        frontLeftMotor.setTargetPosition(fl_Position);
+        frontRightMotor.setTargetPosition(fr_Position);
+        backLeftMotor.setTargetPosition(bl_Position);
+        backRightMotor.setTargetPosition(br_Position);
+
+        //sets the the power of all motors
+        setPower(vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
+        setPower(vv_Constants.MotorEnum.frontRightMotor, fr_Power);
+        setPower(vv_Constants.MotorEnum.backLeftMotor, bl_Power);
+        setPower(vv_Constants.MotorEnum.backRightMotor, br_Power);
+
+        //wait until robot reaches target position
+        //testing the wheels on the opposite sides of the robot because each might have a different position for sideways movements
+
+        while ((Math.abs(frontLeftMotor.getCurrentPosition()) < Math.abs(fl_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN) ||
+                (Math.abs(frontRightMotor.getCurrentPosition()) < Math.abs(fr_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN)
+                || (Math.abs(backRightMotor.getCurrentPosition()) < Math.abs(br_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN) ||
+                (Math.abs(backLeftMotor.getCurrentPosition()) < Math.abs(bl_Position) - vv_Constants.DC_MOTOR_ENCODER_MARGIN)) {
+            //report motor positions for debugging
+            aOpMode.telemetryAddData("Motor FL", "Values", "" + frontLeftMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor FR", "Values", "" + frontRightMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor BL", "Values", "" + backLeftMotor.getCurrentPosition());
+            aOpMode.telemetryAddData("Motor BR", "Values", "" + backRightMotor.getCurrentPosition());
+            aOpMode.telemetryUpdate();
+
+        }
+        stopMotors();
+
+        Thread.sleep(100);
+    }
 
 
-	public void runMotors(vv_OpMode aOpMode, float fl_Power, float fr_Power, float bl_Power, float br_Power)
-			throws InterruptedException
-	{
+    public void runMotorsFB(vv_OpMode aOpMode, float Power)
+            throws InterruptedException {
 
-		frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-		frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-		backLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-		backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        runMotors(aOpMode, Power, Power, Power, Power);
+    }
 
-		//sets the the power of all motors
-		setPower(vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
-		setPower(vv_Constants.MotorEnum.frontRightMotor, fr_Power);
-		setPower(vv_Constants.MotorEnum.backLeftMotor, bl_Power);
-		setPower(vv_Constants.MotorEnum.backRightMotor, br_Power);
-	}
+    public void runMotorsSideways(vv_OpMode aOpMode, float Power)
+            throws InterruptedException {
+
+        runMotors(aOpMode, -Power, Power, Power, -Power);
+    }
 
 
-	public void stopMotors()
-	{
-		frontLeftMotor.setPower(0);
-		frontRightMotor.setPower(0);
-		backLeftMotor.setPower(0);
-		backRightMotor.setPower(0);
-	}
+    public void runMotors(vv_OpMode aOpMode, float fl_Power, float fr_Power, float bl_Power, float br_Power)
+            throws InterruptedException {
 
-	public void pushButton(vv_Constants.BeaconServoStateEnum beaconState)
-	{
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-		switch (beaconState)
-		{
+        //sets the the power of all motors
+        setPower(vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
+        setPower(vv_Constants.MotorEnum.frontRightMotor, fr_Power);
+        setPower(vv_Constants.MotorEnum.backLeftMotor, bl_Power);
+        setPower(vv_Constants.MotorEnum.backRightMotor, br_Power);
+    }
 
-			case Left:
-				buttonServo.setPosition(vv_Constants.BUTTON_SERVO_LEFT_POS);
-				break;
 
-			case Right:
-				buttonServo.setPosition(vv_Constants.BUTTON_SERVO_RIGHT_POS);
-				break;
+    public void stopMotors() {
+        frontLeftMotor.setPower(0);
+        frontRightMotor.setPower(0);
+        backLeftMotor.setPower(0);
+        backRightMotor.setPower(0);
+    }
+
+    public void pushButton(vv_Constants.BeaconServoStateEnum beaconState) {
+
+        switch (beaconState) {
+
+            case Left:
+                buttonServo.setPosition(vv_Constants.BUTTON_SERVO_LEFT_POS);
+                break;
+
+            case Right:
+                buttonServo.setPosition(vv_Constants.BUTTON_SERVO_RIGHT_POS);
+                break;
             case Neutral:
                 buttonServo.setPosition(vv_Constants.BUTTON_SERVO_NEUTRAL_POS);
-		}
-	}
+        }
+    }
 
-	public boolean getButtonTouchValue() throws InterruptedException
-	{
-		return buttonSensor.isPressed();
-	}
+    public boolean getButtonTouchValue() throws InterruptedException {
+        return buttonSensor.isPressed();
+    }
 
-	public void waitForTick(long periodMs) throws InterruptedException
-	{
+    public void waitForTick(long periodMs) throws InterruptedException {
 
-		long remaining = periodMs - (long) period.milliseconds();
+        long remaining = periodMs - (long) period.milliseconds();
 
-		// sleep for the remaining portion of the regular cycle period.
-		if (remaining > 0)
-			Thread.sleep(remaining);
+        // sleep for the remaining portion of the regular cycle period.
+        if (remaining > 0)
+            Thread.sleep(remaining);
 
-		// Reset the cycle clock for the next pass.
-		period.reset();
-	}
+        // Reset the cycle clock for the next pass.
+        period.reset();
+    }
 
-    public void moveMotorUsingEncoderLimits(vv_OpMode anOp, DcMotor motor, int targetPosition, float power, int maxEncoder, int minEncoder) throws InterruptedException
-    {
+    /**
+     * Moves a motor to an Encoder Position by setting the target position, and waiting until the
+     * motor reaches the target position
+     *
+     * @param anOp           an object of vv_OpMode
+     * @param motor          The motor which will be run
+     * @param targetPosition Encoder value in which the motor will be run to
+     * @param power          the power which will be applied to the robot
+     * @param maxEncoder     the top encoder limit, which is the encoder value when the lift is at
+     *                       the top
+     * @param minEncoder     the bottom encoder limit, which is the encoder value when the lift is
+     *                       at rest; usually 0
+     */
+    public void moveMotorUsingEncoderLimits(vv_OpMode anOp, DcMotor motor, int targetPosition, float power, int maxEncoder, int minEncoder) throws InterruptedException {
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motor.setTargetPosition(targetPosition);
         motor.setPower(Math.abs(power));
 
+        //waits until the motor reaches the position
         while (motor.isBusy() || (Math.abs(motor.getCurrentPosition() - (targetPosition)) > vv_Constants.DC_MOTOR_ENCODER_MARGIN)
-            && !(motor.getCurrentPosition() > Math.abs(maxEncoder - vv_Constants.DC_MOTOR_ENCODER_MARGIN))
+                && !(motor.getCurrentPosition() > Math.abs(maxEncoder - vv_Constants.DC_MOTOR_ENCODER_MARGIN))
                 && !(motor.getCurrentPosition() < vv_Constants.DC_MOTOR_ENCODER_MARGIN)) {
 
-			//runs till it approaches target position
+            //runs till it approaches target position
         }
 
-		motor.setPower(0);
+        motor.setPower(0);
 
-		motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 }
