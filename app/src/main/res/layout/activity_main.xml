@@ -18,16 +18,17 @@
 			android:text="@string/alliance_header"/>
 
 		<RadioGroup
-			android:id="@+id/radio_choices"
+			android:id="@+id/radio_group_alliance"
 			style="@style/EncapsulatingView">
 
 			<RadioButton
-				android:id="@+id/radio_choice1"
+				android:id="@+id/blue_alliance"
 				style="@style/RadioCheckBox"
+				android:checked="true"
 				android:text="@string/blue_alliance"/>
 
 			<RadioButton
-				android:id="@+id/radio_choice2"
+				android:id="@+id/red_alliance"
 				style="@style/RadioCheckBox"
 				android:text="@string/red_alliance"/>
 		</RadioGroup>
@@ -38,15 +39,19 @@
 			android:text="@string/starting_position_header"/>
 
 		<RadioGroup
+			android:id="@+id/radio_group_starting_position"
 			style="@style/EncapsulatingView">
 
 			<RadioButton
+				android:id="@+id/left_starting_position"
 				style="@style/RadioCheckBox"
-				android:text="@string/starting_position_1"/>
+				android:checked="true"
+				android:text="@string/starting_position_left"/>
 
 			<RadioButton
+				android:id="@+id/right_starting_position"
 				style="@style/RadioCheckBox"
-				android:text="@string/starting_position_2"/>
+				android:text="@string/starting_position_right"/>
 		</RadioGroup>
 
 
@@ -59,22 +64,27 @@
 			android:orientation="vertical">
 
 			<CheckBox
+				android:id="@+id/beacon_1"
 				style="@style/RadioCheckBox"
 				android:text="@string/beacon_1"/>
 
 			<CheckBox
+				android:id="@+id/beacon_2"
 				style="@style/RadioCheckBox"
 				android:text="@string/beacon_2"/>
 
 			<CheckBox
+				android:id="@+id/center_vortex"
 				style="@style/RadioCheckBox"
 				android:text="@string/park_on_center_vortex_partially"/>
 
 			<CheckBox
+				android:id="@+id/corner_vortex"
 				style="@style/RadioCheckBox"
 				android:text="@string/park_on_corner_vortex"/>
 
 			<CheckBox
+				android:id="@+id/block"
 				style="@style/RadioCheckBox"
 				android:text="@string/block_opposing_team"/>
 		</LinearLayout>

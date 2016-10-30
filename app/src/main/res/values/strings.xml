@@ -9,8 +9,8 @@
 	<string name="blue_alliance">Blue alliance</string>
 	<string name="red_alliance">Red alliance</string>
 
-	<string name="starting_position_1">Left starting position</string>
-	<string name="starting_position_2">Right starting position</string>
+	<string name="starting_position_left">Left starting position</string>
+	<string name="starting_position_right">Right starting position</string>
 
 	<string name="beacon_1">Beacon 1</string>
 	<string name="beacon_2">Beacon 2</string>
