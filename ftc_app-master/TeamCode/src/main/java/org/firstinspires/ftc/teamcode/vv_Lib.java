@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class vv_Lib {
     vv_Robot robot;
 
-    public vv_Lib(vv_OpMode aOpMode) {
+    public vv_Lib(vv_OpMode aOpMode) throws InterruptedException{
         robot = new vv_Robot();
         robot.init(aOpMode.hardwareMap, aOpMode);
     }
@@ -46,7 +46,33 @@ public class vv_Lib {
         }
         // code for moving forward, backward, sideways
     }
-         //code
+
+    public void setupShot(vv_OpMode aOpMode) throws InterruptedException
+    {
+
+
+        robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        while(!robot.isArmAtLimit(aOpMode)){
+            robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 1.0f);
+        }
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.0f);
+
+        Thread.sleep(100);
+
+    }
+
+    public void shootBall(vv_OpMode aOpMode) throws InterruptedException
+    {
+        robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 1.0f);
+
+        Thread.sleep(500);
+
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.0f);
+    }
+    
     /**
      * Using encoders, this method turns the Robot clockwise or counter clockwise based on angle given.
      Calculates the turn distance by multiplying the angle by conversion factors to get to an encoder value
@@ -57,7 +83,7 @@ public class vv_Lib {
      * @param TurnDirection Turns either Clockwise or Counterclockwise
      * @throws InterruptedException
      */
-    public void turnUsingEncoders (vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection) throws InterruptedException
+    public void turnUsingEncoders (vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection)throws InterruptedException
     {
         int turnDistance = (int) (angle * ((vv_Constants.ROBOT_TRACK * Math.PI) / 360)
                 * (vv_Constants.TETRIX_MOTOR_ENCODER_COUNTS_PER_REVOLUTION / (vv_Constants.MECCANUM_WHEEL_DIAMETER * Math.PI)));

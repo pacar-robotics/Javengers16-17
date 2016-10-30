@@ -49,7 +49,7 @@ public class vv_Constants
     // Names of motors
     enum MotorEnum
     {
-        frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
+        frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, armMotor;
     }
 
     // Direction of turning
