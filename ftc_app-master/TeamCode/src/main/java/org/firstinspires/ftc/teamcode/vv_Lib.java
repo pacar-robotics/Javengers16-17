@@ -14,11 +14,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  * Created by thomas on 9/25/2016.
  */
 
-/**
- *
- */
 public class vv_Lib {
-    int rgbValues[] = new int[2];
     vv_Robot robot;
 
     public vv_Lib(vv_OpMode aOpMode) {
@@ -28,7 +24,7 @@ public class vv_Lib {
 
     /**
      * moveWheels method
-     * @param aOpMode
+     * @param aOpMode - object of vv_OpMode class
      * @param distance - in centimeters
      * @param Power - float
      * @param Direction - forward, backward, sideways left, or sideways right
@@ -97,8 +93,18 @@ public class vv_Lib {
         robot.stopMotors(aOpMode);
     }
 
+    /**
+     * Method that moves robot until the color white is detected
+     * Used to stop at white line when going from first to second beacon
+     * @param aOpMode - object of vv_OpMode class
+     * @param cs
+     * @throws InterruptedException
+     */
     public void moveTillColor(vv_OpMode aOpMode, ColorSensor cs) throws InterruptedException {
         while (!((cs.red() < 235) || (cs.green() < 235) || (cs.blue() < 235))) {
+            aOpMode.telemetryAddFormattedData("test: ", "cs red value: ", cs.red());
+            aOpMode.telemetryAddFormattedData("test1: ", "cs green value: ", cs.green());
+            aOpMode.telemetryAddFormattedData("test2: ", "cs blue value: ", cs.blue());
             moveSidewaysLeft(aOpMode, .3f);
         }
 

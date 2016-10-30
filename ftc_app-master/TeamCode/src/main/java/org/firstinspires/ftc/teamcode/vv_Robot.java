@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+
 
 
 /**
@@ -26,6 +28,7 @@ public class vv_Robot
     private Servo buttonServo  = null;
 
     private TouchSensor buttonSensor;
+    private ColorSensor cs;
 
     HardwareMap hwMap  = null;
     private ElapsedTime period  = new ElapsedTime();
@@ -40,6 +43,8 @@ public class vv_Robot
         frontRightMotor = hwMap.dcMotor.get("motor_front_right");
         backLeftMotor   = hwMap.dcMotor.get("motor_back_left");
         backRightMotor  = hwMap.dcMotor.get("motor_back_right");
+
+        cs = hwMap.colorSensor.get("color_line_sensor");
 
 
         buttonServo = hwMap.servo.get("button_servo");
@@ -296,6 +301,11 @@ public class vv_Robot
 
     public boolean getButtonTouchValue(vv_OpMode aOpMode) throws InterruptedException{
         return buttonSensor.isPressed();
+    }
+
+    public ColorSensor getColorSensor(vv_OpMode aOpMode) throws InterruptedException
+    {
+        return cs;
     }
 
     public void waitForTick(vv_OpMode aOpMode, long periodMs)  throws InterruptedException {
