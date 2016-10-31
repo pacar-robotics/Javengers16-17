@@ -9,11 +9,11 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 public class vv_Lib {
     vv_Robot robot;
 
-    public vv_Lib(vv_OpMode aOpMode) {
-        robot = new vv_Robot();
-        robot.init(aOpMode.hardwareMap);
-    }
 
+    public vv_Lib(vv_OpMode aOpMode) throws InterruptedException{
+        robot = new vv_Robot();
+        robot.init(aOpMode.hardwareMap, aOpMode);
+    }
 
     /**
      * Controls the Mecanum wheels on the robot using the two Joysticks.
@@ -54,6 +54,15 @@ public class vv_Lib {
         }
     }
 
+
+    /**
+     * moveWheels method
+     * @param aOpMode - object of vv_OpMode class
+     * @param distance - in centimeters
+     * @param Power - float
+     * @param Direction - forward, backward, sideways left, or sideways right
+     * @throws InterruptedException
+     */
     public void moveWheels(vv_OpMode aOpMode, float distance, float Power, vv_Constants.DirectionEnum Direction) throws InterruptedException {
         if (Direction == vv_Constants.DirectionEnum.Forward) {
             // moving the robot forward
@@ -68,18 +77,61 @@ public class vv_Lib {
             // moving the robot forward
             moveSidewaysRightToPosition(aOpMode, distance, Power);
         }
-
-
         // code for moving forward, backward, sideways
     }
 
+    public void setupShot(vv_OpMode aOpMode) throws InterruptedException
+    {
 
-    public void turnUsingEncoders(vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection) {
-        //code
+       robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        while(!robot.isArmAtLimit(aOpMode)){
+            robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 1.0f);
+        }
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.0f);
+
+        Thread.sleep(100);
+
     }
 
-    public void pushABeaconButton(vv_Constants.BeaconServoStateEnum beaconState) {
-        robot.pushButton(beaconState);
+    public void shootBall(vv_OpMode aOpMode) throws InterruptedException
+    {
+        robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 1.0f);
+
+        Thread.sleep(500);
+
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.0f);
+    }
+    
+    /**
+     * Using encoders, this method turns the Robot clockwise or counter clockwise based on angle given.
+     Calculates the turn distance by multiplying the angle by conversion factors to get to an encoder value
+     *
+     * @param aOpMode an object of the vv_OpMode class
+     * @param power power in which to apply to each motor
+     * @param angle angle in which the robot will turn to based on the current position as 0 degree
+     * @param TurnDirection Turns either Clockwise or Counterclockwise
+     * @throws InterruptedException
+     */
+    public void turnUsingEncoders (vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection)throws InterruptedException
+    {
+        int turnDistance = (int) (angle * ((vv_Constants.ROBOT_TRACK * Math.PI) / 360)
+                * (vv_Constants.TETRIX_MOTOR_ENCODER_COUNTS_PER_REVOLUTION / (vv_Constants.MECCANUM_WHEEL_DIAMETER * Math.PI)));
+
+        switch (TurnDirection) {
+            case Clockwise:
+                robot.runRobotToPosition(aOpMode, power, -power, power, -power, turnDistance, turnDistance, turnDistance, turnDistance);
+                break;
+            case Counterclockwise:
+                robot.runRobotToPosition(aOpMode, -power, power, -power, power, turnDistance, turnDistance, turnDistance, turnDistance);
+                break;
+        }
+    }
+
+    public void pushAButton(vv_OpMode aOpMode, vv_Constants.ButtonEnum buttonEnum) {
+        robot.pushButton(aOpMode, buttonEnum);
     }
 
     public void turnUsingGyro(vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection) {
@@ -87,26 +139,31 @@ public class vv_Lib {
         // absolute vs. relative turns
     }
 
-    public int senseColor(vv_OpMode aOpMode, ColorSensor cs) {
-        // three color sensors (left, right, line)
-        // arguments?
-
-        return 0;
-    }
-
-    public boolean senseTouch() throws InterruptedException {
-        return robot.getButtonTouchValue();
+    public boolean senseTouch(vv_OpMode aOpMode) throws InterruptedException {
+        return robot.getButtonTouchValue(aOpMode);
     }
 
     public void moveTillTouch(vv_OpMode aOpMode) throws InterruptedException {
-        while (!senseTouch()) {
+        while (!senseTouch(aOpMode)) {
             robot.runMotors(aOpMode, .3f, .3f, .3f, .3f);
         }
-        robot.stopMotors();
+        robot.stopMotors(aOpMode);
     }
 
-    public int moveTillColor(vv_OpMode aOpMode, ColorSensor cs) throws InterruptedException {
-        return 0;
+    /**
+     * Method that moves robot until the color white is detected
+     * Used to stop at white line when going from first to second beacon
+     * @param aOpMode - object of vv_OpMode class
+     * @param cs
+     * @throws InterruptedException
+     */
+    public void moveTillColor(vv_OpMode aOpMode, ColorSensor cs) throws InterruptedException {
+        while (!((cs.red() < 235) || (cs.green() < 235) || (cs.blue() < 235))) {
+            aOpMode.telemetryAddFormattedData("test: ", "cs red value: ", cs.red());
+            aOpMode.telemetryAddFormattedData("test1: ", "cs green value: ", cs.green());
+            aOpMode.telemetryAddFormattedData("test2: ", "cs blue value: ", cs.blue());
+            moveSidewaysLeft(aOpMode, .3f);
+        }
     }
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
@@ -234,8 +291,8 @@ public class vv_Lib {
         robot.runMotors(aOpMode, FLPower, FRPower, BLPower, BRPower);
     }
 
-    public void stopAllMotors() {
-        robot.stopMotors();
+    public void stopAllMotors(vv_OpMode aOpMode) {
+        robot.stopMotors(aOpMode);
     }
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1

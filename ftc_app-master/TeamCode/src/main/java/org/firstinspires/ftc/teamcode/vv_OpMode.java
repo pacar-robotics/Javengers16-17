@@ -15,4 +15,8 @@ public abstract class vv_OpMode extends LinearOpMode
     public void telemetryUpdate() {
         telemetry.update();
     }
+
+    public void telemetryAddFormattedData(String caption, String key, int number) {
+        telemetry.addLine(caption).addData(key, number);
+    }
 }
