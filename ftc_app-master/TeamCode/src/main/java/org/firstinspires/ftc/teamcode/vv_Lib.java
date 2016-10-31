@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
  * Created by thomas on 9/25/2016.
@@ -50,7 +51,7 @@ public class vv_Lib {
                 Math.abs(aOpMode.gamepad1.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
             runAllMotors(aOpMode, (forwardLeftPower * powerFactor), (forwardRightPower * powerFactor), (backLeftPower * powerFactor), (backRightPower * powerFactor));
         } else {
-            stopAllMotors();
+            stopAllMotors(aOpMode);
         }
     }
 
@@ -130,7 +131,7 @@ public class vv_Lib {
         }
     }
 
-    public void pushAButton(vv_OpMode aOpMode, vv_Constants.ButtonEnum buttonEnum) {
+    public void pushAButton(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum buttonEnum) {
         robot.pushButton(aOpMode, buttonEnum);
     }
 
