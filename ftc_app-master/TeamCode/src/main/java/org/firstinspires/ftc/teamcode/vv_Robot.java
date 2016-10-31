@@ -350,7 +350,7 @@ public class vv_Robot {
     }
 
 
-    public void pushButton(vv_OpMode aOpMode, vv_Constants.ButtonEnum buttonEnum) {
+    public void pushButton(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum buttonEnum) {
 
         switch (buttonEnum) {
 

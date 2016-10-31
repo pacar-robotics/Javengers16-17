@@ -22,13 +22,16 @@ public class vv_Constants {
 
     // Mecanum wheel properties
    final static float MECCANUM_WHEEL_DIAMETER = 9.95f;   //in centimeters
-   final static float MECCANUM_WHEEL_ENCODER_MARGIN = 20;
+    final static float MECCANUM_WHEEL_ENCODER_MARGIN = 20;
+
+    final static float DC_MOTOR_ENCODER_MARGIN = 20;
+
    final static float ANALOG_STICK_THRESHOLD = .25f;
 
 
     //Beacon Servo Positions
-    static final double BUTTON_SERVO_LEFT_POS = 0.8f;     // Maximum rotational position
-    static final double BUTTON_SERVO_RIGHT_POS = 0.45f;
+    static final double BUTTON_SERVO_MIN_POS = 0.8f;     // Maximum rotational position
+    static final double BUTTON_SERVO_MAX_POS = 0.45f;
     static final double BUTTON_SERVO_NEUTRAL_POS = 0.0f; //TODO: CHANGE VALUE
 
     //CapBall Constants //TODO: CHANGE VALUES
