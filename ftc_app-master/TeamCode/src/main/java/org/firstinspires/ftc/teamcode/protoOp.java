@@ -1,15 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
+@TeleOp(name="Proto", group="Test")
 
-@TeleOp(name="AutoTest", group="Test")
 
-
-public class TestOpMode extends vv_OpMode {
+public class protoOp extends vv_OpMode {
 
     /* Declare OpMode members. */
 
@@ -22,16 +19,16 @@ public class TestOpMode extends vv_OpMode {
          */
         vv_Lib vvLib = new vv_Lib(this);
 
-        // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "Hello Driver");    //
-        telemetry.update();
+
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
 
-        while (opModeIsActive()){
+        vvLib.turnFloorColorSensorLedOn(this);
 
+        while (opModeIsActive()){
+            vvLib.showFloorColorSensorLumnosityOnTelemetry(this);
             idle();
         }
         //Initialize library which in turn initializes the robot plus its hardware map

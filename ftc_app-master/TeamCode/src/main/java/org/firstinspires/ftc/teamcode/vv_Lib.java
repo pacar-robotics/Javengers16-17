@@ -15,11 +15,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 
 public class vv_Lib {
-    vv_Robot robot;
+    private vv_Robot robot;
 
     public vv_Lib(vv_OpMode aOpMode) throws InterruptedException{
         robot = new vv_Robot();
-        robot.init(aOpMode.hardwareMap, aOpMode);
+        robot.init(aOpMode, aOpMode.hardwareMap);
     }
 
     /**
@@ -134,6 +134,20 @@ public class vv_Lib {
             moveSidewaysLeft(aOpMode, .3f);
         }
 
+    }
+
+
+    public void showFloorColorSensorLumnosityOnTelemetry(vv_OpMode aOpMode){
+        aOpMode.telemetryAddData("Floor Sensor", "Luminosity",":"+robot.getFloorColorSensorAlpha(aOpMode));
+        aOpMode.telemetryUpdate();
+    }
+
+    public void turnFloorColorSensorLedOn(vv_OpMode aOpMode)throws InterruptedException{
+        robot.enableFloorColorSensorLed(aOpMode);
+    }
+
+    public void turnFloorColorSensorLedOff(vv_OpMode aOpMode)throws InterruptedException{
+        robot.disableFloorColorSensorLed(aOpMode);
     }
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1

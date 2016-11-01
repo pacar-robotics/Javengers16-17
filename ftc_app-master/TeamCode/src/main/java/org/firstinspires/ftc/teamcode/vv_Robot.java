@@ -34,7 +34,7 @@ public class vv_Robot {
     private ElapsedTime period = new ElapsedTime();
 
 
-    public void init(HardwareMap ahwMap, vv_OpMode aOpMode) {
+    public void init(vv_OpMode aOpMode, HardwareMap ahwMap) throws InterruptedException{
         // save reference to HW Map
         hwMap = ahwMap;
 
@@ -46,6 +46,13 @@ public class vv_Robot {
         armMotor = hwMap.dcMotor.get("motor_arm");
 
         cs = hwMap.colorSensor.get("color_line_sensor");
+
+        //turn the LED on the floor color sensor off at the start.
+        //used for compatibility with older SDK code.
+        cs.enableLed(false);
+        //wait for it to turn off.
+
+        Thread.sleep(300);
 
         armSensor = hwMap.touchSensor.get("touch_arm_sensor");
 
@@ -319,9 +326,27 @@ public class vv_Robot {
         return buttonSensor.isPressed();
     }
 
-    public ColorSensor getColorSensor(vv_OpMode aOpMode) throws InterruptedException {
-        return cs;
+    //turn the color sensor LED on the floor of the robot on
+    public void enableFloorColorSensorLed(vv_OpMode aOpMode) throws InterruptedException{
+        cs.enableLed(true);
+        //wait for it to turn on.
+        Thread.sleep(300);
     }
+
+    //turn the color sensor LED on the floor of the robot off
+    public void disableFloorColorSensorLed(vv_OpMode aOPMode) throws InterruptedException{
+        cs.enableLed(false);
+        //wait for it to turn off.
+        Thread.sleep(300);
+    }
+
+    //get the alpha (luminosity being read in reflected light from LED)
+    //high luminosity will be found with a white surface.
+
+    public int getFloorColorSensorAlpha(vv_OpMode aOpMode){
+        return cs.alpha();
+    }
+
 
     public void waitForTick(vv_OpMode aOpMode, long periodMs) throws InterruptedException {
 
