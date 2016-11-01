@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 /**
@@ -21,7 +20,7 @@ public class vv_Autonomous extends vv_OpMode
         vvLib = new vv_Lib(this);
         vvRobot = new vv_Robot();
 
-        vvLib.moveTillColor(this, vvRobot.getColorSensor(this));
+        //  vvLib.moveTillColor(this, vvRobot.getColorSensor(this));
     }
 
 

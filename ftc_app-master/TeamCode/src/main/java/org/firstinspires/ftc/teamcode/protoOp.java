@@ -24,10 +24,11 @@ public class protoOp extends vv_OpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-
+        //Turn the LED on the Color Sensor mounted on the floor of the Robot on
         vvLib.turnFloorColorSensorLedOn(this);
 
         while (opModeIsActive()){
+            //Send Luminosity data to Telemetry
             vvLib.showFloorColorSensorLumnosityOnTelemetry(this);
             idle();
         }
