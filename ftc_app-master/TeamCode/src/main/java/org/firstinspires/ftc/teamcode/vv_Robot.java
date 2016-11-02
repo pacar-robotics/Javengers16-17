@@ -1,16 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
 
-import android.hardware.Sensor;
-
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 
 
 /**
@@ -18,19 +16,17 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
  */
 
 public class vv_Robot {
+    HardwareMap hwMap = null;
     private DcMotor frontLeftMotor = null;
     private DcMotor frontRightMotor = null;
     private DcMotor backLeftMotor = null;
     private DcMotor backRightMotor = null;
     private DcMotor armMotor = null;
-
     private Servo buttonServo = null;
-
     private TouchSensor buttonSensor;
     private TouchSensor armSensor;
     private ColorSensor cs;
-
-    HardwareMap hwMap = null;
+    private ModernRoboticsI2cGyro base_gyro_sensor;
     private ElapsedTime period = new ElapsedTime();
 
 
@@ -53,6 +49,14 @@ public class vv_Robot {
         //wait for it to turn off.
 
         Thread.sleep(300);
+
+        base_gyro_sensor = (ModernRoboticsI2cGyro) hwMap.gyroSensor.get("base_gyro_sensor");
+        base_gyro_sensor.calibrate();
+        while (base_gyro_sensor.isCalibrating()) {
+            //wait for calibration completion
+            Thread.sleep(50);
+        }
+
 
         armSensor = hwMap.touchSensor.get("touch_arm_sensor");
 
@@ -347,6 +351,13 @@ public class vv_Robot {
         return cs.alpha();
     }
 
+    public int getBaseGyroSensorHeading(vv_OpMode aOpMode) {
+        return base_gyro_sensor.getHeading();
+    }
+
+    public int getBaseGyroSensorIntegratedZValue(vv_OpMode aOpMode) {
+        return base_gyro_sensor.getIntegratedZValue();
+    }
 
     public void waitForTick(vv_OpMode aOpMode, long periodMs) throws InterruptedException {
 

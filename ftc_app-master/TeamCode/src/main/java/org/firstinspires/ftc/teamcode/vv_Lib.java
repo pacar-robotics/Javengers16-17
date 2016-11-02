@@ -1,14 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
-import java.lang.Math;
-
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.hardware.configuration.MotorConfiguration;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * Created by thomas on 9/25/2016.
@@ -137,10 +130,30 @@ public class vv_Lib {
     }
 
 
-    public void showFloorColorSensorLumnosityOnTelemetry(vv_OpMode aOpMode){
+    public void showFloorColorSensorLumnosityOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
+
         aOpMode.telemetryAddData("Floor Sensor", "Luminosity",":"+robot.getFloorColorSensorAlpha(aOpMode));
-        aOpMode.telemetryUpdate();
+        if (updateTheDisplay) {
+            aOpMode.telemetryUpdate();
+        }
     }
+
+    public void showBaseGyroSensorHeadingOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
+        ;
+        aOpMode.telemetryAddData("Gyro Sensor", "Heading", ":" + robot.getBaseGyroSensorHeading(aOpMode));
+        if (updateTheDisplay) {
+            aOpMode.telemetryUpdate();
+        }
+    }
+
+    public void showBaseGyroSensorIntegratedZValueOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
+
+        aOpMode.telemetryAddData("Gyro Sensor", "Integrated Z", ":" + robot.getBaseGyroSensorIntegratedZValue(aOpMode));
+        if (updateTheDisplay) {
+            aOpMode.telemetryUpdate();
+        }
+    }
+
 
     public void turnFloorColorSensorLedOn(vv_OpMode aOpMode)throws InterruptedException{
         robot.enableFloorColorSensorLed(aOpMode);

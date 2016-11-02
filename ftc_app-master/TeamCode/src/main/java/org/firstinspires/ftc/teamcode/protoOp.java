@@ -20,7 +20,6 @@ public class protoOp extends vv_OpMode {
         vv_Lib vvLib = new vv_Lib(this);
 
 
-
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
@@ -29,7 +28,12 @@ public class protoOp extends vv_OpMode {
 
         while (opModeIsActive()){
             //Send Luminosity data to Telemetry
-            vvLib.showFloorColorSensorLumnosityOnTelemetry(this);
+            vvLib.showFloorColorSensorLumnosityOnTelemetry(this, false);
+            //Send Gyro Heading data to Telemetry
+            vvLib.showBaseGyroSensorHeadingOnTelemetry(this, false);
+            //Send Gyro Integrated Z value to Telemetry
+            //this time flush the display and show all values.
+            vvLib.showBaseGyroSensorIntegratedZValueOnTelemetry(this, true);
             idle();
         }
         //Initialize library which in turn initializes the robot plus its hardware map
