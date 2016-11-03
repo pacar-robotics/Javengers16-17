@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class vv_Lib {
     private vv_Robot robot;
 
+
     public vv_Lib(vv_OpMode aOpMode) throws InterruptedException{
         robot = new vv_Robot();
         robot.init(aOpMode, aOpMode.hardwareMap);
@@ -139,12 +140,12 @@ public class vv_Lib {
     }
 
     public void showBaseGyroSensorHeadingOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
-        ;
         aOpMode.telemetryAddData("Gyro Sensor", "Heading", ":" + robot.getBaseGyroSensorHeading(aOpMode));
         if (updateTheDisplay) {
             aOpMode.telemetryUpdate();
         }
     }
+
 
     public void showBaseGyroSensorIntegratedZValueOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
 
@@ -310,4 +311,75 @@ public class vv_Lib {
         robot.runMotorsSideways(aOpMode, -Power);
     }
 
+    public void turnGyroDegrees(vv_OpMode aOpMode, int turnDegrees) throws InterruptedException {
+        float frontLeftMotorPower = 0;
+        float frontRightMotorPower = 0;
+        float backLeftMotorPower = 0;
+        float backRightMotorPower = 0;
+
+
+        //reset the ZIntegrator before the turn, delay is built in.
+        robot.resetBaseGyroZIntegrator(aOpMode);
+        //start a timer to ensure no stuck loops.
+        long startTime = System.currentTimeMillis();
+        int zValue = robot.getBaseGyroSensorIntegratedZValue(aOpMode);
+
+        //adjust turnDegrees for gyro offset
+
+        float turnSignum = Math.signum(turnDegrees);
+        turnDegrees = Math.abs(turnDegrees) - vv_Constants.GYRO_OFFSET;
+        turnDegrees = turnDegrees * (int) turnSignum;
+
+
+        while (Math.abs(zValue)
+                < Math.abs(turnDegrees) && (System.currentTimeMillis() - startTime) < vv_Constants.MAX_MOTOR_LOOP_TIME) {
+
+            //calculate proportional power to be used in turn. This starts off being 1 and drops off as the turn completes.
+            float turnPower = (Math.abs(turnDegrees) -
+                    Math.abs(zValue)) / Math.abs(turnDegrees);
+
+            //check for range of motor power values.
+
+            if (turnPower < vv_Constants.MIN_ROBOT_TURN_MOTOR_VELOCITY) {
+                turnPower = vv_Constants.MIN_ROBOT_TURN_MOTOR_VELOCITY;
+            }
+
+            if (turnPower > vv_Constants.MAX_ROBOT_TURN_MOTOR_VELOCITY) {
+                turnPower = vv_Constants.MAX_ROBOT_TURN_MOTOR_VELOCITY;
+            }
+
+            //adjust for direction of turn by examining the sign of the turn degrees
+            turnPower = turnPower * Math.signum(turnDegrees);
+
+            //set the velocities to be used.
+
+            frontLeftMotorPower = -1 * turnPower;
+            frontRightMotorPower = turnPower;
+            backLeftMotorPower = -1 * turnPower;
+            backRightMotorPower = turnPower;
+
+            //re-scan zValue
+            zValue = robot.getBaseGyroSensorIntegratedZValue(aOpMode);
+            if (Math.abs(zValue) >= Math.abs(turnDegrees)) {
+                //break out of loop.
+                break;
+            }
+
+            robot.runMotors(aOpMode, frontLeftMotorPower, frontRightMotorPower,
+                    backLeftMotorPower, backRightMotorPower);
+
+            //wait so we dont read faster than gyro can provide results.
+            // aOpMode.telemetryAddData("Inside Turn","Degrees",":"+
+            //     robot.getBaseGyroSensorIntegratedZValue(aOpMode));
+            //aOpMode.telemetryAddData("Inside Turn","Power",":"+turnPower);
+            //aOpMode.telemetryUpdate();
+        }
+        robot.stopMotors(aOpMode);
+
+        aOpMode.telemetryAddData("Post Turn Diag", "Degrees", ":" + robot.getBaseGyroSensorIntegratedZValue(aOpMode));
+        aOpMode.telemetryUpdate();
+        Thread.sleep(1000);
+
+
+    }
 }

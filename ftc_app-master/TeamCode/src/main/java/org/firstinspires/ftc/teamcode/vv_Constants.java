@@ -36,37 +36,47 @@ public class vv_Constants
 
     //Robot Dimensions
     static final double ROBOT_TRACK = 0.0; //TODO: CHANGE VALUE
-
+    //distance between wheels left to right of the Robot in inches.
+    final static int ROBOT_TRACK_DISTANCE = 17;
+    //max time to wait in a tight loop, for example in robot turns or autonomous moves
+    final static int MAX_MOTOR_LOOP_TIME = 5000;
+    //max turn velocity for a motor, to be used in autonomous turns of the robot
+    final static float MAX_ROBOT_TURN_MOTOR_VELOCITY = 0.5f;
+    //min turn velocity for a motor, to be used in autonomous turns of the robot
+    final static float MIN_ROBOT_TURN_MOTOR_VELOCITY = 0.15f;
+    //gyro offset to address inertia and gyro lag
+    final static int GYRO_OFFSET = 10;
     DirectionEnum Direction;
     TurnDirectionEnum TurnDirection;
 
     // Direction of movement for autonomous
     enum DirectionEnum
     {
-        Forward, Backward, SidewaysLeft, SidewaysRight;
+        Forward, Backward, SidewaysLeft, SidewaysRight
     }
 
     // Names of motors
     enum MotorEnum
     {
-        frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, armMotor;
+        frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, armMotor
     }
 
     // Direction of turning
     enum TurnDirectionEnum
     {
-        Clockwise, Counterclockwise;
+        Clockwise, Counterclockwise
     }
 
     // Left or right beacon button depending on color
     enum ButtonEnum
     {
-        Left, Right;
+        Left, Right
     }
-    
+
     enum TouchSensorEnum
     {
-        buttonSensor;
+        buttonSensor
     }
+
 
 }

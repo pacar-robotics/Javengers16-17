@@ -55,7 +55,10 @@ public class vv_Robot {
         while (base_gyro_sensor.isCalibrating()) {
             //wait for calibration completion
             Thread.sleep(50);
+            aOpMode.idle();
         }
+
+        Thread.sleep(2000);
 
 
         armSensor = hwMap.touchSensor.get("touch_arm_sensor");
@@ -357,6 +360,11 @@ public class vv_Robot {
 
     public int getBaseGyroSensorIntegratedZValue(vv_OpMode aOpMode) {
         return base_gyro_sensor.getIntegratedZValue();
+    }
+
+    public void resetBaseGyroZIntegrator(vv_OpMode aOpMode) throws InterruptedException {
+        base_gyro_sensor.resetZAxisIntegrator();
+        Thread.sleep(1000);
     }
 
     public void waitForTick(vv_OpMode aOpMode, long periodMs) throws InterruptedException {
