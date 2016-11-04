@@ -127,11 +127,13 @@ public class vv_Lib {
      * @throws InterruptedException
      */
     public void moveTillColor(vv_OpMode aOpMode, ColorSensor cs) throws InterruptedException {
-        while (!((cs.red() < 235) || (cs.green() < 235) || (cs.blue() < 235))) {
+        cs.enableLed(true);
+        while (true) {
             aOpMode.telemetryAddFormattedData("test: ", "cs red value: ", cs.red());
             aOpMode.telemetryAddFormattedData("test1: ", "cs green value: ", cs.green());
             aOpMode.telemetryAddFormattedData("test2: ", "cs blue value: ", cs.blue());
-            moveSidewaysLeft(aOpMode, .3f);
+            aOpMode.telemetryUpdate();
+            //moveSidewaysLeft(aOpMode, .3f);
         }
 
     }
