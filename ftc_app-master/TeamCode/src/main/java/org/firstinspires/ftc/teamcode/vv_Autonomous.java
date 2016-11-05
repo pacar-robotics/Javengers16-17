@@ -8,21 +8,22 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  */
 
 
-@Autonomous(name="vv_Autonomous", group="Test")
-public class vv_Autonomous extends vv_OpMode
-{
+@Autonomous(name = "vv_Autonomous", group = "Test")
+public class vv_Autonomous extends vv_OpMode {
     vv_Lib vvLib;
 
-    public void runOpMode() throws InterruptedException
-    {
-
-        vvLib.moveTillColor(this, vvLib.robot.getColorSensor(this));
-
+    public void runOpMode() throws InterruptedException {
         waitForStart();
 
         vvLib = new vv_Lib(this);
-        //vvLib.robot.getColorSensor(this).enableLed(true);
-        //Thread.sleep(15000);
+
+        vvLib.LineColorSensorOn(this);
+
+        while (opModeIsActive()) {
+            vvLib.moveUntilLine(this);
+            vvLib.displayLineColorSensorLuminosity(this);
+            idle();
+        }
     }
 
 

@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 
 public class vv_Lib {
-    vv_Robot robot;
+    private vv_Robot robot;
 
     public vv_Lib(vv_OpMode aOpMode) throws InterruptedException{
         robot = new vv_Robot();
@@ -117,25 +117,6 @@ public class vv_Lib {
             robot.runMotors(aOpMode, .3f, .3f, .3f, .3f);
         }
         robot.stopMotors(aOpMode);
-    }
-
-    /**
-     * Method that moves robot until the color white is detected
-     * Used to stop at white line when going from first to second beacon
-     * @param aOpMode - object of vv_OpMode class
-     * @param cs
-     * @throws InterruptedException
-     */
-    public void moveTillColor(vv_OpMode aOpMode, ColorSensor cs) throws InterruptedException {
-        cs.enableLed(true);
-        while (true) {
-            aOpMode.telemetryAddFormattedData("test: ", "cs red value: ", cs.red());
-            aOpMode.telemetryAddFormattedData("test1: ", "cs green value: ", cs.green());
-            aOpMode.telemetryAddFormattedData("test2: ", "cs blue value: ", cs.blue());
-            aOpMode.telemetryUpdate();
-            //moveSidewaysLeft(aOpMode, .3f);
-        }
-
     }
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
@@ -285,4 +266,30 @@ public class vv_Lib {
         robot.runMotorsSideways(aOpMode, -Power);
     }
 
+    public void displayLineColorSensorLuminosity(vv_OpMode aOpMode) throws InterruptedException
+    {
+        aOpMode.telemetryAddData("Line Color Sensor", "Luminosity,",":" +robot.getLineColorSensorAlpha(aOpMode));
+        aOpMode.telemetryUpdate();
+    }
+
+    public void LineColorSensorOn(vv_OpMode aOpMode) throws InterruptedException
+    {
+        robot.enableLineColorSensorLED(aOpMode);
+    }
+
+    public void LineColorSensorOff(vv_OpMode aOpMode) throws InterruptedException
+    {
+        robot.disableLineColorSensorLED(aOpMode);
+    }
+
+    public void moveUntilLine(vv_OpMode aOpMode) throws InterruptedException
+    {
+        while(robot.getLineColorSensorAlpha(aOpMode) < 40)
+        {
+            robot.runMotors(aOpMode, -.3f, .3f, .3f, -.3f);
+            Thread.sleep(500);
+            aOpMode.idle();
+        }
+        robot.stopMotors(aOpMode);
+    }
 }

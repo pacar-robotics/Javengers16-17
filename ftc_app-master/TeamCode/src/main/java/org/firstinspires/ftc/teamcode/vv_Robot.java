@@ -34,7 +34,7 @@ public class vv_Robot {
     private ElapsedTime period = new ElapsedTime();
 
 
-    public void init(HardwareMap ahwMap, vv_OpMode aOpMode) {
+    public void init(HardwareMap ahwMap, vv_OpMode aOpMode) throws InterruptedException {
         // save reference to HW Map
         hwMap = ahwMap;
 
@@ -59,6 +59,9 @@ public class vv_Robot {
         frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        cs.enableLed(false);
+        Thread.sleep(300);
 
         // Set all motors to zero power
         stopMotors(aOpMode);
@@ -319,8 +322,20 @@ public class vv_Robot {
         return buttonSensor.isPressed();
     }
 
-    public ColorSensor getColorSensor(vv_OpMode aOpMode) throws InterruptedException {
-        return cs;
+    public void enableLineColorSensorLED(vv_OpMode aOpMode) throws InterruptedException
+    {
+        cs.enableLed(true);
+        Thread.sleep(300);
+    }
+
+    public void disableLineColorSensorLED(vv_OpMode aOpMode) throws InterruptedException
+    {
+        cs.enableLed(false);
+        Thread.sleep(300);
+    }
+
+    public int getLineColorSensorAlpha(vv_OpMode aOpMode) throws InterruptedException {
+        return cs.alpha();
     }
 
     public void waitForTick(vv_OpMode aOpMode, long periodMs) throws InterruptedException {
