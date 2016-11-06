@@ -1,16 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
 /**
- * Class vv_Constants provides all constants that will be used
- * Ensures that all values are in sync
+ * Class vv_Constants provides all constants that will be used Ensures that all values are in sync
  * Also contains enumerations for direction, motors and beacon buttons
+ *
  * @author Krittika Negandhi
  * @author Thomas Chemmanoor
  * @author Rachael Chacko
  */
 public class vv_Constants {
 
-// Encoder constants
+    // Encoder constants
     final static int TETRIX_MOTOR_ENCODER_COUNTS_PER_REVOLUTION = 1440;
     final static int ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION = 1120;
 
@@ -21,12 +21,12 @@ public class vv_Constants {
 
 
     // Mecanum wheel properties
-   final static float MECCANUM_WHEEL_DIAMETER = 9.95f;   //in centimeters
+    final static float MECCANUM_WHEEL_DIAMETER = 9.95f;   //in centimeters
     final static float MECCANUM_WHEEL_ENCODER_MARGIN = 20;
 
     final static float DC_MOTOR_ENCODER_MARGIN = 20;
 
-   final static float ANALOG_STICK_THRESHOLD = .25f;
+    final static float ANALOG_STICK_THRESHOLD = .25f;
 
 
     //Beacon Servo Positions
@@ -47,44 +47,31 @@ public class vv_Constants {
     static final double ROBOT_TRACK = 0.0; //TODO: CHANGE VALUE
 
 
-  // Direction of turning
+    // Direction of turning
 
-  
- 
 
     // Direction of movement for autonomous
-    enum DirectionEnum
-    {
+    enum DirectionEnum {
         Forward, Backward, SidewaysLeft, SidewaysRight;
     }
-    DirectionEnum Direction;
 
- 
-   // Names of motors
-    enum MotorEnum
-    {
+
+    // Names of motors
+    enum MotorEnum {
         frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, armMotor;
     }
 
 
-  // Direction of turning
-    enum TurnDirectionEnum
-    {
+    // Direction of turning
+    enum TurnDirectionEnum {
         Clockwise, Counterclockwise;
-    }
-      TurnDirectionEnum TurnDirection;
-
-
-    // Left or right beacon button depending on color
-    enum ButtonEnum
-    {
-        Left, Right;
     }
 
     enum TouchSensorEnum {
         buttonSensor;
     }
 
+    // Left or right beacon button depending on color
     enum BeaconServoStateEnum {
         Left, Right, Neutral
     }

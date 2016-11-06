@@ -131,7 +131,7 @@ public class vv_Lib {
         }
     }
 
-    public void pushAButton(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum buttonEnum) {
+    public void pushABeaconButton(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum buttonEnum) {
         robot.pushButton(aOpMode, buttonEnum);
     }
 
