@@ -61,15 +61,15 @@ public class vv_TeleOp extends vv_OpMode {
     private void processBeacon(vv_OpMode anOpMode) {
         // Changes Beacon Mechanism to left position in order to score the beacon
         if (gamepad1.dpad_left) {
-            vvLib.pushABeaconButton(vv_Constants.BeaconServoStateEnum.Left);
+            vvLib.pushABeaconButton(anOpMode, vv_Constants.BeaconServoStateEnum.Left);
         }
         // Changes Beacon Mechanism to right position in order to score the beacon
         if (gamepad1.dpad_right) {
-            vvLib.pushABeaconButton(vv_Constants.BeaconServoStateEnum.Right);
+            vvLib.pushABeaconButton(anOpMode, vv_Constants.BeaconServoStateEnum.Right);
         }
         // Changes Beacon Mechanism to a Neutral Position
         if (gamepad1.dpad_down) {
-            vvLib.pushABeaconButton(vv_Constants.BeaconServoStateEnum.Neutral);
+            vvLib.pushABeaconButton(anOpMode, vv_Constants.BeaconServoStateEnum.Neutral);
         }
     }
 
@@ -124,22 +124,22 @@ public class vv_TeleOp extends vv_OpMode {
      *
      * @param anOpMode an object of vv_OpMode
      */
-    private void processShootingAngle(vv_OpMode anOpMode) {
+    private void processShootingAngle(vv_OpMode anOpMode) throws InterruptedException {
         //Changes Angle of the Shooting Mechanism to Position 1
         if (gamepad2.a) {
-
+            vvLib.moveSpringMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position1);
         }
         //Changes Angle of the Shooting Mechanism to Position 2
         if (gamepad2.x) {
-
+            vvLib.moveSpringMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position2);
         }
         //Changes Angle of the Shooting Mechanism to Position 3
         if (gamepad2.y) {
-
+            vvLib.moveSpringMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position3);
         }
         //Changes Angle of the Shooting Mechanism to Position 4
         if (gamepad2.b) {
-
+            vvLib.moveSpringMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position4);
         }
 
         //TODO Change the Angle slowly using Joystick Y Values
@@ -151,20 +151,18 @@ public class vv_TeleOp extends vv_OpMode {
      *
      * @param anOpMode object of vv_OpMode
      */
-    private void processShooting(vv_OpMode anOpMode) {
+    private void processShooting(vv_OpMode anOpMode) throws InterruptedException {
+
+        boolean isLeftBumperPressed;
+
         //Loads and Shoots one Ball
         if (gamepad2.left_bumper) {
-
+            isLeftBumperPressed = true;
+        } else {
+            isLeftBumperPressed = false;
         }
+
+        vvLib.shootOneBall(anOpMode, isLeftBumperPressed);
         //TODO: if we press the button x amount of times, shoot & load the ball x amount of times
     }
-
-    public void telemetryAddData(String caption, String key, String message) {
-        telemetry.addLine(caption).addData(key, message);
-    }
-
-    public void telemetryUpdate() {
-        telemetry.update();
-    }
-
 }

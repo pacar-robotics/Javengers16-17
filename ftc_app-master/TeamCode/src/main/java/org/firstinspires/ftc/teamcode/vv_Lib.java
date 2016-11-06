@@ -11,7 +11,7 @@ public class vv_Lib {
     vv_Robot robot;
 
 
-    public vv_Lib(vv_OpMode aOpMode) throws InterruptedException{
+    public vv_Lib(vv_OpMode aOpMode) throws InterruptedException {
         robot = new vv_Robot();
         robot.init(aOpMode.hardwareMap, aOpMode);
     }
@@ -42,11 +42,11 @@ public class vv_Lib {
         float backRightPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
 
 
-        //rotates/turns the robot
+        //rotates or turns the robot
         if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
             runAllMotors(aOpMode, aOpMode.gamepad1.right_stick_x, -aOpMode.gamepad1.right_stick_x, aOpMode.gamepad1.right_stick_x, -aOpMode.gamepad1.right_stick_x);
         }
-        //translates the robot using the mecanum wheels
+        //translates the robot using the Mecanum wheels
         else if (Math.abs(aOpMode.gamepad1.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
                 Math.abs(aOpMode.gamepad1.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
             runAllMotors(aOpMode, (forwardLeftPower * powerFactor), (forwardRightPower * powerFactor), (backLeftPower * powerFactor), (backRightPower * powerFactor));
@@ -57,12 +57,12 @@ public class vv_Lib {
 
 
     /**
-     * moveWheels method
-     * @param aOpMode - object of vv_OpMode class
-     * @param distance - in centimeters
-     * @param Power - float
-     * @param Direction - forward, backward, sideways left, or sideways right
-     * @throws InterruptedException
+     * Moves the robot in any direction
+     *
+     * @param aOpMode   - object of vv_OpMode class
+     * @param distance  - distance in centimeters in which the robot will travel
+     * @param Power     - power applied to wheel motors
+     * @param Direction - directions to move the robot: forward, backward, sideways left, or sideways right
      */
     public void moveWheels(vv_OpMode aOpMode, float distance, float Power, vv_Constants.DirectionEnum Direction) throws InterruptedException {
         if (Direction == vv_Constants.DirectionEnum.Forward) {
@@ -81,12 +81,33 @@ public class vv_Lib {
         // code for moving forward, backward, sideways
     }
 
-    public void setupShot(vv_OpMode aOpMode) throws InterruptedException
-    {
+    /**
+     * Preps and shoots one ball into the center vortex
+     *
+     * @param anOpMode and object of vv_OpMode
+     * @param isLeftButtonPressed true if the Left Button on gamepad2 is pressed
+     * @throws InterruptedException
+     */
+    public void shootOneBall(vv_OpMode anOpMode, boolean isLeftButtonPressed) throws InterruptedException {
+        if (!robot.isArmAtLimit(anOpMode)) {
+            setupShot(anOpMode);
+        } else if (isLeftButtonPressed) {
+            shootBall(anOpMode);
+            setupShot(anOpMode);
+        }
+    }
 
-       robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    /**
+     * Prepares the launcher to shoot by moving the motor until the launcher touches a touch sensor
+     *
+     * @param aOpMode an object of vv_OpMode
+     * @throws InterruptedException
+     */
+    public void setupShot(vv_OpMode aOpMode) throws InterruptedException {
 
-        while(!robot.isArmAtLimit(aOpMode)){
+        robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        while (!robot.isArmAtLimit(aOpMode)) {
             robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 1.0f);
         }
         robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.0f);
@@ -95,8 +116,13 @@ public class vv_Lib {
 
     }
 
-    public void shootBall(vv_OpMode aOpMode) throws InterruptedException
-    {
+    /**
+     * Shoots one ball into the center vortex
+     *
+     * @param aOpMode an object of vv_OpMode
+     * @throws InterruptedException
+     */
+    public void shootBall(vv_OpMode aOpMode) throws InterruptedException {
         robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 1.0f);
@@ -105,19 +131,49 @@ public class vv_Lib {
 
         robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.0f);
     }
-    
+
     /**
-     * Using encoders, this method turns the Robot clockwise or counter clockwise based on angle given.
-     Calculates the turn distance by multiplying the angle by conversion factors to get to an encoder value
+     * Stretches the spring to different distances which would affect the power of the launch and
+     * shoot the ball farther
      *
-     * @param aOpMode an object of the vv_OpMode class
-     * @param power power in which to apply to each motor
-     * @param angle angle in which the robot will turn to based on the current position as 0 degree
-     * @param TurnDirection Turns either Clockwise or Counterclockwise
+     * @param anOpMode an object of vv_OpMode
+     * @param springPosition Corresponds to defferent distances in which to pull the spring;
+     *                       SPRING_POSITION1, SPRING_POSITION2, SPRING_POSITION3, SPRING_POSITION4
      * @throws InterruptedException
      */
-    public void turnUsingEncoders (vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection)throws InterruptedException
-    {
+    public void moveSpringMotorToPosition(vv_OpMode anOpMode, vv_Constants.SpringPositionsEnum springPosition) throws InterruptedException {
+        switch (springPosition) {
+            case Position1:
+                robot.moveSpringMotor(anOpMode, vv_Constants.SPRING_POSITION1);
+                robot.SpringPosition = vv_Constants.SpringPositionsEnum.Position1;
+                break;
+            case Position2:
+                robot.moveSpringMotor(anOpMode, vv_Constants.SPRING_POSITION2);
+                robot.SpringPosition = vv_Constants.SpringPositionsEnum.Position2;
+                break;
+            case Position3:
+                robot.moveSpringMotor(anOpMode, vv_Constants.SPRING_POSITION3);
+                robot.SpringPosition = vv_Constants.SpringPositionsEnum.Position3;
+                break;
+            case Position4:
+                robot.moveSpringMotor(anOpMode, vv_Constants.SPRING_POSITION4);
+                robot.SpringPosition = vv_Constants.SpringPositionsEnum.Position4;
+                break;
+        }
+    }
+
+    /**
+     * Using encoders, this method turns the Robot clockwise or counter clockwise based on angle
+     * given. Calculates the turn distance by multiplying the angle by conversion factors to get to
+     * an encoder value
+     *
+     * @param aOpMode       an object of the vv_OpMode class
+     * @param power         power in which to apply to each motor
+     * @param angle         angle in which the robot will turn to based on the current position as 0
+     *                      degree
+     * @param TurnDirection Turns either Clockwise or Counterclockwise
+     */
+    public void turnUsingEncoders(vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection) throws InterruptedException {
         int turnDistance = (int) (angle * ((vv_Constants.ROBOT_TRACK * Math.PI) / 360)
                 * (vv_Constants.TETRIX_MOTOR_ENCODER_COUNTS_PER_REVOLUTION / (vv_Constants.MECCANUM_WHEEL_DIAMETER * Math.PI)));
 
@@ -131,6 +187,12 @@ public class vv_Lib {
         }
     }
 
+    /**
+     * Switches the servo into either right, left, or neutral position
+     *
+     * @param aOpMode
+     * @param buttonEnum right, left, neutral
+     */
     public void pushABeaconButton(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum buttonEnum) {
         robot.pushButton(aOpMode, buttonEnum);
     }
@@ -152,11 +214,10 @@ public class vv_Lib {
     }
 
     /**
-     * Method that moves robot until the color white is detected
-     * Used to stop at white line when going from first to second beacon
+     * Method that moves robot until the color white is detected Used to stop at white line when
+     * going from first to second beacon
+     *
      * @param aOpMode - object of vv_OpMode class
-     * @param cs
-     * @throws InterruptedException
      */
     public void moveTillColor(vv_OpMode aOpMode, ColorSensor cs) throws InterruptedException {
         while (!((cs.red() < 235) || (cs.green() < 235) || (cs.blue() < 235))) {
@@ -348,10 +409,10 @@ public class vv_Lib {
         // else set the ball collector motor power to the outtake power
         if (robot.BallCollectorState == vv_Constants.BallCollectorStateEnum.Outtake ||
                 robot.BallCollectorState == vv_Constants.BallCollectorStateEnum.Intake) {
-            robot.setPowerToBallCollector(anOp, 0.0f);
+            robot.setPower(anOp, vv_Constants.MotorEnum.ballCollectorMotor, 0.0f);
             robot.BallCollectorState = vv_Constants.BallCollectorStateEnum.Off;
         } else {
-            robot.setPowerToBallCollector(anOp, vv_Constants.BALL_COLLECTOR_POWER); //TODO: Check negate
+            robot.setPower(anOp, vv_Constants.MotorEnum.ballCollectorMotor, vv_Constants.BALL_COLLECTOR_POWER); //TODO: Check negate
             robot.BallCollectorState = vv_Constants.BallCollectorStateEnum.Outtake;
         }
     }
@@ -367,10 +428,10 @@ public class vv_Lib {
         // else set the ball collector motor power to the intake power
         if (robot.BallCollectorState == vv_Constants.BallCollectorStateEnum.Intake ||
                 robot.BallCollectorState == vv_Constants.BallCollectorStateEnum.Outtake) {
-            robot.setPowerToBallCollector(anOp, 0.0f);
+            robot.setPower(anOp, vv_Constants.MotorEnum.ballCollectorMotor, 0.0f);
             robot.BallCollectorState = vv_Constants.BallCollectorStateEnum.Off;
         } else {
-            robot.setPowerToBallCollector(anOp, -vv_Constants.BALL_COLLECTOR_POWER); //TODO: Check negate
+            robot.setPower(anOp, vv_Constants.MotorEnum.ballCollectorMotor, -vv_Constants.BALL_COLLECTOR_POWER); //TODO: Check negate
             robot.BallCollectorState = vv_Constants.BallCollectorStateEnum.Intake;
         }
     }

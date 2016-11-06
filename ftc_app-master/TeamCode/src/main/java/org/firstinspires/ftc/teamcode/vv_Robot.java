@@ -22,6 +22,7 @@ public class vv_Robot {
     private DcMotor capBallLift = null;
     private DcMotor ballCollector = null;
     private DcMotor armMotor = null;
+    private DcMotor springMotor = null;
 
     private Servo buttonServo = null;
 
@@ -37,6 +38,8 @@ public class vv_Robot {
     public vv_Constants.TurnDirectionEnum TurnDirection;
     public vv_Constants.CapBallStateEnum CapBallState;
     public vv_Constants.BallCollectorStateEnum BallCollectorState;
+    public vv_Constants.SpringPositionsEnum SpringPosition;
+
     public void init(HardwareMap ahwMap, vv_OpMode aOpMode) {
 
         // save reference to HW Map
@@ -51,7 +54,6 @@ public class vv_Robot {
         armMotor = hwMap.dcMotor.get("motor_arm");
 
         cs = hwMap.colorSensor.get("color_line_sensor");
-
 
         armSensor = hwMap.touchSensor.get("touch_arm_sensor");
 
@@ -76,6 +78,7 @@ public class vv_Robot {
 
         CapBallState = vv_Constants.CapBallStateEnum.Rest;
         BallCollectorState = vv_Constants.BallCollectorStateEnum.Off;
+        SpringPosition = vv_Constants.SpringPositionsEnum.Rest;
 
     }
 
@@ -85,6 +88,7 @@ public class vv_Robot {
      * @param anOp     an object of vv_OpMode
      * @param Position Encoder Position to move Cap Ball Lift to
      * @param Power    the power in which the motor runs
+     * @throws InterruptedException
      */
     public void moveCapBallLift(vv_OpMode anOp, int Position, float Power) throws InterruptedException {
         moveMotorUsingEncoderLimits(anOp, capBallLift, Position, Power,
@@ -92,16 +96,24 @@ public class vv_Robot {
     }
 
     /**
-     * Sets Power to the Ball Collector
+     * Moves the spring motor to a preset position
      *
-     * @param aOpMode an object of vv_OpMode
-     * @param Power   the power in which the Ball Collector motor runs
+     * @param anOp an object of vv_OpMode
+     * @param Position Encoder Position to move spring motor to
+     * @throws InterruptedException
      */
-    public void setPowerToBallCollector(vv_OpMode aOpMode, float Power) {
-        ballCollector.setPower(Power);
+    public void moveSpringMotor(vv_OpMode anOp, int Position) throws InterruptedException {
+        moveMotorUsingEncoderLimits(anOp, springMotor, Position, vv_Constants.SPRING_MOTOR_POWER,
+                vv_Constants.SPRING_MAX_LIMIT, vv_Constants.SPRING_MIN_LIMIT);
     }
 
-
+    /**
+     * Sets power to inputted motor
+     *
+     * @param aOpMode an object of vv_OpMode
+     * @param motorEnum list of motors, determines what motor the power will be applied to
+     * @param power power that is applied to the motor
+     */
     public void setPower(vv_OpMode aOpMode, vv_Constants.MotorEnum motorEnum, float power) {
 
         switch (motorEnum) {
@@ -120,6 +132,9 @@ public class vv_Robot {
             case armMotor:
                 armMotor.setPower(power);
                 break;
+            case ballCollectorMotor:
+                ballCollector.setPower(power);
+                break;
         }
     }
 
@@ -127,10 +142,16 @@ public class vv_Robot {
         if (motorEnum.equals("armMotor")) {
             armMotor.setMode(runMode);
         }
-        //TODO: Finish this emthod up
+        //TODO: Finish this method up
     }
 
 
+    /**
+     * Returns true if the Launcher Arm is at its limit
+     *
+     * @param aOpMode
+     * @return armSensor.isPressed; whether to touch sensor at the limit is pressed
+     */
     public boolean isArmAtLimit(vv_OpMode aOpMode) {
         return armSensor.isPressed();
         //TODO: Finish this method up
@@ -152,13 +173,10 @@ public class vv_Robot {
      * @param Power    generic power of the motors
      * @return void
      */
-
     public void runRobotToPositionSideways(vv_OpMode aOpMode, int position, float Power) throws InterruptedException {
         //using the generic method with all powers set to the same value and all positions set to the same position
         runRobotToPosition(aOpMode, -Power, Power, Power, -Power, -position, position, position, -position);
     }
-
-
 
     /**
      * Runs robot to a specific position. Can be called by other, more specific methods to move forwards and backwards or sideways.
@@ -172,7 +190,6 @@ public class vv_Robot {
      * @param fr_Position front left motor position
      * @param bl_Position back left motor position
      * @param br_Position back right motor position
-     * @return void
      */
 
     public void runRobotToPosition(vv_OpMode aOpMode, float fl_Power, float fr_Power,

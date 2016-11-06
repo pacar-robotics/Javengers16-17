@@ -28,7 +28,6 @@ public class vv_Constants {
 
     final static float ANALOG_STICK_THRESHOLD = .25f;
 
-
     //Beacon Servo Positions
     static final double BUTTON_SERVO_MIN_POS = 0.8f;     // Maximum rotational position
     static final double BUTTON_SERVO_MAX_POS = 0.45f;
@@ -41,13 +40,20 @@ public class vv_Constants {
     static final int CAP_BALL_LIFT_MIN = 0;
     static final float CAP_BALL_SCORE_POWER_FACTOR = .5f; //TODO: CHANGE
 
+    //Spring Motor Constants //TODO: CHANGE VALUES
+    static final int SPRING_POSITION1 = 0; //encoder value for spring in order to shoot 1 tile away
+    static final int SPRING_POSITION2 = 0; //encoder value for spring in order to shoot 2 tile away
+    static final int SPRING_POSITION3 = 0; //encoder value for spring in order to shoot 3 tile away
+    static final int SPRING_POSITION4 = 0; //encoder value for spring in order to shoot 4 tile away
+    static final float SPRING_MOTOR_POWER = .5f;
+    static final int SPRING_MAX_LIMIT = 0;
+    static final int SPRING_MIN_LIMIT = 0;
+
+    //Ball Collector Constants
     static final float BALL_COLLECTOR_POWER = .3f; //TODO: CHANGE
 
     //Robot Dimensions
     static final double ROBOT_TRACK = 0.0; //TODO: CHANGE VALUE
-
-
-    // Direction of turning
 
 
     // Direction of movement for autonomous
@@ -55,12 +61,11 @@ public class vv_Constants {
         Forward, Backward, SidewaysLeft, SidewaysRight;
     }
 
-
     // Names of motors
     enum MotorEnum {
-        frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, armMotor;
+        frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, armMotor, ballCollectorMotor,
+        capBallLiftMotor, springMotor
     }
-
 
     // Direction of turning
     enum TurnDirectionEnum {
@@ -68,7 +73,7 @@ public class vv_Constants {
     }
 
     enum TouchSensorEnum {
-        buttonSensor;
+        buttonSensor, armSensor;
     }
 
     // Left or right beacon button depending on color
@@ -76,12 +81,23 @@ public class vv_Constants {
         Left, Right, Neutral
     }
 
+    //Cap Ball Lift States
     enum CapBallStateEnum {
         Rest, Scoring_Position
     }
 
+    //Ball Collector States
     enum BallCollectorStateEnum {
         Off, Intake, Outtake
+    }
+
+    //Spring Motor States used to score in different positions
+    //Position 1 = 1 Tile Away
+    //Position 2 = 2 Tiles Away
+    //Position 3 = 3 Tiles Away
+    //Position 4 = 4 Tiles Away
+    enum SpringPositionsEnum {
+        Rest, Position1, Position2, Position3, Position4
     }
 
 }
