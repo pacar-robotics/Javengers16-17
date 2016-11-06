@@ -19,4 +19,10 @@ public abstract class vv_OpMode extends LinearOpMode
     public void telemetryAddFormattedData(String caption, String key, int number) {
         telemetry.addLine(caption).addData(key, number);
     }
+
+    public void dbg(String key, String message)
+    {
+        telemetryAddData("Debug", key, message);
+        telemetryUpdate();
+    }
 }

@@ -95,7 +95,22 @@ public class vv_Robot {
         if (motorEnum.equals("armMotor")) {
             armMotor.setMode(runMode);
         }
-        //TODO: Finish this emthod up
+
+        if (motorEnum.equals("frontLeftMotor")) {
+            frontLeftMotor.setMode(runMode);
+        }
+
+        if (motorEnum.equals("frontRightMotor")) {
+            frontRightMotor.setMode(runMode);
+        }
+
+        if (motorEnum.equals("backLeftMotor")) {
+            backLeftMotor.setMode(runMode);
+        }
+
+        if (motorEnum.equals("backRightMotor")) {
+            backRightMotor.setMode(runMode);
+        }
     }
 
     public boolean isArmAtLimit(vv_OpMode aOpMode) {
@@ -150,13 +165,25 @@ public class vv_Robot {
         while (frontLeftMotor.getCurrentPosition() != 0) {
             //wait until motors are reset
             Thread.sleep(20);
+            aOpMode.idle();
         }
 
         //sets all motors to run to a position
+
+
+        /*
         setMotorMode(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
         setMotorMode(aOpMode, vv_Constants.MotorEnum.frontRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
         setMotorMode(aOpMode, vv_Constants.MotorEnum.backLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
         setMotorMode(aOpMode, vv_Constants.MotorEnum.backRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
+*/
+
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        aOpMode.dbg("Run Mode", "Set to RUN_TO_POSITION");
 
         //reset encoder for 1 wheel
         frontLeftMotor.setTargetPosition(fl_Position);
@@ -185,7 +212,7 @@ public class vv_Robot {
             aOpMode.telemetryAddData("Motor BL", "Values", "" + backLeftMotor.getCurrentPosition());
             aOpMode.telemetryAddData("Motor BR", "Values", "" + backRightMotor.getCurrentPosition());
             aOpMode.telemetryUpdate();
-
+            aOpMode.idle();
         }
         stopMotors(aOpMode);
 

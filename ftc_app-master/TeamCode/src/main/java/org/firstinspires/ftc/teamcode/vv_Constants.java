@@ -23,6 +23,7 @@ public class vv_Constants
 
 	final static int GYRO_ERROR = 8;
 
+    final static int LUMINOSITY_MINIMUM = 10;
 
     // Mecanum wheel properties
 	final static float MECCANUM_WHEEL_DIAMETER = 9.95f;   //in centimeters

@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 /**
@@ -17,13 +16,17 @@ public class vv_Autonomous extends vv_OpMode {
 
         vvLib = new vv_Lib(this);
 
-        vvLib.LineColorSensorOn(this);
+        vvLib.lineColorSensorOn(this);
 
-        while (opModeIsActive()) {
-            vvLib.moveUntilLine(this);
-            vvLib.displayLineColorSensorLuminosity(this);
-            idle();
-        }
+        vvLib.moveWheels(this, 60, .3f, vv_Constants.DirectionEnum.Forward);
+        vvLib.turnUsingEncoders(this, .3f, 60, vv_Constants.TurnDirectionEnum.Clockwise);
+        vvLib.moveUntilLine(this);
+        vvLib.moveWheels(this, 60, .3f, vv_Constants.DirectionEnum.Forward);
+        vvLib.turnUsingEncoders(this, .3f, 30, vv_Constants.TurnDirectionEnum.Clockwise);
+        vvLib.moveTillTouch(this);
+
+        vvLib.displayLineColorSensorLuminosity(this);
+
     }
 
 

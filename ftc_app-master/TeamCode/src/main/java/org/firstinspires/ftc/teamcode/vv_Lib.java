@@ -115,6 +115,7 @@ public class vv_Lib {
     public void moveTillTouch(vv_OpMode aOpMode) throws InterruptedException {
         while (!senseTouch(aOpMode)) {
             robot.runMotors(aOpMode, .3f, .3f, .3f, .3f);
+            aOpMode.idle();
         }
         robot.stopMotors(aOpMode);
     }
@@ -125,6 +126,7 @@ public class vv_Lib {
         int targetPosition;
         //calculate target position from the input distance in cm
         targetPosition = (int) ((distance / (Math.PI * vv_Constants.MECCANUM_WHEEL_DIAMETER)) * vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
+        aOpMode.telemetryAddFormattedData("Motors", "Target Position", targetPosition);
         //runs the robot to position
         robot.runRobotToPositionFB(aOpMode, targetPosition, Power);
     }
@@ -268,28 +270,28 @@ public class vv_Lib {
 
     public void displayLineColorSensorLuminosity(vv_OpMode aOpMode) throws InterruptedException
     {
-        aOpMode.telemetryAddData("Line Color Sensor", "Luminosity,",":" +robot.getLineColorSensorAlpha(aOpMode));
+        aOpMode.telemetryAddData("Line Color Sensor", "Luminosity",":" +robot.getLineColorSensorAlpha(aOpMode));
         aOpMode.telemetryUpdate();
     }
 
-    public void LineColorSensorOn(vv_OpMode aOpMode) throws InterruptedException
+    public void lineColorSensorOn(vv_OpMode aOpMode) throws InterruptedException
     {
         robot.enableLineColorSensorLED(aOpMode);
     }
 
-    public void LineColorSensorOff(vv_OpMode aOpMode) throws InterruptedException
+    public void lineColorSensorOff(vv_OpMode aOpMode) throws InterruptedException
     {
         robot.disableLineColorSensorLED(aOpMode);
     }
 
     public void moveUntilLine(vv_OpMode aOpMode) throws InterruptedException
     {
-        while(robot.getLineColorSensorAlpha(aOpMode) < 40)
+        while(robot.getLineColorSensorAlpha(aOpMode) < vv_Constants.LUMINOSITY_MINIMUM)
         {
             robot.runMotors(aOpMode, -.3f, .3f, .3f, -.3f);
-            Thread.sleep(500);
             aOpMode.idle();
         }
         robot.stopMotors(aOpMode);
+        Thread.sleep(500);
     }
 }
