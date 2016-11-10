@@ -31,7 +31,7 @@ public class vv_Constants {
     //Beacon Servo Positions
     static final double BUTTON_SERVO_MIN_POS = 0.8f;     // Maximum rotational position
     static final double BUTTON_SERVO_MAX_POS = 0.45f;
-    static final double BUTTON_SERVO_NEUTRAL_POS = 0.0f; //TODO: CHANGE VALUE
+    static final double BUTTON_SERVO_NEUTRAL_POS = 0.625f;
 
     //CapBall Constants //TODO: CHANGE VALUES
     static final int CAP_BALL_LIFT_REST = 0;

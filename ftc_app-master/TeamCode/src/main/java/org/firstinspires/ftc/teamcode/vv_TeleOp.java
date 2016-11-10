@@ -35,17 +35,19 @@ public class vv_TeleOp extends vv_OpMode {
 
         while (opModeIsActive()) {
 
-            vvLib.processDriveRobotWithPowerFactor(this, vvLib.powerFactorBasedOnCapBall());
+            vvLib.processDriveRobotWithPowerFactor(this, 1.0f);
+
+//            vvLib.powerFactorBasedOnCapBall() //TODO: ADD THIS
 
             processBeacon(this);
 
-            processCapBall(this);
-
-            processBallCollection(this);
-
-            processShootingAngle(this);
-
-            processShooting(this);
+//            processCapBall(this);
+//
+//            processBallCollection(this);
+//
+//            processShootingAngle(this);
+//
+//            processShooting(this);
 
             idle();
         }
