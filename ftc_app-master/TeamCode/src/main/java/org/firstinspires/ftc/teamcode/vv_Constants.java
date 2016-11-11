@@ -36,7 +36,7 @@ public class vv_Constants
     static final double BUTTON_SERVO_MIN_POS     =  0.45f;
 
     //Robot Dimensions
-    static final double ROBOT_TRACK = 0.0; //TODO: CHANGE VALUE
+    static final double ROBOT_TRACK = 19.4; //TODO: CHANGE VALUE
 
     DirectionEnum Direction;
     TurnDirectionEnum TurnDirection;

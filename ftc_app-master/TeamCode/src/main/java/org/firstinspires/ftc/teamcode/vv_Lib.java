@@ -85,21 +85,25 @@ public class vv_Lib {
      */
     public void turnUsingEncoders (vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection)throws InterruptedException
     {
-        int turnDistance = (int) (angle * ((vv_Constants.ROBOT_TRACK * Math.PI) / 360)
-                * (vv_Constants.TETRIX_MOTOR_ENCODER_COUNTS_PER_REVOLUTION / (vv_Constants.MECCANUM_WHEEL_DIAMETER * Math.PI)));
+        /*int turnDistance = (int) (angle * ((vv_Constants.ROBOT_TRACK * Math.PI) / 360)
+                * (vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION / (vv_Constants.MECCANUM_WHEEL_DIAMETER * Math.PI)));
+        */
+        int turnDistance = (int) ((((angle / 360.0)*(vv_Constants.ROBOT_TRACK * Math.PI)) /
+                (vv_Constants.MECCANUM_WHEEL_DIAMETER * Math.PI))*(vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION * 4));
 
         switch (TurnDirection) {
             case Clockwise:
-                robot.runRobotToPosition(aOpMode, power, -power, power, -power, turnDistance, turnDistance, turnDistance, turnDistance);
+                robot.runRobotToPosition(aOpMode, power, -power, power, -power, turnDistance, -turnDistance, turnDistance, -turnDistance);
                 break;
             case Counterclockwise:
-                robot.runRobotToPosition(aOpMode, -power, power, -power, power, turnDistance, turnDistance, turnDistance, turnDistance);
+                robot.runRobotToPosition(aOpMode, -power, power, -power, power, -turnDistance, turnDistance, -turnDistance, turnDistance);
                 break;
         }
     }
 
-    public void pushAButton(vv_OpMode aOpMode, vv_Constants.ButtonEnum buttonEnum) {
+    public void pushAButton(vv_OpMode aOpMode, vv_Constants.ButtonEnum buttonEnum) throws InterruptedException{
         robot.pushButton(aOpMode, buttonEnum);
+        Thread.sleep(750);
     }
 
     public void turnUsingGyro(vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection) {
