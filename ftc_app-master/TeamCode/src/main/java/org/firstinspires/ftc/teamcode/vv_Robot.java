@@ -3,9 +3,11 @@ package org.firstinspires.ftc.teamcode;
 
 import android.hardware.Sensor;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -29,6 +31,7 @@ public class vv_Robot {
     private TouchSensor buttonSensor;
     private TouchSensor armSensor;
     private ColorSensor cs;
+    private ModernRoboticsI2cGyro gs_base;
 
     HardwareMap hwMap = null;
     private ElapsedTime period = new ElapsedTime();
@@ -52,6 +55,15 @@ public class vv_Robot {
         buttonServo = hwMap.servo.get("button_servo");
 
         buttonSensor = hwMap.touchSensor.get("touch_button_sensor");
+
+        gs_base = (ModernRoboticsI2cGyro) hwMap.gyroSensor.get("gyro_base_sensor");
+        gs_base.calibrate();
+        while (gs_base.isCalibrating()) {
+            Thread.sleep(50);
+            aOpMode.idle();
+        }
+
+        Thread.sleep(2000);
 
         buttonServo.setPosition(0.65);
 
@@ -362,6 +374,7 @@ public class vv_Robot {
     }
 
     public int getLineColorSensorAlpha(vv_OpMode aOpMode) throws InterruptedException {
+
         return cs.alpha();
     }
 
@@ -375,5 +388,17 @@ public class vv_Robot {
 
         // Reset the cycle clock for the next pass.
         period.reset();
+    }
+    public int getBaseGyroSensorHeading(vv_OpMode aOpMode) {
+        return gs_base.getHeading();
+    }
+
+    public int getBaseGyroSensorIntegratedZValue(vv_OpMode aOpMode) {
+        return gs_base.getIntegratedZValue();
+    }
+
+    public void resetBaseGyroZIntegrator(vv_OpMode aOpMode) throws InterruptedException {
+        gs_base.resetZAxisIntegrator();
+        Thread.sleep(1000);
     }
 }

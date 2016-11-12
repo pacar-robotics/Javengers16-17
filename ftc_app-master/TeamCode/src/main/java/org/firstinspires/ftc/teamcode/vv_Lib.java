@@ -2,13 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import java.lang.Math;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.hardware.configuration.MotorConfiguration;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * Created by thomas on 9/25/2016.
@@ -88,7 +82,7 @@ public class vv_Lib {
         /*int turnDistance = (int) (angle * ((vv_Constants.ROBOT_TRACK * Math.PI) / 360)
                 * (vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION / (vv_Constants.MECCANUM_WHEEL_DIAMETER * Math.PI)));
         */
-        int turnDistance = (int) ((((angle / 360.0)*(vv_Constants.ROBOT_TRACK * Math.PI)) /
+        int turnDistance = (int) ((((angle / 360.0)*(vv_Constants.ROBOT_TRACK_DISTANCE * Math.PI)) /
                 (vv_Constants.MECCANUM_WHEEL_DIAMETER * Math.PI))*(vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION * 4));
 
         switch (TurnDirection) {
@@ -105,12 +99,6 @@ public class vv_Lib {
         robot.pushButton(aOpMode, buttonEnum);
         Thread.sleep(750);
     }
-
-    public void turnUsingGyro(vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection) {
-        // do we need direction?
-        // absolute vs. relative turns
-    }
-
 
     public boolean senseTouch(vv_OpMode aOpMode) throws InterruptedException {
         return robot.getButtonTouchValue(aOpMode);
@@ -288,14 +276,97 @@ public class vv_Lib {
         robot.disableLineColorSensorLED(aOpMode);
     }
 
+    /*
+    public int lineColorCalibration(vv_OpMode aOpMode) throws InterruptedException
+    {
+        int whiteLuminosityMinimum = robot.getLineColorSensorAlpha(aOpMode);
+        return whiteLuminosityMinimum;
+    }
+
+*/
     public void moveUntilLine(vv_OpMode aOpMode) throws InterruptedException
     {
-        while(robot.getLineColorSensorAlpha(aOpMode) < vv_Constants.LUMINOSITY_MINIMUM)
+
+        while(robot.getLineColorSensorAlpha(aOpMode) < vv_Constants.LUMINOSITY_MINIMUM_WHITE)
         {
             robot.runMotors(aOpMode, -.3f, .3f, .3f, -.3f);
             aOpMode.idle();
         }
         robot.stopMotors(aOpMode);
         Thread.sleep(500);
+    }
+
+    public void turnUsingGyro(vv_OpMode aOpMode, int turnDegrees, vv_Constants.TurnDirectionEnum turnDirectionEnum) throws InterruptedException {
+        float frontLeftMotorPower = 0;
+        float frontRightMotorPower = 0;
+        float backLeftMotorPower = 0;
+        float backRightMotorPower = 0;
+
+
+        //reset the ZIntegrator before the turn, delay is built in.
+        robot.resetBaseGyroZIntegrator(aOpMode);
+        //start a timer to ensure no stuck loops.
+        long startTime = System.currentTimeMillis();
+        int zValue = robot.getBaseGyroSensorIntegratedZValue(aOpMode);
+
+        //adjust turnDegrees for gyro offset
+
+        /*
+        turnDegrees = Math.abs(turnDegrees) - vv_Constants.GYRO_ERROR_MARGIN;
+        if(turnDirectionEnum == vv_Constants.TurnDirectionEnum.Counterclockwise)
+        {
+            turnDegrees *= -1;
+        }
+*/
+
+        while (Math.abs(zValue) < Math.abs(turnDegrees) && (System.currentTimeMillis() - startTime) < vv_Constants.MAX_MOTOR_LOOP_TIME) {
+
+            //calculate proportional power to be used in turn. This starts off being 1 and drops off as the turn completes.
+            float turnPower = (Math.abs(turnDegrees) - Math.abs(zValue)) / Math.abs(turnDegrees);
+
+            //check for range of motor power values.
+
+            if (turnPower < vv_Constants.MIN_TURN_SPEED) {
+                turnPower = vv_Constants.MIN_TURN_SPEED;
+            }
+
+            if (turnPower > vv_Constants.MAX_TURN_SPEED) {
+                turnPower = vv_Constants.MAX_TURN_SPEED;
+            }
+
+            //adjust for direction of turn by examining the sign of the turn degrees
+            if(turnDirectionEnum == vv_Constants.TurnDirectionEnum.Counterclockwise)
+            {
+                turnPower *= -1;
+            }
+
+            //set the velocities to be used.
+
+            frontLeftMotorPower = turnPower;
+            frontRightMotorPower = -1 * turnPower;
+            backLeftMotorPower = turnPower;
+            backRightMotorPower = -1 * turnPower;
+
+            //re-scan zValue
+            zValue = robot.getBaseGyroSensorIntegratedZValue(aOpMode);
+            if (Math.abs(zValue) >= Math.abs(turnDegrees)) {
+                //break out of loop.
+                break;
+            }
+
+            robot.runMotors(aOpMode, frontLeftMotorPower, frontRightMotorPower,
+                    backLeftMotorPower, backRightMotorPower);
+
+            //wait so we dont read faster than gyro can provide results.
+            // aOpMode.telemetryAddData("Inside Turn","Degrees",":"+
+            //     robot.getBaseGyroSensorIntegratedZValue(aOpMode));
+            //aOpMode.telemetryAddData("Inside Turn","Power",":"+turnPower);
+            //aOpMode.telemetryUpdate();
+        }
+        robot.stopMotors(aOpMode);
+
+        aOpMode.telemetryAddData("After Turn", "Degrees", ":" +robot.getBaseGyroSensorIntegratedZValue(aOpMode));
+        aOpMode.telemetryUpdate();
+        Thread.sleep(1000);
     }
 }

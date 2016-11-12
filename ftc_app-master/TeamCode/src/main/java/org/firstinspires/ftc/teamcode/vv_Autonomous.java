@@ -12,20 +12,36 @@ public class vv_Autonomous extends vv_OpMode {
     vv_Lib vvLib;
 
     public void runOpMode() throws InterruptedException {
+
+        vvLib = new vv_Lib(this);
+
+        // Distance between lines = 114 cm
+
+        //vvLib.turnUsingGyro(this, 90, vv_Constants.TurnDirectionEnum.Clockwise);
+
+        //Thread.sleep(2000);
+
         waitForStart();
 
         vvLib = new vv_Lib(this);
 
         vvLib.lineColorSensorOn(this);
 
-        vvLib.moveWheels(this, 60, .3f, vv_Constants.DirectionEnum.Forward);
-        vvLib.turnUsingEncoders(this, .3f, 60, vv_Constants.TurnDirectionEnum.Clockwise);
+        vvLib.turnUsingEncoders(this, .5f, 45, vv_Constants.TurnDirectionEnum.Clockwise);
+        vvLib.moveWheels(this, 100, .4f, vv_Constants.DirectionEnum.Forward);
+        vvLib.turnUsingEncoders(this, .5f, 44, vv_Constants.TurnDirectionEnum.Clockwise);
         vvLib.moveUntilLine(this);
-        vvLib.moveWheels(this, 60, .3f, vv_Constants.DirectionEnum.Forward);
-        vvLib.turnUsingEncoders(this, .3f, 30, vv_Constants.TurnDirectionEnum.Clockwise);
+        vvLib.turnUsingEncoders(this, .4f, 5, vv_Constants.TurnDirectionEnum.Counterclockwise);
         vvLib.moveTillTouch(this);
+        vvLib.moveWheels(this, 4, .4f, vv_Constants.DirectionEnum.Backward);
+        vvLib.pushAButton(this, vv_Constants.ButtonEnum.Left);
+        vvLib.pushAButton(this, vv_Constants.ButtonEnum.Right);
 
         vvLib.displayLineColorSensorLuminosity(this);
+
+        //vvLib.turnUsingEncoders(this, 0.3f, 90, vv_Constants.TurnDirectionEnum.Clockwise);
+
+        //vvLib.displayLineColorSensorLuminosity(this);
 
     }
 
