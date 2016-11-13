@@ -23,25 +23,34 @@ public class vv_Autonomous extends vv_OpMode {
 
         waitForStart();
 
-        vvLib = new vv_Lib(this);
 
         vvLib.lineColorSensorOn(this);
 
-        vvLib.turnUsingEncoders(this, .5f, 45, vv_Constants.TurnDirectionEnum.Clockwise);
+
+        /*
+        vvLib.moveWheels(this, 20.32f, .5f, vv_Constants.DirectionEnum.Forward);
+        vvLib.turnUsingGyro(this, 45, vv_Constants.TurnDirectionEnum.Clockwise);
         vvLib.moveWheels(this, 100, .4f, vv_Constants.DirectionEnum.Forward);
-        vvLib.turnUsingEncoders(this, .5f, 44, vv_Constants.TurnDirectionEnum.Clockwise);
+        vvLib.turnUsingGyro(this, 44, vv_Constants.TurnDirectionEnum.Clockwise);
         vvLib.moveUntilLine(this);
-        vvLib.turnUsingEncoders(this, .4f, 5, vv_Constants.TurnDirectionEnum.Counterclockwise);
+       // vvLib.turnUsingEncoders(this, .4f, 5, vv_Constants.TurnDirectionEnum.Counterclockwise);
         vvLib.moveTillTouch(this);
-        vvLib.moveWheels(this, 4, .4f, vv_Constants.DirectionEnum.Backward);
+        vvLib.moveWheels(this, 4, .3f, vv_Constants.DirectionEnum.Backward);
         vvLib.pushAButton(this, vv_Constants.ButtonEnum.Left);
         vvLib.pushAButton(this, vv_Constants.ButtonEnum.Right);
 
         vvLib.displayLineColorSensorLuminosity(this);
 
-        //vvLib.turnUsingEncoders(this, 0.3f, 90, vv_Constants.TurnDirectionEnum.Clockwise);
+        */
 
-        //vvLib.displayLineColorSensorLuminosity(this);
+
+//        vvLib.turnAbsoluteUsingGyro(this, 90, vv_Constants.TurnDirectionEnum.Clockwise);
+//        Thread.sleep(500);
+        vvLib.turnAbsoluteUsingGyro(this, 360);
+        vvLib.turnAbsoluteUsingGyro(this, 90);
+        vvLib.turnAbsoluteUsingGyro(this, 45);
+
+
 
     }
 

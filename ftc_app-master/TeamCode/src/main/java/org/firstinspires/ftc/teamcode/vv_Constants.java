@@ -16,7 +16,7 @@ public class vv_Constants
 {
     final static float ROBOT_TRACK_DISTANCE = 19.4f;
 
-    final static int MAX_MOTOR_LOOP_TIME = 5000;
+    final static int MAX_MOTOR_LOOP_TIME = 10000;
     final static float MAX_TURN_SPEED = 0.5f;
     final static float MIN_TURN_SPEED = 0.15f;
 
@@ -29,9 +29,7 @@ public class vv_Constants
 	final static float MOTOR_LOWER_POWER_THRESHOLD = 0.35f;
 	final static float MOTOR_SLOW_START_THRESHOLD = 0.30f;
 
-	final static int GYRO_ERROR = 8;
-
-    final static int LUMINOSITY_MINIMUM_WHITE = 10;
+    final static int LUMINOSITY_MINIMUM_WHITE = 15;
 
     // Mecanum wheel properties
 	final static float MECCANUM_WHEEL_DIAMETER = 9.95f;   //in centimeters
@@ -40,8 +38,8 @@ public class vv_Constants
 	final static float ANALOG_STICK_THRESHOLD = .25f;
 
     // Extremes for servo that pushes beacon buttons
-    static final double BUTTON_SERVO_MAX_POS = 0.8f;     // Maximum rotational position
-    static final double BUTTON_SERVO_MIN_POS = 0.45f;
+    static final double BUTTON_SERVO_MAX_POS = 0.9f;     // Maximum rotational position
+    static final double BUTTON_SERVO_MIN_POS = 0.35f;
 
     DirectionEnum Direction;
     TurnDirectionEnum TurnDirection;

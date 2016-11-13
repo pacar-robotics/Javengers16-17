@@ -81,6 +81,8 @@ public class vv_Robot {
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
 
+        aOpMode.telemetryAddData("Init", "Message", "Init Complete");
+
     }
 
     public void setPower(vv_OpMode aOpMode, vv_Constants.MotorEnum motorEnum, float power) {

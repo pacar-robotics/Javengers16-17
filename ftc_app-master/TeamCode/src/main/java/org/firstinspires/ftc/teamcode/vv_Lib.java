@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import java.lang.Math;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
@@ -11,18 +9,18 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class vv_Lib {
     private vv_Robot robot;
 
-    public vv_Lib(vv_OpMode aOpMode) throws InterruptedException{
+    public vv_Lib(vv_OpMode aOpMode) throws InterruptedException {
         robot = new vv_Robot();
         robot.init(aOpMode.hardwareMap, aOpMode);
     }
 
     /**
      * moveWheels method
-     * @param aOpMode - object of vv_OpMode class
-     * @param distance - in centimeters
-     * @param Power - float
+     *
+     * @param aOpMode   - object of vv_OpMode class
+     * @param distance  - in centimeters
+     * @param Power     - float
      * @param Direction - forward, backward, sideways left, or sideways right
-     * @throws InterruptedException
      */
     public void moveWheels(vv_OpMode aOpMode, float distance, float Power, vv_Constants.DirectionEnum Direction) throws InterruptedException {
         if (Direction == vv_Constants.DirectionEnum.Forward) {
@@ -41,13 +39,12 @@ public class vv_Lib {
         // code for moving forward, backward, sideways
     }
 
-    public void setupShot(vv_OpMode aOpMode) throws InterruptedException
-    {
+    public void setupShot(vv_OpMode aOpMode) throws InterruptedException {
 
 
         robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        while(!robot.isArmAtLimit(aOpMode)){
+        while (!robot.isArmAtLimit(aOpMode)) {
             robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 1.0f);
         }
         robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.0f);
@@ -56,8 +53,7 @@ public class vv_Lib {
 
     }
 
-    public void shootBall(vv_OpMode aOpMode) throws InterruptedException
-    {
+    public void shootBall(vv_OpMode aOpMode) throws InterruptedException {
         robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 1.0f);
@@ -66,24 +62,24 @@ public class vv_Lib {
 
         robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.0f);
     }
-    
+
     /**
-     * Using encoders, this method turns the Robot clockwise or counter clockwise based on angle given.
-     Calculates the turn distance by multiplying the angle by conversion factors to get to an encoder value
+     * Using encoders, this method turns the Robot clockwise or counter clockwise based on angle
+     * given. Calculates the turn distance by multiplying the angle by conversion factors to get to
+     * an encoder value
      *
-     * @param aOpMode an object of the vv_OpMode class
-     * @param power power in which to apply to each motor
-     * @param angle angle in which the robot will turn to based on the current position as 0 degree
+     * @param aOpMode       an object of the vv_OpMode class
+     * @param power         power in which to apply to each motor
+     * @param angle         angle in which the robot will turn to based on the current position as 0
+     *                      degree
      * @param TurnDirection Turns either Clockwise or Counterclockwise
-     * @throws InterruptedException
      */
-    public void turnUsingEncoders (vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection)throws InterruptedException
-    {
+    public void turnUsingEncoders(vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection) throws InterruptedException {
         /*int turnDistance = (int) (angle * ((vv_Constants.ROBOT_TRACK * Math.PI) / 360)
                 * (vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION / (vv_Constants.MECCANUM_WHEEL_DIAMETER * Math.PI)));
         */
-        int turnDistance = (int) ((((angle / 360.0)*(vv_Constants.ROBOT_TRACK_DISTANCE * Math.PI)) /
-                (vv_Constants.MECCANUM_WHEEL_DIAMETER * Math.PI))*(vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION * 4));
+        int turnDistance = (int) ((((angle / 360.0) * (vv_Constants.ROBOT_TRACK_DISTANCE * Math.PI)) /
+                (vv_Constants.MECCANUM_WHEEL_DIAMETER * Math.PI)) * (vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION * 4));
 
         switch (TurnDirection) {
             case Clockwise:
@@ -95,7 +91,7 @@ public class vv_Lib {
         }
     }
 
-    public void pushAButton(vv_OpMode aOpMode, vv_Constants.ButtonEnum buttonEnum) throws InterruptedException{
+    public void pushAButton(vv_OpMode aOpMode, vv_Constants.ButtonEnum buttonEnum) throws InterruptedException {
         robot.pushButton(aOpMode, buttonEnum);
         Thread.sleep(750);
     }
@@ -106,7 +102,7 @@ public class vv_Lib {
 
     public void moveTillTouch(vv_OpMode aOpMode) throws InterruptedException {
         while (!senseTouch(aOpMode)) {
-            robot.runMotors(aOpMode, .3f, .3f, .3f, .3f);
+            robot.runMotors(aOpMode, .2f, .2f, .2f, .2f);
             aOpMode.idle();
         }
         robot.stopMotors(aOpMode);
@@ -260,19 +256,16 @@ public class vv_Lib {
         robot.runMotorsSideways(aOpMode, -Power);
     }
 
-    public void displayLineColorSensorLuminosity(vv_OpMode aOpMode) throws InterruptedException
-    {
-        aOpMode.telemetryAddData("Line Color Sensor", "Luminosity",":" +robot.getLineColorSensorAlpha(aOpMode));
+    public void displayLineColorSensorLuminosity(vv_OpMode aOpMode) throws InterruptedException {
+        aOpMode.telemetryAddData("Line Color Sensor", "Luminosity", ":" + robot.getLineColorSensorAlpha(aOpMode));
         aOpMode.telemetryUpdate();
     }
 
-    public void lineColorSensorOn(vv_OpMode aOpMode) throws InterruptedException
-    {
+    public void lineColorSensorOn(vv_OpMode aOpMode) throws InterruptedException {
         robot.enableLineColorSensorLED(aOpMode);
     }
 
-    public void lineColorSensorOff(vv_OpMode aOpMode) throws InterruptedException
-    {
+    public void lineColorSensorOff(vv_OpMode aOpMode) throws InterruptedException {
         robot.disableLineColorSensorLED(aOpMode);
     }
 
@@ -284,16 +277,102 @@ public class vv_Lib {
     }
 
 */
-    public void moveUntilLine(vv_OpMode aOpMode) throws InterruptedException
-    {
+    public void moveUntilLine(vv_OpMode aOpMode) throws InterruptedException {
 
-        while(robot.getLineColorSensorAlpha(aOpMode) < vv_Constants.LUMINOSITY_MINIMUM_WHITE)
-        {
+        while (robot.getLineColorSensorAlpha(aOpMode) < vv_Constants.LUMINOSITY_MINIMUM_WHITE) {
             robot.runMotors(aOpMode, -.3f, .3f, .3f, -.3f);
             aOpMode.idle();
         }
         robot.stopMotors(aOpMode);
         Thread.sleep(500);
+    }
+
+    public void turnAbsoluteUsingGyro(vv_OpMode aOpMode, int turnDegrees) throws InterruptedException {
+        float frontLeftMotorPower = 0;
+        float frontRightMotorPower = 0;
+        float backLeftMotorPower = 0;
+        float backRightMotorPower = 0;
+
+        //adjust turnDegrees for gyro offset
+        turnDegrees = turnDegrees%360;
+        turnDegrees = Math.abs(turnDegrees) - vv_Constants.GYRO_ERROR_MARGIN;
+
+        int originalDegreeDifference = Math.abs(Math.abs(robot.getBaseGyroSensorHeading(aOpMode)) - Math.abs(turnDegrees));
+
+        vv_Constants.TurnDirectionEnum turnDirectionEnum;
+
+        if (originalDegreeDifference > 180)
+        {
+            turnDirectionEnum = vv_Constants.TurnDirectionEnum.Counterclockwise;
+        }
+        else
+        {
+            turnDirectionEnum = vv_Constants.TurnDirectionEnum.Clockwise;
+        }
+
+        //start a timer to ensure no stuck loops.
+        long startTime = System.currentTimeMillis();
+        int zValue = robot.getBaseGyroSensorHeading(aOpMode);
+
+
+        if (turnDirectionEnum == vv_Constants.TurnDirectionEnum.Counterclockwise) {
+            turnDegrees *= -1;
+        }
+
+
+        while ((System.currentTimeMillis() - startTime) < vv_Constants.MAX_MOTOR_LOOP_TIME) {
+
+            //calculate proportional power to be used in turn. This starts off being 1 and drops off as the turn completes.
+            float turnPower = Math.abs(Math.abs(robot.getBaseGyroSensorHeading(aOpMode)) - Math.abs(turnDegrees)) / originalDegreeDifference;
+
+//        float turnPower = .2f;
+            //check for range of motor power values.
+
+            if (turnPower < vv_Constants.MIN_TURN_SPEED) {
+                turnPower = vv_Constants.MIN_TURN_SPEED;
+            }
+
+            if (turnPower > vv_Constants.MAX_TURN_SPEED) {
+                turnPower = vv_Constants.MAX_TURN_SPEED;
+            }
+
+            //adjust for direction of turn by examining the sign of the turn degrees
+            if (turnDirectionEnum == vv_Constants.TurnDirectionEnum.Counterclockwise) {
+                turnPower *= -1;
+            }
+
+            //set the velocities to be used.
+
+            frontLeftMotorPower = turnPower;
+            frontRightMotorPower = -1 * turnPower;
+            backLeftMotorPower = turnPower;
+            backRightMotorPower = -1 * turnPower;
+
+            //re-scan zValue
+            zValue = robot.getBaseGyroSensorHeading(aOpMode);
+
+
+            if (Math.abs(Math.abs(robot.getBaseGyroSensorHeading(aOpMode)) - Math.abs(turnDegrees)) < 3) {
+                //break out of loop.
+                aOpMode.telemetryAddData("Debug", "ZValue", ":" +zValue);
+                aOpMode.telemetryAddData("Debug", "turnDegrees", ":" +turnDegrees);
+                break;
+            }
+
+            robot.runMotors(aOpMode, frontLeftMotorPower, frontRightMotorPower,
+                    backLeftMotorPower, backRightMotorPower);
+
+            //wait so we dont read faster than gyro can provide results.
+            // aOpMode.telemetryAddData("Inside Turn","Degrees",":"+
+            //     robot.getBaseGyroSensorIntegratedZValue(aOpMode));
+            //aOpMode.telemetryAddData("Inside Turn","Power",":"+turnPower);
+            //aOpMode.telemetryUpdate();
+        }
+        robot.stopMotors(aOpMode);
+
+        aOpMode.telemetryAddData("After Turn", "Degrees", ":" + robot.getBaseGyroSensorHeading(aOpMode));
+        aOpMode.telemetryUpdate();
+        Thread.sleep(1000);
     }
 
     public void turnUsingGyro(vv_OpMode aOpMode, int turnDegrees, vv_Constants.TurnDirectionEnum turnDirectionEnum) throws InterruptedException {
@@ -311,14 +390,16 @@ public class vv_Lib {
 
         //adjust turnDegrees for gyro offset
 
-        /*
+
         turnDegrees = Math.abs(turnDegrees) - vv_Constants.GYRO_ERROR_MARGIN;
+
+        /*
         if(turnDirectionEnum == vv_Constants.TurnDirectionEnum.Counterclockwise)
         {
             turnDegrees *= -1;
         }
-*/
 
+*/
         while (Math.abs(zValue) < Math.abs(turnDegrees) && (System.currentTimeMillis() - startTime) < vv_Constants.MAX_MOTOR_LOOP_TIME) {
 
             //calculate proportional power to be used in turn. This starts off being 1 and drops off as the turn completes.
@@ -335,8 +416,7 @@ public class vv_Lib {
             }
 
             //adjust for direction of turn by examining the sign of the turn degrees
-            if(turnDirectionEnum == vv_Constants.TurnDirectionEnum.Counterclockwise)
-            {
+            if (turnDirectionEnum == vv_Constants.TurnDirectionEnum.Counterclockwise) {
                 turnPower *= -1;
             }
 
@@ -365,7 +445,7 @@ public class vv_Lib {
         }
         robot.stopMotors(aOpMode);
 
-        aOpMode.telemetryAddData("After Turn", "Degrees", ":" +robot.getBaseGyroSensorIntegratedZValue(aOpMode));
+        aOpMode.telemetryAddData("After Turn", "Degrees", ":" + robot.getBaseGyroSensorIntegratedZValue(aOpMode));
         aOpMode.telemetryUpdate();
         Thread.sleep(1000);
     }
