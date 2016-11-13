@@ -34,6 +34,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
@@ -66,6 +67,20 @@ public class MainActivity extends AppCompatActivity {
 			Log.v(LOG_TAG, "External Storage Permission granted");
 			writeXML(createHashMap());
 			Log.v(LOG_TAG, "Finished writeXML function");
+		}
+	}
+
+	@OnCheckedChanged(R.id.center_vortex)
+	void centerVortexChecked() {
+		if (centerVortexCheck.isChecked()) {
+			cornerVortexCheck.setChecked(false);
+		}
+	}
+
+	@OnCheckedChanged(R.id.corner_vortex)
+	void cornerVortexChecked() {
+		if (cornerVortexCheck.isChecked()) {
+			centerVortexCheck.setChecked(false);
 		}
 	}
 
