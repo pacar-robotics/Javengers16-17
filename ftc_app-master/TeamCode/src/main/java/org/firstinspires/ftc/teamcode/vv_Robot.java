@@ -102,18 +102,59 @@ public class vv_Robot {
         }
     }
 
-    public void setMotorMode(vv_OpMode aOpMode, vv_Constants.MotorEnum motorEnum, DcMotor.RunMode runMode) {
-        if (motorEnum.equals("armMotor")) {
-            armMotor.setMode(runMode);
+    public DcMotor.RunMode getMotorMode(vv_OpMode aOpMode, vv_Constants.MotorEnum motorEnum
+    ) throws MotorNameNotKnownException {
+
+
+        switch (motorEnum) {
+            case frontLeftMotor:
+                return frontLeftMotor.getMode();
+            case frontRightMotor:
+                return frontRightMotor.getMode();
+            case backLeftMotor:
+                return backLeftMotor.getMode();
+            case backRightMotor:
+                return backRightMotor.getMode();
+            case armMotor:
+                return armMotor.getMode();
+            default:
+                throw new MotorNameNotKnownException("Motor Name Not Known:" + motorEnum.toString());
+
         }
-        //TODO: Finish this emthod up
+
+    }
+
+    public void setMotorMode(vv_OpMode aOpMode, vv_Constants.MotorEnum motorEnum,
+                             DcMotor.RunMode runMode) throws MotorNameNotKnownException {
+
+        //TODO: Finish this emthod        switch (motorEnum) {
+        switch (motorEnum) {
+            case frontLeftMotor:
+                frontLeftMotor.setMode(runMode);
+                break;
+            case frontRightMotor:
+                frontRightMotor.setMode(runMode);
+                break;
+            case backLeftMotor:
+                backLeftMotor.setMode(runMode);
+                break;
+            case backRightMotor:
+                backRightMotor.setMode(runMode);
+                break;
+            case armMotor:
+                armMotor.setMode(runMode);
+                break;
+            default:
+                throw new MotorNameNotKnownException("Motor Name Not Known:" + motorEnum.toString());
+
+        }
+
     }
 
     public boolean isArmAtLimit(vv_OpMode aOpMode) {
         return armSensor.isPressed();
         //TODO: Finish this method up
     }
-
 
     public void runRobotToPositionFB(vv_OpMode aOpMode, int position, float Power) throws InterruptedException {
         //using the generic method with all powers set to the same value and all positions set to the same position
@@ -132,7 +173,6 @@ public class vv_Robot {
         //using the generic method with all powers set to the same value and all positions set to the same position
         runRobotToPosition(aOpMode, -Power, Power, Power, -Power, -position, position, position, -position);
     }
-
 
     /**
      * Runs robot to a specific position. Can be called by other, more specific methods to move forwards and backwards or sideways.
@@ -164,11 +204,14 @@ public class vv_Robot {
         }
 
         //sets all motors to run to a position
-        setMotorMode(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
-        setMotorMode(aOpMode, vv_Constants.MotorEnum.frontRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
-        setMotorMode(aOpMode, vv_Constants.MotorEnum.backLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
-        setMotorMode(aOpMode, vv_Constants.MotorEnum.backRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
-
+        try {
+            setMotorMode(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
+            setMotorMode(aOpMode, vv_Constants.MotorEnum.frontRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
+            setMotorMode(aOpMode, vv_Constants.MotorEnum.backLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
+            setMotorMode(aOpMode, vv_Constants.MotorEnum.backRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
+        } catch (MotorNameNotKnownException mNNKE) {
+            aOpMode.telemetryAddData("Motor Control Error", "Error", mNNKE.getMessage());
+        }
         //reset encoder for 1 wheel
         frontLeftMotor.setTargetPosition(fl_Position);
         frontRightMotor.setTargetPosition(fr_Position);
@@ -203,7 +246,6 @@ public class vv_Robot {
         Thread.sleep(100);
     }
 
-
     public void runRobotToPositionWithAngle(vv_OpMode aOpMode, float fl_Power, float fr_Power,
                                             float bl_Power, float br_Power, int fl_Position,
                                             int fr_Position, int bl_Position, int br_Position, float angle)
@@ -221,11 +263,14 @@ public class vv_Robot {
         }
 
         //sets all motors to run to a position
-        setMotorMode(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
-        setMotorMode(aOpMode, vv_Constants.MotorEnum.frontRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
-        setMotorMode(aOpMode, vv_Constants.MotorEnum.backLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
-        setMotorMode(aOpMode, vv_Constants.MotorEnum.backRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
-
+        try {
+            setMotorMode(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
+            setMotorMode(aOpMode, vv_Constants.MotorEnum.frontRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
+            setMotorMode(aOpMode, vv_Constants.MotorEnum.backLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
+            setMotorMode(aOpMode, vv_Constants.MotorEnum.backRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
+        } catch (MotorNameNotKnownException mNNKE) {
+            aOpMode.telemetryAddData("Motor Control Error", "Error", mNNKE.getMessage());
+        }
         //reset encoder for 1 wheel
         frontLeftMotor.setTargetPosition(fl_Position);
         frontRightMotor.setTargetPosition(fr_Position);
@@ -307,7 +352,6 @@ public class vv_Robot {
         setPower(aOpMode, vv_Constants.MotorEnum.backRightMotor, br_Power);
     }
 
-
     public void stopMotors(vv_OpMode aOpMode) {
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
@@ -347,12 +391,12 @@ public class vv_Robot {
         Thread.sleep(300);
     }
 
-    //get the alpha (luminosity being read in reflected light from LED)
-    //high luminosity will be found with a white surface.
-
     public int getFloorColorSensorAlpha(vv_OpMode aOpMode){
         return cs.alpha();
     }
+
+    //get the alpha (luminosity being read in reflected light from LED)
+    //high luminosity will be found with a white surface.
 
     public int getBaseGyroSensorHeading(vv_OpMode aOpMode) {
         return base_gyro_sensor.getHeading();
@@ -377,5 +421,11 @@ public class vv_Robot {
 
         // Reset the cycle clock for the next pass.
         period.reset();
+    }
+
+    class MotorNameNotKnownException extends Exception {
+        MotorNameNotKnownException(String message) {
+            super(message);
+        }
     }
 }

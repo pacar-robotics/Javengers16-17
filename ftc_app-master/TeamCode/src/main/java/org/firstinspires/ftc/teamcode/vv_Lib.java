@@ -41,7 +41,7 @@ public class vv_Lib {
         // code for moving forward, backward, sideways
     }
 
-    public void setupShot(vv_OpMode aOpMode) throws InterruptedException
+    public void setupShot(vv_OpMode aOpMode) throws InterruptedException, vv_Robot.MotorNameNotKnownException
     {
 
 
@@ -56,7 +56,7 @@ public class vv_Lib {
 
     }
 
-    public void shootBall(vv_OpMode aOpMode) throws InterruptedException
+    public void shootBall(vv_OpMode aOpMode) throws InterruptedException, vv_Robot.MotorNameNotKnownException
     {
         robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -79,16 +79,41 @@ public class vv_Lib {
      */
     public void turnUsingEncoders (vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection)throws InterruptedException
     {
-        int turnDistance = (int) (angle * ((vv_Constants.ROBOT_TRACK * Math.PI) / 360)
-                * (vv_Constants.TETRIX_MOTOR_ENCODER_COUNTS_PER_REVOLUTION / (vv_Constants.MECCANUM_WHEEL_DIAMETER * Math.PI)));
 
-        switch (TurnDirection) {
-            case Clockwise:
-                robot.runRobotToPosition(aOpMode, power, -power, power, -power, turnDistance, turnDistance, turnDistance, turnDistance);
-                break;
-            case Counterclockwise:
-                robot.runRobotToPosition(aOpMode, -power, power, -power, power, turnDistance, turnDistance, turnDistance, turnDistance);
-                break;
+        try {
+            //save the current run mode
+            DcMotor.RunMode OldRunMode = robot.getMotorMode(aOpMode, vv_Constants.MotorEnum.frontLeftMotor);
+
+
+            //calculate the turn distance to be used in terms of encoder clicks.
+            //for Andymark encoders.
+
+            int turnDistance = (int) (2 * ((vv_Constants.ROBOT_TRACK_DISTANCE) * angle
+                    * vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION) /
+                    (vv_Constants.MECCANUM_WHEEL_DIAMETER * 360));
+
+
+            switch (TurnDirection) {
+                case Clockwise:
+                    robot.runRobotToPosition(aOpMode, power, power, power, power, turnDistance, -turnDistance, turnDistance, -turnDistance);
+                    break;
+                case Counterclockwise:
+                    robot.runRobotToPosition(aOpMode, power, power, power, power, -turnDistance, turnDistance, -turnDistance, turnDistance);
+                    break;
+            }
+            //restore old run Mode.
+
+            robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, OldRunMode);
+            robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.frontRightMotor, OldRunMode);
+            robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.backLeftMotor, OldRunMode);
+            robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.backRightMotor, OldRunMode);
+
+            //wait just a bit for the commands to complete
+            Thread.sleep(50);
+
+        } catch (vv_Robot.MotorNameNotKnownException mNNKE) {
+            aOpMode.telemetryAddData("Motor", "Error", mNNKE.getMessage());
+            aOpMode.telemetryUpdate();
         }
     }
 
@@ -312,6 +337,13 @@ public class vv_Lib {
     }
 
     public void turnGyroDegrees(vv_OpMode aOpMode, int turnDegrees) throws InterruptedException {
+
+        //this code has some issues due to gyro read lag of approximately 250ms as reported.
+        //This will cause the turns to be approximate and will generally overshoot.
+        //only use this code if other methods dont work.
+        //we will be trying this with another more advanced gyro sensor.
+
+
         float frontLeftMotorPower = 0;
         float frontRightMotorPower = 0;
         float backLeftMotorPower = 0;
@@ -379,6 +411,29 @@ public class vv_Lib {
         aOpMode.telemetryAddData("Post Turn Diag", "Degrees", ":" + robot.getBaseGyroSensorIntegratedZValue(aOpMode));
         aOpMode.telemetryUpdate();
         Thread.sleep(1000);
+
+
+    }
+
+    public void turnAbsoluteGyroDegrees(vv_OpMode aOpMode, float absoluteDegrees) throws InterruptedException {
+        //clockwise is represented by positive numbers.
+        //counterclockwise by negative angle numbers in degrees.
+        //the absoluteDegrees parameters measures degrees off the initial reference frame when the robot is started and the gyro is
+        //calibrated.
+        // >> IMPORTANT: This depends on the zIntegratedHeading not being altered by relative turns !!!
+
+        //first take the absolute degrees and modulus down to 0 and 359.
+
+        float targetDegrees = absoluteDegrees % 360;
+
+        //compare to the current gyro zIntegrated heading and store the result.
+        //the Integrated zValue returned is negative for clockwise turns
+        float turnDegrees = targetDegrees - (-1) * robot.getBaseGyroSensorIntegratedZValue(aOpMode);
+
+        //make the turn using encoders
+
+        turnUsingEncoders(aOpMode, 0.5f, Math.abs(turnDegrees), turnDegrees > 0 ? vv_Constants.TurnDirectionEnum.Counterclockwise :
+                vv_Constants.TurnDirectionEnum.Counterclockwise);
 
 
     }

@@ -25,8 +25,8 @@ public class vv_Constants
 
 
     // Mecanum wheel properties
-	final static float MECCANUM_WHEEL_DIAMETER = 9.95f;   //in centimeters
-	final static float MECCANUM_WHEEL_ENCODER_MARGIN = 20;
+    final static float MECCANUM_WHEEL_DIAMETER = 4f;   //in inches
+    final static float MECCANUM_WHEEL_ENCODER_MARGIN = 10;
 
 	final static float ANALOG_STICK_THRESHOLD = .25f;
 
@@ -34,10 +34,8 @@ public class vv_Constants
     static final double BUTTON_SERVO_MAX_POS     =  0.8f;     // Maximum rotational position
     static final double BUTTON_SERVO_MIN_POS     =  0.45f;
 
-    //Robot Dimensions
-    static final double ROBOT_TRACK = 0.0; //TODO: CHANGE VALUE
     //distance between wheels left to right of the Robot in inches.
-    final static int ROBOT_TRACK_DISTANCE = 17;
+    final static float ROBOT_TRACK_DISTANCE = 15.6f; //adjusted from observation.
     //max time to wait in a tight loop, for example in robot turns or autonomous moves
     final static int MAX_MOTOR_LOOP_TIME = 5000;
     //max turn velocity for a motor, to be used in autonomous turns of the robot
