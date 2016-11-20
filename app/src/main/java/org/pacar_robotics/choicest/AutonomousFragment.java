@@ -3,13 +3,11 @@ package org.pacar_robotics.choicest;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,20 +19,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -64,8 +50,6 @@ public class AutonomousFragment extends Fragment {
 	@BindView(R.id.block) CheckBox blockCheck;
 
 	private Unbinder unbinder;
-
-	private static final String ARG_SECTION_NUMBER = "section_number";
 
 	public AutonomousFragment() {
 		// Required empty public constructor
@@ -99,18 +83,7 @@ public class AutonomousFragment extends Fragment {
 
 	@OnClick(R.id.btn_save)
 	void saveButtonClicked() {
-		if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) &&
-				(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-						!= PackageManager.PERMISSION_GRANTED)) {
-			// If system OS is Marshmallow or greater, must check if have dangerous storage permission
-			ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-					MY_PERMISSION_REQUEST_STORAGE);
-		} else {
-			// Permission is granted, move on
-			Log.v(LOG_TAG, "External Storage Permission granted");
-			writeXML(createHashMap());
-			Log.v(LOG_TAG, "Finished writeXML function");
-		}
+		new XmlWriter(FILE, createHashMap(), getActivity());
 	}
 
 	@OnCheckedChanged(R.id.center_vortex)
@@ -127,7 +100,7 @@ public class AutonomousFragment extends Fragment {
 		}
 	}
 
-	private LinkedHashMap<String, String> createHashMap() {
+	private HashMap<String, String> createHashMap() {
 		LinkedHashMap<String, String> choicesMap = new LinkedHashMap<>();
 
 		// We have to remove spaces between the tags or else it will crash
@@ -185,49 +158,6 @@ public class AutonomousFragment extends Fragment {
 				Log.e(LOG_TAG, "Reached default statement of onRequestPermissionResult");
 				Toast.makeText(getActivity(), "Something bad happened", Toast.LENGTH_SHORT).show();
 				break;
-		}
-	}
-
-	private void writeXML(LinkedHashMap<String, String> choicesMap) {
-		File file = new File(FILE);
-
-		if (file.delete()) {
-			Log.v(LOG_TAG, " File deleted:" + FILE);
-		} else {
-			Log.v(LOG_TAG, " File NOT deleted:" + FILE);
-		}
-
-		try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-			// Create root elements
-			Document doc = docBuilder.newDocument();
-			Element root = doc.createElement("AutoChoices");
-			doc.appendChild(root);
-
-			for (Map.Entry<String, String> entry : choicesMap.entrySet()) {
-				Element i = doc.createElement(entry.getKey());
-				i.appendChild(doc.createTextNode(entry.getValue()));
-				root.appendChild(i);
-			}
-
-			// Write the content into xml file
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-
-			DOMSource source = new DOMSource(doc);
-
-			StreamResult result = new StreamResult(file);
-
-			// Fix XML formatting
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-
-			transformer.transform(source, result);
-		} catch (Exception e) {
-			Toast.makeText(getActivity(), "Oh no! File creation failed!", Toast.LENGTH_LONG).show();
-			Log.e(LOG_TAG, "File creation failed: " + e.getMessage());
 		}
 	}
 
