@@ -74,8 +74,8 @@ public class vv_Robot {
         backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // Set all motors to zero power
-        stopMotors(aOpMode);
+        // Set all base motors to zero power
+        stopBaseMotors(aOpMode);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
@@ -192,6 +192,10 @@ public class vv_Robot {
                                    float bl_Power, float br_Power, int fl_Position,
                                    int fr_Position, int bl_Position, int br_Position)
             throws InterruptedException {
+
+        //save the current run mode
+        DcMotor.RunMode oldRunMode = frontLeftMotor.getMode();
+
         //reset motor encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -204,44 +208,90 @@ public class vv_Robot {
         }
 
         //sets all motors to run to a position
-        try {
-            setMotorMode(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
-            setMotorMode(aOpMode, vv_Constants.MotorEnum.frontRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
-            setMotorMode(aOpMode, vv_Constants.MotorEnum.backLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
-            setMotorMode(aOpMode, vv_Constants.MotorEnum.backRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
-        } catch (MotorNameNotKnownException mNNKE) {
-            aOpMode.telemetryAddData("Motor Control Error", "Error", mNNKE.getMessage());
-        }
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
         //reset encoder for 1 wheel
         frontLeftMotor.setTargetPosition(fl_Position);
         frontRightMotor.setTargetPosition(fr_Position);
         backLeftMotor.setTargetPosition(bl_Position);
         backRightMotor.setTargetPosition(br_Position);
 
+
         //sets the the power of all motors
-        setPower(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, fl_Power);
-        setPower(aOpMode, vv_Constants.MotorEnum.frontRightMotor, fr_Power);
-        setPower(aOpMode, vv_Constants.MotorEnum.backLeftMotor, bl_Power);
-        setPower(aOpMode, vv_Constants.MotorEnum.backRightMotor, br_Power);
+        //since we are ramping up, start at the lowest power allowed.
+        setPower(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, vv_Constants.MOTOR_LOWER_POWER_THRESHOLD);
+        setPower(aOpMode, vv_Constants.MotorEnum.frontRightMotor, vv_Constants.MOTOR_LOWER_POWER_THRESHOLD);
+        setPower(aOpMode, vv_Constants.MotorEnum.backLeftMotor, vv_Constants.MOTOR_LOWER_POWER_THRESHOLD);
+        setPower(aOpMode, vv_Constants.MotorEnum.backRightMotor, vv_Constants.MOTOR_LOWER_POWER_THRESHOLD);
 
         //wait until robot reaches target position
-        //testing the wheels on the opposite sides of the robot because each might have a different position for sideways movements
 
-        while ((Math.abs(frontLeftMotor.getCurrentPosition()) < Math.abs(fl_Position) - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN) ||
-                (Math.abs(frontRightMotor.getCurrentPosition()) < Math.abs(fr_Position) - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN)
-                || (Math.abs(backRightMotor.getCurrentPosition()) < Math.abs(br_Position) - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN) ||
-                (Math.abs(backLeftMotor.getCurrentPosition()) < Math.abs(bl_Position) - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN)) {
+
+        aOpMode.reset_timer();
+        while (baseMotorsAreBusy() && (aOpMode.time_elapsed() < vv_Constants.MAX_MOTOR_LOOP_TIME)) {
+            //wait until motors havce completed movement or timed out.
             //report motor positions for debugging
 
-            // TODO: UNCOMMENT THIS!!!!
-            aOpMode.telemetryAddData("Motor FL", "Values", "" + frontLeftMotor.getCurrentPosition());
-            aOpMode.telemetryAddData("Motor FR", "Values", "" + frontRightMotor.getCurrentPosition());
-            aOpMode.telemetryAddData("Motor BL", "Values", "" + backLeftMotor.getCurrentPosition());
-            aOpMode.telemetryAddData("Motor BR", "Values", "" + backRightMotor.getCurrentPosition());
-            aOpMode.telemetryUpdate();
+            //adjust the motor speeds by adjusting Power proportional to distance that needs to be travelled.
 
+            //
+            //Ramped Move block formula:
+            //RP=PMax(1-4*(0.5-DT/DD)^2)
+            //where RP=Ramped Power, PMax is maximum power available, DT=Distance Travelled, DD=Distance to be travelled
+            //fl_position (target for the front left motor in encoder clicks can be taken as the proxy for all motors.
+            float rampedPowerRaw = (float) (vv_Constants.MOTOR_RAMP_POWER_UPPER_LIMIT * (1 - 4 * (Math.pow((0.5f -
+                    Math.abs((frontLeftMotor.getCurrentPosition() * 1.0f) / fl_Position)), 2.0f))));
+
+            //use another variable to check and adjust power limits, so we can display raw power values.
+            float rampedPower = rampedPowerRaw;
+
+            //check for upper and lower limits.
+            if (rampedPower > vv_Constants.MOTOR_RAMP_POWER_UPPER_LIMIT) {
+                rampedPower = vv_Constants.MOTOR_RAMP_POWER_UPPER_LIMIT;
+            }
+            if (rampedPower < vv_Constants.MOTOR_RAMP_POWER_LOWER_LIMIT) {
+                rampedPower = vv_Constants.MOTOR_RAMP_POWER_LOWER_LIMIT;
+            }
+
+            //apply the new power values.
+            //sets the the power of all motors
+
+            setPower(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, rampedPower);
+            setPower(aOpMode, vv_Constants.MotorEnum.frontRightMotor, rampedPower);
+            setPower(aOpMode, vv_Constants.MotorEnum.backLeftMotor, rampedPower);
+            setPower(aOpMode, vv_Constants.MotorEnum.backRightMotor, rampedPower);
+
+
+
+            // TODO: UNCOMMENT THIS!!!!
+            if (vv_Constants.DEBUG) {
+                aOpMode.telemetryAddData("Motor FL", "Values", ":" + frontLeftMotor.getCurrentPosition());
+                aOpMode.telemetryAddData("Motor FR", "Values", ":" + frontRightMotor.getCurrentPosition());
+                aOpMode.telemetryAddData("Motor BL", "Values", ":" + backLeftMotor.getCurrentPosition());
+                aOpMode.telemetryAddData("Motor BR", "Values", ":" + backRightMotor.getCurrentPosition());
+                aOpMode.telemetryAddData("Raw Ramped Power", "Values", ":" + rampedPowerRaw);
+                aOpMode.telemetryAddData("Ramped Power ", "Values", ":" + rampedPower);
+                aOpMode.telemetryAddData("fl_position", "Values", ":" + fl_Position);
+                aOpMode.telemetryAddData("DTraveled/DTarget", "Values", ":" + Math.abs(frontLeftMotor.getCurrentPosition() / fl_Position));
+                aOpMode.telemetryAddData("Squared Values", "Values", ":" +
+                        Math.pow((0.5f - Math.abs((frontLeftMotor.getCurrentPosition() * 1.0f) / fl_Position)), 2.0f));
+
+
+                aOpMode.telemetryUpdate();
+            }
+            aOpMode.idle();
         }
-        stopMotors(aOpMode);
+        stopBaseMotors(aOpMode);
+
+        //restore old run modes
+        frontLeftMotor.setMode(oldRunMode);
+        frontRightMotor.setMode(oldRunMode);
+        backLeftMotor.setMode(oldRunMode);
+        backRightMotor.setMode(oldRunMode);
 
         Thread.sleep(100);
     }
@@ -268,10 +318,15 @@ public class vv_Robot {
             setMotorMode(aOpMode, vv_Constants.MotorEnum.frontRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
             setMotorMode(aOpMode, vv_Constants.MotorEnum.backLeftMotor, DcMotor.RunMode.RUN_TO_POSITION);
             setMotorMode(aOpMode, vv_Constants.MotorEnum.backRightMotor, DcMotor.RunMode.RUN_TO_POSITION);
+            while (frontLeftMotor.isBusy() || frontRightMotor.isBusy() ||
+                    backLeftMotor.isBusy() || backRightMotor.isBusy()) {
+                //wait until the motors have finished these tasks
+                aOpMode.idle();
+            }
         } catch (MotorNameNotKnownException mNNKE) {
             aOpMode.telemetryAddData("Motor Control Error", "Error", mNNKE.getMessage());
         }
-        //reset encoder for 1 wheel
+        //reset encoders
         frontLeftMotor.setTargetPosition(fl_Position);
         frontRightMotor.setTargetPosition(fr_Position);
         backLeftMotor.setTargetPosition(bl_Position);
@@ -283,22 +338,29 @@ public class vv_Robot {
         setPower(aOpMode, vv_Constants.MotorEnum.backLeftMotor, bl_Power);
         setPower(aOpMode, vv_Constants.MotorEnum.backRightMotor, br_Power);
 
+
         //wait until robot reaches target position
         //testing the wheels on the opposite sides of the robot because each might have a different position for sideways movements
 
-        while ((Math.abs(frontLeftMotor.getCurrentPosition()) < Math.abs(fl_Position) - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN) ||
-                (Math.abs(frontRightMotor.getCurrentPosition()) < Math.abs(fr_Position) - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN)
-                || (Math.abs(backRightMotor.getCurrentPosition()) < Math.abs(br_Position) - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN) ||
-                (Math.abs(backLeftMotor.getCurrentPosition()) < Math.abs(bl_Position) - vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN)) {
+        long startTime = System.currentTimeMillis();
+        while (baseMotorsAreBusy() && ((System.currentTimeMillis() - startTime)) < vv_Constants.MAX_MOTOR_LOOP_TIME) {
+            //wait while motors reach targets or we time out.
             //report motor positions for debugging
             aOpMode.telemetryAddData("Motor FL", "Values", "" + frontLeftMotor.getCurrentPosition());
             aOpMode.telemetryAddData("Motor FR", "Values", "" + frontRightMotor.getCurrentPosition());
             aOpMode.telemetryAddData("Motor BL", "Values", "" + backLeftMotor.getCurrentPosition());
             aOpMode.telemetryAddData("Motor BR", "Values", "" + backRightMotor.getCurrentPosition());
             aOpMode.telemetryUpdate();
+            aOpMode.idle();
 
         }
-        stopMotors(aOpMode);
+        stopBaseMotors(aOpMode);
+        //final value display
+        aOpMode.telemetryAddData("Motor FL", "Values", "" + frontLeftMotor.getCurrentPosition());
+        aOpMode.telemetryAddData("Motor FR", "Values", "" + frontRightMotor.getCurrentPosition());
+        aOpMode.telemetryAddData("Motor BL", "Values", "" + backLeftMotor.getCurrentPosition());
+        aOpMode.telemetryAddData("Motor BR", "Values", "" + backRightMotor.getCurrentPosition());
+        aOpMode.telemetryUpdate();
 
         Thread.sleep(100);
     }
@@ -352,7 +414,7 @@ public class vv_Robot {
         setPower(aOpMode, vv_Constants.MotorEnum.backRightMotor, br_Power);
     }
 
-    public void stopMotors(vv_OpMode aOpMode) {
+    public void stopBaseMotors(vv_OpMode aOpMode) {
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
@@ -423,9 +485,16 @@ public class vv_Robot {
         period.reset();
     }
 
+    public boolean baseMotorsAreBusy() {
+        return (frontLeftMotor.isBusy() && frontRightMotor.isBusy() &&
+                backLeftMotor.isBusy() && backRightMotor.isBusy());
+    }
+
     class MotorNameNotKnownException extends Exception {
         MotorNameNotKnownException(String message) {
             super(message);
         }
     }
+
+
 }

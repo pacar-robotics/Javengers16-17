@@ -36,35 +36,31 @@ public class protoOp extends vv_OpMode {
         //power of 0.5 is recommended to prevent single motor stalls during turns
         //otherwise code has to be written to solve for this (maybe increase margin ?)
 
-        vvLib.turnUsingEncoders(this, 0.5f, 180, vv_Constants.TurnDirectionEnum.Clockwise);
-        Thread.sleep(2000);
+        vvLib.moveWheels(this, 12, 0.5f, vv_Constants.DirectionEnum.Forward);
+        vvLib.turnAbsoluteGyroDegrees(this, 45);
 
-        vvLib.turnUsingEncoders(this, 0.5f, 45, vv_Constants.TurnDirectionEnum.Counterclockwise);
-        Thread.sleep(10000);
+        //distances are by experimentation.
+
+        vvLib.moveWheels(this, 46, 0.5f, vv_Constants.DirectionEnum.Forward);
+        vvLib.turnAbsoluteGyroDegrees(this, 90);
+
+        //move forward to the beacon panel, until the sensor touches the beacon.
+        vvLib.moveTillTouch(this);
+        //back off the panel, 1-2 inches to give space to the beacon press.
+
+        vvLib.moveWheels(this, 1.5f, vv_Constants.TOUCH_SENSE_POWER, vv_Constants.DirectionEnum.Backward);
+        //readjust the orientation again, since the interaction with the beacon face has likely
+        //changed the angle of the robot
 
         vvLib.turnAbsoluteGyroDegrees(this, 90);
 
-        /*
-        vvLib.turnGyroDegrees(this, -90);
-        Thread.sleep(2000);
-        vvLib.turnGyroDegrees(this, 45);
-        Thread.sleep(2000);
-        vvLib.turnGyroDegrees(this, -180);
-        Thread.sleep(2000);
-        */
-
-
-        while (opModeIsActive()){
-            //Send Luminosity data to Telemetry
-            vvLib.showFloorColorSensorLumnosityOnTelemetry(this, false);
-            //Send Gyro Heading data to Telemetry
-            vvLib.showBaseGyroSensorHeadingOnTelemetry(this, false);
-            //Send Gyro Integrated Z value to Telemetry
-            //this time flush the display and show all values.
-            vvLib.showBaseGyroSensorIntegratedZValueOnTelemetry(this, true);
-            idle();
-
-        }
-
+        vvLib.pushAButton(this, vv_Constants.ButtonEnum.Left);
+        //wait till the servo reaches the button
+        Thread.sleep(1000);
+        vvLib.pushAButton(this, vv_Constants.ButtonEnum.Right);
+        //wait till the servo reaches the button
+        Thread.sleep(1000);
     }
+
+
 }

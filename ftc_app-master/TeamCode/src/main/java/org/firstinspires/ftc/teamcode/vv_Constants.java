@@ -19,14 +19,16 @@ public class vv_Constants
 	final static int ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION = 1120;
 
 	final static float MOTOR_LOWER_POWER_THRESHOLD = 0.35f;
-	final static float MOTOR_SLOW_START_THRESHOLD = 0.30f;
+    final static float MOTOR_RAMP_POWER_LOWER_LIMIT = 0.20f;
+    final static float MOTOR_RAMP_POWER_UPPER_LIMIT = 0.5f;
+    final static float MOTOR_SLOW_START_THRESHOLD = 0.30f;
 
 	final static int GYRO_ERROR = 8;
 
 
     // Mecanum wheel properties
     final static float MECCANUM_WHEEL_DIAMETER = 4f;   //in inches
-    final static float MECCANUM_WHEEL_ENCODER_MARGIN = 10;
+    final static float MECCANUM_WHEEL_ENCODER_MARGIN = 20;
 
 	final static float ANALOG_STICK_THRESHOLD = .25f;
 
@@ -44,6 +46,17 @@ public class vv_Constants
     final static float MIN_ROBOT_TURN_MOTOR_VELOCITY = 0.15f;
     //gyro offset to address inertia and gyro lag
     final static int GYRO_OFFSET = 10;
+
+    final static float TURN_POWER = 0.7f;
+    final static float TOUCH_SENSE_POWER = 0.15f;
+
+    //turn this one for debugging messages.
+
+    final static boolean DEBUG = true;
+    //time to flash DEBUG message on telemtry
+    final static long DEBUG_MESSAGE_DISPLAY_TIME = 500;
+
+
     DirectionEnum Direction;
     TurnDirectionEnum TurnDirection;
 
