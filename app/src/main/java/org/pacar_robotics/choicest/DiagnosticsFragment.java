@@ -1,4 +1,4 @@
-package layout;
+package org.pacar_robotics.choicest;
 
 
 import android.os.Bundle;
