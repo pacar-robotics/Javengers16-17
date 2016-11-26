@@ -5,7 +5,7 @@
 
 	<!-- AUTONOMOUS -->
 	<string name="alliance_header">Alliances</string>
-	<string name="delay_header">Delay in Seconds</string>
+	<string name="delay_header">Starting Delay in Seconds</string>
 	<string name="starting_position_header">Starting Position</string>
 	<string name="choices_header">Choices</string>
 
