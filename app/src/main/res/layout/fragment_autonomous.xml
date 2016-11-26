@@ -3,9 +3,9 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/scroll_view"
-	android:paddingBottom="40dp"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
+	android:paddingBottom="40dp"
 	tools:context="org.pacar_robotics.choicest.AutonomousFragment">
 
 	<LinearLayout
@@ -15,7 +15,7 @@
 		android:padding="16dp">
 
 		<TextView
-			style="@style/HeaderTextView"
+			style="@style/RadioHeaderTextView"
 			android:text="@string/alliance_header"/>
 
 		<RadioGroup
@@ -36,7 +36,7 @@
 
 
 		<TextView
-			style="@style/HeaderTextView"
+			style="@style/RadioHeaderTextView"
 			android:text="@string/starting_position_header"/>
 
 		<RadioGroup
@@ -57,7 +57,7 @@
 
 
 		<TextView
-			style="@style/HeaderTextView"
+			style="@style/RadioHeaderTextView"
 			android:text="@string/choices_header"/>
 
 		<LinearLayout
@@ -92,18 +92,20 @@
 
 
 		<TextView
-			style="@style/HeaderTextView"
+			style="@style/RadioHeaderTextView"
 			android:text="@string/delay_header"/>
 
 		<LinearLayout
 			style="@style/EncapsulatingView"
 			android:orientation="horizontal">
+
 			<SeekBar
 				android:id="@+id/seek_delay"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:max="30"/>
+
 			<TextView
 				android:id="@+id/text_delay"
 				android:layout_width="wrap_content"

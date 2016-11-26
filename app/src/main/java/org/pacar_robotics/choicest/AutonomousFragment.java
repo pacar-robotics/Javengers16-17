@@ -35,7 +35,7 @@ import butterknife.Unbinder;
 public class AutonomousFragment extends Fragment {
 
 	private static final int MY_PERMISSION_REQUEST_STORAGE = 101;
-	private static final String LOG_TAG = "MainActivity";
+	private static final String LOG_TAG = "AutonomousFragment";
 	private static final String FILE = Environment.getExternalStorageDirectory().getPath() +
 			"/PACAR/AutoChoices.xml";
 
