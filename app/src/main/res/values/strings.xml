@@ -3,9 +3,7 @@
 	<string name="action_settings">Settings</string>
 	<string name="section_format">Hello World from section: %1$d</string>
 
-	<!-- TODO: Remove or change this placeholder text -->
-	<string name="hello_blank_fragment">Hello blank fragment</string>
-
+	<!-- AUTONOMOUS -->
 	<string name="alliance_header">Alliances</string>
 	<string name="delay_header">Delay in Seconds</string>
 	<string name="starting_position_header">Starting Position</string>
@@ -24,6 +22,28 @@
 	<string name="block_opposing_team">Block opposing team</string>
 
 	<string name="default_delay_value">0</string>
+
+	<!-- DIAGNOSTICS -->
+	<string name="motors_header">Motors</string>
+	<string name="wheels_motor">Wheels</string>
+	<string name="worm_drive_motor">Worm Drive</string>
+	<string name="launcher_motor">Launcher</string>
+	<string name="intake_motor">Intake</string>
+	<string name="lift_motor">Lift</string>
+
+	<string name="servos_header">Servos</string>
+	<string name="intake_gate_servo">Intake gate</string>
+	<string name="beacon_servo">Beacon</string>
+	<string name="capball_servo">Capball</string>
+
+	<string name="sensors_header">Sensors</string>
+	<string name="floor_color_sensor">Floor color</string>
+	<string name="beacon_touch_sensor">Beacon touch</string>
+	<string name="launcher_limit_touch_sensor">Launcher limit touch</string>
+	<string name="lift_limit_touch_sensor">Lift limit touch</string>
+	<string name="ultrasonic_sensor">Ultrasonic</string>
+	<string name="gyro_sensor">Gyro</string>
+
 
 	<string name="save_to_file">Save Choices</string>
 </resources>

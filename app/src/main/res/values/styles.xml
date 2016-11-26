@@ -24,8 +24,26 @@
 		<item name="android:layout_marginBottom">@dimen/header_margin</item>
 	</style>
 
+	<style name="CheckBoxHeaderTextView">
+		<item name="android:layout_width">0dp</item>
+		<item name="android:layout_weight">1</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_marginBottom">@dimen/header_margin</item>
+	</style>
+
 	<style name="RadioCheckBox">
 		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+	</style>
+
+	<style name="CheckBoxDiag">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:checked">true</item>
+	</style>
+
+	<style name="HeaderCheckBoxDiag">
+		<item name="android:layout_width">wrap_content</item>
 		<item name="android:layout_height">wrap_content</item>
 	</style>
 
