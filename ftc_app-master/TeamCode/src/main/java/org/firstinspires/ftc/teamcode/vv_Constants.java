@@ -41,10 +41,9 @@ public class vv_Constants {
     static final float CAP_BALL_SCORE_POWER_FACTOR = .5f; //TODO: CHANGE
 
     //Spring Motor Constants //TODO: CHANGE VALUES
-    static final int SPRING_POSITION1 = 0; //encoder value for spring in order to shoot 1 tile away
-    static final int SPRING_POSITION2 = 0; //encoder value for spring in order to shoot 2 tile away
-    static final int SPRING_POSITION3 = 0; //encoder value for spring in order to shoot 3 tile away
-    static final int SPRING_POSITION4 = 0; //encoder value for spring in order to shoot 4 tile away
+    static final int SPRING_POSITION1 = 200; //encoder value for spring in order to shoot 1 tile away
+    static final int SPRING_POSITION2 = 300; //encoder value for spring in order to shoot 2 tile away
+    static final int SPRING_POSITION3 = 400; //encoder value for spring in order to shoot 3 tile away
     static final float SPRING_MOTOR_POWER = .5f;
     static final int SPRING_MAX_LIMIT = 0;
     static final int SPRING_MIN_LIMIT = 0;
@@ -63,8 +62,8 @@ public class vv_Constants {
 
     // Names of motors
     enum MotorEnum {
-        frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, armMotor, ballCollectorMotor,
-        capBallLiftMotor, springMotor
+        frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, armMotor,
+        capBallLiftMotor, intakeMotor, wormDriveMotor
     }
 
     // Direction of turning

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -22,12 +23,14 @@ public class vv_Robot {
     private DcMotor capBallLift = null;
     private DcMotor ballCollector = null;
     private DcMotor armMotor = null;
-    private DcMotor springMotor = null;
+    private DcMotor intakeMotor = null;
+    private DcMotor wormDriveMotor  = null;
 
-    private Servo buttonServo = null;
+
+    //private Servo buttonServo = null;
 
     private TouchSensor buttonSensor;
-    private TouchSensor armSensor;
+    private TouchSensor ts_springSensor;
     private ColorSensor cs;
 
     HardwareMap hwMap = null;
@@ -52,16 +55,22 @@ public class vv_Robot {
         backRightMotor = hwMap.dcMotor.get("motor_back_right");
 
         armMotor = hwMap.dcMotor.get("motor_arm");
+        intakeMotor=hwMap.dcMotor.get("motor_intake");
+        wormDriveMotor=hwMap.dcMotor.get("motor_worm");
+
 
         cs = hwMap.colorSensor.get("color_line_sensor");
 
-        armSensor = hwMap.touchSensor.get("touch_arm_sensor");
 
-        buttonServo = hwMap.servo.get("button_servo");
+
+        ts_springSensor = hwMap.touchSensor.get("touch_spring_sensor");
+
+        //buttonServo = hwMap.servo.get("button_servo");
 
         buttonSensor = hwMap.touchSensor.get("touch_button_sensor");
 
-        buttonServo.setPosition(0.65);
+        //buttonServo.setPosition(0.65);
+
 
         frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -102,8 +111,8 @@ public class vv_Robot {
      * @param Position Encoder Position to move spring motor to
      * @throws InterruptedException
      */
-    public void moveSpringMotor(vv_OpMode anOp, int Position) throws InterruptedException {
-        moveMotorUsingEncoderLimits(anOp, springMotor, Position, vv_Constants.SPRING_MOTOR_POWER,
+    public void movearmMotor(vv_OpMode anOp, int Position) throws InterruptedException {
+        moveMotorUsingEncoderLimits(anOp, armMotor, Position, vv_Constants.SPRING_MOTOR_POWER,
                 vv_Constants.SPRING_MAX_LIMIT, vv_Constants.SPRING_MIN_LIMIT);
     }
 
@@ -132,8 +141,8 @@ public class vv_Robot {
             case armMotor:
                 armMotor.setPower(power);
                 break;
-            case ballCollectorMotor:
-                ballCollector.setPower(power);
+            case intakeMotor:
+                intakeMotor.setPower(power);
                 break;
         }
     }
@@ -153,7 +162,7 @@ public class vv_Robot {
      * @return armSensor.isPressed; whether to touch sensor at the limit is pressed
      */
     public boolean isArmAtLimit(vv_OpMode aOpMode) {
-        return armSensor.isPressed();
+        return ts_springSensor.isPressed();
         //TODO: Finish this method up
     }
 
@@ -372,14 +381,14 @@ public class vv_Robot {
         switch (buttonEnum) {
 
             case Left:
-                buttonServo.setPosition(vv_Constants.BUTTON_SERVO_MAX_POS);
+                //buttonServo.setPosition(vv_Constants.BUTTON_SERVO_MAX_POS);
                 break;
 
             case Right:
-                buttonServo.setPosition(vv_Constants.BUTTON_SERVO_MIN_POS);
+                //buttonServo.setPosition(vv_Constants.BUTTON_SERVO_MIN_POS);
                 break;
             case Neutral:
-                buttonServo.setPosition(vv_Constants.BUTTON_SERVO_NEUTRAL_POS);
+                //buttonServo.setPosition(vv_Constants.BUTTON_SERVO_NEUTRAL_POS);
         }
     }
 
@@ -387,6 +396,18 @@ public class vv_Robot {
 
     public boolean getButtonTouchValue(vv_OpMode aOpMode) throws InterruptedException {
         return buttonSensor.isPressed();
+    }
+
+    public boolean getSpringTouchValue(vv_OpMode aOpMode) throws InterruptedException {
+        return ts_springSensor.isPressed();
+    }
+
+    //TODO: P3 init for the spring
+    public void moveTillSpringTouch(vv_OpMode aOpMode) throws InterruptedException {
+        while (!getSpringTouchValue(aOpMode)) {
+            wormDriveMotor.setPower(.4f);
+        }
+        wormDriveMotor.setPower(.0f);
     }
 
     public ColorSensor getColorSensor(vv_OpMode aOpMode) throws InterruptedException {

@@ -27,13 +27,26 @@ public class TestOpMode extends vv_OpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
+        vvLib.test_Motors(this);
+
+
 
         while (opModeIsActive()){
             vvLib.setupShot(this);
-            if(gamepad1.a){
 
-                vvLib.shootBall(this);
+            /*if(gamepad1.x){
+
+                vvLib.moveSpringMotorToPosition(this, vv_Constants.SpringPositionsEnum.Position1);
             }
+            else if(gamepad1.y){
+
+                vvLib.moveSpringMotorToPosition(this, vv_Constants.SpringPositionsEnum.Position2);
+            }
+            else if(gamepad1.b){
+
+                vvLib.moveSpringMotorToPosition(this, vv_Constants.SpringPositionsEnum.Position3);
+            }*/
+
             idle();
         }
         //Initialize library which in turn initializes the robot plus its hardware map

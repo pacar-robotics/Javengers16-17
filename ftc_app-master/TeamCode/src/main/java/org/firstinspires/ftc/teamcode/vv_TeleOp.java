@@ -128,7 +128,9 @@ public class vv_TeleOp extends vv_OpMode {
      */
     private void processShootingAngle(vv_OpMode anOpMode) throws InterruptedException {
         //Changes Angle of the Shooting Mechanism to Position 1
-        if (gamepad2.a) {
+
+
+       /* if (gamepad2.a) {
             vvLib.moveSpringMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position1);
         }
         //Changes Angle of the Shooting Mechanism to Position 2
@@ -143,7 +145,7 @@ public class vv_TeleOp extends vv_OpMode {
         if (gamepad2.b) {
             vvLib.moveSpringMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position4);
         }
-
+*/
         //TODO Change the Angle slowly using Joystick Y Values
     }
 

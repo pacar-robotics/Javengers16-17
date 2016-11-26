@@ -156,26 +156,23 @@ public class vv_Lib {
      *                       SPRING_POSITION1, SPRING_POSITION2, SPRING_POSITION3, SPRING_POSITION4
      * @throws InterruptedException
      */
-    public void moveSpringMotorToPosition(vv_OpMode anOpMode, vv_Constants.SpringPositionsEnum springPosition) throws InterruptedException {
+    // TODO: uncomment this!
+    /*public void movewormdriveMotorToPosition(vv_OpMode anOpMode, vv_Constants.SpringPositionsEnum springPosition) throws InterruptedException {
         switch (springPosition) {
             case Position1:
-                robot.moveSpringMotor(anOpMode, vv_Constants.SPRING_POSITION1);
+                robot.movewormdriveMotor(anOpMode, vv_Constants.SPRING_POSITION1);
                 robot.SpringPosition = vv_Constants.SpringPositionsEnum.Position1;
                 break;
             case Position2:
-                robot.moveSpringMotor(anOpMode, vv_Constants.SPRING_POSITION2);
+                robot.movewormdriveMotor(anOpMode, vv_Constants.SPRING_POSITION2);
                 robot.SpringPosition = vv_Constants.SpringPositionsEnum.Position2;
                 break;
             case Position3:
-                robot.moveSpringMotor(anOpMode, vv_Constants.SPRING_POSITION3);
+                robot.movewormdriveMotor(anOpMode, vv_Constants.SPRING_POSITION3);
                 robot.SpringPosition = vv_Constants.SpringPositionsEnum.Position3;
                 break;
-            case Position4:
-                robot.moveSpringMotor(anOpMode, vv_Constants.SPRING_POSITION4);
-                robot.SpringPosition = vv_Constants.SpringPositionsEnum.Position4;
-                break;
         }
-    }
+    }*/
 
     /**
      * Using encoders, this method turns the Robot clockwise or counter clockwise based on angle
@@ -217,12 +214,12 @@ public class vv_Lib {
         // absolute vs. relative turns
     }
 
-    public boolean senseTouch(vv_OpMode aOpMode) throws InterruptedException {
+    public boolean senseButtonTouch(vv_OpMode aOpMode) throws InterruptedException {
         return robot.getButtonTouchValue(aOpMode);
     }
 
     public void moveTillTouch(vv_OpMode aOpMode) throws InterruptedException {
-        while (!senseTouch(aOpMode)) {
+        while (!senseButtonTouch(aOpMode)) {
             robot.runMotors(aOpMode, .3f, .3f, .3f, .3f);
         }
         robot.stopMotors(aOpMode);
@@ -424,10 +421,10 @@ public class vv_Lib {
         // else set the ball collector motor power to the outtake power
         if (robot.BallCollectorState == vv_Constants.BallCollectorStateEnum.Outtake ||
                 robot.BallCollectorState == vv_Constants.BallCollectorStateEnum.Intake) {
-            robot.setPower(anOp, vv_Constants.MotorEnum.ballCollectorMotor, 0.0f);
+            robot.setPower(anOp, vv_Constants.MotorEnum.intakeMotor, 0.0f);
             robot.BallCollectorState = vv_Constants.BallCollectorStateEnum.Off;
         } else {
-            robot.setPower(anOp, vv_Constants.MotorEnum.ballCollectorMotor, vv_Constants.BALL_COLLECTOR_POWER); //TODO: Check negate
+            robot.setPower(anOp, vv_Constants.MotorEnum.intakeMotor, vv_Constants.BALL_COLLECTOR_POWER); //TODO: Check negate
             robot.BallCollectorState = vv_Constants.BallCollectorStateEnum.Outtake;
         }
     }
@@ -443,10 +440,10 @@ public class vv_Lib {
         // else set the ball collector motor power to the intake power
         if (robot.BallCollectorState == vv_Constants.BallCollectorStateEnum.Intake ||
                 robot.BallCollectorState == vv_Constants.BallCollectorStateEnum.Outtake) {
-            robot.setPower(anOp, vv_Constants.MotorEnum.ballCollectorMotor, 0.0f);
+            robot.setPower(anOp, vv_Constants.MotorEnum.intakeMotor, 0.0f);
             robot.BallCollectorState = vv_Constants.BallCollectorStateEnum.Off;
         } else {
-            robot.setPower(anOp, vv_Constants.MotorEnum.ballCollectorMotor, -vv_Constants.BALL_COLLECTOR_POWER); //TODO: Check negate
+            robot.setPower(anOp, vv_Constants.MotorEnum.intakeMotor, -vv_Constants.BALL_COLLECTOR_POWER); //TODO: Check negate
             robot.BallCollectorState = vv_Constants.BallCollectorStateEnum.Intake;
         }
     }
@@ -464,5 +461,51 @@ public class vv_Lib {
         } else {
             return vv_Constants.CAP_BALL_SCORE_POWER_FACTOR;
         }
+    }
+
+    public void test_Motors(vv_OpMode aOpMode)  throws InterruptedException
+    {
+        //test front left motor
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, 0.3f);
+        Thread.sleep(3000);
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, 0.0f);
+
+        Thread.sleep(2000);
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.frontRightMotor, 0.3f);
+        Thread.sleep(3000);
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.frontRightMotor, 0.0f);
+
+        Thread.sleep(2000);
+
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.backLeftMotor, 0.3f);
+        Thread.sleep(3000);
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.backLeftMotor, 0.0f);
+
+        Thread.sleep(2000);
+
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.backRightMotor, 0.3f);
+        Thread.sleep(3000);
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.backRightMotor, 0.0f);
+
+        Thread.sleep(2000);
+
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.3f);
+        Thread.sleep(500);
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.0f);
+
+        Thread.sleep(2000);
+
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.intakeMotor, 0.3f);
+        Thread.sleep(3000);
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.intakeMotor, 0.0f);
+
+        Thread.sleep(2000);
+
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.wormDriveMotor, 0.3f);
+        Thread.sleep(200);
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.wormDriveMotor, 0.0f);
+
+
+
     }
 }
