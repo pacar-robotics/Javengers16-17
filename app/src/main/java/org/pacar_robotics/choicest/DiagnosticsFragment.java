@@ -1,20 +1,16 @@
 package org.pacar_robotics.choicest;
 
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.Toast;
 
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -45,11 +41,40 @@ public class DiagnosticsFragment extends Fragment {
 	@BindViews({R.id.floor_color_sensor, R.id.beacon_touch_sensor, R.id.launcher_limit_touch_sensor, R.id.lift_limit_touch_sensor, R.id.ultrasonic_sensor, R.id.gyro_sensor})
 	List<CheckBox> sensorsList;
 
+	XmlWriter xmlWriter;
+
 	private Unbinder unbinder;
 
 	public DiagnosticsFragment() {
 		// Required empty public constructor
 	}
+
+	@OnClick(R.id.btn_save)
+	void saveButtonClicked() {
+		xmlWriter = new XmlWriter(FILE, createHashMap(), getActivity());
+	}
+
+	private HashMap<String, String> createHashMap() {
+		HashMap<String, String> choicesMap = new HashMap<>();
+
+		choicesMap.putAll(addListsToMap(motorsList));
+		choicesMap.putAll(addListsToMap(servosList));
+		choicesMap.putAll(addListsToMap(sensorsList));
+
+		return choicesMap;
+	}
+
+	private HashMap<String, String> addListsToMap(List<CheckBox> list) {
+		HashMap<String, String> hashMap = new HashMap<>();
+
+		for (CheckBox checkBox : list) {
+			hashMap.put(checkBox.getText().toString().replace(" ", "").toLowerCase(),
+					Boolean.toString(checkBox.isChecked()));
+		}
+
+		return hashMap;
+	}
+
 
 	@OnCheckedChanged(R.id.motors_check_all)
 	void changeCheckAllMotors(CheckBox motorCheckAllBox) {
@@ -115,35 +140,7 @@ public class DiagnosticsFragment extends Fragment {
 	                                       @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-		switch (requestCode) {
-			case MY_PERMISSION_REQUEST_STORAGE:
-				if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					// Permission has been granted
-					// Go back into saveButtonClicked because it will go into else and save the file
-					// TODO: Update this: saveButtonClicked();
-				} else {
-					if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-							Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-						// Permission got denied but user did not check "do not show again"
-						// They may have clicked the wrong button, so tell them they clicked the wrong one
-						Toast.makeText(getActivity(), "We need the storage permission to make an xml file\n" +
-								"Please grant this permission", Toast.LENGTH_LONG).show();
-					} else {
-						// If they clicked "Do not show again", the user is not smart enough to be on this team
-						Toast.makeText(getActivity(), "You don't know how to use this app.\n" +
-										"Ask Rahul the Tech Support God to help you",
-								Toast.LENGTH_LONG).show();
-					}
-				}
-				break;
-
-			default:
-				// There is no way the program can get to this statement
-				// If it does, something is very, very wrong
-				Log.e(LOG_TAG, "Reached default statement of onRequestPermissionResult");
-				Toast.makeText(getActivity(), "Something bad happened", Toast.LENGTH_SHORT).show();
-				break;
-		}
+		xmlWriter.onRequestPermissionResult(requestCode, getActivity(), grantResults);
 	}
 
 	@Override
