@@ -1,12 +1,9 @@
 package org.pacar_robotics.choicest;
 
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,12 +14,12 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 
 import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
@@ -43,11 +40,11 @@ public class AutonomousFragment extends Fragment {
 	@BindView(R.id.text_delay) TextView delayText;
 	@BindView(R.id.radio_group_alliance) RadioGroup allianceGroup;
 	@BindView(R.id.radio_group_starting_position) RadioGroup startingPositionGroup;
-	@BindView(R.id.beacon_1) CheckBox beacon1Check;
-	@BindView(R.id.beacon_2) CheckBox beacon2Check;
 	@BindView(R.id.center_vortex) CheckBox centerVortexCheck;
 	@BindView(R.id.corner_vortex) CheckBox cornerVortexCheck;
-	@BindView(R.id.block) CheckBox blockCheck;
+
+	@BindViews({R.id.beacon_1, R.id.beacon_2, R.id.center_vortex, R.id.corner_vortex, R.id.block})
+	List<CheckBox> choicesList;
 
 	private Unbinder unbinder;
 
@@ -114,12 +111,10 @@ public class AutonomousFragment extends Fragment {
 		RadioButton startingPositionButton = (RadioButton) getView().findViewById(startingPositionGroup.getCheckedRadioButtonId());
 		choicesMap.put(getString(R.string.starting_position_header).replace(" ", ""), startingPositionButton.getText().toString());
 
-		// Checkbox Choices
-		choicesMap.put(getString(R.string.beacon_1).replace(" ", ""), Boolean.toString(beacon1Check.isChecked()));
-		choicesMap.put(getString(R.string.beacon_2).replace(" ", ""), Boolean.toString(beacon2Check.isChecked()));
-		choicesMap.put(getString(R.string.park_on_center_vortex_partially).replace(" ", ""), Boolean.toString(centerVortexCheck.isChecked()));
-		choicesMap.put(getString(R.string.park_on_corner_vortex).replace(" ", ""), Boolean.toString(cornerVortexCheck.isChecked()));
-		choicesMap.put(getString(R.string.block_opposing_team).replace(" ", ""), Boolean.toString(blockCheck.isChecked()));
+		for (CheckBox checkBox : choicesList) {
+			choicesMap.put(checkBox.getText().toString().replace(" ", "").toLowerCase(),
+					Boolean.toString(checkBox.isChecked()));
+		}
 
 		// Delay
 		choicesMap.put(getString(R.string.delay_header).replace(" ", ""), Integer.toString(delaySeek.getProgress()));
