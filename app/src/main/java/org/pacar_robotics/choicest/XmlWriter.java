@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -31,7 +32,7 @@ import javax.xml.transform.stream.StreamResult;
 class XmlWriter {
 
 	private String filePath;
-	private HashMap choicesMap;
+	private HashMap<String, String> choicesMap;
 	private Activity activity;
 
 	private static final int MY_PERMISSION_REQUEST_STORAGE = 101;
@@ -45,7 +46,7 @@ class XmlWriter {
 		getWritePermission();
 	}
 
-	private void writeXML(HashMap<String, String> choicesMap) {
+	private void writeXML() {
 		File file = new File(filePath);
 
 		if (file.delete()) {
@@ -88,7 +89,7 @@ class XmlWriter {
 		}
 	}
 
-	public void getWritePermission() {
+	private void getWritePermission() {
 		if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) &&
 				(ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
 						!= PackageManager.PERMISSION_GRANTED)) {
@@ -98,8 +99,41 @@ class XmlWriter {
 		} else {
 			// Permission is granted, move on
 			Log.v(LOG_TAG, "External Storage Permission granted");
-			writeXML(choicesMap);
+			writeXML();
 			Log.v(LOG_TAG, "Finished writeXML function");
+		}
+	}
+
+	public void onRequestPermissionResult(int requestCode, Activity activity,
+	                                      @NonNull int[] grantResults) {
+		switch (requestCode) {
+			case MY_PERMISSION_REQUEST_STORAGE:
+				if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+					// Permission has been granted
+					// Go back into saveButtonClicked because it will go into else and save the file
+					writeXML();
+				} else {
+					if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
+							Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+						// Permission got denied but user did not check "do not show again"
+						// They may have clicked the wrong button, so tell them they clicked the wrong one
+						Toast.makeText(activity, "We need the storage permission to make an xml file\n" +
+								"Please grant this permission", Toast.LENGTH_LONG).show();
+					} else {
+						// If they clicked "Do not show again", the user is not smart enough to be on this team
+						Toast.makeText(activity, "You don't know how to use this app.\n" +
+										"Ask Rahul the Tech Support God to help you",
+								Toast.LENGTH_LONG).show();
+					}
+				}
+				break;
+
+			default:
+				// There is no way the program can get to this statement
+				// If it does, something is very, very wrong
+				Log.e(LOG_TAG, "Reached default statement of onRequestPermissionResult");
+				Toast.makeText(activity, "Something bad happened", Toast.LENGTH_SHORT).show();
+				break;
 		}
 	}
 }

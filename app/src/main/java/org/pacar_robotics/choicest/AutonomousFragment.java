@@ -51,6 +51,8 @@ public class AutonomousFragment extends Fragment {
 
 	private Unbinder unbinder;
 
+	XmlWriter xmlWriter;
+
 	public AutonomousFragment() {
 		// Required empty public constructor
 	}
@@ -83,7 +85,7 @@ public class AutonomousFragment extends Fragment {
 
 	@OnClick(R.id.btn_save)
 	void saveButtonClicked() {
-		new XmlWriter(FILE, createHashMap(), getActivity());
+		xmlWriter = new XmlWriter(FILE, createHashMap(), getActivity());
 	}
 
 	@OnCheckedChanged(R.id.center_vortex)
@@ -101,7 +103,7 @@ public class AutonomousFragment extends Fragment {
 	}
 
 	private HashMap<String, String> createHashMap() {
-		LinkedHashMap<String, String> choicesMap = new LinkedHashMap<>();
+		HashMap<String, String> choicesMap = new HashMap<>();
 
 		// We have to remove spaces between the tags or else it will crash
 		// Alliance
@@ -130,35 +132,7 @@ public class AutonomousFragment extends Fragment {
 	                                       @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-		switch (requestCode) {
-			case MY_PERMISSION_REQUEST_STORAGE:
-				if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					// Permission has been granted
-					// Go back into saveButtonClicked because it will go into else and save the file
-					saveButtonClicked();
-				} else {
-					if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-							Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-						// Permission got denied but user did not check "do not show again"
-						// They may have clicked the wrong button, so tell them they clicked the wrong one
-						Toast.makeText(getActivity(), "We need the storage permission to make an xml file\n" +
-								"Please grant this permission", Toast.LENGTH_LONG).show();
-					} else {
-						// If they clicked "Do not show again", the user is not smart enough to be on this team
-						Toast.makeText(getActivity(), "You don't know how to use this app.\n" +
-										"Ask Rahul the Tech Support God to help you",
-								Toast.LENGTH_LONG).show();
-					}
-				}
-				break;
-
-			default:
-				// There is no way the program can get to this statement
-				// If it does, something is very, very wrong
-				Log.e(LOG_TAG, "Reached default statement of onRequestPermissionResult");
-				Toast.makeText(getActivity(), "Something bad happened", Toast.LENGTH_SHORT).show();
-				break;
-		}
+		xmlWriter.onRequestPermissionResult(requestCode, getActivity(), grantResults);
 	}
 
 	@Override
