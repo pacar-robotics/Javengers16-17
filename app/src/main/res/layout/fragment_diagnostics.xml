@@ -106,8 +106,8 @@
 				android:text="@string/sensors_header"/>
 
 			<CheckBox
-				style="@style/HeaderCheckBoxDiag"
-				android:id="@+id/sensors_check_all"/>
+				android:id="@+id/sensors_check_all"
+				style="@style/HeaderCheckBoxDiag"/>
 		</LinearLayout>
 
 		<LinearLayout
