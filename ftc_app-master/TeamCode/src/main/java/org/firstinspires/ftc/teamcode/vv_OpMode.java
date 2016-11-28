@@ -13,6 +13,7 @@ public abstract class vv_OpMode extends LinearOpMode
 
     public void DBG(String message) throws InterruptedException {
         if (vv_Constants.DEBUG) {
+            telemetry.setAutoClear(vv_Constants.DEBUG_AUTO_CLEAR);
             telemetryAddData("DBG", "Message", ":" + message);
             telemetryUpdate();
             Thread.sleep(vv_Constants.DEBUG_MESSAGE_DISPLAY_TIME);

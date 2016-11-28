@@ -3,6 +3,25 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import static org.firstinspires.ftc.teamcode.vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION;
+import static org.firstinspires.ftc.teamcode.vv_Constants.ButtonEnum;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
+import static org.firstinspires.ftc.teamcode.vv_Constants.GYRO_OFFSET;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_MOTOR_LOOP_TIME;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_ROBOT_TURN_MOTOR_VELOCITY;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_DIAMETER;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MIN_ROBOT_TURN_MOTOR_VELOCITY;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MotorEnum;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MotorEnum.armMotor;
+import static org.firstinspires.ftc.teamcode.vv_Constants.ROBOT_TRACK_DISTANCE;
+import static org.firstinspires.ftc.teamcode.vv_Constants.TOUCH_SENSE_POWER;
+import static org.firstinspires.ftc.teamcode.vv_Constants.TURN_POWER;
+import static org.firstinspires.ftc.teamcode.vv_Constants.TurnDirectionEnum;
+
 /**
  * Created by thomas on 9/25/2016.
  */
@@ -24,17 +43,18 @@ public class vv_Lib {
      * @param Direction - forward, backward, sideways left, or sideways right
      * @throws InterruptedException
      */
-    public void moveWheels(vv_OpMode aOpMode, float distance, float Power, vv_Constants.DirectionEnum Direction) throws InterruptedException {
-        if (Direction == vv_Constants.DirectionEnum.Forward) {
+    public void moveWheels(vv_OpMode aOpMode, float distance, float Power, DirectionEnum Direction)
+            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+        if (Direction == Forward) {
             // moving the robot forward
             moveForwardToPosition(aOpMode, distance, Power);
-        } else if (Direction == vv_Constants.DirectionEnum.Backward) {
+        } else if (Direction == Backward) {
             // moving the robot forward
             moveBackwardToPosition(aOpMode, distance, Power);
-        } else if (Direction == vv_Constants.DirectionEnum.SidewaysLeft) {
+        } else if (Direction == SidewaysLeft) {
             // moving the robot forward
             moveSidewaysLeftToPosition(aOpMode, distance, Power);
-        } else if (Direction == vv_Constants.DirectionEnum.SidewaysRight) {
+        } else if (Direction == SidewaysRight) {
             // moving the robot forward
             moveSidewaysRightToPosition(aOpMode, distance, Power);
         }
@@ -45,12 +65,12 @@ public class vv_Lib {
     {
 
 
-        robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.setMotorMode(aOpMode, armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         while(!robot.isArmAtLimit(aOpMode)){
-            robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 1.0f);
+            robot.setPower(aOpMode, armMotor, 1.0f);
         }
-        robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.0f);
+        robot.setPower(aOpMode, armMotor, 0.0f);
 
         Thread.sleep(100);
 
@@ -58,13 +78,13 @@ public class vv_Lib {
 
     public void shootBall(vv_OpMode aOpMode) throws InterruptedException, vv_Robot.MotorNameNotKnownException
     {
-        robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.setMotorMode(aOpMode, MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 1.0f);
+        robot.setPower(aOpMode, MotorEnum.armMotor, 1.0f);
 
         Thread.sleep(500);
 
-        robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.0f);
+        robot.setPower(aOpMode, MotorEnum.armMotor, 0.0f);
     }
     
     /**
@@ -77,14 +97,15 @@ public class vv_Lib {
      * @param TurnDirection Turns either Clockwise or Counterclockwise
      * @throws InterruptedException
      */
-    public void turnUsingEncoders(vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection) throws InterruptedException {
+    public void turnUsingEncoders(vv_OpMode aOpMode, float power, float angle, TurnDirectionEnum TurnDirection)
+            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
 
         //calculate the turn distance to be used in terms of encoder clicks.
         //for Andymark encoders.
 
-        int turnDistance = (int) (2 * ((vv_Constants.ROBOT_TRACK_DISTANCE) * angle
-                * vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION) /
-                (vv_Constants.MECCANUM_WHEEL_DIAMETER * 360));
+        int turnDistance = (int) (2 * ((ROBOT_TRACK_DISTANCE) * angle
+                * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION) /
+                (MECCANUM_WHEEL_DIAMETER * 360));
 
 
         switch (TurnDirection) {
@@ -100,11 +121,11 @@ public class vv_Lib {
         Thread.sleep(50);
     }
 
-    public void pushAButton(vv_OpMode aOpMode, vv_Constants.ButtonEnum buttonEnum) {
+    public void pushAButton(vv_OpMode aOpMode, ButtonEnum buttonEnum) {
         robot.pushButton(aOpMode, buttonEnum);
     }
 
-    public void turnUsingGyro(vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection) {
+    public void turnUsingGyro(vv_OpMode aOpMode, float power, float angle, TurnDirectionEnum TurnDirection) {
         // do we need direction?
         // absolute vs. relative turns
     }
@@ -114,11 +135,11 @@ public class vv_Lib {
         return robot.getButtonTouchValue(aOpMode);
     }
 
-    public void moveTillTouch(vv_OpMode aOpMode) throws InterruptedException {
+    public void moveTillTouch(vv_OpMode aOpMode) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
         aOpMode.reset_timer();
-        while (!senseTouch(aOpMode) && aOpMode.time_elapsed() < vv_Constants.MAX_MOTOR_LOOP_TIME) {
-            robot.runMotors(aOpMode, vv_Constants.TOUCH_SENSE_POWER, vv_Constants.TOUCH_SENSE_POWER,
-                    vv_Constants.TOUCH_SENSE_POWER, vv_Constants.TOUCH_SENSE_POWER);
+        while (!senseTouch(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
+            robot.runMotors(aOpMode, TOUCH_SENSE_POWER, TOUCH_SENSE_POWER,
+                    TOUCH_SENSE_POWER, TOUCH_SENSE_POWER);
             aOpMode.idle();
         }
         robot.stopBaseMotors(aOpMode);
@@ -134,7 +155,7 @@ public class vv_Lib {
      * @param cs
      * @throws InterruptedException
      */
-    public void moveTillColor(vv_OpMode aOpMode, ColorSensor cs) throws InterruptedException {
+    public void moveTillColor(vv_OpMode aOpMode, ColorSensor cs) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
         while (!((cs.red() < 235) || (cs.green() < 235) || (cs.blue() < 235))) {
             aOpMode.telemetryAddFormattedData("test: ", "cs red value: ", cs.red());
             aOpMode.telemetryAddFormattedData("test1: ", "cs green value: ", cs.green());
@@ -179,39 +200,40 @@ public class vv_Lib {
     }
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
-    private void moveForwardToPosition(vv_OpMode aOpMode, float distance, float Power) throws InterruptedException {
+    private void moveForwardToPosition(vv_OpMode aOpMode, float distance, float Power) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
         //we need to store the encoder target position
         int targetPosition;
         //calculate target position from the input distance in cm
-        targetPosition = (int) ((distance / (Math.PI * vv_Constants.MECCANUM_WHEEL_DIAMETER)) * vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
+        targetPosition = (int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position
         robot.runRobotToPositionFB(aOpMode, targetPosition, Power);
     }
 
     //Moves robot backward with a distance supplied in centimeters and power between 0 and 1
-    private void moveBackwardToPosition(vv_OpMode aOpMode, float distance, float Power) throws InterruptedException {
+    private void moveBackwardToPosition(vv_OpMode aOpMode, float distance, float Power) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
         //we need to store the encoder target position
         int targetPosition;
         //calculate target position from the input distance in cm
-        targetPosition = -(int) ((distance / (Math.PI * vv_Constants.MECCANUM_WHEEL_DIAMETER)) * vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
+        targetPosition = -(int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position with negative power
         robot.runRobotToPositionFB(aOpMode, -targetPosition, Power);
     }
 
-    private void moveSidewaysLeftToPosition(vv_OpMode aOpMode, float distance, float Power) throws InterruptedException {
+    private void moveSidewaysLeftToPosition(vv_OpMode aOpMode, float distance, float Power) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
         //we need to store the encoder target position
         int targetPosition;
         //calculate target position from the input distance in cm
-        targetPosition = (int) ((distance / (Math.PI * vv_Constants.MECCANUM_WHEEL_DIAMETER)) * vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
+        targetPosition = (int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position with negative power
         robot.runRobotToPositionSideways(aOpMode, targetPosition, Power);
     }
 
-    private void moveSidewaysRightToPosition(vv_OpMode aOpMode, float distance, float Power) throws InterruptedException {
+    private void moveSidewaysRightToPosition(vv_OpMode aOpMode, float distance, float Power)
+            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
         //we need to store the encoder target position
         int targetPosition;
         //calculate target position from the input distance in cm
-        targetPosition = -(int) ((distance / (Math.PI * vv_Constants.MECCANUM_WHEEL_DIAMETER)) * vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
+        targetPosition = -(int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position with negative power
         robot.runRobotToPositionSideways(aOpMode, -targetPosition, Power);
     }
@@ -220,7 +242,7 @@ public class vv_Lib {
     //DO NOT USE THIS METHOD
     //IT IS NOT COMPLETED
     public void moveAtAngle(vv_OpMode aOpMode, double distance, float Power, float Angle)
-            throws InterruptedException {
+            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
         //we need to store the encoder target position
         int VldtargetPosition;
         int VrdtargetPosition;
@@ -286,10 +308,10 @@ public class vv_Lib {
         }
 
 
-        VldtargetPosition = (int) ((Vld_distance / (Math.PI * vv_Constants.MECCANUM_WHEEL_DIAMETER)) *
-                vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
-        VrdtargetPosition = (int) ((Vrd_distance / (Math.PI * vv_Constants.MECCANUM_WHEEL_DIAMETER)) *
-                vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
+        VldtargetPosition = (int) ((Vld_distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) *
+                ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
+        VrdtargetPosition = (int) ((Vrd_distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) *
+                ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
 
 
         //runs the robot to position with negative power
@@ -299,7 +321,8 @@ public class vv_Lib {
     }
 
 
-    public void runAllMotors(vv_OpMode aOpMode, float FLPower, float FRPower, float BLPower, float BRPower) throws InterruptedException {
+    public void runAllMotors(vv_OpMode aOpMode, float FLPower, float FRPower, float BLPower, float BRPower)
+            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
         robot.runMotors(aOpMode, FLPower, FRPower, BLPower, BRPower);
     }
 
@@ -309,24 +332,24 @@ public class vv_Lib {
     }
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
-    public void moveForward(vv_OpMode aOpMode, float Power) throws InterruptedException {
+    public void moveForward(vv_OpMode aOpMode, float Power) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
         robot.runMotorsFB(aOpMode, Power);
     }
 
     //Moves robot backward with a distance supplied in centimeters and power between 0 and 1
-    public void moveBackward(vv_OpMode aOpMode, float Power) throws InterruptedException {
+    public void moveBackward(vv_OpMode aOpMode, float Power) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
         robot.runMotorsFB(aOpMode, -Power);
     }
 
-    public void moveSidewaysLeft(vv_OpMode aOpMode, float Power) throws InterruptedException {
+    public void moveSidewaysLeft(vv_OpMode aOpMode, float Power) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
         robot.runMotorsSideways(aOpMode, Power);
     }
 
-    public void moveSidewaysRight(vv_OpMode aOpMode, float Power) throws InterruptedException {
+    public void moveSidewaysRight(vv_OpMode aOpMode, float Power) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
         robot.runMotorsSideways(aOpMode, -Power);
     }
 
-    public void turnGyroDegrees(vv_OpMode aOpMode, int turnDegrees) throws InterruptedException {
+    public void turnGyroDegrees(vv_OpMode aOpMode, int turnDegrees) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
 
         //this code has some issues due to gyro read lag of approximately 250ms as reported.
         //This will cause the turns to be approximate and will generally overshoot.
@@ -349,12 +372,12 @@ public class vv_Lib {
         //adjust turnDegrees for gyro offset
 
         float turnSignum = Math.signum(turnDegrees);
-        turnDegrees = Math.abs(turnDegrees) - vv_Constants.GYRO_OFFSET;
+        turnDegrees = Math.abs(turnDegrees) - GYRO_OFFSET;
         turnDegrees = turnDegrees * (int) turnSignum;
 
 
         while (Math.abs(zValue)
-                < Math.abs(turnDegrees) && (System.currentTimeMillis() - startTime) < vv_Constants.MAX_MOTOR_LOOP_TIME) {
+                < Math.abs(turnDegrees) && (System.currentTimeMillis() - startTime) < MAX_MOTOR_LOOP_TIME) {
 
             //calculate proportional power to be used in turn. This starts off being 1 and drops off as the turn completes.
             float turnPower = (Math.abs(turnDegrees) -
@@ -362,12 +385,12 @@ public class vv_Lib {
 
             //check for range of motor power values.
 
-            if (turnPower < vv_Constants.MIN_ROBOT_TURN_MOTOR_VELOCITY) {
-                turnPower = vv_Constants.MIN_ROBOT_TURN_MOTOR_VELOCITY;
+            if (turnPower < MIN_ROBOT_TURN_MOTOR_VELOCITY) {
+                turnPower = MIN_ROBOT_TURN_MOTOR_VELOCITY;
             }
 
-            if (turnPower > vv_Constants.MAX_ROBOT_TURN_MOTOR_VELOCITY) {
-                turnPower = vv_Constants.MAX_ROBOT_TURN_MOTOR_VELOCITY;
+            if (turnPower > MAX_ROBOT_TURN_MOTOR_VELOCITY) {
+                turnPower = MAX_ROBOT_TURN_MOTOR_VELOCITY;
             }
 
             //adjust for direction of turn by examining the sign of the turn degrees
@@ -407,7 +430,7 @@ public class vv_Lib {
 
     }
 
-    public void turnAbsoluteGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
+    public void turnAbsoluteGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
         //clockwise is represented by clockwise numbers.
         //counterclockwise by negative angle numbers in degrees.
         //the fieldReferenceDegrees parameters measures degrees off the initial reference frame when the robot is started and the gyro is
@@ -433,10 +456,21 @@ public class vv_Lib {
 
         aOpMode.telemetryUpdate();
 
-        turnUsingEncoders(aOpMode, vv_Constants.TURN_POWER, Math.abs(turnDegrees),
-                turnDegrees > 0 ? vv_Constants.TurnDirectionEnum.Clockwise :
-                vv_Constants.TurnDirectionEnum.Counterclockwise);
+        turnUsingEncoders(aOpMode, TURN_POWER, Math.abs(turnDegrees),
+                turnDegrees > 0 ? TurnDirectionEnum.Clockwise :
+                        TurnDirectionEnum.Counterclockwise);
 
 
+    }
+
+    public void testMotor(vv_OpMode aOpMode, MotorEnum motorName, float power, int duration) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+        aOpMode.DBG("in vvLib test Motor");
+        robot.testMotor(aOpMode, motorName, power, duration);
+    }
+
+    public void testEncodedMotor(vv_OpMode aOpMode, MotorEnum motorName, float power, int duration, int targetPosition)
+            throws InterruptedException, vv_Robot.MotorNameNotKnownException, vv_Robot.MotorStalledException {
+        aOpMode.DBG("in testEncodedMotor");
+        robot.testEncodedMotor(aOpMode, motorName, power, duration, targetPosition);
     }
 }

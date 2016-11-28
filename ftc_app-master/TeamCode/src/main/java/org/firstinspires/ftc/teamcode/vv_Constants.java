@@ -56,6 +56,17 @@ public class vv_Constants
     //time to flash DEBUG message on telemtry
     final static long DEBUG_MESSAGE_DISPLAY_TIME = 500;
 
+    //controls whether debug messages remain on screen while new ones are written
+    final static boolean DEBUG_AUTO_CLEAR = false;
+
+    //time to wait in stall check code
+    final static int ENCODED_MOTOR_STALL_TIME_DELTA = 100;
+
+    //encoder clicks to check for Andymark motors for stall
+    final static int ENCODED_MOTOR_STALL_CLICKS_ANDYMARK = 90;
+    //encoder clicks to check for Andymark motors for stall
+    final static int ENCODED_MOTOR_STALL_CLICKS_TETRIX = 100;
+
 
     DirectionEnum Direction;
     TurnDirectionEnum TurnDirection;
@@ -69,7 +80,7 @@ public class vv_Constants
     // Names of motors
     enum MotorEnum
     {
-        frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, armMotor
+        frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, intakeMotor, armMotor, wormDriveMotor
     }
 
     // Direction of turning

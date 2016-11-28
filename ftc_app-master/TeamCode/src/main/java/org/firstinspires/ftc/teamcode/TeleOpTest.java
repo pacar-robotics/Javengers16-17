@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import static java.lang.Math.pow;
 
 
 @TeleOp(name="TeleOpTest", group="Test")
@@ -25,7 +22,8 @@ public class TeleOpTest extends vv_OpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-	    vvLib = new vv_Lib(this);
+        /*
+        vvLib = new vv_Lib(this);
 
         vvLib.moveTillTouch(this);
         while(opModeIsActive()) {
@@ -50,6 +48,7 @@ public class TeleOpTest extends vv_OpMode {
 
             idle();
         }
+        */
     }
 
     private void processDriveRobot() throws InterruptedException
@@ -65,6 +64,8 @@ public class TeleOpTest extends vv_OpMode {
 //            }else{
 //                robot.stopMotors();
 //            }
+
+        /*
         if (Math.abs(gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD)
         {
             vvLib.runAllMotors(this, gamepad1.right_stick_x, -gamepad1.right_stick_x, gamepad1.right_stick_x, -gamepad1.right_stick_x);
@@ -79,6 +80,7 @@ public class TeleOpTest extends vv_OpMode {
         }else{
             vvLib.stopAllMotors(this);
         }
+        */
     }
 
     private void processBeacon() {
