@@ -52,9 +52,9 @@ public class vv_Constants
 
     //turn this one for debugging messages.
 
-    final static boolean DEBUG = true;
+    final static boolean DEBUG = false;
     //time to flash DEBUG message on telemtry
-    final static long DEBUG_MESSAGE_DISPLAY_TIME = 500;
+    final static long DEBUG_MESSAGE_DISPLAY_TIME = 10;
 
     //controls whether debug messages remain on screen while new ones are written
     final static boolean DEBUG_AUTO_CLEAR = false;
@@ -67,20 +67,25 @@ public class vv_Constants
     //encoder clicks to check for Andymark motors for stall
     final static int ENCODED_MOTOR_STALL_CLICKS_TETRIX = 100;
 
+    //power used to rotate intake
+    final static float INTAKE_POWER = 06f;
+    final static int FRONT_LEFT_MOTOR = 0;
+    final static int FRONT_RIGHT_MOTOR = 1;
+    final static int BACK_LEFT_MOTOR = 2;
 
+
+    //define the motors as constants instead of enumerations for speed.
+    final static int BACK_RIGHT_MOTOR = 3;
+    final static int INTAKE_MOTOR = 4;
+    final static int ARM_MOTOR = 5;
+    final static int WORM_DRIVE_MOTOR = 6;
+    final static int CAP_BALL_MOTOR = 7;
     DirectionEnum Direction;
     TurnDirectionEnum TurnDirection;
-
     // Direction of movement for autonomous
     enum DirectionEnum
     {
         Forward, Backward, SidewaysLeft, SidewaysRight
-    }
-
-    // Names of motors
-    enum MotorEnum
-    {
-        frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, intakeMotor, armMotor, wormDriveMotor
     }
 
     // Direction of turning
@@ -89,16 +94,35 @@ public class vv_Constants
         Clockwise, Counterclockwise
     }
 
-    // Left or right beacon button depending on color
-    enum ButtonEnum
-    {
-        Left, Right
-    }
-
     enum TouchSensorEnum
     {
         buttonSensor
     }
+
+    enum BeaconServoStateEnum {
+        Left, Right, Neutral
+    }
+
+
+    //Cap Ball Lift States
+    enum CapBallStateEnum {
+        Rest, Scoring_Position
+    }
+
+    //Ball Collector States
+    enum IntakeStateEnum {
+        Off, In, Out
+    }
+
+    //Spring Motor States used to score in different positions
+    //Position 1 = 1 Tile Away
+    //Position 2 = 2 Tiles Away
+    //Position 3 = 3 Tiles Away
+    //Position 4 = 4 Tiles Away
+    enum SpringPositionsEnum {
+        Rest, Position1, Position2, Position3, Position4
+    }
+
 
 
 }

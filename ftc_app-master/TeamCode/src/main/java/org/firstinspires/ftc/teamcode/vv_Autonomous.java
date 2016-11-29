@@ -15,12 +15,19 @@ public class vv_Autonomous extends vv_OpMode
 
     public void runOpMode() throws InterruptedException
     {
-        waitForStart();
+        try {
+            waitForStart();
 
-        vvLib = new vv_Lib(this);
-        vvRobot = new vv_Robot();
+            vvLib = new vv_Lib(this);
+            vvRobot = new vv_Robot();
 
-        //  vvLib.moveTillColor(this, vvRobot.getColorSensor(this));
+            //  vvLib.moveTillColor(this, vvRobot.getColorSensor(this));
+        } catch (vv_Robot.MotorNameNotKnownException MNNKE) {
+            telemetryAddData("Motor Not found", "Values:", MNNKE.getMessage());
+            telemetryUpdate();
+            Thread.sleep(3000);
+        }
+
     }
 
 

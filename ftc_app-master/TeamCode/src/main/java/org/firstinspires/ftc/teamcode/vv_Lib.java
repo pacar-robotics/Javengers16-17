@@ -3,20 +3,20 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import static org.firstinspires.ftc.teamcode.vv_Constants.ANALOG_STICK_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION;
-import static org.firstinspires.ftc.teamcode.vv_Constants.ButtonEnum;
+import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
 import static org.firstinspires.ftc.teamcode.vv_Constants.GYRO_OFFSET;
+import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_MOTOR_LOOP_TIME;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_ROBOT_TURN_MOTOR_VELOCITY;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_DIAMETER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MIN_ROBOT_TURN_MOTOR_VELOCITY;
-import static org.firstinspires.ftc.teamcode.vv_Constants.MotorEnum;
-import static org.firstinspires.ftc.teamcode.vv_Constants.MotorEnum.armMotor;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ROBOT_TRACK_DISTANCE;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TOUCH_SENSE_POWER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TURN_POWER;
@@ -30,9 +30,11 @@ public class vv_Lib {
     private vv_Robot robot;
 
 
-    public vv_Lib(vv_OpMode aOpMode) throws InterruptedException{
+    public vv_Lib(vv_OpMode aOpMode)
+            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
         robot = new vv_Robot();
         robot.init(aOpMode, aOpMode.hardwareMap);
+        setupShot(aOpMode);
     }
 
     /**
@@ -65,12 +67,15 @@ public class vv_Lib {
     {
 
 
-        robot.setMotorMode(aOpMode, armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.setMotorMode(aOpMode, ARM_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        while(!robot.isArmAtLimit(aOpMode)){
-            robot.setPower(aOpMode, armMotor, 1.0f);
+        aOpMode.reset_timer();
+        while (!robot.isArmAtLimit(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
+
+            robot.setPower(aOpMode, ARM_MOTOR, 1.0f);
+            aOpMode.idle();
         }
-        robot.setPower(aOpMode, armMotor, 0.0f);
+        robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
 
         Thread.sleep(100);
 
@@ -78,13 +83,13 @@ public class vv_Lib {
 
     public void shootBall(vv_OpMode aOpMode) throws InterruptedException, vv_Robot.MotorNameNotKnownException
     {
-        robot.setMotorMode(aOpMode, MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.setMotorMode(aOpMode, ARM_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        robot.setPower(aOpMode, MotorEnum.armMotor, 1.0f);
+        robot.setPower(aOpMode, ARM_MOTOR, 1.0f);
 
         Thread.sleep(500);
 
-        robot.setPower(aOpMode, MotorEnum.armMotor, 0.0f);
+        robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
     }
     
     /**
@@ -121,8 +126,8 @@ public class vv_Lib {
         Thread.sleep(50);
     }
 
-    public void pushAButton(vv_OpMode aOpMode, ButtonEnum buttonEnum) {
-        robot.pushButton(aOpMode, buttonEnum);
+    public void pushAButton(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum BeaconServoStateEnumValue) {
+        robot.pushButton(aOpMode, BeaconServoStateEnumValue);
     }
 
     public void turnUsingGyro(vv_OpMode aOpMode, float power, float angle, TurnDirectionEnum TurnDirection) {
@@ -357,10 +362,10 @@ public class vv_Lib {
         //we will be trying this with another more advanced gyro sensor.
 
 
-        float frontLeftMotorPower = 0;
-        float frontRightMotorPower = 0;
-        float backLeftMotorPower = 0;
-        float backRightMotorPower = 0;
+        float FRONT_LEFT_MOTORPower = 0;
+        float FRONT_RIGHT_MOTORPower = 0;
+        float BACK_LEFT_MOTORPower = 0;
+        float BACK_RIGHT_MOTORPower = 0;
 
 
         //reset the ZIntegrator before the turn, delay is built in.
@@ -398,10 +403,10 @@ public class vv_Lib {
 
             //set the velocities to be used.
 
-            frontLeftMotorPower = -1 * turnPower;
-            frontRightMotorPower = turnPower;
-            backLeftMotorPower = -1 * turnPower;
-            backRightMotorPower = turnPower;
+            FRONT_LEFT_MOTORPower = -1 * turnPower;
+            FRONT_RIGHT_MOTORPower = turnPower;
+            BACK_LEFT_MOTORPower = -1 * turnPower;
+            BACK_RIGHT_MOTORPower = turnPower;
 
             //re-scan zValue
             zValue = robot.getBaseGyroSensorIntegratedZValue(aOpMode);
@@ -410,8 +415,8 @@ public class vv_Lib {
                 break;
             }
 
-            robot.runMotors(aOpMode, frontLeftMotorPower, frontRightMotorPower,
-                    backLeftMotorPower, backRightMotorPower);
+            robot.runMotors(aOpMode, FRONT_LEFT_MOTORPower, FRONT_RIGHT_MOTORPower,
+                    BACK_LEFT_MOTORPower, BACK_RIGHT_MOTORPower);
 
             //wait so we dont read faster than gyro can provide results.
             // aOpMode.telemetryAddData("Inside Turn","Degrees",":"+
@@ -463,12 +468,148 @@ public class vv_Lib {
 
     }
 
-    public void testMotor(vv_OpMode aOpMode, MotorEnum motorName, float power, int duration) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+    public void drive1RobotWithPowerFactor(vv_OpMode aOpMode, float powerFactor)
+            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+
+        //left stick is for forward/backward motion.
+        //right stick for turns.
+
+        //read forward/backward movements from the left stick y axis and apply it to the motors.
+
+        float frontLeftMotorPower = 0;
+        float frontRightMotorPower = 0;
+        float backLeftMotorPower = 0;
+        float backRightMotorPower = 0;
+
+        if (Math.abs(aOpMode.gamepad1.right_stick_x) < ANALOG_STICK_THRESHOLD) {
+            //we think the driver is not using the right stick to turn
+            if (Math.abs(aOpMode.gamepad1.left_stick_y) > ANALOG_STICK_THRESHOLD) {
+                //lets drive the motor forward or back based on the stick values.
+
+                frontLeftMotorPower = aOpMode.gamepad1.left_stick_y * powerFactor;
+                frontRightMotorPower = aOpMode.gamepad1.left_stick_y * powerFactor;
+                backLeftMotorPower = aOpMode.gamepad1.left_stick_y * powerFactor;
+                backRightMotorPower = aOpMode.gamepad1.left_stick_y * powerFactor;
+                //apply the power
+                robot.runMotors(aOpMode, frontLeftMotorPower, frontRightMotorPower,
+                        backLeftMotorPower, backRightMotorPower);
+
+            }
+        } else {
+            frontLeftMotorPower = Math.abs(aOpMode.gamepad1.right_stick_x * powerFactor);
+            frontRightMotorPower = Math.abs(aOpMode.gamepad1.right_stick_x * powerFactor);
+            backLeftMotorPower = Math.abs(aOpMode.gamepad1.right_stick_x * powerFactor);
+            backRightMotorPower = Math.abs(aOpMode.gamepad1.right_stick_x * powerFactor);
+
+            if (aOpMode.gamepad1.right_stick_x > 0) {
+                //clockwise turn
+                frontRightMotorPower = -frontRightMotorPower;
+                backRightMotorPower = -backRightMotorPower;
+            } else {
+                //counter clockwise turn
+                frontLeftMotorPower = -frontLeftMotorPower;
+                backLeftMotorPower = -backLeftMotorPower;
+            }
+        }
+
+        //when power is zero as initialized the motors will stop. This should be true if the
+        //joysticks are released.
+        //otherwise this will run the motors in desired direction.
+
+        robot.runMotors(aOpMode, frontLeftMotorPower, frontRightMotorPower,
+                backLeftMotorPower, backRightMotorPower);
+
+
+    }
+
+
+    public void driveRobotWithPowerFactor(vv_OpMode aOpMode, float powerFactor)
+            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+
+
+        // takes the x and y cooridinates of the joystick and calculates the power for each motor that allows the robot to turn in that direction
+        float forwardLeftPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
+        float forwardRightPower = -(aOpMode.gamepad1.left_stick_x * Math.abs(aOpMode.gamepad1.left_stick_x)) - ((Math.abs(aOpMode.gamepad1.left_stick_y) * aOpMode.gamepad1.left_stick_y));
+        float backLeftPower = -(aOpMode.gamepad1.left_stick_x * Math.abs(aOpMode.gamepad1.left_stick_x)) - ((Math.abs(aOpMode.gamepad1.left_stick_y) * aOpMode.gamepad1.left_stick_y));
+        float backRightPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
+
+        //Code to round powers when the driver wants to move diagonally
+        if ((forwardLeftPower < .5f && forwardLeftPower > -.5f) && (forwardRightPower > .5f || forwardRightPower < .5f)) {
+            forwardLeftPower = 0;
+            backRightPower = 0;
+        }
+        if ((forwardRightPower < .5f && forwardRightPower > -.5f) && (forwardLeftPower > .5f || forwardLeftPower < .5f)) {
+            forwardRightPower = 0;
+            backLeftPower = 0;
+        }
+//        float forwardLeftPower = aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x + aOpMode.gamepad1.left_stick_x;
+//        float backLeftPower = aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x - aOpMode.gamepad1.left_stick_x;
+//        float forwardRightPower =  aOpMode.gamepad1.left_stick_y - aOpMode.gamepad1.right_stick_x - aOpMode.gamepad1.left_stick_x;
+//        float backRightPower =  aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x + aOpMode.gamepad1.left_stick_x;
+
+        //rotates or turns the robot
+        if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
+            runAllMotors(aOpMode, aOpMode.gamepad1.right_stick_x, -aOpMode.gamepad1.right_stick_x, aOpMode.gamepad1.right_stick_x, -aOpMode.gamepad1.right_stick_x);
+        }
+        //translates the robot using the Mecanum wheels
+        else if (Math.abs(aOpMode.gamepad1.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
+                Math.abs(aOpMode.gamepad1.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
+            runAllMotors(aOpMode, (forwardLeftPower * powerFactor), (forwardRightPower * powerFactor), (backLeftPower * powerFactor), (backRightPower * powerFactor));
+        } else {
+            stopAllMotors(aOpMode);
+        }
+    }
+
+    public void pushABeaconButton(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum buttonEnum) {
+        robot.pushButton(aOpMode, buttonEnum);
+    }
+
+    /**
+     * Toggles the power of the Ball Collector Motor to either off or to the power required to
+     * outtake depending on the current state of the motor
+     *
+     * @param anOp an object of vv_OpMode
+     */
+    public void toggleOuttake(vv_OpMode anOp) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+        // if the current ball collector state is Outtake or Intake, turn the motor off
+        // else set the ball collector motor power to the outtake power
+        if (robot.getIntakeState() == vv_Constants.IntakeStateEnum.Out ||
+                robot.getIntakeState() == vv_Constants.IntakeStateEnum.In) {
+            robot.setPower(anOp, INTAKE_MOTOR, 0.0f);
+            robot.setIntakeState(vv_Constants.IntakeStateEnum.Off);
+        } else {
+            robot.setPower(anOp, INTAKE_MOTOR, vv_Constants.INTAKE_POWER); //TODO: Check negate
+            robot.setIntakeState(vv_Constants.IntakeStateEnum.Out);
+        }
+    }
+
+    /**
+     * Toggles the power of the Ball Collector Motor to either off or to the power required to
+     * intake depending on the current state of the motor
+     *
+     * @param anOp an object of vv_OpMode
+     */
+    public void toggleIntake(vv_OpMode anOp)
+            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+        // if the current ball collector state is Outtake or Intake, turn the motor off
+        // else set the ball collector motor power to the intake power
+        if (robot.getIntakeState() == vv_Constants.IntakeStateEnum.In ||
+                robot.getIntakeState() == vv_Constants.IntakeStateEnum.Out) {
+            robot.setPower(anOp, INTAKE_MOTOR, 0.0f);
+            robot.setIntakeState(vv_Constants.IntakeStateEnum.Off);
+        } else {
+            robot.setPower(anOp, INTAKE_MOTOR, -vv_Constants.INTAKE_POWER); //TODO: Check negate
+            robot.setIntakeState(vv_Constants.IntakeStateEnum.In);
+        }
+    }
+
+
+    public void testMotor(vv_OpMode aOpMode, int motorName, float power, int duration) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
         aOpMode.DBG("in vvLib test Motor");
         robot.testMotor(aOpMode, motorName, power, duration);
     }
 
-    public void testEncodedMotor(vv_OpMode aOpMode, MotorEnum motorName, float power, int duration, int targetPosition)
+    public void testEncodedMotor(vv_OpMode aOpMode, int motorName, float power, int duration, int targetPosition)
             throws InterruptedException, vv_Robot.MotorNameNotKnownException, vv_Robot.MotorStalledException {
         aOpMode.DBG("in testEncodedMotor");
         robot.testEncodedMotor(aOpMode, motorName, power, duration, targetPosition);
