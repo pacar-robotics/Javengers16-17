@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 
 
 /**
@@ -24,7 +22,7 @@ public class vv_Robot {
     private DcMotor ballCollector = null;
     private DcMotor armMotor = null;
     private DcMotor intakeMotor = null;
-    private DcMotor wormDriveMotor  = null;
+    private DcMotor wormDriveMotor = null;
 
 
     //private Servo buttonServo = null;
@@ -55,15 +53,14 @@ public class vv_Robot {
         backRightMotor = hwMap.dcMotor.get("motor_back_right");
 
         armMotor = hwMap.dcMotor.get("motor_arm");
-        intakeMotor=hwMap.dcMotor.get("motor_intake");
-        wormDriveMotor=hwMap.dcMotor.get("motor_worm");
+        intakeMotor = hwMap.dcMotor.get("motor_intake");
+        wormDriveMotor = hwMap.dcMotor.get("motor_worm");
 
 
         cs = hwMap.colorSensor.get("color_line_sensor");
 
 
-
-        ts_springSensor = hwMap.touchSensor.get("touch_spring_sensor");
+        ts_springSensor = hwMap.touchSensor.get("touch_arm_sensor");
 
         //buttonServo = hwMap.servo.get("button_servo");
 
@@ -73,9 +70,9 @@ public class vv_Robot {
 
 
         frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // Set all motors to zero power
         stopMotors(aOpMode);
@@ -97,7 +94,6 @@ public class vv_Robot {
      * @param anOp     an object of vv_OpMode
      * @param Position Encoder Position to move Cap Ball Lift to
      * @param Power    the power in which the motor runs
-     * @throws InterruptedException
      */
     public void moveCapBallLift(vv_OpMode anOp, int Position, float Power) throws InterruptedException {
         moveMotorUsingEncoderLimits(anOp, capBallLift, Position, Power,
@@ -107,11 +103,10 @@ public class vv_Robot {
     /**
      * Moves the spring motor to a preset position
      *
-     * @param anOp an object of vv_OpMode
+     * @param anOp     an object of vv_OpMode
      * @param Position Encoder Position to move spring motor to
-     * @throws InterruptedException
      */
-    public void movearmMotor(vv_OpMode anOp, int Position) throws InterruptedException {
+    public void moveArmMotor(vv_OpMode anOp, int Position) throws InterruptedException {
         moveMotorUsingEncoderLimits(anOp, armMotor, Position, vv_Constants.SPRING_MOTOR_POWER,
                 vv_Constants.SPRING_MAX_LIMIT, vv_Constants.SPRING_MIN_LIMIT);
     }
@@ -119,9 +114,9 @@ public class vv_Robot {
     /**
      * Sets power to inputted motor
      *
-     * @param aOpMode an object of vv_OpMode
+     * @param aOpMode   an object of vv_OpMode
      * @param motorEnum list of motors, determines what motor the power will be applied to
-     * @param power power that is applied to the motor
+     * @param power     power that is applied to the motor
      */
     public void setPower(vv_OpMode aOpMode, vv_Constants.MotorEnum motorEnum, float power) {
 
@@ -158,14 +153,12 @@ public class vv_Robot {
     /**
      * Returns true if the Launcher Arm is at its limit
      *
-     * @param aOpMode
      * @return armSensor.isPressed; whether to touch sensor at the limit is pressed
      */
     public boolean isArmAtLimit(vv_OpMode aOpMode) {
         return ts_springSensor.isPressed();
         //TODO: Finish this method up
     }
-
 
 
     public void runRobotToPositionFB(vv_OpMode aOpMode, int position, float Power) throws InterruptedException {
@@ -188,7 +181,8 @@ public class vv_Robot {
     }
 
     /**
-     * Runs robot to a specific position. Can be called by other, more specific methods to move forwards and backwards or sideways.
+     * Runs robot to a specific position. Can be called by other, more specific methods to move
+     * forwards and backwards or sideways.
      *
      * @param aOpMode     an object of the vv_OpMode class
      * @param fl_Power    front right motor power
@@ -342,7 +336,8 @@ public class vv_Robot {
 
 
     /**
-     * Runs motors. Can be called by a more specific method to move forwards and backwards or sideways.
+     * Runs motors. Can be called by a more specific method to move forwards and backwards or
+     * sideways.
      *
      * @param aOpMode  object of vv_OpMode class so we can use telemetry
      * @param fl_Power power of front left motor
@@ -365,7 +360,6 @@ public class vv_Robot {
         setPower(aOpMode, vv_Constants.MotorEnum.backLeftMotor, bl_Power);
         setPower(aOpMode, vv_Constants.MotorEnum.backRightMotor, br_Power);
     }
-
 
 
     public void stopMotors(vv_OpMode aOpMode) {
@@ -391,7 +385,6 @@ public class vv_Robot {
                 //buttonServo.setPosition(vv_Constants.BUTTON_SERVO_NEUTRAL_POS);
         }
     }
-
 
 
     public boolean getButtonTouchValue(vv_OpMode aOpMode) throws InterruptedException {
