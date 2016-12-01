@@ -31,6 +31,7 @@ public class vv_Constants
     final static float MECCANUM_WHEEL_ENCODER_MARGIN = 20;
 
 	final static float ANALOG_STICK_THRESHOLD = .25f;
+    final static float TRIGGER_THRESHOLD = .25f;
 
     // Extremes for servo that pushes beacon buttons
     static final double BUTTON_SERVO_MAX_POS     =  0.8f;     // Maximum rotational position
@@ -80,40 +81,43 @@ public class vv_Constants
     final static int ARM_MOTOR = 5;
     final static int WORM_DRIVE_MOTOR = 6;
     final static int CAP_BALL_MOTOR = 7;
+    final static int LAUNCH_POWER_INCREMENT = 200;
+    final static int LAUNCH_POWER_POSITION_MAX = 2000;
+    final static int LAUNCH_POWER_POSITION_MIN = 0;
+    final static float WORM_DRIVE_POWER = 0.8f;
+    final static float WORM_DRIVE_DURATION_MAX = 1000;
+    final static float WORM_DRIVE_ENCODER_MARGIN = 20;
     DirectionEnum Direction;
     TurnDirectionEnum TurnDirection;
+
     // Direction of movement for autonomous
     enum DirectionEnum
     {
         Forward, Backward, SidewaysLeft, SidewaysRight
     }
 
+    //values that control the worm drive motor to adjust tension of the Launch arm
+
     // Direction of turning
     enum TurnDirectionEnum
     {
         Clockwise, Counterclockwise
     }
-
     enum TouchSensorEnum
     {
         buttonSensor
     }
-
     enum BeaconServoStateEnum {
         Left, Right, Neutral
     }
-
-
     //Cap Ball Lift States
     enum CapBallStateEnum {
         Rest, Scoring_Position
     }
-
     //Ball Collector States
     enum IntakeStateEnum {
         Off, In, Out
     }
-
     //Spring Motor States used to score in different positions
     //Position 1 = 1 Tile Away
     //Position 2 = 2 Tiles Away
@@ -122,7 +126,6 @@ public class vv_Constants
     enum SpringPositionsEnum {
         Rest, Position1, Position2, Position3, Position4
     }
-
 
 
 }

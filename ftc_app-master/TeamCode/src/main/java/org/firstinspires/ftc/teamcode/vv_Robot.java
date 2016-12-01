@@ -27,9 +27,10 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_ENCODER
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_LOWER_POWER_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_POWER_LOWER_LIMIT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_POWER_UPPER_LIMIT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_DURATION_MAX;
+import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_ENCODER_MARGIN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_MOTOR;
-
-
+import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_POWER;
 
 
 /**
@@ -105,6 +106,19 @@ public class vv_Robot {
         motorArray[FRONT_RIGHT_MOTOR].setDirection(DcMotorSimple.Direction.FORWARD);
         motorArray[BACK_LEFT_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
         motorArray[BACK_RIGHT_MOTOR].setDirection(DcMotorSimple.Direction.FORWARD);
+
+        //reset encoders for all encoded motors!!
+
+        motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        while (motorArray[FRONT_LEFT_MOTOR].getCurrentPosition() != 0) {
+            //wait for the Front Left Motor to settle. as a proxy for all of the motors.
+            aOpMode.idle();
+        }
 
         // Set all base motors to zero power
         stopBaseMotors(aOpMode);
@@ -593,6 +607,68 @@ public class vv_Robot {
         Thread.sleep(100);
 
     }
+
+    public int getLauncherPowerPosition(vv_OpMode aOpMode) {
+        return motorArray[WORM_DRIVE_MOTOR].getCurrentPosition();
+    }
+
+    public void setLauncherPowerPosition(vv_OpMode aOpMode, int launcherPowerPosition)
+            throws InterruptedException, MotorStalledException {
+        //set the mode to be RUN_TO_POSITION
+        //we dont have to save previous state because we will never run the WORM DRIVE motor
+        //in any other mode.
+
+        motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //allow for a bit of time for set to complete.
+        Thread.sleep(50);
+
+        //Now set the target
+        motorArray[WORM_DRIVE_MOTOR].setTargetPosition(launcherPowerPosition);
+
+        //now set the power
+        motorArray[WORM_DRIVE_MOTOR].setPower(WORM_DRIVE_POWER);
+
+        float stallVelocityThreshold = (ENCODED_MOTOR_STALL_CLICKS_TETRIX * 1.0f /
+                ENCODED_MOTOR_STALL_TIME_DELTA);
+
+        //wait till completion of max duration.
+        aOpMode.reset_timer();
+        while (motorArray[WORM_DRIVE_MOTOR].isBusy() &&
+                (Math.abs((Math.abs(motorArray[WORM_DRIVE_MOTOR].getCurrentPosition()) -
+                        Math.abs(launcherPowerPosition))) > WORM_DRIVE_ENCODER_MARGIN) &&
+                aOpMode.time_elapsed() < WORM_DRIVE_DURATION_MAX) {
+            //wait until the position is reached or times out.
+
+            aOpMode.idle();
+            int stallPositionStart = motorArray[WORM_DRIVE_MOTOR].getCurrentPosition();
+            long stallTimeStart = aOpMode.time_elapsed();
+            //wait till the run is complete or the time runs out.
+            Thread.sleep(50);
+            aOpMode.idle();
+            //stall code
+            int stallPositionDelta = Math.abs(motorArray[WORM_DRIVE_MOTOR].getCurrentPosition()) - Math.abs(stallPositionStart);
+            long stallTimeDelta = aOpMode.time_elapsed() - stallTimeStart;
+            float stallVelocity = ((stallPositionDelta * 1.0f) / stallTimeDelta);
+
+            //TODO: Stall code must be tested!!
+            if (stallTimeDelta > 0) {
+                if (stallVelocity < stallVelocityThreshold) {
+                    //motor stalling ?
+                    //stop motor first
+                    aOpMode.DBG("in stall code throw testEncodedMotor");
+                    motorArray[WORM_DRIVE_MOTOR].setPower(0.0f);
+                    //throw exception indicating the problem.
+                    throw new MotorStalledException("MotorName" + WORM_DRIVE_MOTOR, stallVelocity, stallVelocityThreshold);
+                }
+            }
+
+
+        }
+        //stop the motor
+        motorArray[WORM_DRIVE_MOTOR].setPower(0.0f);
+
+    }
+
 
 
     public vv_Constants.IntakeStateEnum getIntakeState() {

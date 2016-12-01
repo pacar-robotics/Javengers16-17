@@ -104,6 +104,14 @@ public class protoOp extends vv_OpMode {
         vvLib.pushAButton(this, Right);
         //wait till the servo reaches the button
         Thread.sleep(1000);
+
+        // TO MOVE SIDEWAYS RIGHT:
+        /*
+        front left - backwards
+        back right - backwards
+        front right - forwards
+        back left - forwards
+         */
     }
 
 

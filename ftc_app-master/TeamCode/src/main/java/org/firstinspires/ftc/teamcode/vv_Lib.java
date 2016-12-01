@@ -6,13 +6,20 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANALOG_STICK_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
+import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.GYRO_OFFSET;
 import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_INCREMENT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_MAX;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_MIN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_MOTOR_LOOP_TIME;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_ROBOT_TURN_MOTOR_VELOCITY;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_DIAMETER;
@@ -21,6 +28,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.ROBOT_TRACK_DISTANCE;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TOUCH_SENSE_POWER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TURN_POWER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TurnDirectionEnum;
+
 
 /**
  * Created by thomas on 9/25/2016.
@@ -85,7 +93,7 @@ public class vv_Lib {
     {
         robot.setMotorMode(aOpMode, ARM_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        robot.setPower(aOpMode, ARM_MOTOR, 1.0f);
+        robot.setPower(aOpMode, ARM_MOTOR, 0.5f);
 
         Thread.sleep(500);
 
@@ -613,5 +621,64 @@ public class vv_Lib {
             throws InterruptedException, vv_Robot.MotorNameNotKnownException, vv_Robot.MotorStalledException {
         aOpMode.DBG("in testEncodedMotor");
         robot.testEncodedMotor(aOpMode, motorName, power, duration, targetPosition);
+    }
+
+    public void testSidewaysRight(vv_OpMode aOpMode)
+            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+
+
+        robot.setPower(aOpMode, FRONT_LEFT_MOTOR, -0.3f);
+        robot.setPower(aOpMode, FRONT_RIGHT_MOTOR, 0.3f);
+        robot.setPower(aOpMode, BACK_LEFT_MOTOR, 0.3f);
+        robot.setPower(aOpMode, BACK_RIGHT_MOTOR, -0.3f);
+
+        aOpMode.reset_timer();
+        while (aOpMode.time_elapsed() < 2000) {
+            //run till duration
+            aOpMode.idle();
+        }
+
+        robot.stopBaseMotors(aOpMode);
+
+        // TO MOVE SIDEWAYS RIGHT:
+        /*
+        front left - backwards
+        back right - backwards
+        front right - forwards
+        back left - forwards
+         */
+    }
+
+    public void decreaseLauncherPower(vv_OpMode aOpMode) throws InterruptedException,
+            vv_Robot.MotorStalledException {
+        int launcherPowerPosition = robot.getLauncherPowerPosition(aOpMode);
+        if (launcherPowerPosition > LAUNCH_POWER_POSITION_MIN) {
+            //decrement power.
+            if ((launcherPowerPosition - LAUNCH_POWER_INCREMENT) > LAUNCH_POWER_POSITION_MIN) {
+                launcherPowerPosition -= LAUNCH_POWER_INCREMENT;
+            } else {
+                launcherPowerPosition = LAUNCH_POWER_POSITION_MIN;
+            }
+
+            robot.setLauncherPowerPosition(aOpMode, launcherPowerPosition);
+        }
+    }
+
+    public void increaseLauncherPower(vv_OpMode aOpMode) throws InterruptedException,
+            vv_Robot.MotorStalledException {
+        int launcherPowerPosition = robot.getLauncherPowerPosition(aOpMode);
+        if (launcherPowerPosition < LAUNCH_POWER_POSITION_MAX) {
+            //increment power.
+            if ((launcherPowerPosition + LAUNCH_POWER_INCREMENT) < LAUNCH_POWER_POSITION_MAX) {
+                launcherPowerPosition += LAUNCH_POWER_INCREMENT;
+            } else {
+                launcherPowerPosition = LAUNCH_POWER_POSITION_MAX;
+            }
+            robot.setLauncherPowerPosition(aOpMode, launcherPowerPosition);
+        }
+    }
+
+    public int getLauncherPowerPosition(vv_OpMode aOpMode) {
+        return robot.getLauncherPowerPosition(aOpMode);
     }
 }
