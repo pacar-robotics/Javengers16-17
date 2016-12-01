@@ -7,6 +7,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -22,6 +23,33 @@ import javax.xml.xpath.XPathFactory;
 
 public class DiagnosticsOp extends vv_OpMode {
 
+	private static class ChoiceRecord {
+		private boolean toBeCalled;
+		private boolean errorStatus;
+		private ArrayList<String> errorMessages;
+
+		public ChoiceRecord(boolean toBeCalled) {
+			this.toBeCalled = toBeCalled;
+			errorStatus = false;
+			errorMessages = new ArrayList<>();
+		}
+
+		public void addErrorMessage(String errorMessage) {
+			errorMessages.add(errorMessage);
+		}
+
+		public boolean isToBeCalled() {
+			return toBeCalled;
+		}
+
+		public boolean isErrorStatus() {
+			return errorStatus;
+		}
+
+		public ArrayList<String> getErrorMessages() {
+			return errorMessages;
+		}
+	}
 
 	// Code is based off of AutoXMLParser:
 	// https://gist.github.com/rsquared226/21cf8b0d3e3476b38f22982f698d0388
