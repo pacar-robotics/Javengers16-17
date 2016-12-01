@@ -102,8 +102,31 @@ public class DiagnosticsOp extends vv_OpMode {
 		}
 	}
 
+	private vv_Lib robotLibrary;
+	private HashMap<String, ChoiceRecord> choices;
+
 	@Override
 	public void runOpMode() throws InterruptedException {
-		
+		initialize();
+		choices = getTests();
+	}
+
+	private void initialize() throws InterruptedException {
+		robotLibrary = new vv_Lib(this);
+	}
+
+	private HashMap<String, ChoiceRecord> getTests() {
+		HashMap<String, ChoiceRecord> formattedChoices = new HashMap<>();
+		HashMap<String, Boolean> xmlChoices;
+
+		XmlParser xmlParser = new XmlParser();
+		xmlChoices = xmlParser.getChoicesMap();
+
+		for (String key : xmlChoices.keySet()) {
+			// Take xml's hashmap and convert it into the one we want
+			formattedChoices.put(key, new ChoiceRecord(xmlChoices.get(key)));
+		}
+
+		return formattedChoices;
 	}
 }
