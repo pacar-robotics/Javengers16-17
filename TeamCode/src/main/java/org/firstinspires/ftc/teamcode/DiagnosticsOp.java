@@ -27,12 +27,12 @@ import javax.xml.xpath.XPathFactory;
 public class DiagnosticsOp extends vv_OpMode {
 
 	private static class ChoiceRecord {
-		private boolean toBeCalled;
+		private boolean testMotor;
 		private boolean errorStatus;
 		private ArrayList<String> errorMessages;
 
-		public ChoiceRecord(boolean toBeCalled) {
-			this.toBeCalled = toBeCalled;
+		public ChoiceRecord(boolean testMotor) {
+			this.testMotor = testMotor;
 			errorStatus = false;
 			errorMessages = new ArrayList<>();
 		}
@@ -45,11 +45,11 @@ public class DiagnosticsOp extends vv_OpMode {
 			this.errorStatus = errorStatus;
 		}
 
-		public boolean isToBeCalled() {
-			return toBeCalled;
+		public boolean getTestMotor() {
+			return testMotor;
 		}
 
-		public boolean isErrorStatus() {
+		public boolean getErrorStatus() {
 			return errorStatus;
 		}
 
@@ -123,7 +123,7 @@ public class DiagnosticsOp extends vv_OpMode {
 		// Go through all choices
 		for (Map.Entry<String, ChoiceRecord> choicesEntry : choices.entrySet()) {
 			// First check if we need to do the test through XML file, then ask the user
-			if (choicesEntry.getValue().isToBeCalled() && getUserConfirmation(choicesEntry.getKey())) {
+			if (choicesEntry.getValue().getTestMotor() && getUserConfirmation(choicesEntry.getKey())) {
 				try {
 					Method method = DiagnosticsOp.class.getDeclaredMethod(choicesEntry.getKey());
 
@@ -166,6 +166,7 @@ public class DiagnosticsOp extends vv_OpMode {
 		HashMap<String, ChoiceRecord> formattedChoices = new HashMap<>();
 		HashMap<String, Boolean> xmlChoices;
 
+		// Parse XML and get hashmap
 		XmlParser xmlParser = new XmlParser();
 		xmlChoices = xmlParser.getChoicesMap();
 
