@@ -2,16 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
-import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
-import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BeaconServoStateEnum.Left;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BeaconServoStateEnum.Right;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
-import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
-import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
-import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TOUCH_SENSE_POWER;
 
 
@@ -30,40 +24,30 @@ public class protoOp extends vv_OpMode {
         //We need to pass the this pointer into vv_Lib in order to call some value added functions
         //in vv_Opmode
 
+        telemetryAddData("Initializing", ":Please", "wait..");
+        telemetryUpdate();
         DBG("before try");
-        try {
+
             DBG("Before vvLIb init");
             vvLib = new vv_Lib(this);
 
             // Send telemetry message to signify robot waiting;
-            telemetry.addData("Say", "Hello Driver");    //
+        telemetry.addData("Say", "Hello Driver", "Im Ready");    //
             telemetry.update();
             DBG("before waitForStart");
             // Wait for the game to start (driver presses PLAY)
             waitForStart();
 
-            DBG("before Intake");
-            vvLib.testMotor(this, INTAKE_MOTOR, 0.3f, 3000);
-            DBG("after Intake");
-            vvLib.testMotor(this, ARM_MOTOR, 0.3f, 500);
-            //DBG("before wormDrive");
-            //vvLib.testEncodedMotor(this, wormDriveMotor, 0.3f, 500, 100);
 
-            vvLib.testEncodedMotor(this, FRONT_LEFT_MOTOR, 0.5f, 1000, 1000);
-            vvLib.testEncodedMotor(this, FRONT_RIGHT_MOTOR, 0.5f, 1000, 1000);
-            vvLib.testEncodedMotor(this, BACK_LEFT_MOTOR, 0.5f, 1000, 1000);
-            vvLib.testEncodedMotor(this, BACK_RIGHT_MOTOR, 0.5f, 1000, 1000);
+        //vvLib.testMotor(this,FRONT_LEFT_MOTOR,0.3f,1000);
+        //vvLib.testMotor(this,FRONT_RIGHT_MOTOR,0.3f,1000);
 
 
-        } catch (vv_Robot.MotorNameNotKnownException MNNKE) {
-            telemetryAddData("Motor Not found", "Values:", MNNKE.getMessage());
-            telemetryUpdate();
-            Thread.sleep(3000);
-        } catch (vv_Robot.MotorStalledException MSTE) {
-            telemetryAddData("Motor Stalled", "Values:", MSTE.getMessage());
-            telemetryUpdate();
-            Thread.sleep(3000);
-        }
+        //vvLib.testMotor(this, BACK_LEFT_MOTOR, 0.3f, 1000);
+        //vvLib.testMotor(this, BACK_RIGHT_MOTOR, 0.3f, 1000);
+        vvLib.testSidewaysRight(this, 1000);
+
+
 
 
     }

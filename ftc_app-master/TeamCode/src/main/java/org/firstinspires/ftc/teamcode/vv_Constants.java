@@ -70,17 +70,19 @@ public class vv_Constants
 
     //power used to rotate intake
     final static float INTAKE_POWER = 06f;
+    //define the motors as constants instead of enumerations for speed.
+
+
     final static int FRONT_LEFT_MOTOR = 0;
     final static int FRONT_RIGHT_MOTOR = 1;
     final static int BACK_LEFT_MOTOR = 2;
-
-
-    //define the motors as constants instead of enumerations for speed.
     final static int BACK_RIGHT_MOTOR = 3;
     final static int INTAKE_MOTOR = 4;
     final static int ARM_MOTOR = 5;
     final static int WORM_DRIVE_MOTOR = 6;
     final static int CAP_BALL_MOTOR = 7;
+
+
     final static int LAUNCH_POWER_INCREMENT = 200;
     final static int LAUNCH_POWER_POSITION_MAX = 2000;
     final static int LAUNCH_POWER_POSITION_MIN = 0;

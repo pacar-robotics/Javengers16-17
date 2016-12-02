@@ -89,7 +89,6 @@ public class vv_Robot {
             aOpMode.idle();
         }
         aOpMode.DBG("after gyro calib");
-        Thread.sleep(2000);
 
 
         armSensor = hwMap.touchSensor.get("touch_arm_sensor");
@@ -102,18 +101,25 @@ public class vv_Robot {
 
         aOpMode.DBG("before motor dir set");
 
-        motorArray[FRONT_LEFT_MOTOR].setDirection(DcMotorSimple.Direction.FORWARD);
-        motorArray[FRONT_RIGHT_MOTOR].setDirection(DcMotorSimple.Direction.FORWARD);
-        motorArray[BACK_LEFT_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
-        motorArray[BACK_RIGHT_MOTOR].setDirection(DcMotorSimple.Direction.FORWARD);
+        motorArray[FRONT_LEFT_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
+        motorArray[FRONT_RIGHT_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
+        motorArray[BACK_LEFT_MOTOR].setDirection(DcMotorSimple.Direction.FORWARD);
+        motorArray[BACK_RIGHT_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
 
-        //reset encoders for all encoded motors!!
 
-        motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //set default modes for all motors
+        motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //reset encoders for motors always used in encoded mode
         motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
         while (motorArray[FRONT_LEFT_MOTOR].getCurrentPosition() != 0) {
             //wait for the Front Left Motor to settle. as a proxy for all of the motors.
@@ -130,20 +136,22 @@ public class vv_Robot {
 
     }
 
-    public void setPower(vv_OpMode aOpMode, int motorName, float power) throws MotorNameNotKnownException, InterruptedException {
+    public void setPower(vv_OpMode aOpMode, int motorName, float power)
+            throws InterruptedException {
 
         motorArray[motorName].setPower(power);
     }
 
     public DcMotor.RunMode getMotorMode(vv_OpMode aOpMode, int motorName
-    ) throws MotorNameNotKnownException, InterruptedException {
+    ) throws InterruptedException {
 
         return motorArray[motorName].getMode();
 
     }
 
     public void setMotorMode(vv_OpMode aOpMode, int motorName,
-                             DcMotor.RunMode runMode) throws MotorNameNotKnownException, InterruptedException {
+                             DcMotor.RunMode runMode)
+            throws InterruptedException {
 
         motorArray[motorName].setMode(runMode);
     }
@@ -153,7 +161,8 @@ public class vv_Robot {
         //TODO: Finish this method up
     }
 
-    public void runRobotToPositionFB(vv_OpMode aOpMode, int position, float Power) throws InterruptedException, MotorNameNotKnownException {
+    public void runRobotToPositionFB(vv_OpMode aOpMode, int position, float Power)
+            throws InterruptedException {
         //using the generic method with all powers set to the same value and all positions set to the same position
         runRobotToPosition(aOpMode, Power, Power, Power, Power, position, position, position, position);
     }
@@ -166,7 +175,8 @@ public class vv_Robot {
      * @param Power    generic power of the motors
      * @return void
      */
-    public void runRobotToPositionSideways(vv_OpMode aOpMode, int position, float Power) throws InterruptedException, MotorNameNotKnownException {
+    public void runRobotToPositionSideways(vv_OpMode aOpMode, int position, float Power)
+            throws InterruptedException {
         //using the generic method with all powers set to the same value and all positions set to the same position
         runRobotToPosition(aOpMode, -Power, Power, Power, -Power, -position, position, position, -position);
     }
@@ -188,7 +198,7 @@ public class vv_Robot {
     public void runRobotToPosition(vv_OpMode aOpMode, float fl_Power, float fr_Power,
                                    float bl_Power, float br_Power, int fl_Position,
                                    int fr_Position, int bl_Position, int br_Position)
-            throws InterruptedException, MotorNameNotKnownException {
+            throws InterruptedException {
 
         //save the current run mode
         DcMotor.RunMode oldRunMode = motorArray[FRONT_LEFT_MOTOR].getMode();
@@ -298,7 +308,7 @@ public class vv_Robot {
     public void runRobotToPositionWithAngle(vv_OpMode aOpMode, float fl_Power, float fr_Power,
                                             float bl_Power, float br_Power, int fl_Position,
                                             int fr_Position, int bl_Position, int br_Position, float angle)
-            throws InterruptedException, MotorNameNotKnownException {
+            throws InterruptedException {
 
         //reset motor encoders
         motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -312,19 +322,18 @@ public class vv_Robot {
         }
 
         //sets all motors to run to a position
-        try {
-            setMotorMode(aOpMode, FRONT_LEFT_MOTOR, DcMotor.RunMode.RUN_TO_POSITION);
-            setMotorMode(aOpMode, FRONT_RIGHT_MOTOR, DcMotor.RunMode.RUN_TO_POSITION);
-            setMotorMode(aOpMode, BACK_LEFT_MOTOR, DcMotor.RunMode.RUN_TO_POSITION);
-            setMotorMode(aOpMode, BACK_RIGHT_MOTOR, DcMotor.RunMode.RUN_TO_POSITION);
-            while (motorArray[FRONT_LEFT_MOTOR].isBusy() || motorArray[FRONT_RIGHT_MOTOR].isBusy() ||
-                    motorArray[BACK_LEFT_MOTOR].isBusy() || motorArray[BACK_RIGHT_MOTOR].isBusy()) {
-                //wait until the motors have finished these tasks
-                aOpMode.idle();
-            }
-        } catch (MotorNameNotKnownException mNNKE) {
-            aOpMode.telemetryAddData("Motor Control Error", "Error", mNNKE.getMessage());
+
+        setMotorMode(aOpMode, FRONT_LEFT_MOTOR, DcMotor.RunMode.RUN_TO_POSITION);
+        setMotorMode(aOpMode, FRONT_RIGHT_MOTOR, DcMotor.RunMode.RUN_TO_POSITION);
+        setMotorMode(aOpMode, BACK_LEFT_MOTOR, DcMotor.RunMode.RUN_TO_POSITION);
+        setMotorMode(aOpMode, BACK_RIGHT_MOTOR, DcMotor.RunMode.RUN_TO_POSITION);
+        while (motorArray[FRONT_LEFT_MOTOR].isBusy() || motorArray[FRONT_RIGHT_MOTOR].isBusy() ||
+                motorArray[BACK_LEFT_MOTOR].isBusy() || motorArray[BACK_RIGHT_MOTOR].isBusy()) {
+            //wait until the motors have finished these tasks
+            aOpMode.idle();
         }
+
+
         //reset encoders
         motorArray[FRONT_LEFT_MOTOR].setTargetPosition(fl_Position);
         motorArray[FRONT_RIGHT_MOTOR].setTargetPosition(fr_Position);
@@ -371,7 +380,7 @@ public class vv_Robot {
      * @return void
      */
     public void runMotorsFB(vv_OpMode aOpMode, float Power)
-            throws InterruptedException, MotorNameNotKnownException {
+            throws InterruptedException {
 
         runMotors(aOpMode, Power, Power, Power, Power);
     }
@@ -383,7 +392,7 @@ public class vv_Robot {
      * @return void
      */
     public void runMotorsSideways(vv_OpMode aOpMode, float Power)
-            throws InterruptedException, MotorNameNotKnownException {
+            throws InterruptedException {
 
         runMotors(aOpMode, -Power, Power, Power, -Power);
     }
@@ -399,7 +408,7 @@ public class vv_Robot {
      * @return void
      */
     public void runMotors(vv_OpMode aOpMode, float fl_Power, float fr_Power, float bl_Power, float br_Power)
-            throws InterruptedException, MotorNameNotKnownException {
+            throws InterruptedException {
 
         motorArray[0].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorArray[1].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -413,11 +422,12 @@ public class vv_Robot {
         setPower(aOpMode, BACK_RIGHT_MOTOR, br_Power);
     }
 
-    public void stopBaseMotors(vv_OpMode aOpMode) {
+    public void stopBaseMotors(vv_OpMode aOpMode) throws InterruptedException {
         motorArray[FRONT_LEFT_MOTOR].setPower(0);
         motorArray[FRONT_RIGHT_MOTOR].setPower(0);
         motorArray[BACK_LEFT_MOTOR].setPower(0);
         motorArray[BACK_RIGHT_MOTOR].setPower(0);
+        Thread.sleep(250);
     }
 
     public void pushButton(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum buttonEnum) {
@@ -489,8 +499,7 @@ public class vv_Robot {
                 motorArray[BACK_LEFT_MOTOR].isBusy() && motorArray[BACK_RIGHT_MOTOR].isBusy());
     }
 
-    public void testMotor(vv_OpMode aOpMode, int motorName, float power, int duration) throws InterruptedException,
-            MotorNameNotKnownException {
+    public void testMotor(vv_OpMode aOpMode, int motorName, float power, long duration) throws InterruptedException {
         aOpMode.DBG("In test motor in vv_robot");
 
         aOpMode.DBG("after checkname assertion in vv_robot");
@@ -503,7 +512,7 @@ public class vv_Robot {
 
         motorArray[motorName].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //delay for mode change completion
-        Thread.sleep(100);
+        Thread.sleep(1000);
 
         aOpMode.DBG("after runmode set in vv_robot");
 
@@ -526,12 +535,12 @@ public class vv_Robot {
         //restore old motor mode
         motorArray[motorName].setMode(oldRunMode);
         //delay to complete switch to old run mode
-        Thread.sleep(100);
+        Thread.sleep(1000);
 
     }
 
     public void testEncodedMotor(vv_OpMode aOpMode, int motorName, float power, int maxDuration, int targetPosition) throws InterruptedException,
-            MotorNameNotKnownException, MotorStalledException {
+            MotorStalledException {
 
         aOpMode.DBG("in testEncodedMotor");
 

@@ -39,7 +39,7 @@ public class vv_Lib {
 
 
     public vv_Lib(vv_OpMode aOpMode)
-            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+            throws InterruptedException {
         robot = new vv_Robot();
         robot.init(aOpMode, aOpMode.hardwareMap);
         setupShot(aOpMode);
@@ -54,7 +54,7 @@ public class vv_Lib {
      * @throws InterruptedException
      */
     public void moveWheels(vv_OpMode aOpMode, float distance, float Power, DirectionEnum Direction)
-            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+            throws InterruptedException {
         if (Direction == Forward) {
             // moving the robot forward
             moveForwardToPosition(aOpMode, distance, Power);
@@ -71,7 +71,7 @@ public class vv_Lib {
         // code for moving forward, backward, sideways
     }
 
-    public void setupShot(vv_OpMode aOpMode) throws InterruptedException, vv_Robot.MotorNameNotKnownException
+    public void setupShot(vv_OpMode aOpMode) throws InterruptedException
     {
 
 
@@ -89,7 +89,7 @@ public class vv_Lib {
 
     }
 
-    public void shootBall(vv_OpMode aOpMode) throws InterruptedException, vv_Robot.MotorNameNotKnownException
+    public void shootBall(vv_OpMode aOpMode) throws InterruptedException
     {
         robot.setMotorMode(aOpMode, ARM_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -111,7 +111,7 @@ public class vv_Lib {
      * @throws InterruptedException
      */
     public void turnUsingEncoders(vv_OpMode aOpMode, float power, float angle, TurnDirectionEnum TurnDirection)
-            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+            throws InterruptedException {
 
         //calculate the turn distance to be used in terms of encoder clicks.
         //for Andymark encoders.
@@ -148,7 +148,7 @@ public class vv_Lib {
         return robot.getButtonTouchValue(aOpMode);
     }
 
-    public void moveTillTouch(vv_OpMode aOpMode) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+    public void moveTillTouch(vv_OpMode aOpMode) throws InterruptedException {
         aOpMode.reset_timer();
         while (!senseTouch(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
             robot.runMotors(aOpMode, TOUCH_SENSE_POWER, TOUCH_SENSE_POWER,
@@ -213,7 +213,8 @@ public class vv_Lib {
     }
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
-    private void moveForwardToPosition(vv_OpMode aOpMode, float distance, float Power) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+    private void moveForwardToPosition(vv_OpMode aOpMode, float distance, float Power)
+            throws InterruptedException {
         //we need to store the encoder target position
         int targetPosition;
         //calculate target position from the input distance in cm
@@ -223,7 +224,8 @@ public class vv_Lib {
     }
 
     //Moves robot backward with a distance supplied in centimeters and power between 0 and 1
-    private void moveBackwardToPosition(vv_OpMode aOpMode, float distance, float Power) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+    private void moveBackwardToPosition(vv_OpMode aOpMode, float distance, float Power)
+            throws InterruptedException {
         //we need to store the encoder target position
         int targetPosition;
         //calculate target position from the input distance in cm
@@ -232,30 +234,31 @@ public class vv_Lib {
         robot.runRobotToPositionFB(aOpMode, -targetPosition, Power);
     }
 
-    private void moveSidewaysLeftToPosition(vv_OpMode aOpMode, float distance, float Power) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+    private void moveSidewaysLeftToPosition(vv_OpMode aOpMode, float distance, float Power)
+            throws InterruptedException {
         //we need to store the encoder target position
         int targetPosition;
         //calculate target position from the input distance in cm
         targetPosition = (int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position with negative power
-        robot.runRobotToPositionSideways(aOpMode, targetPosition, Power);
+        robot.runRobotToPositionSideways(aOpMode, -targetPosition, Power);
     }
 
     private void moveSidewaysRightToPosition(vv_OpMode aOpMode, float distance, float Power)
-            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+            throws InterruptedException {
         //we need to store the encoder target position
         int targetPosition;
         //calculate target position from the input distance in cm
         targetPosition = -(int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position with negative power
-        robot.runRobotToPositionSideways(aOpMode, -targetPosition, Power);
+        robot.runRobotToPositionSideways(aOpMode, targetPosition, Power);
     }
 
 
     //DO NOT USE THIS METHOD
     //IT IS NOT COMPLETED
     public void moveAtAngle(vv_OpMode aOpMode, double distance, float Power, float Angle)
-            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+            throws InterruptedException {
         //we need to store the encoder target position
         int VldtargetPosition;
         int VrdtargetPosition;
@@ -335,34 +338,34 @@ public class vv_Lib {
 
 
     public void runAllMotors(vv_OpMode aOpMode, float FLPower, float FRPower, float BLPower, float BRPower)
-            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+            throws InterruptedException {
         robot.runMotors(aOpMode, FLPower, FRPower, BLPower, BRPower);
     }
 
-    public void stopAllMotors(vv_OpMode aOpMode) {
+    public void stopAllMotors(vv_OpMode aOpMode) throws InterruptedException {
         robot.stopBaseMotors(aOpMode);
         //TODO: Stop additional motors that are not on the base of the Robot.
     }
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
-    public void moveForward(vv_OpMode aOpMode, float Power) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+    public void moveForward(vv_OpMode aOpMode, float Power) throws InterruptedException {
         robot.runMotorsFB(aOpMode, Power);
     }
 
     //Moves robot backward with a distance supplied in centimeters and power between 0 and 1
-    public void moveBackward(vv_OpMode aOpMode, float Power) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+    public void moveBackward(vv_OpMode aOpMode, float Power) throws InterruptedException {
         robot.runMotorsFB(aOpMode, -Power);
     }
 
-    public void moveSidewaysLeft(vv_OpMode aOpMode, float Power) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+    public void moveSidewaysLeft(vv_OpMode aOpMode, float Power) throws InterruptedException {
         robot.runMotorsSideways(aOpMode, Power);
     }
 
-    public void moveSidewaysRight(vv_OpMode aOpMode, float Power) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+    public void moveSidewaysRight(vv_OpMode aOpMode, float Power) throws InterruptedException {
         robot.runMotorsSideways(aOpMode, -Power);
     }
 
-    public void turnGyroDegrees(vv_OpMode aOpMode, int turnDegrees) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+    public void turnGyroDegrees(vv_OpMode aOpMode, int turnDegrees) throws InterruptedException {
 
         //this code has some issues due to gyro read lag of approximately 250ms as reported.
         //This will cause the turns to be approximate and will generally overshoot.
@@ -612,33 +615,61 @@ public class vv_Lib {
     }
 
 
-    public void testMotor(vv_OpMode aOpMode, int motorName, float power, int duration) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+    public void testMotor(vv_OpMode aOpMode, int motorName, float power, long duration)
+            throws InterruptedException {
         aOpMode.DBG("in vvLib test Motor");
         robot.testMotor(aOpMode, motorName, power, duration);
     }
 
     public void testEncodedMotor(vv_OpMode aOpMode, int motorName, float power, int duration, int targetPosition)
-            throws InterruptedException, vv_Robot.MotorNameNotKnownException, vv_Robot.MotorStalledException {
+            throws InterruptedException, vv_Robot.MotorStalledException {
         aOpMode.DBG("in testEncodedMotor");
         robot.testEncodedMotor(aOpMode, motorName, power, duration, targetPosition);
     }
 
-    public void testSidewaysRight(vv_OpMode aOpMode)
-            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+    public void testSidewaysRight(vv_OpMode aOpMode, int duration)
+            throws InterruptedException {
 
 
-        robot.setPower(aOpMode, FRONT_LEFT_MOTOR, -0.3f);
-        robot.setPower(aOpMode, FRONT_RIGHT_MOTOR, 0.3f);
-        robot.setPower(aOpMode, BACK_LEFT_MOTOR, 0.3f);
-        robot.setPower(aOpMode, BACK_RIGHT_MOTOR, -0.3f);
+        //save old run mode
+        DcMotor.RunMode oldRunMode = robot.getMotorMode(aOpMode, FRONT_LEFT_MOTOR);
+
+        //set the new RunMode.
+
+        robot.setMotorMode(aOpMode, FRONT_LEFT_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.setMotorMode(aOpMode, FRONT_RIGHT_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.setMotorMode(aOpMode, BACK_LEFT_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.setMotorMode(aOpMode, BACK_RIGHT_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        //wait just a bit for the changes to take effect.
+
+        Thread.sleep(1000);
+
+
+        robot.setPower(aOpMode, FRONT_LEFT_MOTOR, -0.4f);
+        robot.setPower(aOpMode, FRONT_RIGHT_MOTOR, 0.4f);
+        robot.setPower(aOpMode, BACK_LEFT_MOTOR, 0.4f);
+        robot.setPower(aOpMode, BACK_RIGHT_MOTOR, -0.4f);
 
         aOpMode.reset_timer();
-        while (aOpMode.time_elapsed() < 2000) {
+        while (aOpMode.time_elapsed() < duration) {
             //run till duration
             aOpMode.idle();
         }
 
         robot.stopBaseMotors(aOpMode);
+
+        //restore the old Run Modes.
+
+        robot.setMotorMode(aOpMode, FRONT_LEFT_MOTOR, oldRunMode);
+        robot.setMotorMode(aOpMode, FRONT_RIGHT_MOTOR, oldRunMode);
+        robot.setMotorMode(aOpMode, BACK_LEFT_MOTOR, oldRunMode);
+        robot.setMotorMode(aOpMode, BACK_RIGHT_MOTOR, oldRunMode);
+
+        //wait just a bit for the changes to take effect.
+
+        Thread.sleep(1000);
+
 
         // TO MOVE SIDEWAYS RIGHT:
         /*

@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
+
+
 /**
  * Created by Rachael_ on 10/23/2016.
  */
@@ -42,7 +45,6 @@ public class vv_Autonomous extends vv_OpMode
 
         //Turn the LED on the Color Sensor mounted on the floor of the Robot on
         vvLib.turnFloorColorSensorLedOn(this);
-        vvLib.testSidewaysRight(this);
 
         //test the turn of the robot.
 
@@ -51,16 +53,16 @@ public class vv_Autonomous extends vv_OpMode
         //power of 0.5 is recommended to prevent single motor stalls during turns
         //otherwise code has to be written to solve for this (maybe increase margin ?)
 
-        /*
-        vvLib.moveWheels(this, 12, 0.5f, SidewaysRight);
+
+        vvLib.moveWheels(this, 12, 0.4f, SidewaysRight);
         vvLib.turnAbsoluteGyroDegrees(this, 50);
 
         //distances are by experimentation.
 
-        vvLib.moveWheels(this, 46, 0.5f, SidewaysRight);
+        vvLib.moveWheels(this, 46, 0.4f, SidewaysRight);
         vvLib.turnAbsoluteGyroDegrees(this, 90);
 
-        */
+
 
         /*
 
