@@ -7,6 +7,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -122,6 +124,23 @@ public class DiagnosticsOp extends vv_OpMode {
 		for (Map.Entry<String, ChoiceRecord> choicesEntry : choices.entrySet()) {
 			// First check if we need to do the test through XML file, then ask the user
 			if (choicesEntry.getValue().isToBeCalled() && getUserConfirmation(choicesEntry.getKey())) {
+				try {
+					Method method = DiagnosticsOp.class.getDeclaredMethod(choicesEntry.getKey());
+
+					choicesEntry.getValue().setErrorStatus((Boolean) method.invoke(this));
+				} catch (NoSuchMethodException e) {
+					Log.e(LOG_TAG, e.getMessage());
+					choicesEntry.getValue().setErrorStatus(true);
+					choicesEntry.getValue().addErrorMessage("Could not find method: " + choicesEntry.getKey());
+				} catch (InvocationTargetException e) {
+					Log.e(LOG_TAG, e.getMessage());
+					choicesEntry.getValue().setErrorStatus(true);
+					choicesEntry.getValue().addErrorMessage("Could invoke method: " + choicesEntry.getKey());
+				} catch (IllegalAccessException e) {
+					Log.e(LOG_TAG, e.getMessage());
+					choicesEntry.getValue().setErrorStatus(true);
+					choicesEntry.getValue().addErrorMessage("Could not access method: " + choicesEntry.getKey());
+				}
 			}
 		}
 	}
