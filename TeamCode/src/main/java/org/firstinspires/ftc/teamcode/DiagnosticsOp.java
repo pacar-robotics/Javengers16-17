@@ -39,6 +39,10 @@ public class DiagnosticsOp extends vv_OpMode {
 			errorMessages.add(errorMessage);
 		}
 
+		public void setErrorStatus(boolean errorStatus) {
+			this.errorStatus = errorStatus;
+		}
+
 		public boolean isToBeCalled() {
 			return toBeCalled;
 		}
