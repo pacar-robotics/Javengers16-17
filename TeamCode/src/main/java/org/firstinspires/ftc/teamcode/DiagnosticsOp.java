@@ -9,6 +9,7 @@ import org.w3c.dom.NodeList;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -105,10 +106,33 @@ public class DiagnosticsOp extends vv_OpMode {
 	private vv_Lib robotLibrary;
 	private HashMap<String, ChoiceRecord> choices;
 
+	private static final String LOG_TAG = "DiagnosticsOp";
+	private static final String INPUT_TELEMETRY_MESSAGE = "input: ";
+
 	@Override
 	public void runOpMode() throws InterruptedException {
 		initialize();
 		choices = getTests();
+
+		// Go through all choices
+		for (Map.Entry<String, ChoiceRecord> choicesEntry : choices.entrySet()) {
+			// First check if we need to do the test through XML file, then ask the user
+			if (choicesEntry.getValue().isToBeCalled() && getUserConfirmation(choicesEntry.getKey())) {
+			}
+		}
+	}
+
+	private boolean getUserConfirmation(String testName) {
+		// Clear screen and print message
+		telemetryUpdate();
+		telemetryAddData(LOG_TAG, INPUT_TELEMETRY_MESSAGE,
+				String.format("Test the %s? A for yes; B for no", testName));
+
+		// Wait until A or B is pressed
+		while (!gamepad1.a && !gamepad1.b);
+
+		// If A is pressed, return yes. Otherwise, return no
+		return gamepad1.a;
 	}
 
 	private void initialize() throws InterruptedException {
