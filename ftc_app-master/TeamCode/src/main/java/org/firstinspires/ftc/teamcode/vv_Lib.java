@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANALOG_STICK_THRESHOLD;
@@ -8,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.ANDYMARK_MOTOR_ENCODER
 import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.COLOR_SENSOR_WHITE_LIMIT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
@@ -151,8 +151,7 @@ public class vv_Lib {
     public void moveTillTouch(vv_OpMode aOpMode) throws InterruptedException {
         aOpMode.reset_timer();
         while (!senseTouch(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
-            robot.runMotors(aOpMode, TOUCH_SENSE_POWER, TOUCH_SENSE_POWER,
-                    TOUCH_SENSE_POWER, TOUCH_SENSE_POWER);
+            robot.runMotorsSidewaysRight(aOpMode, TOUCH_SENSE_POWER);
             aOpMode.idle();
         }
         robot.stopBaseMotors(aOpMode);
@@ -165,21 +164,24 @@ public class vv_Lib {
      * Method that moves robot until the color white is detected
      * Used to stop at white line when going from first to second beacon
      * @param aOpMode - object of vv_OpMode class
-     * @param cs
      * @throws InterruptedException
      */
-    public void moveTillColor(vv_OpMode aOpMode, ColorSensor cs) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
-        while (!((cs.red() < 235) || (cs.green() < 235) || (cs.blue() < 235))) {
-            aOpMode.telemetryAddFormattedData("test: ", "cs red value: ", cs.red());
-            aOpMode.telemetryAddFormattedData("test1: ", "cs green value: ", cs.green());
-            aOpMode.telemetryAddFormattedData("test2: ", "cs blue value: ", cs.blue());
-            moveSidewaysLeft(aOpMode, .3f);
+    public void moveTillWhiteLineDetect(vv_OpMode aOpMode, float Power) throws InterruptedException {
+        aOpMode.reset_timer();
+        while ((robot.getFloorColorSensorAlpha(aOpMode) < COLOR_SENSOR_WHITE_LIMIT) &&
+                aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
+            moveSidewaysRight(aOpMode, Power);
+            aOpMode.idle();
         }
-
+        //stop motors
+        robot.stopBaseMotors(aOpMode);
     }
 
 
-    public void showFloorColorSensorLumnosityOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
+    public void showFloorColorSensorLumnosityOnTelemetry(vv_OpMode aOpMode,
+                                                         boolean updateTheDisplay)
+            throws InterruptedException {
+
 
         aOpMode.telemetryAddData("Floor Sensor", "Luminosity",":"+robot.getFloorColorSensorAlpha(aOpMode));
         if (updateTheDisplay) {
@@ -212,6 +214,14 @@ public class vv_Lib {
         robot.disableFloorColorSensorLed(aOpMode);
     }
 
+    public void turnBeaconColorSensorLedOn(vv_OpMode aOpMode) throws InterruptedException {
+        robot.enableBeaconColorSensorLed(aOpMode);
+    }
+
+    public void turnBeaconColorSensorLedOff(vv_OpMode aOpMode) throws InterruptedException {
+        robot.disableBeaconColorSensorLed(aOpMode);
+    }
+
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
     private void moveForwardToPosition(vv_OpMode aOpMode, float distance, float Power)
             throws InterruptedException {
@@ -220,7 +230,7 @@ public class vv_Lib {
         //calculate target position from the input distance in cm
         targetPosition = (int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position
-        robot.runRobotToPositionFB(aOpMode, targetPosition, Power);
+        robot.runRobotToPositionFB(aOpMode, -targetPosition, Power);
     }
 
     //Moves robot backward with a distance supplied in centimeters and power between 0 and 1
@@ -231,7 +241,7 @@ public class vv_Lib {
         //calculate target position from the input distance in cm
         targetPosition = -(int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position with negative power
-        robot.runRobotToPositionFB(aOpMode, -targetPosition, Power);
+        robot.runRobotToPositionFB(aOpMode, targetPosition, Power);
     }
 
     private void moveSidewaysLeftToPosition(vv_OpMode aOpMode, float distance, float Power)
@@ -358,11 +368,11 @@ public class vv_Lib {
     }
 
     public void moveSidewaysLeft(vv_OpMode aOpMode, float Power) throws InterruptedException {
-        robot.runMotorsSideways(aOpMode, Power);
+        robot.runMotorsSidewaysLeft(aOpMode, Power);
     }
 
     public void moveSidewaysRight(vv_OpMode aOpMode, float Power) throws InterruptedException {
-        robot.runMotorsSideways(aOpMode, -Power);
+        robot.runMotorsSidewaysRight(aOpMode, Power);
     }
 
     public void turnGyroDegrees(vv_OpMode aOpMode, int turnDegrees) throws InterruptedException {
@@ -711,5 +721,9 @@ public class vv_Lib {
 
     public int getLauncherPowerPosition(vv_OpMode aOpMode) {
         return robot.getLauncherPowerPosition(aOpMode);
+    }
+
+    public vv_Constants.BeaconColorEnum getBeaconColor(vv_OpMode aOpMode) {
+        return robot.getBeaconColor(aOpMode);
     }
 }

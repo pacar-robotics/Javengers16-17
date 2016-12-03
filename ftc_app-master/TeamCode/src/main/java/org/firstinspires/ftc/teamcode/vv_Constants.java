@@ -20,8 +20,10 @@ public class vv_Constants
 
 	final static float MOTOR_LOWER_POWER_THRESHOLD = 0.35f;
     final static float MOTOR_RAMP_POWER_LOWER_LIMIT = 0.20f;
-    final static float MOTOR_RAMP_POWER_UPPER_LIMIT = 0.5f;
+    final static float MOTOR_RAMP_POWER_UPPER_LIMIT = 0.8f;
     final static float MOTOR_SLOW_START_THRESHOLD = 0.30f;
+
+    final static float COLOR_SENSOR_WHITE_LIMIT = 2.0f;
 
 	final static int GYRO_ERROR = 8;
 
@@ -34,7 +36,8 @@ public class vv_Constants
     final static float TRIGGER_THRESHOLD = .25f;
 
     // Extremes for servo that pushes beacon buttons
-    static final double BUTTON_SERVO_MAX_POS     =  0.8f;     // Maximum rotational position
+    static final double BEACON_SERVO_MAX_POS = 0.8f;     // Maximum rotational position
+    static final double BEACON_SERVO_MID_POS = 0.4f;
     static final double BUTTON_SERVO_MIN_POS     =  0.45f;
 
     //distance between wheels left to right of the Robot in inches.
@@ -49,7 +52,7 @@ public class vv_Constants
     final static int GYRO_OFFSET = 10;
 
     final static float TURN_POWER = 0.7f;
-    final static float TOUCH_SENSE_POWER = 0.15f;
+    final static float TOUCH_SENSE_POWER = 0.2f;
 
     //turn this one for debugging messages.
 
@@ -89,8 +92,15 @@ public class vv_Constants
     final static float WORM_DRIVE_POWER = 0.8f;
     final static float WORM_DRIVE_DURATION_MAX = 1000;
     final static float WORM_DRIVE_ENCODER_MARGIN = 20;
+    BeaconColorEnum BeaconColor;
     DirectionEnum Direction;
     TurnDirectionEnum TurnDirection;
+
+    enum BeaconColorEnum {
+        RED,
+        BLUE,
+        UNKNOWN
+    }
 
     // Direction of movement for autonomous
     enum DirectionEnum

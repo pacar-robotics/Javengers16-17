@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtColorSensor;
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtTouchSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,7 +15,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
-import static org.firstinspires.ftc.teamcode.vv_Constants.BUTTON_SERVO_MAX_POS;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_MAX_POS;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_MID_POS;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BUTTON_SERVO_MIN_POS;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DEBUG;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_CLICKS_TETRIX;
@@ -42,8 +45,10 @@ public class vv_Robot {
     private DcMotor motorArray[];
 
 
-    private Servo buttonServo = null;
-    private TouchSensor buttonSensor;
+    private Servo beaconServo = null;
+    private Servo launcherGateServo = null;
+    private HiTechnicNxtTouchSensor beaconTouchSensor;
+    private HiTechnicNxtColorSensor beaconColorSensor;
     private TouchSensor armSensor;
     private ColorSensor cs;
     private ModernRoboticsI2cGyro base_gyro_sensor;
@@ -71,12 +76,19 @@ public class vv_Robot {
         motorArray[INTAKE_MOTOR] = hwMap.dcMotor.get("motor_intake");
 
         cs = hwMap.colorSensor.get("color_line_sensor");
+        beaconTouchSensor = (HiTechnicNxtTouchSensor) hwMap.touchSensor.get("beacon_touch_sensor");
+        beaconColorSensor = (HiTechnicNxtColorSensor) hwMap.colorSensor.get("beacon_color_sensor");
+
+
 
         //turn the LED on the floor color sensor off at the start.
         //used for compatibility with older SDK code.
         cs.enableLed(false);
         //wait for it to turn off.
+        Thread.sleep(300);
 
+        beaconColorSensor.enableLed(false);
+        //wait for it to turn off.
         Thread.sleep(300);
 
         aOpMode.DBG("before gyro calib");
@@ -94,9 +106,14 @@ public class vv_Robot {
 
         armSensor = hwMap.touchSensor.get("touch_arm_sensor");
 
-        //buttonServo = hwMap.servo.get("button_servo");
+        beaconServo = hwMap.servo.get("servo_beacon");
 
-        //buttonSensor = hwMap.touchSensor.get("touch_button_sensor");
+        //initialize to the middle position.
+        beaconServo.setPosition(BEACON_SERVO_MID_POS);
+
+
+        launcherGateServo = hwMap.servo.get("servo_launcher_gate");
+
 
         //buttonServo.setPosition(0.65);
 
@@ -174,7 +191,7 @@ public class vv_Robot {
     public void runRobotToPositionSideways(vv_OpMode aOpMode, int position, float Power)
             throws InterruptedException {
         //using the generic method with all powers set to the same value and all positions set to the same position
-        runRobotToPosition(aOpMode, -Power, Power, Power, -Power, -position, position, position, -position);
+        runRobotToPosition(aOpMode, Power, Power, Power, Power, -position, position, position, -position);
     }
 
     /**
@@ -387,11 +404,16 @@ public class vv_Robot {
      * @param Power each motor will run at the same float value
      * @return void
      */
-    public void runMotorsSideways(vv_OpMode aOpMode, float Power)
-            throws InterruptedException {
+    public void runMotorsSidewaysRight(vv_OpMode aOpMode, float Power) throws InterruptedException {
+
+        runMotors(aOpMode, Power, -Power, -Power, Power);
+    }
+
+    public void runMotorsSidewaysLeft(vv_OpMode aOpMode, float Power) throws InterruptedException {
 
         runMotors(aOpMode, -Power, Power, Power, -Power);
     }
+
 
     /**
      * Runs motors. Can be called by a more specific method to move forwards and backwards or sideways.
@@ -423,7 +445,7 @@ public class vv_Robot {
         motorArray[FRONT_RIGHT_MOTOR].setPower(0);
         motorArray[BACK_LEFT_MOTOR].setPower(0);
         motorArray[BACK_RIGHT_MOTOR].setPower(0);
-        Thread.sleep(250);
+        Thread.sleep(100);
     }
 
     public void pushButton(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum buttonEnum) {
@@ -431,17 +453,17 @@ public class vv_Robot {
         switch (buttonEnum) {
 
             case Left:
-                buttonServo.setPosition(BUTTON_SERVO_MAX_POS);
+                beaconServo.setPosition(BEACON_SERVO_MAX_POS);
                 break;
 
             case Right:
-                buttonServo.setPosition(BUTTON_SERVO_MIN_POS);
+                beaconServo.setPosition(BUTTON_SERVO_MIN_POS);
                 break;
         }
     }
 
     public boolean getButtonTouchValue(vv_OpMode aOpMode) throws InterruptedException {
-        return buttonSensor.isPressed();
+        return beaconTouchSensor.isPressed();
     }
 
     //turn the color sensor LED on the floor of the robot on
@@ -458,7 +480,23 @@ public class vv_Robot {
         Thread.sleep(300);
     }
 
-    public int getFloorColorSensorAlpha(vv_OpMode aOpMode){
+    //turn the color sensor LED on the floor of the robot on
+    public void enableBeaconColorSensorLed(vv_OpMode aOpMode) throws InterruptedException {
+        beaconColorSensor.enableLed(true);
+        //wait for it to turn on.
+        Thread.sleep(300);
+    }
+
+    //turn the color sensor LED on the floor of the robot off
+    public void disableBeaconColorSensorLed(vv_OpMode aOPMode) throws InterruptedException {
+        beaconColorSensor.enableLed(false);
+        //wait for it to turn off.
+        Thread.sleep(300);
+    }
+
+
+    public int getFloorColorSensorAlpha(vv_OpMode aOpMode) throws InterruptedException {
+        Thread.sleep(30);
         return cs.alpha();
     }
 
@@ -674,6 +712,18 @@ public class vv_Robot {
 
     }
 
+    public vv_Constants.BeaconColorEnum getBeaconColor(vv_OpMode aOpMode) {
+        if (beaconColorSensor.blue() > 100) {
+            return vv_Constants.BeaconColorEnum.BLUE;
+        }
+
+        if (beaconColorSensor.blue() > 100) {
+            return vv_Constants.BeaconColorEnum.BLUE;
+        }
+
+        return vv_Constants.BeaconColorEnum.UNKNOWN;
+
+    }
 
 
     public vv_Constants.IntakeStateEnum getIntakeState() {

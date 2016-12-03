@@ -2,8 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import static org.firstinspires.ftc.teamcode.vv_Constants.BeaconColorEnum;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BeaconServoStateEnum;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
-
+import static org.firstinspires.ftc.teamcode.vv_Constants.TOUCH_SENSE_POWER;
 
 /**
  * Created by Rachael_ on 10/23/2016.
@@ -24,6 +28,9 @@ public class vv_Autonomous extends vv_OpMode
             vvLib = new vv_Lib(this);
             telemetryAddData("Ready to go!", "", "");
             telemetryUpdate();
+            //Turn the LED on the Color Sensor mounted on the floor of the Robot on
+            vvLib.turnFloorColorSensorLedOn(this);
+            vvLib.turnBeaconColorSensorLedOn(this);
 
             waitForStart();
 
@@ -43,8 +50,7 @@ public class vv_Autonomous extends vv_OpMode
 
     public void basic_auto_strategy() throws InterruptedException, vv_Robot.MotorNameNotKnownException {
 
-        //Turn the LED on the Color Sensor mounted on the floor of the Robot on
-        vvLib.turnFloorColorSensorLedOn(this);
+
 
         //test the turn of the robot.
 
@@ -54,36 +60,81 @@ public class vv_Autonomous extends vv_OpMode
         //otherwise code has to be written to solve for this (maybe increase margin ?)
 
 
-        vvLib.moveWheels(this, 12, 0.4f, SidewaysRight);
+        vvLib.moveWheels(this, 12, 0.2f, SidewaysRight);
 
-        Thread.sleep(5000);
+        Thread.sleep(100);
 
-        /*
+        vvLib.turnAbsoluteGyroDegrees(this, 40);
 
-        vvLib.turnAbsoluteGyroDegrees(this, 50);
-
-        Thread.sleep(2000);
+        Thread.sleep(100);
 
         //distances are by experimentation.
 
-        vvLib.moveWheels(this, 46, 0.4f, SidewaysRight);
-
-        Thread.sleep(2000);
+        // vvLib.moveWheels(this, 60, 0.9f, SidewaysRight);
+        vvLib.moveTillWhiteLineDetect(this, 0.3f);
+        Thread.sleep(100);
 
         vvLib.turnAbsoluteGyroDegrees(this, 90);
+        Thread.sleep(100);
+        //now we are too far to the side, pull back a bit
+
+        //vvLib.moveWheels(this,6, 0.3f, Backward);
+
+        Thread.sleep(100);
+        vvLib.moveWheels(this, 6, 0.5f, SidewaysRight);
+
+        //code for detecting color of the beacon.
+
+        if (vvLib.getBeaconColor(this) == BeaconColorEnum.BLUE) {
+            //logic for choosing team side red or blue.
+
+            vvLib.pushABeaconButton(this, BeaconServoStateEnum.Left);
+            Thread.sleep(100);
+
+        }
+
+
+        if (vvLib.getBeaconColor(this) == BeaconColorEnum.RED) {
+            //logic for choosing team side red or blue.
+
+            vvLib.pushABeaconButton(this, BeaconServoStateEnum.Right);
+            Thread.sleep(100);
+
+        }
+
+        if (vvLib.getBeaconColor(this) == BeaconColorEnum.UNKNOWN) {
+            //logic for choosing team side red or blue.
+
+            vvLib.pushABeaconButton(this, BeaconServoStateEnum.Right);
+            Thread.sleep(100);
+            vvLib.pushABeaconButton(this, BeaconServoStateEnum.Right);
+            Thread.sleep(100);
+
+        }
+
+
+        //now move Sideways left to knock the ball off location.
+
+        vvLib.moveWheels(this, 40, 0.3f, SidewaysLeft);
 
 
 
 
+/*
+Touch Sensor is out of plane, so using dead reckoning till fixed.
         //move forward to the beacon panel, until the sensor touches the beacon.
         vvLib.moveTillTouch(this);
         //back off the panel, 1-2 inches to give space to the beacon press.
+        */
+
 
         vvLib.moveWheels(this, 1.5f, TOUCH_SENSE_POWER, Backward);
         //readjust the orientation again, since the interaction with the beacon face has likely
         //changed the angle of the robot
 
         vvLib.turnAbsoluteGyroDegrees(this, 90);
+
+        /*
 
         vvLib.pushAButton(this, Left);
         //wait till the servo reaches the button
