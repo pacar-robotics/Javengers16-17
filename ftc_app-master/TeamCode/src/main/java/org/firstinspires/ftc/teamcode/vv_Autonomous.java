@@ -55,16 +55,25 @@ public class vv_Autonomous extends vv_OpMode
 
 
         vvLib.moveWheels(this, 12, 0.4f, SidewaysRight);
+
+        Thread.sleep(5000);
+
+        /*
+
         vvLib.turnAbsoluteGyroDegrees(this, 50);
+
+        Thread.sleep(2000);
 
         //distances are by experimentation.
 
         vvLib.moveWheels(this, 46, 0.4f, SidewaysRight);
+
+        Thread.sleep(2000);
+
         vvLib.turnAbsoluteGyroDegrees(this, 90);
 
 
 
-        /*
 
         //move forward to the beacon panel, until the sensor touches the beacon.
         vvLib.moveTillTouch(this);

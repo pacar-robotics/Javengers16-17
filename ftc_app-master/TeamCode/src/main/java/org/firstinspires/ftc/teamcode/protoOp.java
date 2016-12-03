@@ -2,10 +2,14 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BeaconServoStateEnum.Left;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BeaconServoStateEnum.Right;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
+import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TOUCH_SENSE_POWER;
 
 
@@ -39,13 +43,13 @@ public class protoOp extends vv_OpMode {
             waitForStart();
 
 
-        //vvLib.testMotor(this,FRONT_LEFT_MOTOR,0.3f,1000);
-        //vvLib.testMotor(this,FRONT_RIGHT_MOTOR,0.3f,1000);
+        vvLib.testMotor(this, FRONT_LEFT_MOTOR, 0.3f, 1000);
+        vvLib.testMotor(this, FRONT_RIGHT_MOTOR, 0.3f, 1000);
 
 
-        //vvLib.testMotor(this, BACK_LEFT_MOTOR, 0.3f, 1000);
-        //vvLib.testMotor(this, BACK_RIGHT_MOTOR, 0.3f, 1000);
-        vvLib.testSidewaysRight(this, 1000);
+        vvLib.testMotor(this, BACK_LEFT_MOTOR, 0.3f, 1000);
+        vvLib.testMotor(this, BACK_RIGHT_MOTOR, 0.3f, 1000);
+
 
 
 

@@ -40,7 +40,7 @@ public class vv_Constants
     //distance between wheels left to right of the Robot in inches.
     final static float ROBOT_TRACK_DISTANCE = 15.6f; //adjusted from observation.
     //max time to wait in a tight loop, for example in robot turns or autonomous moves
-    final static int MAX_MOTOR_LOOP_TIME = 5000;
+    final static int MAX_MOTOR_LOOP_TIME = 10000;
     //max turn velocity for a motor, to be used in autonomous turns of the robot
     final static float MAX_ROBOT_TURN_MOTOR_VELOCITY = 0.5f;
     //min turn velocity for a motor, to be used in autonomous turns of the robot
@@ -53,7 +53,7 @@ public class vv_Constants
 
     //turn this one for debugging messages.
 
-    final static boolean DEBUG = false;
+    final static boolean DEBUG = true;
     //time to flash DEBUG message on telemtry
     final static long DEBUG_MESSAGE_DISPLAY_TIME = 10;
 
