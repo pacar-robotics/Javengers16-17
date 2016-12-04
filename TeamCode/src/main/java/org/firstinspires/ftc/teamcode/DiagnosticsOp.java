@@ -177,4 +177,57 @@ public class DiagnosticsOp extends vv_OpMode {
 
 		return formattedChoices;
 	}
+
+
+	/*
+	 * Robot element testing methods
+	 * The names are made to be the same as the tag in the XML file, so they do not follow camel-casing
+	 */
+
+	// TODO 12/3/2016: Fill in method stubs
+
+	// Motors
+	private void wheels() {
+	}
+
+	private void wormdrive() {
+	}
+
+	private void launcher() {
+	}
+
+	private void intake() {
+	}
+
+	private void lift() {
+	}
+
+	// Servos
+	private void intakegate() {
+	}
+
+	private void beacon() {
+	}
+
+	private void capball() {
+	}
+
+	// Sensors
+	private void floorcolor() {
+	}
+
+	private void beacontouch() {
+	}
+
+	private void launcherlimittouch() {
+	}
+
+	private void liftlimittouch() {
+	}
+
+	private void ultrasonic() {
+	}
+
+	private void gyro() {
+	}
 }
