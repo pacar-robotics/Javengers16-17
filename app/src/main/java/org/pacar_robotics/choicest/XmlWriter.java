@@ -14,7 +14,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -32,13 +31,13 @@ import javax.xml.transform.stream.StreamResult;
 class XmlWriter {
 
 	private String filePath;
-	private HashMap<String, String> choicesMap;
+	private Map<String, String> choicesMap;
 	private Activity activity;
 
 	private static final int MY_PERMISSION_REQUEST_STORAGE = 101;
 	private static final String LOG_TAG = "XmlWriter";
 
-	public XmlWriter(String filePath, HashMap choicesMap, Activity activity) {
+	public XmlWriter(String filePath, Map choicesMap, Activity activity) {
 		this.filePath = filePath;
 		this.choicesMap = choicesMap;
 		this.activity = activity;

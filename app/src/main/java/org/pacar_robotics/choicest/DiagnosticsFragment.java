@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -61,8 +61,8 @@ public class DiagnosticsFragment extends Fragment {
 		xmlWriter = new XmlWriter(FILE, createHashMap(), getActivity());
 	}
 
-	private HashMap<String, String> createHashMap() {
-		HashMap<String, String> choicesMap = new HashMap<>();
+	private LinkedHashMap<String, String> createHashMap() {
+		LinkedHashMap<String, String> choicesMap = new LinkedHashMap<>();
 
 		choicesMap.putAll(addListsToMap(motorsList));
 		choicesMap.putAll(addListsToMap(servosList));
@@ -71,8 +71,8 @@ public class DiagnosticsFragment extends Fragment {
 		return choicesMap;
 	}
 
-	private HashMap<String, String> addListsToMap(List<CheckBox> list) {
-		HashMap<String, String> hashMap = new HashMap<>();
+	private LinkedHashMap<String, String> addListsToMap(List<CheckBox> list) {
+		LinkedHashMap<String, String> hashMap = new LinkedHashMap<>();
 
 		for (CheckBox checkBox : list) {
 			hashMap.put(checkBox.getText().toString().replace(" ", "").toLowerCase(),
