@@ -33,9 +33,64 @@
 			android:orientation="vertical">
 
 			<CheckBox
-				android:id="@+id/wheels_motor"
+				android:id="@+id/base_motor_check_all"
 				style="@style/CheckBoxDiag"
-				android:text="@string/wheels_motor"/>
+				android:text="@string/base_motors"/>
+
+			<LinearLayout
+				style="@style/EncapsulatingView.Diagnostics.NextLevel"
+				android:orientation="vertical">
+
+				<CheckBox
+					android:id="@+id/front_right_wheel"
+					style="@style/CheckBoxDiag"
+					android:text="@string/frontright_wheel"/>
+
+				<CheckBox
+					android:id="@+id/front_left_wheel"
+					style="@style/CheckBoxDiag"
+					android:text="@string/frontleft_wheel"/>
+
+				<CheckBox
+					android:id="@+id/back_right_wheel"
+					style="@style/CheckBoxDiag"
+					android:text="@string/backright_wheel"/>
+
+				<CheckBox
+					android:id="@+id/back_left_wheel"
+					style="@style/CheckBoxDiag"
+					android:text="@string/backleft_wheel"/>
+			</LinearLayout>
+
+			<CheckBox
+				android:id="@+id/platform_movement_check_all"
+				style="@style/CheckBoxDiag"
+				android:text="@string/platform_movement"/>
+
+			<LinearLayout
+				style="@style/EncapsulatingView.Diagnostics.NextLevel"
+				android:orientation="vertical">
+
+				<CheckBox
+					android:id="@+id/forwards_platform"
+					style="@style/CheckBoxDiag"
+					android:text="@string/forwards"/>
+
+				<CheckBox
+					android:id="@+id/backwards_platform"
+					style="@style/CheckBoxDiag"
+					android:text="@string/backwards"/>
+
+				<CheckBox
+					android:id="@+id/right_platform"
+					style="@style/CheckBoxDiag"
+					android:text="@string/sideways_right"/>
+
+				<CheckBox
+					android:id="@+id/left_platform"
+					style="@style/CheckBoxDiag"
+					android:text="@string/sideways_left"/>
+			</LinearLayout>
 
 			<CheckBox
 				android:id="@+id/worm_drive_motor"

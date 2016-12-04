@@ -25,7 +25,16 @@
 
 	<!-- DIAGNOSTICS -->
 	<string name="motors_header">Motors</string>
-	<string name="wheels_motor">Wheels</string>
+	<string name="base_motors">Base Motors</string>
+	<string name="frontright_wheel">FrontRight Wheel</string>
+	<string name="frontleft_wheel">FrontLeft Wheel</string>
+	<string name="backright_wheel">BackRight Wheel</string>
+	<string name="backleft_wheel">BackLeft Wheel</string>
+	<string name="platform_movement">Platform Movement</string>
+	<string name="forwards">Forwards</string>
+	<string name="backwards">Backwards</string>
+	<string name="sideways_right">Sideways Right</string>
+	<string name="sideways_left">Sideways Left</string>
 	<string name="worm_drive_motor">Worm Drive</string>
 	<string name="launcher_motor">Launcher</string>
 	<string name="intake_motor">Intake</string>

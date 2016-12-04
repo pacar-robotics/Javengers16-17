@@ -30,11 +30,19 @@ public class DiagnosticsFragment extends Fragment {
 			"/PACAR/DiagChoices.xml";
 
 	@BindView(R.id.motors_check_all) CheckBox checkAllMotors;
+	@BindView(R.id.base_motor_check_all) CheckBox checkAllBaseMotors;
+	@BindView(R.id.platform_movement_check_all) CheckBox checkAllPlatformMovement;
 	@BindView(R.id.servos_check_all) CheckBox checkAllServos;
 	@BindView(R.id.sensors_check_all) CheckBox checkAllSensors;
 
-	@BindViews({R.id.wheels_motor, R.id.worm_drive_motor, R.id.launcher_motor, R.id.intake_motor, R.id.lift_motor})
+	@BindViews({R.id.front_right_wheel, R.id.front_left_wheel, R.id.back_right_wheel, R.id.back_left_wheel,
+			R.id.forwards_platform, R.id.backwards_platform, R.id.right_platform, R.id.left_platform,
+			R.id.worm_drive_motor, R.id.launcher_motor, R.id.intake_motor, R.id.lift_motor})
 	List<CheckBox> motorsList;
+	@BindViews({R.id.front_right_wheel, R.id.front_left_wheel, R.id.back_right_wheel, R.id.back_left_wheel})
+	List<CheckBox> baseMotors;
+	@BindViews({R.id.forwards_platform, R.id.backwards_platform, R.id.right_platform, R.id.left_platform})
+	List<CheckBox> platformMotors;
 	@BindViews({R.id.intake_gate_servo, R.id.beacon_servo, R.id.capball_servo})
 	List<CheckBox> servosList;
 	@BindViews({R.id.floor_color_sensor, R.id.beacon_touch_sensor, R.id.launcher_limit_touch_sensor, R.id.lift_limit_touch_sensor, R.id.ultrasonic_sensor, R.id.gyro_sensor})
@@ -79,8 +87,28 @@ public class DiagnosticsFragment extends Fragment {
 	void changeCheckAllMotors(CheckBox motorCheckAllBox) {
 		if (motorCheckAllBox.isChecked()) {
 			ButterKnife.apply(motorsList, CHECK);
+			checkAllBaseMotors.setChecked(true);
+			checkAllPlatformMovement.setChecked(true);
 		} else {
 			ButterKnife.apply(motorsList, UNCHECK);
+			checkAllBaseMotors.setChecked(false);
+			checkAllPlatformMovement.setChecked(false);
+		}
+	}
+	@OnCheckedChanged(R.id.base_motor_check_all)
+	void changeCheckAllBaseMotors(CheckBox baseMotorCheckAllBox) {
+		if (baseMotorCheckAllBox.isChecked()) {
+			ButterKnife.apply(baseMotors, CHECK);
+		} else {
+			ButterKnife.apply(baseMotors, UNCHECK);
+		}
+	}
+	@OnCheckedChanged(R.id.platform_movement_check_all)
+	void changeCheckAllPlatformMovement(CheckBox platformMovementCheckAll) {
+		if (platformMovementCheckAll.isChecked()) {
+			ButterKnife.apply(platformMotors, CHECK);
+		} else {
+			ButterKnife.apply(platformMotors, UNCHECK);
 		}
 	}
 	@OnCheckedChanged(R.id.servos_check_all)
