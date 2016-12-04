@@ -21,37 +21,39 @@ public class LauncherCalibration extends vv_OpMode {
 
         telemetry.setAutoClear(true);
 
-        try {
-            vvLib = new vv_Lib(this);
+
+        vvLib = new vv_Lib(this);
 
 
-            // Send telemetry message to signify robot waiting;
-            telemetry.addData("Hello Driver", ":I am", ":ready!");    //
-            telemetry.update();
-            // Wait for the game to start (driver presses PLAY)
+        // Send telemetry message to signify robot waiting;
+        telemetry.addData("Hello Driver", ":I am", ":ready!");    //
+        telemetry.update();
+        // Wait for the game to start (driver presses PLAY)
 
-            waitForStart();
-
-
-            while (opModeIsActive()) {
+        waitForStart();
 
 
-                processLaunchPowerCalibration();
-
-                processLaunch();
+        while (opModeIsActive()) {
 
 
-                idle();
+            processLaunchPowerCalibration();
 
-            }
-        } catch (vv_Robot.MotorNameNotKnownException MNNKE) {
-            telemetryAddData("Motor Name Not Known", "Values:", MNNKE.getMessage());
+            processLaunch();
+
+            processDrive();
+
+            processIntake();
+
+
+            idle();
+
         }
     }
 
+
     public void processDrive()
-            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
-        vvLib.drive1RobotWithPowerFactor(this, 0.4f);
+            throws InterruptedException {
+        vvLib.driveRobotWithPowerFactor(this, 0.4f);
     }
 
 
@@ -108,7 +110,7 @@ public class LauncherCalibration extends vv_OpMode {
      * gamepad1.left_bumper = turns the motor either to off or to the outtake power
      */
     private void processIntake()
-            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+            throws InterruptedException {
         //Changes state of Ball Collection mechanism to Outtake [Toggles On or Off]
         if (gamepad1.right_bumper) {
             vvLib.toggleIntake(this);
@@ -155,15 +157,84 @@ public class LauncherCalibration extends vv_OpMode {
      * amount of times
      */
     private void processLaunch()
-            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+            throws InterruptedException {
 
+/*
         if (gamepad1.y) {
             //shoot a ball
             //then setup for next shot.
             //first setupShot should be called from vvLib.init
+
+
+            try {
+                //first move to position max
+                vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_MAX);
+
+            } catch (vv_Robot.MotorStalledException MSE) {
+                telemetryAddData("Motor Stalled!", "Name", MSE.getMessage());
+                Thread.sleep(500);
+            }
+            if (vvLib.getLauncherPowerPosition(this) > (LAUNCH_POWER_POSITION_MAX - LAUNCH_POWER_INCREMENT)) {
+                vvLib.shootBall(this);
+                vvLib.setupShot(this);
+            }
+        }
+
+*/
+
+        /*
+
+        if (gamepad1.x) {
+            //shoot a ball
+            //then setup for next shot.
+            //first setupShot should be called from vvLib.init
+
+
+            //first move to position max
+            vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_MID);
+
             vvLib.shootBall(this);
             vvLib.setupShot(this);
         }
+
+        if (gamepad1.a) {
+            //shoot a ball
+            //then setup for next shot.
+            //first setupShot should be called from vvLib.init
+
+
+            //first move to position max
+            vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_AUTONOMOUS);
+
+            vvLib.shootBall(this);
+            vvLib.setupShot(this);
+        }
+
+*/
+        if (gamepad1.start) {
+            //shoot a ball
+            //then setup for next shot.
+            //launch where we are.
+            //used to calibrate the location.
+
+
+            vvLib.shootBall(this);
+            vvLib.setupShot(this);
+        }
+
+
+/*
+        if (gamepad1.b) {
+            //shoot a ball
+            //then setup for next shot.
+            //first setupShot should be called from vvLib.init
+
+
+            //first move to position max
+            vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_MIN);
+        }
+
+        */
 
 
     }

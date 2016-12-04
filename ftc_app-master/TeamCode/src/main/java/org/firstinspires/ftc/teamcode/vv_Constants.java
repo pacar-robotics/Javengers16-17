@@ -61,7 +61,7 @@ public class vv_Constants
 
     //turn this one for debugging messages.
 
-    final static boolean DEBUG = true;
+    final static boolean DEBUG = false;
     //time to flash DEBUG message on telemtry
     final static long DEBUG_MESSAGE_DISPLAY_TIME = 10;
 
@@ -69,12 +69,12 @@ public class vv_Constants
     final static boolean DEBUG_AUTO_CLEAR = false;
 
     //time to wait in stall check code
-    final static int ENCODED_MOTOR_STALL_TIME_DELTA = 100;
+    final static int ENCODED_MOTOR_STALL_TIME_DELTA = 200;
 
     //encoder clicks to check for Andymark motors for stall
-    final static int ENCODED_MOTOR_STALL_CLICKS_ANDYMARK = 90;
+    final static int ENCODED_MOTOR_STALL_CLICKS_ANDYMARK = 10;
     //encoder clicks to check for Andymark motors for stall
-    final static int ENCODED_MOTOR_STALL_CLICKS_TETRIX = 100;
+    final static int ENCODED_MOTOR_STALL_CLICKS_TETRIX = 10;
 
     //power used to rotate intake
     final static float INTAKE_POWER = 06f;
@@ -91,15 +91,15 @@ public class vv_Constants
     final static int CAP_BALL_MOTOR = 7;
 
 
-    final static int LAUNCH_POWER_INCREMENT = 200;
+    final static int LAUNCH_POWER_INCREMENT = 500;
 
     final static int LAUNCH_POWER_POSITION_MIN = 0;
     final static int LAUNCH_POWER_POSITION_AUTONOMOUS = 3500;
-    final static int LAUNCH_POWER_POSITION_MAX = 4600;
+    final static int LAUNCH_POWER_POSITION_MAX = 4400;
     final static int LAUNCH_POWER_POSITION_MID = 4000;
-    
+
     final static float WORM_DRIVE_POWER = 0.8f;
-    final static float WORM_DRIVE_DURATION_MAX = 1000;
+    final static float WORM_DRIVE_DURATION_MAX = 3000;
     final static float WORM_DRIVE_ENCODER_MARGIN = 20;
     BeaconColorEnum BeaconColor;
     DirectionEnum Direction;

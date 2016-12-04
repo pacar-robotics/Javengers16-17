@@ -98,7 +98,7 @@ public class vv_Lib {
     {
         robot.setMotorMode(aOpMode, ARM_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        robot.setPower(aOpMode, ARM_MOTOR, 0.5f);
+        robot.setPower(aOpMode, ARM_MOTOR, 0.8f);
 
         Thread.sleep(500);
 
@@ -563,7 +563,7 @@ public class vv_Lib {
 
 
     public void driveRobotWithPowerFactor(vv_OpMode aOpMode, float powerFactor)
-            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+            throws InterruptedException {
 
 
         // takes the x and y cooridinates of the joystick and calculates the power for each motor that allows the robot to turn in that direction
@@ -609,7 +609,7 @@ public class vv_Lib {
      *
      * @param anOp an object of vv_OpMode
      */
-    public void toggleOuttake(vv_OpMode anOp) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+    public void toggleOuttake(vv_OpMode anOp) throws InterruptedException {
         // if the current ball collector state is Outtake or Intake, turn the motor off
         // else set the ball collector motor power to the outtake power
         if (robot.getIntakeState() == vv_Constants.IntakeStateEnum.Out ||
@@ -629,7 +629,7 @@ public class vv_Lib {
      * @param anOp an object of vv_OpMode
      */
     public void toggleIntake(vv_OpMode anOp)
-            throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+            throws InterruptedException {
         // if the current ball collector state is Outtake or Intake, turn the motor off
         // else set the ball collector motor power to the intake power
         if (robot.getIntakeState() == vv_Constants.IntakeStateEnum.In ||
@@ -754,6 +754,11 @@ public class vv_Lib {
 
 
         robot.setLauncherPowerPosition(aOpMode, launcherPowerPosition);
+    }
+
+    public void setLauncherPowerPosition(vv_OpMode aOpMode, int position)
+            throws InterruptedException, vv_Robot.MotorStalledException {
+        robot.setLauncherPowerPosition(aOpMode, position);
     }
 
     public double getLauncherGatePosition(vv_OpMode aOpMode) {

@@ -152,6 +152,7 @@ public class vv_Robot {
         motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
+
         // Set all base motors to zero power
         stopBaseMotors(aOpMode);
 
@@ -713,30 +714,32 @@ public class vv_Robot {
                 aOpMode.time_elapsed() < WORM_DRIVE_DURATION_MAX) {
             //wait until the position is reached or times out.
 
-            aOpMode.idle();
             int stallPositionStart = motorArray[WORM_DRIVE_MOTOR].getCurrentPosition();
             long stallTimeStart = aOpMode.time_elapsed();
             //wait till the run is complete or the time runs out.
-            Thread.sleep(50);
-            aOpMode.idle();
+            Thread.sleep(ENCODED_MOTOR_STALL_TIME_DELTA);
             //stall code
-            int stallPositionDelta = Math.abs(motorArray[WORM_DRIVE_MOTOR].getCurrentPosition()) - Math.abs(stallPositionStart);
+            int stallPositionDelta = Math.abs(Math.abs(motorArray[WORM_DRIVE_MOTOR].getCurrentPosition())
+                    - Math.abs(stallPositionStart));
             long stallTimeDelta = aOpMode.time_elapsed() - stallTimeStart;
             float stallVelocity = ((stallPositionDelta * 1.0f) / stallTimeDelta);
 
             //TODO: Stall code must be tested!!
-            if (stallTimeDelta > 0) {
-                if (stallVelocity < stallVelocityThreshold) {
-                    //motor stalling ?
-                    //stop motor first
-                    aOpMode.DBG("in stall code throw testEncodedMotor");
-                    motorArray[WORM_DRIVE_MOTOR].setPower(0.0f);
-                    //throw exception indicating the problem.
-                    throw new MotorStalledException("MotorName" + WORM_DRIVE_MOTOR, stallVelocity, stallVelocityThreshold);
+            if (stallVelocity < stallVelocityThreshold) {
+                //motor stalling ?
+                //stop motor first
+                aOpMode.DBG("in stall code throw testEncodedMotor");
+                motorArray[WORM_DRIVE_MOTOR].setPower(0.0f);
+                //throw exception indicating the problem.
+                if (DEBUG) {
+                    aOpMode.telemetryAddData("Stall Data", "", "stallV:" + stallVelocity
+                            + "stallT" + stallVelocityThreshold
+                            + "stallTDelta" + stallTimeDelta
+                            + "stallPDelta" + stallPositionDelta);
+                    aOpMode.telemetryUpdate();
                 }
+                throw new MotorStalledException("MotorName" + ":WormDriveMotor", stallVelocity, stallVelocityThreshold);
             }
-
-
         }
         //stop the motor
         motorArray[WORM_DRIVE_MOTOR].setPower(0.0f);
@@ -754,7 +757,7 @@ public class vv_Robot {
     }
 
     public void closeLauncherGate() throws InterruptedException {
-        launcherGateServo.setPosition(LAUNCH_GATE_SERVO_OPEN);
+        launcherGateServo.setPosition(LAUNCH_GATE_SERVO_CLOSED);
         Thread.sleep(100);
     }
 
