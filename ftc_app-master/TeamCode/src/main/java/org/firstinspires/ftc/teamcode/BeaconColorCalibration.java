@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 
 
-@TeleOp(name = "LauncherCalibrationOp", group = "Test")
+@TeleOp(name = "BeaconColorCalibrationOp", group = "Test")
 
-public class LauncherCalibration extends vv_OpMode {
+public class BeaconColorCalibration extends vv_OpMode {
 
     vv_Lib vvLib;
 
@@ -19,34 +19,27 @@ public class LauncherCalibration extends vv_OpMode {
          * The init() method of the hardware class does all the work here
          */
 
-        telemetry.setAutoClear(true);
 
-        try {
-            vvLib = new vv_Lib(this);
+        vvLib = new vv_Lib(this);
 
 
-            // Send telemetry message to signify robot waiting;
-            telemetry.addData("Hello Driver", ":I am", ":ready!");    //
-            telemetry.update();
-            // Wait for the game to start (driver presses PLAY)
+        // Send telemetry message to signify robot waiting;
+        telemetry.addData("Hello Driver", ":I am", ":ready!");    //
+        telemetry.addData("Move Robot over line", ":To read", ":values!");    //
+        telemetry.update();
+        // Wait for the game to start (driver presses PLAY)
 
-            waitForStart();
+        vvLib.turnBeaconLightSensorLedOn(this);
 
-
-            while (opModeIsActive()) {
-
-
-                processLaunchPowerCalibration();
-
-                processLaunch();
+        waitForStart();
 
 
-                idle();
-
-            }
-        } catch (vv_Robot.MotorNameNotKnownException MNNKE) {
-            telemetryAddData("Motor Name Not Known", "Values:", MNNKE.getMessage());
+        while (opModeIsActive()) {
+            telemetry.setAutoClear(true);
+            vvLib.showBeaconLightSensorLightIntensityOnTelemetry(this, true);
+            idle();
         }
+
     }
 
     public void processDrive()
@@ -171,11 +164,6 @@ public class LauncherCalibration extends vv_OpMode {
     private void processLaunchPowerCalibration() throws InterruptedException {
 
         try {
-            telemetry.setAutoClear(true);
-            telemetryAddData("Power Position Before:", "Value", ":" +
-                    vvLib.getLauncherPowerPosition(this));
-            telemetryUpdate();
-
             //read the triggers from game pad.
             if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
                 vvLib.decreaseLauncherPower(this);
@@ -183,12 +171,11 @@ public class LauncherCalibration extends vv_OpMode {
             if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
                 vvLib.increaseLauncherPower(this);
             }
-            telemetryAddData("Power Position After:", "Value", ":" +
+            telemetryAddData("Current Launcher Power:", "Value", ":" +
                     vvLib.getLauncherPowerPosition(this));
             telemetryUpdate();
         } catch (vv_Robot.MotorStalledException MSE) {
             telemetryAddData("Motor Stalled!", "Name", MSE.getMessage());
-            Thread.sleep(500);
         }
     }
 }

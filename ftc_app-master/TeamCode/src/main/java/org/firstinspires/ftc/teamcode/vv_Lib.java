@@ -85,7 +85,12 @@ public class vv_Lib {
         }
         robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
 
-        Thread.sleep(100);
+        //open the launcher gate
+        robot.openLauncherGate();
+        Thread.sleep(500);
+        //wait for a ball to fall.
+        robot.closeLauncherGate();
+        //close the gate
 
     }
 
@@ -189,6 +194,19 @@ public class vv_Lib {
         }
     }
 
+    public void showBeaconLightSensorLightIntensityOnTelemetry(vv_OpMode aOpMode,
+                                                               boolean updateTheDisplay)
+            throws InterruptedException {
+        aOpMode.telemetryAddData("Beacon Intensity", "Intensity", ":" +
+                robot.getbeaconLightSensorIntensity(aOpMode));
+
+
+        if (updateTheDisplay) {
+            aOpMode.telemetryUpdate();
+        }
+    }
+
+
     public void showBaseGyroSensorHeadingOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
         aOpMode.telemetryAddData("Gyro Sensor", "Heading", ":" + robot.getBaseGyroSensorHeading(aOpMode));
         if (updateTheDisplay) {
@@ -214,12 +232,12 @@ public class vv_Lib {
         robot.disableFloorColorSensorLed(aOpMode);
     }
 
-    public void turnBeaconColorSensorLedOn(vv_OpMode aOpMode) throws InterruptedException {
-        robot.enableBeaconColorSensorLed(aOpMode);
+    public void turnBeaconLightSensorLedOn(vv_OpMode aOpMode) throws InterruptedException {
+        robot.enableBeaconLightSensorLed(aOpMode);
     }
 
-    public void turnBeaconColorSensorLedOff(vv_OpMode aOpMode) throws InterruptedException {
-        robot.disableBeaconColorSensorLed(aOpMode);
+    public void turnBeaconLightSensorLedOff(vv_OpMode aOpMode) throws InterruptedException {
+        robot.disableBeaconLightSensorLed(aOpMode);
     }
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
@@ -690,7 +708,7 @@ public class vv_Lib {
          */
     }
 
-    public void decreaseLauncherPower(vv_OpMode aOpMode) throws InterruptedException,
+    public void decreaseLauncherPowerWithLimits(vv_OpMode aOpMode) throws InterruptedException,
             vv_Robot.MotorStalledException {
         int launcherPowerPosition = robot.getLauncherPowerPosition(aOpMode);
         if (launcherPowerPosition > LAUNCH_POWER_POSITION_MIN) {
@@ -705,7 +723,7 @@ public class vv_Lib {
         }
     }
 
-    public void increaseLauncherPower(vv_OpMode aOpMode) throws InterruptedException,
+    public void increaseLauncherPowerWithLimits(vv_OpMode aOpMode) throws InterruptedException,
             vv_Robot.MotorStalledException {
         int launcherPowerPosition = robot.getLauncherPowerPosition(aOpMode);
         if (launcherPowerPosition < LAUNCH_POWER_POSITION_MAX) {
@@ -719,11 +737,41 @@ public class vv_Lib {
         }
     }
 
+    public void decreaseLauncherPower(vv_OpMode aOpMode) throws InterruptedException,
+            vv_Robot.MotorStalledException {
+        int launcherPowerPosition = robot.getLauncherPowerPosition(aOpMode);
+
+        launcherPowerPosition -= LAUNCH_POWER_INCREMENT;
+        robot.setLauncherPowerPosition(aOpMode, launcherPowerPosition);
+    }
+
+    public void increaseLauncherPower(vv_OpMode aOpMode) throws InterruptedException,
+            vv_Robot.MotorStalledException {
+        int launcherPowerPosition = robot.getLauncherPowerPosition(aOpMode);
+
+
+        launcherPowerPosition += LAUNCH_POWER_INCREMENT;
+
+
+        robot.setLauncherPowerPosition(aOpMode, launcherPowerPosition);
+    }
+
+    public double getLauncherGatePosition(vv_OpMode aOpMode) {
+        return robot.getLauncherGateServoPosition(aOpMode);
+    }
+
+    public void setLauncherGatePosition(vv_OpMode aOpMode, double position) {
+        robot.setLauncherGateServoPosition(aOpMode, position);
+    }
+
+
     public int getLauncherPowerPosition(vv_OpMode aOpMode) {
         return robot.getLauncherPowerPosition(aOpMode);
     }
 
-    public vv_Constants.BeaconColorEnum getBeaconColor(vv_OpMode aOpMode) {
-        return robot.getBeaconColor(aOpMode);
+
+    public double getBeaconLightIntensity(vv_OpMode aOpMode) throws InterruptedException {
+        return robot.getbeaconLightSensorIntensity(aOpMode);
     }
+
 }

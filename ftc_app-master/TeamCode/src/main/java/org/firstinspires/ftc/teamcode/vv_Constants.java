@@ -40,6 +40,11 @@ public class vv_Constants
     static final double BEACON_SERVO_MID_POS = 0.4f;
     static final double BUTTON_SERVO_MIN_POS     =  0.45f;
 
+    // Extremes for servo that controls the gate for launch
+    static final double LAUNCH_GATE_SERVO_OPEN = 0.0f;     // Maximum rotational position
+    static final double LAUNCH_GATE_SERVO_CLOSED = 0.3f;
+
+
     //distance between wheels left to right of the Robot in inches.
     final static float ROBOT_TRACK_DISTANCE = 15.6f; //adjusted from observation.
     //max time to wait in a tight loop, for example in robot turns or autonomous moves
@@ -87,8 +92,12 @@ public class vv_Constants
 
 
     final static int LAUNCH_POWER_INCREMENT = 200;
-    final static int LAUNCH_POWER_POSITION_MAX = 2000;
+
     final static int LAUNCH_POWER_POSITION_MIN = 0;
+    final static int LAUNCH_POWER_POSITION_AUTONOMOUS = 3500;
+    final static int LAUNCH_POWER_POSITION_MAX = 4600;
+    final static int LAUNCH_POWER_POSITION_MID = 4000;
+    
     final static float WORM_DRIVE_POWER = 0.8f;
     final static float WORM_DRIVE_DURATION_MAX = 1000;
     final static float WORM_DRIVE_ENCODER_MARGIN = 20;

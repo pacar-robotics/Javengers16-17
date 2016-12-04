@@ -2,10 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import static org.firstinspires.ftc.teamcode.vv_Constants.BeaconColorEnum;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BeaconServoStateEnum;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
-import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TOUCH_SENSE_POWER;
 
@@ -30,7 +28,7 @@ public class vv_Autonomous extends vv_OpMode
             telemetryUpdate();
             //Turn the LED on the Color Sensor mounted on the floor of the Robot on
             vvLib.turnFloorColorSensorLedOn(this);
-            vvLib.turnBeaconColorSensorLedOn(this);
+            vvLib.turnBeaconLightSensorLedOn(this);
 
             waitForStart();
 
@@ -85,16 +83,8 @@ public class vv_Autonomous extends vv_OpMode
 
         //code for detecting color of the beacon.
 
-        if (vvLib.getBeaconColor(this) == BeaconColorEnum.BLUE) {
-            //logic for choosing team side red or blue.
 
-            vvLib.pushABeaconButton(this, BeaconServoStateEnum.Left);
-            Thread.sleep(100);
-
-        }
-
-
-        if (vvLib.getBeaconColor(this) == BeaconColorEnum.RED) {
+        if (vvLib.getBeaconLightIntensity(this) > 0.5) {
             //logic for choosing team side red or blue.
 
             vvLib.pushABeaconButton(this, BeaconServoStateEnum.Right);
@@ -102,21 +92,12 @@ public class vv_Autonomous extends vv_OpMode
 
         }
 
-        if (vvLib.getBeaconColor(this) == BeaconColorEnum.UNKNOWN) {
-            //logic for choosing team side red or blue.
 
-            vvLib.pushABeaconButton(this, BeaconServoStateEnum.Right);
-            Thread.sleep(100);
-            vvLib.pushABeaconButton(this, BeaconServoStateEnum.Right);
-            Thread.sleep(100);
-
-        }
-
-
+/*
         //now move Sideways left to knock the ball off location.
 
         vvLib.moveWheels(this, 40, 0.3f, SidewaysLeft);
-
+*/
 
 
 

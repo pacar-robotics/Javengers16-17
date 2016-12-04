@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
 
-import com.qualcomm.hardware.hitechnic.HiTechnicNxtColorSensor;
 import com.qualcomm.hardware.hitechnic.HiTechnicNxtTouchSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -25,6 +25,8 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.IntakeStateEnum.Off;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_GATE_SERVO_CLOSED;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_GATE_SERVO_OPEN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_MOTOR_LOOP_TIME;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_LOWER_POWER_THRESHOLD;
@@ -48,7 +50,7 @@ public class vv_Robot {
     private Servo beaconServo = null;
     private Servo launcherGateServo = null;
     private HiTechnicNxtTouchSensor beaconTouchSensor;
-    private HiTechnicNxtColorSensor beaconColorSensor;
+    private LightSensor beaconLightSensor;
     private TouchSensor armSensor;
     private ColorSensor cs;
     private ModernRoboticsI2cGyro base_gyro_sensor;
@@ -77,7 +79,7 @@ public class vv_Robot {
 
         cs = hwMap.colorSensor.get("color_line_sensor");
         beaconTouchSensor = (HiTechnicNxtTouchSensor) hwMap.touchSensor.get("beacon_touch_sensor");
-        beaconColorSensor = (HiTechnicNxtColorSensor) hwMap.colorSensor.get("beacon_color_sensor");
+        beaconLightSensor = hwMap.lightSensor.get("beacon_light_sensor");
 
 
 
@@ -87,7 +89,7 @@ public class vv_Robot {
         //wait for it to turn off.
         Thread.sleep(300);
 
-        beaconColorSensor.enableLed(false);
+        beaconLightSensor.enableLed(false);
         //wait for it to turn off.
         Thread.sleep(300);
 
@@ -113,6 +115,10 @@ public class vv_Robot {
 
 
         launcherGateServo = hwMap.servo.get("servo_launcher_gate");
+        //initialize to the closed position
+        launcherGateServo.setPosition(LAUNCH_GATE_SERVO_CLOSED);
+        //wait for these servos to reach desired state
+        Thread.sleep(100);
 
 
         //buttonServo.setPosition(0.65);
@@ -134,10 +140,17 @@ public class vv_Robot {
         //motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
+
         while (motorArray[WORM_DRIVE_MOTOR].getCurrentPosition() != 0) {
             //wait for the Front Left Motor to settle. as a proxy for all of the motors.
             aOpMode.idle();
         }
+
+        //set the run mode to run_to_position for the worm drive
+        //since we will not be using it in any other mode.
+
+        motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
 
         // Set all base motors to zero power
         stopBaseMotors(aOpMode);
@@ -481,15 +494,15 @@ public class vv_Robot {
     }
 
     //turn the color sensor LED on the floor of the robot on
-    public void enableBeaconColorSensorLed(vv_OpMode aOpMode) throws InterruptedException {
-        beaconColorSensor.enableLed(true);
+    public void enableBeaconLightSensorLed(vv_OpMode aOpMode) throws InterruptedException {
+        beaconLightSensor.enableLed(true);
         //wait for it to turn on.
         Thread.sleep(300);
     }
 
     //turn the color sensor LED on the floor of the robot off
-    public void disableBeaconColorSensorLed(vv_OpMode aOPMode) throws InterruptedException {
-        beaconColorSensor.enableLed(false);
+    public void disableBeaconLightSensorLed(vv_OpMode aOPMode) throws InterruptedException {
+        beaconLightSensor.enableLed(false);
         //wait for it to turn off.
         Thread.sleep(300);
     }
@@ -499,6 +512,24 @@ public class vv_Robot {
         Thread.sleep(30);
         return cs.alpha();
     }
+
+    public double getbeaconLightSensorIntensity(vv_OpMode aOpMode) throws InterruptedException {
+        Thread.sleep(30);
+        return beaconLightSensor.getLightDetected();
+    }
+
+/*
+    public int getbeaconLightSensorGreen(vv_OpMode aOpMode) throws InterruptedException {
+        Thread.sleep(30);
+        return beaconLightSensor.green();
+    }
+
+    public int getbeaconLightSensorBlue(vv_OpMode aOpMode) throws InterruptedException {
+        Thread.sleep(30);
+        return beaconLightSensor.blue();
+    }
+
+*/
 
     //get the alpha (luminosity being read in reflected light from LED)
     //high luminosity will be found with a white surface.
@@ -712,17 +743,27 @@ public class vv_Robot {
 
     }
 
-    public vv_Constants.BeaconColorEnum getBeaconColor(vv_OpMode aOpMode) {
-        if (beaconColorSensor.blue() > 100) {
-            return vv_Constants.BeaconColorEnum.BLUE;
-        }
+    public double getBeaconLightIntensity(vv_OpMode aOpMode) {
+        return beaconLightSensor.getLightDetected();
 
-        if (beaconColorSensor.blue() > 100) {
-            return vv_Constants.BeaconColorEnum.BLUE;
-        }
+    }
 
-        return vv_Constants.BeaconColorEnum.UNKNOWN;
+    public void openLauncherGate() throws InterruptedException {
+        launcherGateServo.setPosition(LAUNCH_GATE_SERVO_OPEN);
+        Thread.sleep(100);
+    }
 
+    public void closeLauncherGate() throws InterruptedException {
+        launcherGateServo.setPosition(LAUNCH_GATE_SERVO_OPEN);
+        Thread.sleep(100);
+    }
+
+    public double getLauncherGateServoPosition(vv_OpMode aOpMode) {
+        return launcherGateServo.getPosition();
+    }
+
+    public void setLauncherGateServoPosition(vv_OpMode aOpMode, double position) {
+        launcherGateServo.setPosition(position);
     }
 
 
