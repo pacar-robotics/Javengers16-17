@@ -118,63 +118,26 @@ public class DiagnosticsOp extends vv_OpMode {
 	@Override
 	public void runOpMode() throws InterruptedException {
 		initialize();
-		choices = getTests();
 
 		// Go through all choices
 		for (Map.Entry<String, ChoiceRecord> choicesEntry : choices.entrySet()) {
 			// First check if we need to do the test through XML file, then ask the user
 			if (choicesEntry.getValue().getTestMotor() && getUserConfirmation(choicesEntry.getKey())) {
-				try {
-					Method method = DiagnosticsOp.class.getDeclaredMethod(choicesEntry.getKey());
-
-					choicesEntry.getValue().setErrorStatus((Boolean) method.invoke(this));
-				} catch (NoSuchMethodException e) {
-					Log.e(LOG_TAG, e.getMessage());
-					choicesEntry.getValue().setErrorStatus(true);
-					choicesEntry.getValue().addErrorMessage("Could not find method: " + choicesEntry.getKey());
-				} catch (InvocationTargetException e) {
-					Log.e(LOG_TAG, e.getMessage());
-					choicesEntry.getValue().setErrorStatus(true);
-					choicesEntry.getValue().addErrorMessage("Could invoke method: " + choicesEntry.getKey());
-				} catch (IllegalAccessException e) {
-					Log.e(LOG_TAG, e.getMessage());
-					choicesEntry.getValue().setErrorStatus(true);
-					choicesEntry.getValue().addErrorMessage("Could not access method: " + choicesEntry.getKey());
-				}
+				callTestElementMethod(choicesEntry);
 			}
 		}
 
 		// Print all errors
 		for (Map.Entry<String, ChoiceRecord> choicesEntry : choices.entrySet()) {
 			if (choicesEntry.getValue().getErrorStatus()) {
-				telemetryUpdate();
-				telemetryAddData(LOG_TAG, "Test failed", choicesEntry.getKey());
-
-				// Print all error messages
-				int errorMessageCount = 0;
-				for (String errorMessage : choicesEntry.getValue().getErrorMessages()) {
-					// Must have different key each time or line with same key will be overwritten
-					telemetryAddData(LOG_TAG, "Reason" + errorMessageCount++, errorMessage);
-				}
+				printElementError(choicesEntry);
 			}
 		}
 	}
 
-	private boolean getUserConfirmation(String testName) {
-		// Clear screen and print message
-		telemetryUpdate();
-		telemetryAddData(LOG_TAG, INPUT_TELEMETRY_MESSAGE,
-				String.format("Test the %s? A for yes; B for no", testName));
-
-		// Wait until A or B is pressed
-		while (!gamepad1.a && !gamepad1.b);
-
-		// If A is pressed, return yes. Otherwise, return no
-		return gamepad1.a;
-	}
-
 	private void initialize() throws InterruptedException {
 		robotLibrary = new vv_Lib(this);
+		choices = getTests();
 	}
 
 	private HashMap<String, ChoiceRecord> getTests() {
@@ -191,6 +154,50 @@ public class DiagnosticsOp extends vv_OpMode {
 		}
 
 		return formattedChoices;
+	}
+
+	private void callTestElementMethod(Map.Entry<String, ChoiceRecord> choicesEntry) {
+		try {
+			Method method = DiagnosticsOp.class.getDeclaredMethod(choicesEntry.getKey());
+			choicesEntry.getValue().setErrorStatus((Boolean) method.invoke(this));
+		} catch (NoSuchMethodException e) {
+			Log.e(LOG_TAG, e.getMessage());
+			choicesEntry.getValue().setErrorStatus(true);
+			choicesEntry.getValue().addErrorMessage("Could not find method: " + choicesEntry.getKey());
+		} catch (InvocationTargetException e) {
+			Log.e(LOG_TAG, e.getMessage());
+			choicesEntry.getValue().setErrorStatus(true);
+			choicesEntry.getValue().addErrorMessage("Could invoke method: " + choicesEntry.getKey());
+		} catch (IllegalAccessException e) {
+			Log.e(LOG_TAG, e.getMessage());
+			choicesEntry.getValue().setErrorStatus(true);
+			choicesEntry.getValue().addErrorMessage("Could not access method: " + choicesEntry.getKey());
+		}
+	}
+
+	private void printElementError(Map.Entry<String, ChoiceRecord> choicesEntry) {
+		telemetryUpdate();
+		telemetryAddData(LOG_TAG, "Test failed", choicesEntry.getKey());
+
+		// Print all error messages
+		int errorMessageCount = 0;
+		for (String errorMessage : choicesEntry.getValue().getErrorMessages()) {
+			// Must have different key each time or line with same key will be overwritten
+			telemetryAddData(LOG_TAG, "Reason" + errorMessageCount++, errorMessage);
+		}
+	}
+
+	private boolean getUserConfirmation(String testName) {
+		// Clear screen and print message
+		telemetryUpdate();
+		telemetryAddData(LOG_TAG, INPUT_TELEMETRY_MESSAGE,
+				String.format("Test the %s? A for yes; B for no", testName));
+
+		// Wait until A or B is pressed
+		while (!gamepad1.a && !gamepad1.b);
+
+		// If A is pressed, return yes. Otherwise, return no
+		return gamepad1.a;
 	}
 
 
