@@ -47,6 +47,7 @@
 
 	<string name="sensors_header">Sensors</string>
 	<string name="floor_color_sensor">Floor color</string>
+	<string name="beacon_color_sensor">Beacon color</string>
 	<string name="beacon_touch_sensor">Beacon touch</string>
 	<string name="launcher_limit_touch_sensor">Launcher limit touch</string>
 	<string name="lift_limit_touch_sensor">Lift limit touch</string>

@@ -45,7 +45,7 @@ public class DiagnosticsFragment extends Fragment {
 	List<CheckBox> platformMotors;
 	@BindViews({R.id.intake_gate_servo, R.id.beacon_servo, R.id.capball_servo})
 	List<CheckBox> servosList;
-	@BindViews({R.id.floor_color_sensor, R.id.beacon_touch_sensor, R.id.launcher_limit_touch_sensor, R.id.lift_limit_touch_sensor, R.id.ultrasonic_sensor, R.id.gyro_sensor})
+	@BindViews({R.id.floor_color_sensor, R.id.beacon_color_sensor, R.id.beacon_touch_sensor, R.id.launcher_limit_touch_sensor, R.id.lift_limit_touch_sensor, R.id.ultrasonic_sensor, R.id.gyro_sensor})
 	List<CheckBox> sensorsList;
 
 	XmlWriter xmlWriter;
