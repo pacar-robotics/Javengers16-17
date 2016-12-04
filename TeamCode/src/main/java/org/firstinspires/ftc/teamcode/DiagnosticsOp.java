@@ -209,7 +209,28 @@ public class DiagnosticsOp extends vv_OpMode {
 	// TODO 12/3/2016: Fill in method stubs
 
 	// Motors
-	private void wheels() {
+	private void frontrightwheel() {
+	}
+
+	private void frontleftwheel() {
+	}
+
+	private void backrightwheel() {
+	}
+
+	private void backleftwheel() {
+	}
+
+	private void forwards() {
+	}
+
+	private void backwards() {
+	}
+
+	private void sidewaysright() {
+	}
+
+	private void sidwaysleft() {
 	}
 
 	private void wormdrive() {
@@ -239,6 +260,9 @@ public class DiagnosticsOp extends vv_OpMode {
 	}
 
 	private void beacontouch() {
+	}
+
+	private void beaconcolor() {
 	}
 
 	private void launcherlimittouch() {
