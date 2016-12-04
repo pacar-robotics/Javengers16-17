@@ -36,9 +36,7 @@
 		<item name="android:layout_height">wrap_content</item>
 	</style>
 
-	<style name="CheckBoxDiag">
-		<item name="android:layout_width">match_parent</item>
-		<item name="android:layout_height">wrap_content</item>
+	<style name="CheckBoxDiag" parent="RadioCheckBox">
 		<item name="android:checked">true</item>
 	</style>
 
