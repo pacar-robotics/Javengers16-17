@@ -217,7 +217,7 @@ public class LauncherCalibration extends vv_OpMode {
             //launch where we are.
             //used to calibrate the location.
 
-
+            vvLib.dropBall(this);
             vvLib.shootBall(this);
             vvLib.setupShot(this);
         }

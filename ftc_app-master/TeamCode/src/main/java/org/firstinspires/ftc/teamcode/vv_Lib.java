@@ -85,14 +85,21 @@ public class vv_Lib {
         }
         robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
 
+
+
+    }
+
+    public void dropBall(vv_OpMode aOpMode) throws InterruptedException {
+
         //open the launcher gate
         robot.openLauncherGate();
-        Thread.sleep(500);
+        Thread.sleep(350);
         //wait for a ball to fall.
         robot.closeLauncherGate();
         //close the gate
-
     }
+
+
 
     public void shootBall(vv_OpMode aOpMode) throws InterruptedException
     {
