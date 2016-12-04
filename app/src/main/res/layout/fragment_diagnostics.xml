@@ -177,7 +177,7 @@
 			<CheckBox
 				style="@style/CheckBoxDiag"
 				android:id="@+id/beacon_color_sensor"
-				android:text="@string/beacon_color"/>
+				android:text="@string/beacon_color_sensor"/>
 
 			<CheckBox
 				android:id="@+id/beacon_touch_sensor"
