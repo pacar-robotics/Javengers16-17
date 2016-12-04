@@ -35,38 +35,64 @@ public class vv_Lib {
 //                robot.stopMotors();
 //            }
 
-        // takes the x and y cooridinates of the joystick and calculates the power for each motor that allows the robot to turn in that direction
-        float forwardLeftPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
-        float forwardRightPower = -(aOpMode.gamepad1.left_stick_x * Math.abs(aOpMode.gamepad1.left_stick_x)) - ((Math.abs(aOpMode.gamepad1.left_stick_y) * aOpMode.gamepad1.left_stick_y));
-        float backLeftPower = -(aOpMode.gamepad1.left_stick_x * Math.abs(aOpMode.gamepad1.left_stick_x)) - ((Math.abs(aOpMode.gamepad1.left_stick_y) * aOpMode.gamepad1.left_stick_y));
-        float backRightPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
 
-        //Code to round powers when the driver wants to move diagonally
-        if ((forwardLeftPower < .5f && forwardLeftPower > -.5f) && (forwardRightPower > .5f || forwardRightPower < .5f))
-        {
-            forwardLeftPower = 0;
-            backRightPower = 0;
-        }
-        if ((forwardRightPower < .5f && forwardRightPower > -.5f) && (forwardLeftPower > .5f || forwardLeftPower < .5f))
-        {
-            forwardRightPower = 0;
-            backLeftPower = 0;
-        }
-//        float forwardLeftPower = aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x + aOpMode.gamepad1.left_stick_x;
-//        float backLeftPower = aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x - aOpMode.gamepad1.left_stick_x;
-//        float forwardRightPower =  aOpMode.gamepad1.left_stick_y - aOpMode.gamepad1.right_stick_x - aOpMode.gamepad1.left_stick_x;
-//        float backRightPower =  aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x + aOpMode.gamepad1.left_stick_x;
+        if (robot.CurrentDriver == vv_Constants.DriverEnum.CapBallDriver) {
 
-        //rotates or turns the robot
-        if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
-            runAllMotors(aOpMode, aOpMode.gamepad1.right_stick_x, -aOpMode.gamepad1.right_stick_x, aOpMode.gamepad1.right_stick_x, -aOpMode.gamepad1.right_stick_x);
-        }
-        //translates the robot using the Mecanum wheels
-        else if (Math.abs(aOpMode.gamepad1.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
-                Math.abs(aOpMode.gamepad1.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
-            runAllMotors(aOpMode, (forwardLeftPower * powerFactor), (forwardRightPower * powerFactor), (backLeftPower * powerFactor), (backRightPower * powerFactor));
+            // takes the x and y cooridinates of the joystick and calculates the power for each motor that allows the robot to turn in that direction
+            float forwardLeftPower = (Math.abs(aOpMode.gamepad2.left_stick_x) * aOpMode.gamepad2.left_stick_x) - ((Math.abs(aOpMode.gamepad2.left_stick_y)) * aOpMode.gamepad2.left_stick_y);
+            float forwardRightPower = -(aOpMode.gamepad2.left_stick_x * Math.abs(aOpMode.gamepad2.left_stick_x)) - ((Math.abs(aOpMode.gamepad2.left_stick_y) * aOpMode.gamepad2.left_stick_y));
+            float backLeftPower = -(aOpMode.gamepad2.left_stick_x * Math.abs(aOpMode.gamepad2.left_stick_x)) - ((Math.abs(aOpMode.gamepad2.left_stick_y) * aOpMode.gamepad2.left_stick_y));
+            float backRightPower = (Math.abs(aOpMode.gamepad2.left_stick_x) * aOpMode.gamepad2.left_stick_x) - ((Math.abs(aOpMode.gamepad2.left_stick_y)) * aOpMode.gamepad2.left_stick_y);
+
+            //Code to round powers when the driver wants to move diagonally
+            if ((forwardLeftPower < .5f && forwardLeftPower > -.5f) && (forwardRightPower > .5f || forwardRightPower < .5f)) {
+                forwardLeftPower = 0;
+                backRightPower = 0;
+            }
+            if ((forwardRightPower < .5f && forwardRightPower > -.5f) && (forwardLeftPower > .5f || forwardLeftPower < .5f)) {
+                forwardRightPower = 0;
+                backLeftPower = 0;
+            }
+
+            //rotates or turns the robot
+            if (Math.abs(aOpMode.gamepad2.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
+                runAllMotors(aOpMode, aOpMode.gamepad2.right_stick_x, -aOpMode.gamepad2.right_stick_x, aOpMode.gamepad2.right_stick_x, -aOpMode.gamepad2.right_stick_x);
+            }
+            //translates the robot using the Mecanum wheels
+            else if (Math.abs(aOpMode.gamepad2.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
+                    Math.abs(aOpMode.gamepad2.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
+                runAllMotors(aOpMode, (forwardLeftPower * powerFactor), (forwardRightPower * powerFactor), (backLeftPower * powerFactor), (backRightPower * powerFactor));
+            } else {
+                stopAllMotors(aOpMode);
+            }
         } else {
-            stopAllMotors(aOpMode);
+            // takes the x and y cooridinates of the joystick and calculates the power for each motor that allows the robot to turn in that direction
+            float forwardLeftPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
+            float forwardRightPower = -(aOpMode.gamepad1.left_stick_x * Math.abs(aOpMode.gamepad1.left_stick_x)) - ((Math.abs(aOpMode.gamepad1.left_stick_y) * aOpMode.gamepad1.left_stick_y));
+            float backLeftPower = -(aOpMode.gamepad1.left_stick_x * Math.abs(aOpMode.gamepad1.left_stick_x)) - ((Math.abs(aOpMode.gamepad1.left_stick_y) * aOpMode.gamepad1.left_stick_y));
+            float backRightPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
+
+            //Code to round powers when the driver wants to move diagonally
+            if ((forwardLeftPower < .5f && forwardLeftPower > -.5f) && (forwardRightPower > .5f || forwardRightPower < .5f)) {
+                forwardLeftPower = 0;
+                backRightPower = 0;
+            }
+            if ((forwardRightPower < .5f && forwardRightPower > -.5f) && (forwardLeftPower > .5f || forwardLeftPower < .5f)) {
+                forwardRightPower = 0;
+                backLeftPower = 0;
+            }
+
+            //rotates or turns the robot
+            if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
+                runAllMotors(aOpMode, aOpMode.gamepad1.right_stick_x, -aOpMode.gamepad1.right_stick_x, aOpMode.gamepad1.right_stick_x, -aOpMode.gamepad1.right_stick_x);
+            }
+            //translates the robot using the Mecanum wheels
+            else if (Math.abs(aOpMode.gamepad1.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
+                    Math.abs(aOpMode.gamepad1.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
+                runAllMotors(aOpMode, (forwardLeftPower * powerFactor), (forwardRightPower * powerFactor), (backLeftPower * powerFactor), (backRightPower * powerFactor));
+            } else {
+                stopAllMotors(aOpMode);
+            }
         }
     }
 
@@ -410,6 +436,11 @@ public class vv_Lib {
         }
     }
 
+    public void setCapBallLiftPower (vv_OpMode anOp, float Power) {
+        //TODO: SET LIMITS
+        robot.setPower(anOp, vv_Constants.MotorEnum.capBallLiftMotor, Power);
+    }
+
     /**
      * Toggles the power of the Ball Collector Motor to either off or to the power required to
      * outtake depending on the current state of the motor
@@ -449,7 +480,8 @@ public class vv_Lib {
     }
 
     /**
-     * Changes the powerFactor of the wheels depending on the state of the Cap Ball Lift
+     * Changes the powerFactor of the wheels depending on the state of the Cap Ball Lift.
+     * Changes Driver depending whether the cap ball lift is up.
      *
      * @return either 1.0 or CAP_BALL_SCORE_POWER_FACTOR
      */
@@ -457,8 +489,10 @@ public class vv_Lib {
         //if the cap ball lift is at rest, set the power factor to 1
         //else set the cap ball lift to the power factor needed to score the cap ball
         if (robot.CapBallState == vv_Constants.CapBallStateEnum.Rest) {
+            robot.CurrentDriver = vv_Constants.DriverEnum.CapBallDriver;
             return 1.0f;
         } else {
+            robot.CurrentDriver = vv_Constants.DriverEnum.MainDriver;
             return vv_Constants.CAP_BALL_SCORE_POWER_FACTOR;
         }
     }

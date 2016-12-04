@@ -28,6 +28,8 @@ public class vv_Constants {
 
     final static float ANALOG_STICK_THRESHOLD = .25f;
 
+    final static float TRIGGER_THRESHOLD = .15f;
+
     //Beacon Servo Positions
     static final double BUTTON_SERVO_MIN_POS = 0.8f;     // Maximum rotational position
     static final double BUTTON_SERVO_MAX_POS = 0.45f;
@@ -97,6 +99,10 @@ public class vv_Constants {
     //Position 4 = 4 Tiles Away
     enum SpringPositionsEnum {
         Rest, Position1, Position2, Position3, Position4
+    }
+
+    enum DriverEnum {
+        MainDriver, CapBallDriver
     }
 
 }

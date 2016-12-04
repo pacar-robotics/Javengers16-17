@@ -40,6 +40,7 @@ public class vv_Robot {
     public vv_Constants.CapBallStateEnum CapBallState;
     public vv_Constants.BallCollectorStateEnum BallCollectorState;
     public vv_Constants.SpringPositionsEnum SpringPosition;
+    public vv_Constants.DriverEnum CurrentDriver;
 
     public void init(HardwareMap ahwMap, vv_OpMode aOpMode) {
 
@@ -85,6 +86,7 @@ public class vv_Robot {
         CapBallState = vv_Constants.CapBallStateEnum.Rest;
         BallCollectorState = vv_Constants.BallCollectorStateEnum.Off;
         SpringPosition = vv_Constants.SpringPositionsEnum.Rest;
+        CurrentDriver = vv_Constants.DriverEnum.MainDriver;
 
     }
 
@@ -139,6 +141,8 @@ public class vv_Robot {
             case intakeMotor:
                 intakeMotor.setPower(power);
                 break;
+            case capBallLiftMotor:
+                capBallLift.setPower(power);
         }
     }
 
