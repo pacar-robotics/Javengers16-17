@@ -10,7 +10,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -65,14 +65,14 @@ public class DiagnosticsOp extends vv_OpMode {
 				"/PACAR/AutoChoices.xml";
 		private final String LOG_TAG = "XmlParser";
 
-		private HashMap<String, Boolean> choicesMap;
+		private LinkedHashMap<String, Boolean> choicesMap;
 
 		public XmlParser() {
 			choicesMap = parseXml();
 		}
 
-		private HashMap<String, Boolean> parseXml() {
-			HashMap<String, Boolean> choicesMap = new HashMap<>();
+		private LinkedHashMap<String, Boolean> parseXml() {
+			LinkedHashMap<String, Boolean> choicesMap = new LinkedHashMap<>();
 			try {
 				File xmlFile = new File(FILE_NAME);
 				DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -104,13 +104,13 @@ public class DiagnosticsOp extends vv_OpMode {
 			return choicesMap;
 		}
 
-		public HashMap<String, Boolean> getChoicesMap() {
+		public LinkedHashMap<String, Boolean> getChoicesMap() {
 			return choicesMap;
 		}
 	}
 
 	private vv_Lib robotLibrary;
-	private HashMap<String, ChoiceRecord> choices;
+	private LinkedHashMap<String, ChoiceRecord> choices;
 
 	private static final String LOG_TAG = "DiagnosticsOp";
 	private static final String INPUT_TELEMETRY_MESSAGE = "input: ";
@@ -140,9 +140,9 @@ public class DiagnosticsOp extends vv_OpMode {
 		choices = getTests();
 	}
 
-	private HashMap<String, ChoiceRecord> getTests() {
-		HashMap<String, ChoiceRecord> formattedChoices = new HashMap<>();
-		HashMap<String, Boolean> xmlChoices;
+	private LinkedHashMap<String, ChoiceRecord> getTests() {
+		LinkedHashMap<String, ChoiceRecord> formattedChoices = new LinkedHashMap<>();
+		LinkedHashMap<String, Boolean> xmlChoices;
 
 		// Parse XML and get hashmap
 		XmlParser xmlParser = new XmlParser();
