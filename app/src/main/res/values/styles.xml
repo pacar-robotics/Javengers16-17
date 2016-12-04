@@ -53,4 +53,8 @@
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_marginBottom">@dimen/default_space_margin</item>
 	</style>
+
+	<style name="EncapsulatingView.Diagnostics">
+		<item name="android:paddingLeft">16dp</item>
+	</style>
 </resources>

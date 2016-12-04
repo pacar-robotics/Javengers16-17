@@ -17,19 +17,19 @@
 			android:layout_height="wrap_content"
 			android:orientation="horizontal">
 
+			<CheckBox
+				android:id="@+id/motors_check_all"
+				style="@style/HeaderCheckBoxDiag"/>
+
 			<TextView
 				android:id="@+id/motors_header"
 				style="@style/CheckBoxHeaderTextView"
 				android:text="@string/motors_header"/>
-
-			<CheckBox
-				android:id="@+id/motors_check_all"
-				style="@style/HeaderCheckBoxDiag"/>
 		</LinearLayout>
 
 
 		<LinearLayout
-			style="@style/EncapsulatingView"
+			style="@style/EncapsulatingView.Diagnostics"
 			android:orientation="vertical">
 
 			<CheckBox
@@ -64,18 +64,18 @@
 			android:layout_height="wrap_content"
 			android:orientation="horizontal">
 
+			<CheckBox
+				android:id="@+id/servos_check_all"
+				style="@style/HeaderCheckBoxDiag"/>
+
 			<TextView
 				android:id="@+id/servos_header"
 				style="@style/CheckBoxHeaderTextView"
 				android:text="@string/servos_header"/>
-
-			<CheckBox
-				android:id="@+id/servos_check_all"
-				style="@style/HeaderCheckBoxDiag"/>
 		</LinearLayout>
 
 		<LinearLayout
-			style="@style/EncapsulatingView"
+			style="@style/EncapsulatingView.Diagnostics"
 			android:orientation="vertical">
 
 			<CheckBox
@@ -100,18 +100,18 @@
 			android:layout_height="wrap_content"
 			android:orientation="horizontal">
 
+			<CheckBox
+				android:id="@+id/sensors_check_all"
+				style="@style/HeaderCheckBoxDiag"/>
+
 			<TextView
 				android:id="@+id/sensors_header"
 				style="@style/CheckBoxHeaderTextView"
 				android:text="@string/sensors_header"/>
-
-			<CheckBox
-				android:id="@+id/sensors_check_all"
-				style="@style/HeaderCheckBoxDiag"/>
 		</LinearLayout>
 
 		<LinearLayout
-			style="@style/EncapsulatingView"
+			style="@style/EncapsulatingView.Diagnostics"
 			android:orientation="vertical">
 
 			<CheckBox

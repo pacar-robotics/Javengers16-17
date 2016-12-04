@@ -6,4 +6,11 @@
 		<item name="android:windowDrawsSystemBarBackgrounds">true</item>
 		<item name="android:statusBarColor">@android:color/transparent</item>
 	</style>
+
+	<style name="HeaderCheckBoxDiag">
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:checked">true</item>
+		<item name="android:buttonTint">@color/colorPrimary</item>
+	</style>
 </resources>
