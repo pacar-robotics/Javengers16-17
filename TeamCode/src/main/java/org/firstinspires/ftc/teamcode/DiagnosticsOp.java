@@ -143,6 +143,21 @@ public class DiagnosticsOp extends vv_OpMode {
 				}
 			}
 		}
+
+		// Print all errors
+		for (Map.Entry<String, ChoiceRecord> choicesEntry : choices.entrySet()) {
+			if (choicesEntry.getValue().getErrorStatus()) {
+				telemetryUpdate();
+				telemetryAddData(LOG_TAG, "Test failed", choicesEntry.getKey());
+
+				// Print all error messages
+				int errorMessageCount = 0;
+				for (String errorMessage : choicesEntry.getValue().getErrorMessages()) {
+					// Must have different key each time or line with same key will be overwritten
+					telemetryAddData(LOG_TAG, "Reason" + errorMessageCount++, errorMessage);
+				}
+			}
+		}
 	}
 
 	private boolean getUserConfirmation(String testName) {
