@@ -103,10 +103,13 @@ public class vv_TeleOp extends vv_OpMode {
         //Changes state of Ball Collection mechanism to Outtake [Toggles On or Off]
         if (gamepad1.right_bumper) {
             vvLib.toggleIntake(anOp);
+            Thread.sleep(250);
         }
         //Changes state of Ball Collection mechanism to Outtake [Toggles On or Off]
         if (gamepad1.left_bumper) {
             vvLib.toggleOuttake(anOp);
+            Thread.sleep(250);
+
         }
     }
 
@@ -123,23 +126,21 @@ public class vv_TeleOp extends vv_OpMode {
         //Changes Angle of the Shooting Mechanism to Position 1
 
 
-       /* if (gamepad2.a) {
-            vvLib.moveSpringMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position1);
+       if (gamepad2.a) {
+            vvLib.moveWormDriveMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position1);
         }
         //Changes Angle of the Shooting Mechanism to Position 2
         if (gamepad2.x) {
-            vvLib.moveSpringMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position2);
+            vvLib.moveWormDriveMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position2);
         }
         //Changes Angle of the Shooting Mechanism to Position 3
         if (gamepad2.y) {
-            vvLib.moveSpringMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position3);
+            vvLib.moveWormDriveMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position3);
         }
         //Changes Angle of the Shooting Mechanism to Position 4
         if (gamepad2.b) {
-            vvLib.moveSpringMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position4);
+            vvLib.moveWormDriveMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position4);
         }
-*/
-        //TODO Change the Angle slowly using Joystick Y Values
     }
 
     /**
@@ -150,16 +151,14 @@ public class vv_TeleOp extends vv_OpMode {
      */
     private void processShooting(vv_OpMode anOpMode) throws InterruptedException {
 
-        boolean isLeftBumperPressed;
-
-        //Loads and Shoots one Ball
-        if (gamepad2.left_bumper) {
-            isLeftBumperPressed = true;
-        } else {
-            isLeftBumperPressed = false;
+        if(vvLib.isLauncherArmAtLimit(anOpMode)) {
+            vvLib.setupShot(anOpMode);
         }
 
-        vvLib.shootOneBall(anOpMode, isLeftBumperPressed);
+        vvLib.dropBall(anOpMode);
+        vvLib.shootBall(anOpMode);
+        vvLib.setupShot(anOpMode);
+
         //TODO: if we press the button x amount of times, shoot & load the ball x amount of times
     }
 }

@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -19,13 +20,12 @@ public class vv_Robot {
     private DcMotor backLeftMotor = null;
     private DcMotor backRightMotor = null;
     private DcMotor capBallLift = null;
-    private DcMotor ballCollector = null;
     private DcMotor armMotor = null;
     private DcMotor intakeMotor = null;
     private DcMotor wormDriveMotor = null;
 
-
-    //private Servo buttonServo = null;
+    private Servo beaconServo = null;
+    private Servo launcherGateServo = null;
 
     private TouchSensor buttonSensor;
     private TouchSensor ts_springSensor;
@@ -63,11 +63,14 @@ public class vv_Robot {
 
         ts_springSensor = hwMap.touchSensor.get("touch_arm_sensor");
 
-        //buttonServo = hwMap.servo.get("button_servo");
+        beaconServo = hwMap.servo.get("button_servo");
+        launcherGateServo = hwMap.servo.get("servo_launcher_gate");
+
+        launcherGateServo.setPosition(vv_Constants.LAUNCH_GATE_SERVO_CLOSED);
 
         buttonSensor = hwMap.touchSensor.get("touch_button_sensor");
 
-        //buttonServo.setPosition(0.65);
+        beaconServo.setPosition(0.65);
 
 
         frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -80,6 +83,15 @@ public class vv_Robot {
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
+
+        wormDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        while (wormDriveMotor.getCurrentPosition() != 0)
+        {
+            //wait until resetted
+        }
+
+        wormDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //Set enumerations
 
@@ -108,9 +120,13 @@ public class vv_Robot {
      * @param anOp     an object of vv_OpMode
      * @param Position Encoder Position to move spring motor to
      */
-    public void moveArmMotor(vv_OpMode anOp, int Position) throws InterruptedException {
+    public void moveWormDriveMotorToPosition(vv_OpMode anOp, int Position) throws InterruptedException {
         moveMotorUsingEncoderLimits(anOp, armMotor, Position, vv_Constants.SPRING_MOTOR_POWER,
                 vv_Constants.SPRING_MAX_LIMIT, vv_Constants.SPRING_MIN_LIMIT);
+    }
+
+    public void decrementLauncherArmPosition (vv_OpMode anOp) {
+        //TODO: FINISH
     }
 
     /**
@@ -379,14 +395,14 @@ public class vv_Robot {
         switch (buttonEnum) {
 
             case Left:
-                //buttonServo.setPosition(vv_Constants.BUTTON_SERVO_MAX_POS);
+                beaconServo.setPosition(vv_Constants.BUTTON_SERVO_MAX_POS);
                 break;
 
             case Right:
-                //buttonServo.setPosition(vv_Constants.BUTTON_SERVO_MIN_POS);
+                beaconServo.setPosition(vv_Constants.BUTTON_SERVO_MIN_POS);
                 break;
             case Neutral:
-                //buttonServo.setPosition(vv_Constants.BUTTON_SERVO_NEUTRAL_POS);
+                beaconServo.setPosition(vv_Constants.BUTTON_SERVO_NEUTRAL_POS);
         }
     }
 
@@ -452,5 +468,13 @@ public class vv_Robot {
         motor.setPower(0);
 
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    public void closeLauncherGate (vv_OpMode anOp) {
+        launcherGateServo.setPosition(vv_Constants.LAUNCH_GATE_SERVO_CLOSED);
+    }
+
+    public void openLauncherGate (vv_OpMode anOp) {
+        launcherGateServo.setPosition(vv_Constants.LAUNCH_GATE_SERVO_OPEN);
     }
 }

@@ -122,21 +122,6 @@ public class vv_Lib {
         // code for moving forward, backward, sideways
     }
 
-    /**
-     * Preps and shoots one ball into the center vortex
-     *
-     * @param anOpMode and object of vv_OpMode
-     * @param isLeftButtonPressed true if the Left Button on gamepad2 is pressed
-     * @throws InterruptedException
-     */
-    public void shootOneBall(vv_OpMode anOpMode, boolean isLeftButtonPressed) throws InterruptedException {
-        if (!robot.isArmAtLimit(anOpMode)) {
-            setupShot(anOpMode);
-        } else if (isLeftButtonPressed) {
-            shootBall(anOpMode);
-            setupShot(anOpMode);
-        }
-    }
 
     /**
      * Prepares the launcher to shoot by moving the motor until the launcher touches a touch sensor
@@ -166,11 +151,21 @@ public class vv_Lib {
     public void shootBall(vv_OpMode aOpMode) throws InterruptedException {
         robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.armMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 1.0f);
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.8f);
 
         Thread.sleep(500);
 
         robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.0f);
+    }
+
+    public void dropBall(vv_OpMode aOpMode) throws InterruptedException {
+        robot.openLauncherGate(aOpMode);
+        Thread.sleep(500);
+        robot.openLauncherGate(aOpMode);
+    }
+
+    public boolean isLauncherArmAtLimit(vv_OpMode anOp) {
+        return robot.isArmAtLimit(anOp);
     }
 
     /**
@@ -178,27 +173,26 @@ public class vv_Lib {
      * shoot the ball farther
      *
      * @param anOpMode an object of vv_OpMode
-     * @param springPosition Corresponds to defferent distances in which to pull the spring;
+     * @param springPosition Corresponds to different distances in which to pull the spring;
      *                       SPRING_POSITION1, SPRING_POSITION2, SPRING_POSITION3, SPRING_POSITION4
      * @throws InterruptedException
      */
-    // TODO: uncomment this!
-    /*public void movewormdriveMotorToPosition(vv_OpMode anOpMode, vv_Constants.SpringPositionsEnum springPosition) throws InterruptedException {
+    public void moveWormDriveMotorToPosition(vv_OpMode anOpMode, vv_Constants.SpringPositionsEnum springPosition) throws InterruptedException {
         switch (springPosition) {
             case Position1:
-                robot.movewormdriveMotor(anOpMode, vv_Constants.SPRING_POSITION1);
+                robot.moveWormDriveMotorToPosition(anOpMode, vv_Constants.SPRING_POSITION1);
                 robot.SpringPosition = vv_Constants.SpringPositionsEnum.Position1;
                 break;
             case Position2:
-                robot.movewormdriveMotor(anOpMode, vv_Constants.SPRING_POSITION2);
+                robot.moveWormDriveMotorToPosition(anOpMode, vv_Constants.SPRING_POSITION2);
                 robot.SpringPosition = vv_Constants.SpringPositionsEnum.Position2;
                 break;
             case Position3:
-                robot.movewormdriveMotor(anOpMode, vv_Constants.SPRING_POSITION3);
+                robot.moveWormDriveMotorToPosition(anOpMode, vv_Constants.SPRING_POSITION3);
                 robot.SpringPosition = vv_Constants.SpringPositionsEnum.Position3;
                 break;
         }
-    }*/
+    }
 
     /**
      * Using encoders, this method turns the Robot clockwise or counter clockwise based on angle

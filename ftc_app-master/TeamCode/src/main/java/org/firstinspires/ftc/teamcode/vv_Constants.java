@@ -49,6 +49,11 @@ public class vv_Constants {
     static final float SPRING_MOTOR_POWER = .5f;
     static final int SPRING_MAX_LIMIT = 0;
     static final int SPRING_MIN_LIMIT = 0;
+    static final int SPRING_POS_INCREMENT = 500;
+
+    // Extremes for servo that controls the gate for launch
+    static final double LAUNCH_GATE_SERVO_OPEN = 0.0f;     // Maximum rotational position
+    static final double LAUNCH_GATE_SERVO_CLOSED = 0.3f;
 
     //Ball Collector Constants
     static final float BALL_COLLECTOR_POWER = .3f; //TODO: CHANGE
