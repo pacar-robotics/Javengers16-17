@@ -12,7 +12,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.TEAM_RED;
 
 
 @Autonomous(name = "BasicBlueRightOp", group = "Test")
-public class vv_Autonomous extends vv_OpMode
+public class AutoOp extends vv_OpMode
 {
     vv_Lib vvLib;
     vv_Robot vvRobot;
@@ -61,14 +61,14 @@ public class vv_Autonomous extends vv_OpMode
 
         Thread.sleep(100);
 
-        vvLib.turnAbsoluteGyroDegrees(this, 40);
+        vvLib.turnAbsoluteGyroDegrees(this, 35);
 
         Thread.sleep(100);
 
         //distances are by experimentation.
 
         // vvLib.moveWheels(this, 60, 0.9f, SidewaysRight);
-        vvLib.moveTillWhiteLineDetect(this, 0.3f);
+        vvLib.moveTillWhiteLineDetect(this, 0.7f);
         Thread.sleep(100);
 
         vvLib.turnAbsoluteGyroDegrees(this, 90);

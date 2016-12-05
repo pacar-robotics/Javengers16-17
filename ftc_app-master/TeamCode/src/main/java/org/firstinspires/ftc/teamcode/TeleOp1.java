@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name="TeleOpTest", group="Test")
+@TeleOp(name = "TeleOp", group = "Test")
 
-public class TeleOpTest extends vv_OpMode {
+public class TeleOp1 extends vv_OpMode {
 
     vv_Lib vvLib;
     private float wheelPowerFactor = 1;

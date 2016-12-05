@@ -281,7 +281,7 @@ public class vv_Lib {
         //calculate target position from the input distance in cm
         targetPosition = (int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position
-        robot.runRobotToPositionFB(aOpMode, -targetPosition, Power);
+        robot.runRobotToPositionFB(aOpMode, targetPosition, Power);
     }
 
     //Moves robot backward with a distance supplied in centimeters and power between 0 and 1
@@ -302,7 +302,7 @@ public class vv_Lib {
         //calculate target position from the input distance in cm
         targetPosition = (int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position with negative power
-        robot.runRobotToPositionSideways(aOpMode, -targetPosition, Power);
+        robot.runRobotToPositionSideways(aOpMode, targetPosition, Power);
     }
 
     private void moveSidewaysRightToPosition(vv_OpMode aOpMode, float distance, float Power)
@@ -507,7 +507,7 @@ public class vv_Lib {
 
     }
 
-    public void turnAbsoluteGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException, vv_Robot.MotorNameNotKnownException {
+    public void turnAbsoluteGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
         //clockwise is represented by clockwise numbers.
         //counterclockwise by negative angle numbers in degrees.
         //the fieldReferenceDegrees parameters measures degrees off the initial reference frame when the robot is started and the gyro is

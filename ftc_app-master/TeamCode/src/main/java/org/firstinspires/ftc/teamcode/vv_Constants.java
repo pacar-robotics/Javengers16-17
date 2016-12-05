@@ -19,7 +19,7 @@ public class vv_Constants
 	final static int ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION = 1120;
 
 	final static float MOTOR_LOWER_POWER_THRESHOLD = 0.35f;
-    final static float MOTOR_RAMP_POWER_LOWER_LIMIT = 0.20f;
+    final static float MOTOR_RAMP_POWER_LOWER_LIMIT = 0.30f;
     final static float MOTOR_RAMP_POWER_UPPER_LIMIT = 0.8f;
     final static float MOTOR_SLOW_START_THRESHOLD = 0.30f;
 
@@ -47,7 +47,7 @@ public class vv_Constants
 
 
     //distance between wheels left to right of the Robot in inches.
-    final static float ROBOT_TRACK_DISTANCE = 15.6f; //adjusted from observation.
+    final static float ROBOT_TRACK_DISTANCE = 13.75f; //adjusted from observation.
     //max time to wait in a tight loop, for example in robot turns or autonomous moves
     final static int MAX_MOTOR_LOOP_TIME = 10000;
     //max turn velocity for a motor, to be used in autonomous turns of the robot
