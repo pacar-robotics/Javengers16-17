@@ -811,6 +811,19 @@ public class vv_Robot {
         IntakeState = IntakeStateValue;
     }
 
+    public void setBeaconPosition(vv_OpMode aOpMode, double position)
+            throws InterruptedException {
+        beaconServo.setPosition(position);
+        Thread.sleep(100);
+    }
+
+    public double getBeaconPosition(vv_OpMode aOpMode)
+            throws InterruptedException {
+        return beaconServo.getPosition();
+
+    }
+
+
     class MotorNameNotKnownException extends Exception {
 
         MotorNameNotKnownException(String message) {

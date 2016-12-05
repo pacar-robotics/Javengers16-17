@@ -36,10 +36,10 @@ public class vv_Constants
     final static float TRIGGER_THRESHOLD = .25f;
 
     // Extremes for servo that pushes beacon buttons
-    static final double BEACON_SERVO_LEFT = 0.8f;     // Maximum rotational position
-    static final double BEACON_SERVO_LOOK_FOR_COLOR = 0.6f;
-    static final double BEACON_SERVO_NEUTRAL = 0.4f;
-    static final double BEACON_SERVO_RIGHT = 0.45f;
+    static final double BEACON_SERVO_LEFT = 0.65f;     // Maximum rotational position
+    static final double BEACON_SERVO_LOOK_FOR_COLOR = 0.55f;
+    static final double BEACON_SERVO_NEUTRAL = 0.5f;
+    static final double BEACON_SERVO_RIGHT = 0.4f;
 
     // Extremes for servo that controls the gate for launch
     static final double LAUNCH_GATE_SERVO_OPEN = 0.8f;     // Maximum rotational position
@@ -47,7 +47,7 @@ public class vv_Constants
 
 
     //distance between wheels left to right of the Robot in inches.
-    final static float ROBOT_TRACK_DISTANCE = 13.75f; //adjusted from observation.
+    final static float ROBOT_TRACK_DISTANCE = 13.7f; //adjusted from observation.
     //max time to wait in a tight loop, for example in robot turns or autonomous moves
     final static int MAX_MOTOR_LOOP_TIME = 10000;
     //max turn velocity for a motor, to be used in autonomous turns of the robot

@@ -808,4 +808,14 @@ public class vv_Lib {
         return robot.getFloorLightIntensity(aOpMode);
     }
 
+    public void setBeaconPosition(vv_OpMode aOpMode, double position)
+            throws InterruptedException {
+        robot.setBeaconPosition(aOpMode, position);
+    }
+
+    public double getBeaconPosition(vv_OpMode aOpMode)
+            throws InterruptedException {
+        return robot.getBeaconPosition(aOpMode);
+    }
+
 }
