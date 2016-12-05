@@ -818,4 +818,12 @@ public class vv_Lib {
         return robot.getBeaconPosition(aOpMode);
     }
 
+    public double getFloorUltrasonicReading(vv_OpMode aOpMode) {
+        return robot.getUltrasonicReading(aOpMode);
+    }
+
+    public boolean isBeaconTouchSensorPressed(vv_OpMode aOpMode) throws InterruptedException {
+        return robot.getButtonTouchValue(aOpMode);
+    }
+
 }

@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.Arrays;
 
 
-@TeleOp(name = "UltrasonicCalibrationOp", group = "Test")
-public class UltrasonicCalibration extends vv_OpMode {
+@TeleOp(name = "UltrasonicPositionTest", group = "Test")
+public class UltrasonicPositionTest extends vv_OpMode {
 
     /* Declare OpMode members. */
     vv_Lib vvLib;
@@ -19,17 +19,16 @@ public class UltrasonicCalibration extends vv_OpMode {
         DBG("before try");
 
 
-        readingsArray = new double[9];
+        readingsArray = new double[3];
 
         //initialize array
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 3; i++) {
             readingsArray[i] = 0.0f;
         }
 
         //Initialize library which in turn initializes the robot plus its hardware map
         //We need to pass the this pointer into vv_Lib in order to call some value added functions
         //in vv_Opmode
-
 
 
         DBG("Before vvLIb init");
@@ -43,21 +42,28 @@ public class UltrasonicCalibration extends vv_OpMode {
         waitForStart();
 
 
-        telemetryAddData("Reading Ultrasonic", ":distance:", ".");
+        telemetryAddData("Positioning Robot to be 4 inches distance from sensor", ":", ".");
         telemetryUpdate();
         Thread.sleep(2000);
 
         //looks like the ultrasonic sensor is accurate to about 16cm or 6 inches.
-        while (opModeIsActive()) {
-            telemetryAddData("Reading Ultrasonic", ":distance:",
-                    "" + readUltrasonicDistance() / 2.54); //for inches
-            telemetryUpdate();
+        vvLib.moveSidewaysRight(this, 0.5f);
+        while (opModeIsActive() && (readUltrasonicDistance() > 30)) { //in cm
             idle();
-
         }
+        vvLib.stopAllMotors(this);
+        Thread.sleep(1000);
 
+        //re-orient
 
+        vvLib.turnAbsoluteGyroDegrees(this, 0);
 
+        while (!vvLib.isBeaconTouchSensorPressed(this)) {
+            vvLib.moveSidewaysRight(this, 0.2f);
+        }
+        vvLib.stopAllMotors(this);
+        vvLib.moveWheels(this, 1.0f, 0.4f, vv_Constants.DirectionEnum.SidewaysLeft);
+        vvLib.turnAbsoluteGyroDegrees(this, 0);
 
 
     }
@@ -70,18 +76,18 @@ public class UltrasonicCalibration extends vv_OpMode {
 
     public double filterUltrasonicReadings() throws InterruptedException {
         //take 9 readings
-        for (int i = 0, j = 0; i < 9 && j < 25; i++, j++) {
+        for (int i = 0, j = 0; i < 3 && j < 10; i++, j++) {
             readingsArray[i] = vvLib.getFloorUltrasonicReading(this);
             //wait between readings
-            Thread.sleep(50);
+            Thread.sleep(20);
             if (readingsArray[i] == 0) {
-                i--; //bad read, redo. to a maximum of 25 reads
+                i--; //bad read, redo. to a maximum of 10 reads
             }
         }
         //Now sort the readings
         Arrays.sort(readingsArray);
         //return the middle element to reduce noise
-        return readingsArray[4];
+        return readingsArray[1];
     }
 
 }

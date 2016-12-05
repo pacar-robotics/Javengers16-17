@@ -823,6 +823,11 @@ public class vv_Robot {
 
     }
 
+    public double getUltrasonicReading(vv_OpMode aOPMode) {
+
+        return floorUltrasonicSensor.getUltrasonicLevel();
+    }
+
 
     class MotorNameNotKnownException extends Exception {
 
