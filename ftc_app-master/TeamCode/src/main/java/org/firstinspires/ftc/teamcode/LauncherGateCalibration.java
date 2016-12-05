@@ -27,7 +27,7 @@ public class LauncherGateCalibration extends vv_OpMode {
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
 
-        vvLib.turnBeaconLightSensorLedOn(this);
+        vvLib.turnBeaconColorSensorLedOn(this);
 
         waitForStart();
 

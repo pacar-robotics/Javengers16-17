@@ -7,7 +7,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 
 @TeleOp(name = "LineDetectCalibrationOp", group = "Test")
 
-public class FloorColorSensorCalibration extends vv_OpMode {
+public class FloorLightSensorCalibration extends vv_OpMode {
 
     vv_Lib vvLib;
 
@@ -29,14 +29,14 @@ public class FloorColorSensorCalibration extends vv_OpMode {
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
 
-        vvLib.turnFloorColorSensorLedOn(this);
+        vvLib.turnFloorLightSensorLedOn(this);
 
         waitForStart();
 
 
         while (opModeIsActive()) {
 
-            vvLib.showFloorColorSensorLumnosityOnTelemetry(this, true);
+            vvLib.showFloorLightSensorIntensityOnTelemetry(this, true);
             idle();
 
         }
@@ -55,20 +55,6 @@ public class FloorColorSensorCalibration extends vv_OpMode {
      * gamepad1.dpad_left = changes mechanism to left position gamepad1.dpad_right = changes
      * mechanism to right position gamepad1.dpad_down = changes mechanism to neutral position
      */
-    private void processBeacon() {
-        // Changes Beacon Mechanism to left position in order to score the beacon
-        if (gamepad1.dpad_left) {
-            vvLib.pushABeaconButton(this, vv_Constants.BeaconServoStateEnum.Left);
-        }
-        // Changes Beacon Mechanism to right position in order to score the beacon
-        if (gamepad1.dpad_right) {
-            vvLib.pushABeaconButton(this, vv_Constants.BeaconServoStateEnum.Right);
-        }
-        // Changes Beacon Mechanism to a Neutral Position
-        if (gamepad1.dpad_down) {
-            vvLib.pushABeaconButton(this, vv_Constants.BeaconServoStateEnum.Neutral);
-        }
-    }
 
     /**
      * Controls the Cap Ball Mechanism by either raising the lift, lowering the lift, or grabbing

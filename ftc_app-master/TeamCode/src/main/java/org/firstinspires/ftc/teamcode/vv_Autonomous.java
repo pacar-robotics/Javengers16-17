@@ -3,9 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.BeaconServoStateEnum;
-import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
-import static org.firstinspires.ftc.teamcode.vv_Constants.TOUCH_SENSE_POWER;
+import static org.firstinspires.ftc.teamcode.vv_Constants.TEAM_RED;
 
 /**
  * Created by Rachael_ on 10/23/2016.
@@ -27,8 +26,8 @@ public class vv_Autonomous extends vv_OpMode
             telemetryAddData("Ready to go!", "", "");
             telemetryUpdate();
             //Turn the LED on the Color Sensor mounted on the floor of the Robot on
-            vvLib.turnFloorColorSensorLedOn(this);
-            vvLib.turnBeaconLightSensorLedOn(this);
+            vvLib.turnFloorLightSensorLedOn(this);
+
 
             waitForStart();
 
@@ -79,17 +78,43 @@ public class vv_Autonomous extends vv_OpMode
         //vvLib.moveWheels(this,6, 0.3f, Backward);
 
         Thread.sleep(100);
-        vvLib.moveWheels(this, 6, 0.5f, SidewaysRight);
+        vvLib.moveWheels(this, 6, 0.3f, SidewaysRight);
 
         //code for detecting color of the beacon.
 
 
-        if (vvLib.getBeaconLightIntensity(this) > 0.5) {
+        //turn to check color
+
+        vvLib.turnBeaconArm(this, BeaconServoStateEnum.Look);
+
+
+        if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.RED) {
             //logic for choosing team side red or blue.
 
-            vvLib.pushABeaconButton(this, BeaconServoStateEnum.Right);
-            Thread.sleep(100);
+            if (TEAM_RED) {
+                vvLib.turnBeaconArm(this, BeaconServoStateEnum.Right);
+                Thread.sleep(100);
+            } else {
+                vvLib.turnBeaconArm(this, BeaconServoStateEnum.Left);
+                Thread.sleep(100);
+            }
 
+        }
+        if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.BLUE) {
+            //logic for choosing team side red or blue.
+
+            if (!TEAM_RED) {
+                //we are blue
+                vvLib.turnBeaconArm(this, BeaconServoStateEnum.Right);
+                Thread.sleep(100);
+            } else {
+                vvLib.turnBeaconArm(this, BeaconServoStateEnum.Left);
+                Thread.sleep(100);
+            }
+
+        }
+        if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.UNKNOWN) {
+            vvLib.showBeaconColorValuesOnTelemetry(this, true);
         }
 
 
@@ -106,7 +131,7 @@ Touch Sensor is out of plane, so using dead reckoning till fixed.
         //move forward to the beacon panel, until the sensor touches the beacon.
         vvLib.moveTillTouch(this);
         //back off the panel, 1-2 inches to give space to the beacon press.
-        */
+
 
 
         vvLib.moveWheels(this, 1.5f, TOUCH_SENSE_POWER, Backward);
@@ -123,8 +148,9 @@ Touch Sensor is out of plane, so using dead reckoning till fixed.
         vvLib.pushAButton(this, Right);
         //wait till the servo reaches the button
         Thread.sleep(1000);
-
         */
+
+
     }
 
 

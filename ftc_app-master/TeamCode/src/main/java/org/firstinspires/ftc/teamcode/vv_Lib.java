@@ -7,12 +7,12 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.ANDYMARK_MOTOR_ENCODER
 import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
-import static org.firstinspires.ftc.teamcode.vv_Constants.COLOR_SENSOR_WHITE_LIMIT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
+import static org.firstinspires.ftc.teamcode.vv_Constants.FLOOR_WHITE_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.GYRO_OFFSET;
@@ -93,7 +93,7 @@ public class vv_Lib {
 
         //open the launcher gate
         robot.openLauncherGate();
-        Thread.sleep(350);
+        Thread.sleep(550);
         //wait for a ball to fall.
         robot.closeLauncherGate();
         //close the gate
@@ -146,9 +146,11 @@ public class vv_Lib {
         Thread.sleep(50);
     }
 
-    public void pushAButton(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum BeaconServoStateEnumValue) {
-        robot.pushButton(aOpMode, BeaconServoStateEnumValue);
+    public void turnBeaconArm(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum BeaconServoStateEnumValue)
+            throws InterruptedException {
+        robot.turnBeaconArm(aOpMode, BeaconServoStateEnumValue);
     }
+
 
     public void turnUsingGyro(vv_OpMode aOpMode, float power, float angle, TurnDirectionEnum TurnDirection) {
         // do we need direction?
@@ -180,7 +182,7 @@ public class vv_Lib {
      */
     public void moveTillWhiteLineDetect(vv_OpMode aOpMode, float Power) throws InterruptedException {
         aOpMode.reset_timer();
-        while ((robot.getFloorColorSensorAlpha(aOpMode) < COLOR_SENSOR_WHITE_LIMIT) &&
+        while ((robot.getFloorLightIntensity(aOpMode) < FLOOR_WHITE_THRESHOLD) &&
                 aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
             moveSidewaysRight(aOpMode, Power);
             aOpMode.idle();
@@ -190,23 +192,42 @@ public class vv_Lib {
     }
 
 
-    public void showFloorColorSensorLumnosityOnTelemetry(vv_OpMode aOpMode,
+    public void showFloorLightSensorIntensityOnTelemetry(vv_OpMode aOpMode,
                                                          boolean updateTheDisplay)
             throws InterruptedException {
 
 
-        aOpMode.telemetryAddData("Floor Sensor", "Luminosity",":"+robot.getFloorColorSensorAlpha(aOpMode));
+        aOpMode.telemetryAddData("Floor Sensor", "Light Intensity", ":" + robot.getFloorLightIntensity(aOpMode));
         if (updateTheDisplay) {
             aOpMode.telemetryUpdate();
         }
     }
 
-    public void showBeaconLightSensorLightIntensityOnTelemetry(vv_OpMode aOpMode,
-                                                               boolean updateTheDisplay)
+    public void showBeaconColorValuesOnTelemetry(vv_OpMode aOpMode,
+                                                 boolean updateTheDisplay)
             throws InterruptedException {
-        aOpMode.telemetryAddData("Beacon Intensity", "Intensity", ":" +
-                robot.getbeaconLightSensorIntensity(aOpMode));
 
+        String color = "Unknown";
+
+        if (robot.getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
+            color = "RED";
+        }
+
+        if (robot.getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE) {
+            color = "BLUE";
+        }
+        if (robot.getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.UNKNOWN) {
+            color = "Dont Know";
+        }
+
+        aOpMode.telemetryAddData("Beacon red Val", "values:",
+                "Red:" + robot.getBeaconColorRedValue(aOpMode));
+        aOpMode.telemetryAddData("Beacon red Val", "values:",
+                "Green:" + robot.getBeaconColorGreenValue(aOpMode));
+        aOpMode.telemetryAddData("Beacon red Val", "values:",
+                "Blue:" + robot.getBeaconColorBlueValue(aOpMode));
+
+        aOpMode.telemetryAddData("Beacon Color Choice", "Choice", color);
 
         if (updateTheDisplay) {
             aOpMode.telemetryUpdate();
@@ -231,20 +252,25 @@ public class vv_Lib {
     }
 
 
-    public void turnFloorColorSensorLedOn(vv_OpMode aOpMode)throws InterruptedException{
-        robot.enableFloorColorSensorLed(aOpMode);
+    public void turnFloorLightSensorLedOn(vv_OpMode aOpMode) throws InterruptedException {
+        robot.enableFloorLightSensorLed(aOpMode);
     }
 
     public void turnFloorColorSensorLedOff(vv_OpMode aOpMode)throws InterruptedException{
-        robot.disableFloorColorSensorLed(aOpMode);
+        robot.disableFloorLightSensorLed(aOpMode);
     }
 
-    public void turnBeaconLightSensorLedOn(vv_OpMode aOpMode) throws InterruptedException {
-        robot.enableBeaconLightSensorLed(aOpMode);
+    public void turnBeaconColorSensorLedOn(vv_OpMode aOpMode) throws InterruptedException {
+        robot.enableBeaconColorSensorLed(aOpMode);
     }
 
-    public void turnBeaconLightSensorLedOff(vv_OpMode aOpMode) throws InterruptedException {
-        robot.disableBeaconLightSensorLed(aOpMode);
+    public void turnBeaconColorSensorLedOff(vv_OpMode aOpMode) throws InterruptedException {
+        robot.disableBeaconColorSensorLed(aOpMode);
+    }
+
+    public vv_Constants.BeaconColorEnum getBeaconColor(vv_OpMode aOpMode)
+            throws InterruptedException {
+        return robot.getBeaconColor(aOpMode);
     }
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
@@ -606,10 +632,6 @@ public class vv_Lib {
         }
     }
 
-    public void pushABeaconButton(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum buttonEnum) {
-        robot.pushButton(aOpMode, buttonEnum);
-    }
-
     /**
      * Toggles the power of the Ball Collector Motor to either off or to the power required to
      * outtake depending on the current state of the motor
@@ -782,8 +804,8 @@ public class vv_Lib {
     }
 
 
-    public double getBeaconLightIntensity(vv_OpMode aOpMode) throws InterruptedException {
-        return robot.getbeaconLightSensorIntensity(aOpMode);
+    public double getFloorLightIntensity(vv_OpMode aOpMode) throws InterruptedException {
+        return robot.getFloorLightIntensity(aOpMode);
     }
 
 }

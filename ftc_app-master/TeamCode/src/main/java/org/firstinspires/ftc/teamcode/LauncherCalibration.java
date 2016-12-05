@@ -63,18 +63,21 @@ public class LauncherCalibration extends vv_OpMode {
      * gamepad1.dpad_left = changes mechanism to left position gamepad1.dpad_right = changes
      * mechanism to right position gamepad1.dpad_down = changes mechanism to neutral position
      */
-    private void processBeacon() {
+    private void processBeacon() throws InterruptedException {
         // Changes Beacon Mechanism to left position in order to score the beacon
         if (gamepad1.dpad_left) {
-            vvLib.pushABeaconButton(this, vv_Constants.BeaconServoStateEnum.Left);
+            vvLib.turnBeaconArm(this, vv_Constants.BeaconServoStateEnum.Left);
         }
         // Changes Beacon Mechanism to right position in order to score the beacon
         if (gamepad1.dpad_right) {
-            vvLib.pushABeaconButton(this, vv_Constants.BeaconServoStateEnum.Right);
+            vvLib.turnBeaconArm(this, vv_Constants.BeaconServoStateEnum.Right);
         }
         // Changes Beacon Mechanism to a Neutral Position
         if (gamepad1.dpad_down) {
-            vvLib.pushABeaconButton(this, vv_Constants.BeaconServoStateEnum.Neutral);
+            vvLib.turnBeaconArm(this, vv_Constants.BeaconServoStateEnum.Neutral);
+        }
+        if (gamepad1.dpad_up) {
+            vvLib.turnBeaconArm(this, vv_Constants.BeaconServoStateEnum.Look);
         }
     }
 

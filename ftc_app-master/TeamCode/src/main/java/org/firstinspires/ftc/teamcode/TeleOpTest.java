@@ -71,18 +71,8 @@ public class TeleOpTest extends vv_OpMode {
      */
     private void processBeacon() {
         // Changes Beacon Mechanism to left position in order to score the beacon
-        if (gamepad1.dpad_left) {
-            vvLib.pushABeaconButton(this, vv_Constants.BeaconServoStateEnum.Left);
-        }
-        // Changes Beacon Mechanism to right position in order to score the beacon
-        if (gamepad1.dpad_right) {
-            vvLib.pushABeaconButton(this, vv_Constants.BeaconServoStateEnum.Right);
-        }
-        // Changes Beacon Mechanism to a Neutral Position
-        if (gamepad1.dpad_down) {
-            vvLib.pushABeaconButton(this, vv_Constants.BeaconServoStateEnum.Neutral);
-        }
-        }
+
+    }
 
         /**
          * Controls the Cap Ball Mechanism by either raising the lift, lowering the lift, or grabbing

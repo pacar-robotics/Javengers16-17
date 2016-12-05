@@ -36,12 +36,13 @@ public class vv_Constants
     final static float TRIGGER_THRESHOLD = .25f;
 
     // Extremes for servo that pushes beacon buttons
-    static final double BEACON_SERVO_MAX_POS = 0.8f;     // Maximum rotational position
-    static final double BEACON_SERVO_MID_POS = 0.4f;
-    static final double BUTTON_SERVO_MIN_POS     =  0.45f;
+    static final double BEACON_SERVO_LEFT = 0.8f;     // Maximum rotational position
+    static final double BEACON_SERVO_LOOK_FOR_COLOR = 0.6f;
+    static final double BEACON_SERVO_NEUTRAL = 0.4f;
+    static final double BEACON_SERVO_RIGHT = 0.45f;
 
     // Extremes for servo that controls the gate for launch
-    static final double LAUNCH_GATE_SERVO_OPEN = 0.0f;     // Maximum rotational position
+    static final double LAUNCH_GATE_SERVO_OPEN = 0.8f;     // Maximum rotational position
     static final double LAUNCH_GATE_SERVO_CLOSED = 0.3f;
 
 
@@ -101,6 +102,10 @@ public class vv_Constants
     final static float WORM_DRIVE_POWER = 0.8f;
     final static float WORM_DRIVE_DURATION_MAX = 3000;
     final static float WORM_DRIVE_ENCODER_MARGIN = 20;
+    final static int BEACON_RED_THRESHOLD = 0;
+    final static int BEACON_BLUE_THRESHOLD = 0;
+    final static float FLOOR_WHITE_THRESHOLD = 0.35f; //may need to calibrate
+    final static boolean TEAM_RED = false;
     BeaconColorEnum BeaconColor;
     DirectionEnum Direction;
     TurnDirectionEnum TurnDirection;
@@ -111,14 +116,13 @@ public class vv_Constants
         UNKNOWN
     }
 
+    //values that control the worm drive motor to adjust tension of the Launch arm
+
     // Direction of movement for autonomous
     enum DirectionEnum
     {
         Forward, Backward, SidewaysLeft, SidewaysRight
     }
-
-    //values that control the worm drive motor to adjust tension of the Launch arm
-
     // Direction of turning
     enum TurnDirectionEnum
     {
@@ -129,7 +133,7 @@ public class vv_Constants
         buttonSensor
     }
     enum BeaconServoStateEnum {
-        Left, Right, Neutral
+        Left, Right, Neutral, Look
     }
     //Cap Ball Lift States
     enum CapBallStateEnum {
@@ -139,6 +143,7 @@ public class vv_Constants
     enum IntakeStateEnum {
         Off, In, Out
     }
+
     //Spring Motor States used to score in different positions
     //Position 1 = 1 Tile Away
     //Position 2 = 2 Tiles Away

@@ -4,8 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
-import static org.firstinspires.ftc.teamcode.vv_Constants.BeaconServoStateEnum.Left;
-import static org.firstinspires.ftc.teamcode.vv_Constants.BeaconServoStateEnum.Right;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
@@ -59,7 +57,7 @@ public class protoOp extends vv_OpMode {
     public void auto1() throws InterruptedException, vv_Robot.MotorNameNotKnownException {
 
         //Turn the LED on the Color Sensor mounted on the floor of the Robot on
-        vvLib.turnFloorColorSensorLedOn(this);
+        vvLib.turnFloorLightSensorLedOn(this);
 
         //test the turn of the robot.
 
@@ -86,12 +84,6 @@ public class protoOp extends vv_OpMode {
 
         vvLib.turnAbsoluteGyroDegrees(this, 90);
 
-        vvLib.pushAButton(this, Left);
-        //wait till the servo reaches the button
-        Thread.sleep(1000);
-        vvLib.pushAButton(this, Right);
-        //wait till the servo reaches the button
-        Thread.sleep(1000);
 
         // TO MOVE SIDEWAYS RIGHT:
         /*
