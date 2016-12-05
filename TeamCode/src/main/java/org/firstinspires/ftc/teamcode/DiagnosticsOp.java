@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import android.os.Environment;
 import android.util.Log;
 
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -24,6 +26,7 @@ import javax.xml.xpath.XPathFactory;
  * Created by Rahul on 11/27/2016.
  */
 
+@TeleOp
 public class DiagnosticsOp extends vv_OpMode {
 
 	private static class ChoiceRecord {
