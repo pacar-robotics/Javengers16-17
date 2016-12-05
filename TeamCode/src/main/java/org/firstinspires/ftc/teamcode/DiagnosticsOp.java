@@ -114,6 +114,9 @@ public class DiagnosticsOp extends vv_OpMode {
 
 	private static final String LOG_TAG = "DiagnosticsOp";
 	private static final String INPUT_TELEMETRY_MESSAGE = "input: ";
+	private static final int WHEEL_POWER = 50;
+	private static final int WHEEL_DISTANCE = 15; // Centimeters
+	private static final int WHEEL_TIME = 2000; // milliseconds
 
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -165,9 +168,15 @@ public class DiagnosticsOp extends vv_OpMode {
 			choicesEntry.getValue().setErrorStatus(true);
 			choicesEntry.getValue().addErrorMessage("Could not find method: " + choicesEntry.getKey());
 		} catch (InvocationTargetException e) {
-			Log.e(LOG_TAG, e.getMessage());
-			choicesEntry.getValue().setErrorStatus(true);
-			choicesEntry.getValue().addErrorMessage("Could invoke method: " + choicesEntry.getKey());
+			if (e.getCause() instanceof InterruptedException) {
+				Log.e(LOG_TAG, e.getMessage());
+				choicesEntry.getValue().setErrorStatus(true);
+				choicesEntry.getValue().addErrorMessage("Interrupted Exception: " + choicesEntry.getKey());
+			} else {
+				Log.e(LOG_TAG, e.getMessage());
+				choicesEntry.getValue().setErrorStatus(true);
+				choicesEntry.getValue().addErrorMessage("Could invoke method: " + choicesEntry.getKey());
+			}
 		} catch (IllegalAccessException e) {
 			Log.e(LOG_TAG, e.getMessage());
 			choicesEntry.getValue().setErrorStatus(true);
@@ -209,28 +218,44 @@ public class DiagnosticsOp extends vv_OpMode {
 	// TODO 12/3/2016: Fill in method stubs
 
 	// Motors
-	private void frontrightwheel() {
+	private void frontrightwheel() throws InterruptedException {
+		robotLibrary.runAllMotors(this, 0, WHEEL_POWER, 0, 0);
+		Thread.sleep(WHEEL_TIME);
+		robotLibrary.stopAllMotors(this);
 	}
 
-	private void frontleftwheel() {
+	private void frontleftwheel() throws InterruptedException {
+		robotLibrary.runAllMotors(this, WHEEL_POWER, 0, 0, 0);
+		Thread.sleep(WHEEL_TIME);
+		robotLibrary.stopAllMotors(this);
 	}
 
-	private void backrightwheel() {
+	private void backrightwheel() throws InterruptedException {
+		robotLibrary.runAllMotors(this, 0, 0, 0, WHEEL_POWER);
+		Thread.sleep(WHEEL_TIME);
+		robotLibrary.stopAllMotors(this);
 	}
 
-	private void backleftwheel() {
+	private void backleftwheel() throws InterruptedException {
+		robotLibrary.runAllMotors(this, 0, 0, WHEEL_POWER, 0);
+		Thread.sleep(WHEEL_TIME);
+		robotLibrary.stopAllMotors(this);
 	}
 
-	private void forwards() {
+	private void forwards() throws InterruptedException {
+		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.Forward);
 	}
 
-	private void backwards() {
+	private void backwards() throws InterruptedException {
+		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.Backward);
 	}
 
-	private void sidewaysright() {
+	private void sidewaysright() throws InterruptedException {
+		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.SidewaysRight);
 	}
 
-	private void sidwaysleft() {
+	private void sidwaysleft() throws InterruptedException {
+		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.SidewaysLeft);
 	}
 
 	private void wormdrive() {
