@@ -35,7 +35,7 @@ public class vv_TeleOp extends vv_OpMode {
 
         while (opModeIsActive()) {
 
-            vvLib.processDriveRobotWithPowerFactor(this, 1.0f);
+            vvLib.processDriveRobotWithPowerFactor(this, 0.9f);
 
 //            vvLib.powerFactorBasedOnCapBall() //TODO: ADD THIS
 
@@ -43,7 +43,7 @@ public class vv_TeleOp extends vv_OpMode {
 
 //            processCapBall(this);
 //
-//            processBallCollection(this);
+            processBallCollection(this);
 //
 //            processShootingAngle(this);
 //
@@ -57,44 +57,37 @@ public class vv_TeleOp extends vv_OpMode {
     /**
      * Changes the state of the Beacon Button Mechanism depending on the D-PAD Button Pressed
      *
-     * gamepad1.dpad_left = changes mechanism to left position gamepad1.dpad_right = changes
-     * mechanism to right position gamepad1.dpad_down = changes mechanism to neutral position
+     * gamepad2.dpad_left = changes mechanism to left position gamepad2.dpad_right = changes
+     * mechanism to right position gamepad2.dpad_down = changes mechanism to neutral position
      */
     private void processBeacon(vv_OpMode anOpMode) {
         // Changes Beacon Mechanism to left position in order to score the beacon
-        if (gamepad1.dpad_left) {
+        if (gamepad2.dpad_left) {
             vvLib.pushABeaconButton(anOpMode, vv_Constants.BeaconServoStateEnum.Left);
         }
         // Changes Beacon Mechanism to right position in order to score the beacon
-        if (gamepad1.dpad_right) {
+        if (gamepad2.dpad_right) {
             vvLib.pushABeaconButton(anOpMode, vv_Constants.BeaconServoStateEnum.Right);
         }
         // Changes Beacon Mechanism to a Neutral Position
-        if (gamepad1.dpad_down) {
+        if (gamepad2.dpad_down) {
             vvLib.pushABeaconButton(anOpMode, vv_Constants.BeaconServoStateEnum.Neutral);
         }
     }
 
     /**
-     * Controls the Cap Ball Mechanism by either raising the lift, lowering the lift, or grabbing
-     * the ball
+     * Sets power of CapBallLift to the trigger values
      *
-     * gamepad1.y = raises the lift to scoring position gamepad1.a = lowers the lift to the resting
-     * position gamepad.x = graps/releases the cap ball
+     * gamepad2.left_trigger = raises capBallLift
+     * gamepad2.right_trigger = lowers capBallLift
      */
     private void processCapBall(vv_OpMode anOpMode) throws InterruptedException {
-        // Semi-Autonomously Raises the Cap Ball Lift Mechanism to the Scoring Height
-        if (gamepad1.y) {
-            vvLib.moveCapBallLiftToPosition(this, vv_Constants.CapBallStateEnum.Scoring_Position, 0.5f);
-        }
-        //Semi-Autonomously Lowers the Cap Ball Lift Mechanism to Resting Position
-        if (gamepad1.a) {
-            vvLib.moveCapBallLiftToPosition(this, vv_Constants.CapBallStateEnum.Rest, 0.5f);
-        }
-        //TODO: Change only if we need this
-        //Grabs or Releases the Ball [Toggle]
-        if (gamepad1.x) {
-
+        if(gamepad2.left_trigger > vv_Constants.TRIGGER_THRESHOLD) {
+            vvLib.setCapBallLiftPower(anOpMode, (gamepad2.left_trigger * vv_Constants.CAP_BALL_SCORE_POWER_FACTOR));
+        } else if (gamepad2.right_trigger > vv_Constants.TRIGGER_THRESHOLD) {
+            vvLib.setCapBallLiftPower(anOpMode, (-gamepad2.right_trigger * vv_Constants.CAP_BALL_SCORE_POWER_FACTOR));
+        } else {
+            vvLib.setCapBallLiftPower(anOpMode, 0);
         }
     }
 
@@ -110,10 +103,13 @@ public class vv_TeleOp extends vv_OpMode {
         //Changes state of Ball Collection mechanism to Outtake [Toggles On or Off]
         if (gamepad1.right_bumper) {
             vvLib.toggleIntake(anOp);
+            Thread.sleep(250);
         }
         //Changes state of Ball Collection mechanism to Outtake [Toggles On or Off]
         if (gamepad1.left_bumper) {
             vvLib.toggleOuttake(anOp);
+            Thread.sleep(250);
+
         }
     }
 
@@ -130,23 +126,21 @@ public class vv_TeleOp extends vv_OpMode {
         //Changes Angle of the Shooting Mechanism to Position 1
 
 
-       /* if (gamepad2.a) {
-            vvLib.moveSpringMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position1);
+       if (gamepad2.a) {
+            vvLib.moveWormDriveMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position1);
         }
         //Changes Angle of the Shooting Mechanism to Position 2
         if (gamepad2.x) {
-            vvLib.moveSpringMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position2);
+            vvLib.moveWormDriveMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position2);
         }
         //Changes Angle of the Shooting Mechanism to Position 3
         if (gamepad2.y) {
-            vvLib.moveSpringMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position3);
+            vvLib.moveWormDriveMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position3);
         }
         //Changes Angle of the Shooting Mechanism to Position 4
         if (gamepad2.b) {
-            vvLib.moveSpringMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position4);
+            vvLib.moveWormDriveMotorToPosition(anOpMode, vv_Constants.SpringPositionsEnum.Position4);
         }
-*/
-        //TODO Change the Angle slowly using Joystick Y Values
     }
 
     /**
@@ -157,16 +151,14 @@ public class vv_TeleOp extends vv_OpMode {
      */
     private void processShooting(vv_OpMode anOpMode) throws InterruptedException {
 
-        boolean isLeftBumperPressed;
-
-        //Loads and Shoots one Ball
-        if (gamepad2.left_bumper) {
-            isLeftBumperPressed = true;
-        } else {
-            isLeftBumperPressed = false;
+        if(vvLib.isLauncherArmAtLimit(anOpMode)) {
+            vvLib.setupShot(anOpMode);
         }
 
-        vvLib.shootOneBall(anOpMode, isLeftBumperPressed);
+        vvLib.dropBall(anOpMode);
+        vvLib.shootBall(anOpMode);
+        vvLib.setupShot(anOpMode);
+
         //TODO: if we press the button x amount of times, shoot & load the ball x amount of times
     }
 }

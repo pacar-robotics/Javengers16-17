@@ -28,6 +28,8 @@ public class vv_Constants {
 
     final static float ANALOG_STICK_THRESHOLD = .25f;
 
+    final static float TRIGGER_THRESHOLD = .15f;
+
     //Beacon Servo Positions
     static final double BUTTON_SERVO_MIN_POS = 0.8f;     // Maximum rotational position
     static final double BUTTON_SERVO_MAX_POS = 0.45f;
@@ -48,6 +50,11 @@ public class vv_Constants {
     static final float WORM_DRIVE_MOTOR_POWER = .3f;
     static final int SPRING_MAX_LIMIT = 500;
     static final int SPRING_MIN_LIMIT = 0;
+    static final int SPRING_POS_INCREMENT = 500;
+
+    // Extremes for servo that controls the gate for launch
+    static final double LAUNCH_GATE_SERVO_OPEN = 0.0f;     // Maximum rotational position
+    static final double LAUNCH_GATE_SERVO_CLOSED = 0.3f;
 
     //Ball Collector Constants
     static final float BALL_COLLECTOR_POWER = .3f; //TODO: CHANGE
@@ -98,6 +105,10 @@ public class vv_Constants {
     //Position 4 = 4 Tiles Away
     enum SpringPositionsEnum {
         Rest, Position1, Position2, Position3, Position4
+    }
+
+    enum DriverEnum {
+        MainDriver, CapBallDriver
     }
 
 }
