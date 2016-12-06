@@ -32,20 +32,20 @@ public class TestOpMode extends vv_OpMode {
 
 
         while (opModeIsActive()){
-            vvLib.setupShot(this);
+            //vvLib.setupShot(this);
 
-            /*if(gamepad1.x){
+            if(gamepad1.x){
 
-                vvLib.moveSpringMotorToPosition(this, vv_Constants.SpringPositionsEnum.Position1);
+                vvLib.moveWormDriveMotorToPosition(this, vv_Constants.SpringPositionsEnum.Position1);
             }
             else if(gamepad1.y){
 
-                vvLib.moveSpringMotorToPosition(this, vv_Constants.SpringPositionsEnum.Position2);
+                vvLib.moveWormDriveMotorToPosition(this, vv_Constants.SpringPositionsEnum.Position2);
             }
             else if(gamepad1.b){
 
-                vvLib.moveSpringMotorToPosition(this, vv_Constants.SpringPositionsEnum.Position3);
-            }*/
+                vvLib.moveWormDriveMotorToPosition(this, vv_Constants.SpringPositionsEnum.Position3);
+            }
 
             idle();
         }

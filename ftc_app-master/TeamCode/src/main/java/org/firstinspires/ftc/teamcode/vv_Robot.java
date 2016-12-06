@@ -43,7 +43,7 @@ public class vv_Robot {
     public vv_Constants.BallCollectorStateEnum BallCollectorState;
     public vv_Constants.SpringPositionsEnum SpringPosition;
 
-    public void init(HardwareMap ahwMap, vv_OpMode aOpMode) {
+    public void init(HardwareMap ahwMap, vv_OpMode aOpMode) throws InterruptedException{
 
         // save reference to HW Map
         hwMap = ahwMap;
@@ -88,6 +88,14 @@ public class vv_Robot {
         CapBallState = vv_Constants.CapBallStateEnum.Rest;
         BallCollectorState = vv_Constants.BallCollectorStateEnum.Off;
         SpringPosition = vv_Constants.SpringPositionsEnum.Rest;
+        /*
+        wormDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //reset the worm drive motor
+        while(wormDriveMotor.getCurrentPosition()!=0){
+            //wait till it reaches a steady state with encoder reset.
+            aOpMode.idle();
+        }
+        */
 
     }
 
@@ -111,8 +119,8 @@ public class vv_Robot {
      * @param Position Encoder Position to move spring motor to
      * @throws InterruptedException
      */
-    public void movearmMotor(vv_OpMode anOp, int Position) throws InterruptedException {
-        moveMotorUsingEncoderLimits(anOp, armMotor, Position, vv_Constants.SPRING_MOTOR_POWER,
+    public void moveWormDriveMotor(vv_OpMode anOp, int Position) throws InterruptedException {
+        moveMotorUsingEncoderLimits(anOp, wormDriveMotor, Position, vv_Constants.WORM_DRIVE_MOTOR_POWER,
                 vv_Constants.SPRING_MAX_LIMIT, vv_Constants.SPRING_MIN_LIMIT);
     }
 
@@ -142,15 +150,37 @@ public class vv_Robot {
                 armMotor.setPower(power);
                 break;
             case intakeMotor:
-                intakeMotor.setPower(power);
+                intakeMotor.setPower(-power);
+                break;
+            case wormDriveMotor:
+                wormDriveMotor.setPower(power);
                 break;
         }
     }
 
     public void setMotorMode(vv_OpMode aOpMode, vv_Constants.MotorEnum motorEnum, DcMotor.RunMode runMode) {
-        if (motorEnum.equals("armMotor")) {
-            armMotor.setMode(runMode);
+        switch(motorEnum){
+            case armMotor:
+                armMotor.setMode(runMode);
+                break;
+            case wormDriveMotor:
+                wormDriveMotor.setMode(runMode);
+                break;
+            case frontLeftMotor:
+                frontLeftMotor.setMode(runMode);
+                break;
+            case frontRightMotor:
+                frontRightMotor.setMode(runMode);
+                break;
+            case backLeftMotor:
+                backLeftMotor.setMode(runMode);
+                break;
+            case backRightMotor:
+                backRightMotor.setMode(runMode);
+                break;
+
         }
+
         //TODO: Finish this method up
     }
 
@@ -445,9 +475,9 @@ public class vv_Robot {
         motor.setPower(Math.abs(power));
 
         //waits until the motor reaches the position
-        while (motor.isBusy() || (Math.abs(motor.getCurrentPosition() - (targetPosition)) > vv_Constants.DC_MOTOR_ENCODER_MARGIN)
-                && !(motor.getCurrentPosition() > Math.abs(maxEncoder - vv_Constants.DC_MOTOR_ENCODER_MARGIN))
-                && !(motor.getCurrentPosition() < vv_Constants.DC_MOTOR_ENCODER_MARGIN)) {
+        while (motor.isBusy() && (Math.abs(motor.getCurrentPosition()) - Math.abs(targetPosition) >= vv_Constants.DC_MOTOR_ENCODER_MARGIN)
+                && (Math.abs(motor.getCurrentPosition()) <= maxEncoder - vv_Constants.DC_MOTOR_ENCODER_MARGIN)
+                && (Math.abs(motor.getCurrentPosition()) >= minEncoder)) {
 
             //runs till it approaches target position
         }

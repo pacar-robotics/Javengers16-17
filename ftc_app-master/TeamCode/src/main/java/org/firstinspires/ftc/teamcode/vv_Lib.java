@@ -157,22 +157,22 @@ public class vv_Lib {
      * @throws InterruptedException
      */
     // TODO: uncomment this!
-    /*public void movewormdriveMotorToPosition(vv_OpMode anOpMode, vv_Constants.SpringPositionsEnum springPosition) throws InterruptedException {
+    public void moveWormDriveMotorToPosition(vv_OpMode anOpMode, vv_Constants.SpringPositionsEnum springPosition) throws InterruptedException {
         switch (springPosition) {
             case Position1:
-                robot.movewormdriveMotor(anOpMode, vv_Constants.SPRING_POSITION1);
+                robot.moveWormDriveMotor(anOpMode, vv_Constants.SPRING_POSITION1);
                 robot.SpringPosition = vv_Constants.SpringPositionsEnum.Position1;
                 break;
             case Position2:
-                robot.movewormdriveMotor(anOpMode, vv_Constants.SPRING_POSITION2);
+                robot.moveWormDriveMotor(anOpMode, vv_Constants.SPRING_POSITION2);
                 robot.SpringPosition = vv_Constants.SpringPositionsEnum.Position2;
                 break;
             case Position3:
-                robot.movewormdriveMotor(anOpMode, vv_Constants.SPRING_POSITION3);
+                robot.moveWormDriveMotor(anOpMode, vv_Constants.SPRING_POSITION3);
                 robot.SpringPosition = vv_Constants.SpringPositionsEnum.Position3;
                 break;
         }
-    }*/
+    }
 
     /**
      * Using encoders, this method turns the Robot clockwise or counter clockwise based on angle
@@ -465,7 +465,7 @@ public class vv_Lib {
 
     public void test_Motors(vv_OpMode aOpMode)  throws InterruptedException
     {
-        //test front left motor
+        /*//test front left motor
         robot.setPower(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, 0.3f);
         Thread.sleep(3000);
         robot.setPower(aOpMode, vv_Constants.MotorEnum.frontLeftMotor, 0.0f);
@@ -487,7 +487,8 @@ public class vv_Lib {
         Thread.sleep(3000);
         robot.setPower(aOpMode, vv_Constants.MotorEnum.backRightMotor, 0.0f);
 
-        Thread.sleep(2000);
+        Thread.sleep(2000);*/
+/*
 
         robot.setPower(aOpMode, vv_Constants.MotorEnum.armMotor, 0.3f);
         Thread.sleep(500);
@@ -500,9 +501,11 @@ public class vv_Lib {
         robot.setPower(aOpMode, vv_Constants.MotorEnum.intakeMotor, 0.0f);
 
         Thread.sleep(2000);
+*/
 
-        robot.setPower(aOpMode, vv_Constants.MotorEnum.wormDriveMotor, 0.3f);
-        Thread.sleep(200);
+        //robot.setMotorMode(aOpMode, vv_Constants.MotorEnum.wormDriveMotor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.setPower(aOpMode, vv_Constants.MotorEnum.wormDriveMotor, 0.7f);
+        Thread.sleep(5000);
         robot.setPower(aOpMode, vv_Constants.MotorEnum.wormDriveMotor, 0.0f);
 
 
