@@ -12,6 +12,8 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -120,6 +122,7 @@ public class DiagnosticsOp extends vv_OpMode {
 	private static final int WHEEL_POWER = 50;
 	private static final int WHEEL_DISTANCE = 15; // Centimeters
 	private static final int WHEEL_TIME = 2000; // milliseconds
+	private static final int TOUCH_WAIT_TIME = 5000; // milliseconds
 
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -206,7 +209,19 @@ public class DiagnosticsOp extends vv_OpMode {
 				String.format("Test the %s? A for yes; B for no", testName));
 
 		// Wait until A or B is pressed
-		while (!gamepad1.a && !gamepad1.b);
+		while (!gamepad1.a && !gamepad1.b) ;
+
+		// If A is pressed, return yes. Otherwise, return no
+		return gamepad1.a;
+	}
+
+	private boolean didItRun(String testName) {
+		telemetryUpdate();
+		telemetryAddData(LOG_TAG, INPUT_TELEMETRY_MESSAGE,
+				String.format("Did %s work? A for yes; B for no", testName));
+
+		// Wait until A or B is pressed
+		while (!gamepad1.a && !gamepad1.b) ;
 
 		// If A is pressed, return yes. Otherwise, return no
 		return gamepad1.a;
@@ -221,50 +236,70 @@ public class DiagnosticsOp extends vv_OpMode {
 	// TODO 12/3/2016: Fill in method stubs
 
 	// Motors
-	private void frontrightwheel() throws InterruptedException {
+	private boolean frontrightwheel() throws InterruptedException {
 		robotLibrary.runAllMotors(this, 0, WHEEL_POWER, 0, 0);
 		Thread.sleep(WHEEL_TIME);
 		robotLibrary.stopAllMotors(this);
+
+		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
-	private void frontleftwheel() throws InterruptedException {
+	private boolean frontleftwheel() throws InterruptedException {
 		robotLibrary.runAllMotors(this, WHEEL_POWER, 0, 0, 0);
 		Thread.sleep(WHEEL_TIME);
 		robotLibrary.stopAllMotors(this);
+
+		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
-	private void backrightwheel() throws InterruptedException {
+	private boolean backrightwheel() throws InterruptedException {
 		robotLibrary.runAllMotors(this, 0, 0, 0, WHEEL_POWER);
 		Thread.sleep(WHEEL_TIME);
 		robotLibrary.stopAllMotors(this);
+
+		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
-	private void backleftwheel() throws InterruptedException {
+	private boolean backleftwheel() throws InterruptedException {
 		robotLibrary.runAllMotors(this, 0, 0, WHEEL_POWER, 0);
 		Thread.sleep(WHEEL_TIME);
 		robotLibrary.stopAllMotors(this);
+
+		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
-	private void forwards() throws InterruptedException {
+	private boolean forwards() throws InterruptedException {
 		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.Forward);
+		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
-	private void backwards() throws InterruptedException {
+	private boolean backwards() throws InterruptedException {
 		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.Backward);
+		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
-	private void sidewaysright() throws InterruptedException {
+	private boolean sidewaysright() throws InterruptedException {
 		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.SidewaysRight);
+		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
-	private void sidwaysleft() throws InterruptedException {
+	private boolean sidwaysleft() throws InterruptedException {
 		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.SidewaysLeft);
+		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	private void wormdrive() {
 	}
 
-	private void launcher() {
+	private boolean launcher() throws InterruptedException {
+		vv_Robot robot = new vv_Robot();
+		robot.init(hardwareMap, this);
+
+		robot.setPower(this, vv_Constants.MotorEnum.armMotor, WHEEL_POWER);
+		Thread.sleep(WHEEL_TIME);
+		robot.stopMotors(this);
+
+		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	private void intake() {
@@ -277,20 +312,43 @@ public class DiagnosticsOp extends vv_OpMode {
 	private void intakegate() {
 	}
 
-	private void beacon() {
+	private boolean beacon() throws InterruptedException {
+		robotLibrary.pushAButton(this, vv_Constants.ButtonEnum.Left);
+		Thread.sleep(WHEEL_TIME);
+		robotLibrary.pushAButton(this, vv_Constants.ButtonEnum.Right);
+
+		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	private void capball() {
 	}
 
 	// Sensors
-	private void floorcolor() {
+	private void floorcolor() throws InterruptedException {
+
 	}
 
-	private void beacontouch() {
+	private boolean beacontouch() throws InterruptedException {
+		Calendar cal = new GregorianCalendar();
+		cal.setTimeInMillis(System.currentTimeMillis());
+
+		// Wait until sensor is touched or 5 seconds have passed
+		while (robotLibrary.senseTouch(this) && (System.currentTimeMillis() - cal.getTimeInMillis() < TOUCH_WAIT_TIME));
+
+		return !robotLibrary.senseTouch(this);
 	}
 
-	private void beaconcolor() {
+	private boolean beaconcolor() throws InterruptedException {
+		vv_Robot robot = new vv_Robot();
+		robot.init(hardwareMap, this);
+
+		Calendar cal = new GregorianCalendar();
+		cal.setTimeInMillis(System.currentTimeMillis());
+
+		// Wait until sensor is touched or 5 seconds have passed
+		while (robot.isArmAtLimit(this) && (System.currentTimeMillis() - cal.getTimeInMillis() < TOUCH_WAIT_TIME));
+
+		return !robot.isArmAtLimit(this);
 	}
 
 	private void launcherlimittouch() {
