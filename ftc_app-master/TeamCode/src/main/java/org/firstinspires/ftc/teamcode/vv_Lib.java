@@ -105,7 +105,7 @@ public class vv_Lib {
     {
         robot.setMotorMode(aOpMode, ARM_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        robot.setPower(aOpMode, ARM_MOTOR, 0.8f);
+        robot.setPower(aOpMode, ARM_MOTOR, 0.9f);
 
         Thread.sleep(500);
 

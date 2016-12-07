@@ -54,6 +54,7 @@ public class vv_Robot {
     private Servo beaconServo = null;
     private Servo launcherGateServo = null;
     private TouchSensor beaconTouchSensor;
+    private TouchSensor wormDriveTouchSensor;
     private ColorSensor beaconColorSensor;
     private TouchSensor armSensor;
     private LightSensor floorLightSensor;
@@ -86,6 +87,7 @@ public class vv_Robot {
         beaconTouchSensor = hwMap.touchSensor.get("beacon_touch_sensor");
         beaconColorSensor = hwMap.colorSensor.get("beacon_color_sensor");
         floorUltrasonicSensor = hwMap.ultrasonicSensor.get("floor_ultrasonic_sensor");
+        wormDriveTouchSensor = hwMap.touchSensor.get("touch_worm_sensor");
 
         //turn the LED on the floor color sensor off at the start.
         //used for compatibility with older SDK code.
@@ -274,8 +276,8 @@ public class vv_Robot {
 
         aOpMode.reset_timer();
         while (baseMotorsAreBusy() && (aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) &&
-                (Math.abs(Math.abs(motorArray[FRONT_LEFT_MOTOR].getCurrentPosition()) -
-                        Math.abs(fl_Position)) > MECCANUM_WHEEL_ENCODER_MARGIN)) {
+                (Math.abs(fl_Position - motorArray[FRONT_LEFT_MOTOR].getCurrentPosition())
+                        >= MECCANUM_WHEEL_ENCODER_MARGIN)) {
             //wait until motors havce completed movement or timed out.
             //report motor positions for debugging
 
@@ -667,7 +669,7 @@ public class vv_Robot {
         aOpMode.DBG("before move loop in testEncodedMotor");
 
         while ((motorArray[motorName].isBusy()) &&
-                ((Math.abs(motorArray[motorName].getCurrentPosition()) - Math.abs(targetPosition)) > MECCANUM_WHEEL_ENCODER_MARGIN) &&
+                ((Math.abs(motorArray[motorName].getCurrentPosition() - targetPosition)) > MECCANUM_WHEEL_ENCODER_MARGIN) &&
                 (aOpMode.time_elapsed() < maxDuration)) {
             stallPositionStart = motorArray[motorName].getCurrentPosition();
             stallTimeStart = aOpMode.time_elapsed();
@@ -687,7 +689,10 @@ public class vv_Robot {
                     aOpMode.DBG("in stall code throw testEncodedMotor");
                     motorArray[motorName].setPower(0.0f);
                     //throw exception indicating the problem.
-                    throw new MotorStalledException("MotorName" + motorName, stallVelocity, stallVelocityThreshold);
+                    String stallMessage = "MotorName" + motorName + "StallV:[" +
+                            stallVelocity + "]" + "Stall Velocity Threshold:{" +
+                            stallVelocityThreshold + "]";
+                    throw new MotorStalledException(stallMessage);
                 }
             }
 
@@ -726,40 +731,73 @@ public class vv_Robot {
         float stallVelocityThreshold = (ENCODED_MOTOR_STALL_CLICKS_TETRIX * 1.0f /
                 ENCODED_MOTOR_STALL_TIME_DELTA);
 
-        //wait till completion of max duration.
+        //reset clock;
         aOpMode.reset_timer();
-        while (motorArray[WORM_DRIVE_MOTOR].isBusy() &&
-                (Math.abs((Math.abs(motorArray[WORM_DRIVE_MOTOR].getCurrentPosition()) -
-                        Math.abs(launcherPowerPosition))) > WORM_DRIVE_ENCODER_MARGIN) &&
-                aOpMode.time_elapsed() < WORM_DRIVE_DURATION_MAX) {
-            //wait until the position is reached or times out.
 
-            int stallPositionStart = motorArray[WORM_DRIVE_MOTOR].getCurrentPosition();
-            long stallTimeStart = aOpMode.time_elapsed();
-            //wait till the run is complete or the time runs out.
-            Thread.sleep(ENCODED_MOTOR_STALL_TIME_DELTA);
-            //stall code
-            int stallPositionDelta = Math.abs(Math.abs(motorArray[WORM_DRIVE_MOTOR].getCurrentPosition())
-                    - Math.abs(stallPositionStart));
-            long stallTimeDelta = aOpMode.time_elapsed() - stallTimeStart;
-            float stallVelocity = ((stallPositionDelta * 1.0f) / stallTimeDelta);
+        //initialize the variables we need.
+        int newStallPosition = 0;
+        int oldStallPosition = 0;
+        long newStallTime = 0;
+        long oldStallTime = 0;
+        int stallPositionDelta = 0;
+        long stallTimeDelta = 0;
+        float stallVelocity = 0;
+
+        while (motorArray[WORM_DRIVE_MOTOR].isBusy() &&
+                (aOpMode.time_elapsed() < WORM_DRIVE_DURATION_MAX) &&
+                (!wormDriveTouchSensor.isPressed())) {
+
+            //save old stall time and position.
+            oldStallPosition = newStallPosition;
+            oldStallTime = newStallTime;
+
+            //read the current position only once.
+            newStallPosition = motorArray[WORM_DRIVE_MOTOR].getCurrentPosition();
+            newStallTime = aOpMode.time_elapsed();
+
+            stallPositionDelta = Math.abs(Math.abs(newStallPosition) - Math.abs(oldStallPosition));
+            stallTimeDelta = newStallTime - oldStallTime;
+
+            stallVelocity = ((stallPositionDelta * 1.0f) / stallTimeDelta);
 
             //TODO: Stall code must be tested!!
-            if (stallVelocity < stallVelocityThreshold) {
+            if ((oldStallTime > 0) && stallVelocity < stallVelocityThreshold) {
                 //motor stalling ?
                 //stop motor first
-                aOpMode.DBG("in stall code throw testEncodedMotor");
+
                 motorArray[WORM_DRIVE_MOTOR].setPower(0.0f);
                 //throw exception indicating the problem.
+                String stallMessage = "stallV:[" + stallVelocity + "]"
+                        + "stallT:[" + stallVelocityThreshold + "]"
+                        + "stallTDelta:[" + stallTimeDelta + "]"
+                        + "stallPDelta:[" + stallPositionDelta + "]";
+
                 if (DEBUG) {
-                    aOpMode.telemetryAddData("Stall Data", "", "stallV:" + stallVelocity
-                            + "stallT" + stallVelocityThreshold
-                            + "stallTDelta" + stallTimeDelta
-                            + "stallPDelta" + stallPositionDelta);
+                    aOpMode.DBG("in stall code throw testEncodedMotor");
+                    aOpMode.telemetryAddData("Stall Data", "", stallMessage);
                     aOpMode.telemetryUpdate();
                 }
-                throw new MotorStalledException("MotorName" + ":WormDriveMotor", stallVelocity, stallVelocityThreshold);
+                throw new MotorStalledException("MotorName" + ":WormDriveMotor" + stallMessage);
             }
+
+
+            if ((Math.abs(launcherPowerPosition -
+                    newStallPosition)) <= WORM_DRIVE_ENCODER_MARGIN) {
+                //stop the motor
+                motorArray[WORM_DRIVE_MOTOR].setPower(0.0f);
+                //break out of loop, as we have reached target within margin.
+                aOpMode.telemetryAddData("Break out of loop, margin", "", "margin");
+                aOpMode.telemetryUpdate();
+                Thread.sleep(500);
+
+                break;
+            }
+
+            //wait for a bit of time to test for stall
+            Thread.sleep(ENCODED_MOTOR_STALL_TIME_DELTA);
+
+
+            aOpMode.idle();
         }
         //stop the motor
         motorArray[WORM_DRIVE_MOTOR].setPower(0.0f);
@@ -838,8 +876,8 @@ public class vv_Robot {
 
     class MotorStalledException extends Exception {
 
-        MotorStalledException(String message, float stallVelocity, float stallVelocityThreshold) {
-            super(message + stallVelocity + stallVelocityThreshold);
+        MotorStalledException(String message) {
+            super(message);
         }
     }
 

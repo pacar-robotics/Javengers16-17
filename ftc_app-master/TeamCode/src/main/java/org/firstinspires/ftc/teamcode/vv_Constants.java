@@ -19,8 +19,8 @@ public class vv_Constants
 	final static int ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION = 1120;
 
 	final static float MOTOR_LOWER_POWER_THRESHOLD = 0.35f;
-    final static float MOTOR_RAMP_POWER_LOWER_LIMIT = 0.30f;
-    final static float MOTOR_RAMP_POWER_UPPER_LIMIT = 0.8f;
+    final static float MOTOR_RAMP_POWER_LOWER_LIMIT = 0.5f;
+    final static float MOTOR_RAMP_POWER_UPPER_LIMIT = 0.5f;
     final static float MOTOR_SLOW_START_THRESHOLD = 0.30f;
 
     final static float COLOR_SENSOR_WHITE_LIMIT = 2.0f;
@@ -92,12 +92,12 @@ public class vv_Constants
     final static int CAP_BALL_MOTOR = 7;
 
 
-    final static int LAUNCH_POWER_INCREMENT = 500;
+    final static int LAUNCH_POWER_INCREMENT = 150;
 
     final static int LAUNCH_POWER_POSITION_MIN = 0;
-    final static int LAUNCH_POWER_POSITION_AUTONOMOUS = 3500;
-    final static int LAUNCH_POWER_POSITION_MAX = 4400;
-    final static int LAUNCH_POWER_POSITION_MID = 4000;
+    final static int LAUNCH_POWER_POSITION_AUTONOMOUS = 4000;
+    final static int LAUNCH_POWER_POSITION_MAX = 4550;
+    final static int LAUNCH_POWER_POSITION_MID = 4200;
 
     final static float WORM_DRIVE_POWER = 0.8f;
     final static float WORM_DRIVE_DURATION_MAX = 3000;

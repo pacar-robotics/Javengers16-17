@@ -2,6 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_AUTONOMOUS;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_MAX;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_MID;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_MIN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 
 
@@ -132,28 +136,7 @@ public class LauncherCalibration extends vv_OpMode {
      * mechanism to position 2 (___ Tiles away) gamepad2.y = changes the mechanism to position 3
      * (___ Tiles away) gamepad2.b = changes the mechanism to position 4 (___ Tiles away)
      */
-    private void processLaunchPower() throws InterruptedException {
-        //Changes Angle of the Shooting Mechanism to Position 1
 
-
-       /* if (gamepad2.a) {
-            vvLib.moveSpringMotorToPosition(aOpMode, vv_Constants.SpringPositionsEnum.Position1);
-        }
-        //Changes Angle of the Shooting Mechanism to Position 2
-        if (gamepad2.x) {
-            vvLib.moveSpringMotorToPosition(aOpMode, vv_Constants.SpringPositionsEnum.Position2);
-        }
-        //Changes Angle of the Shooting Mechanism to Position 3
-        if (gamepad2.y) {
-            vvLib.moveSpringMotorToPosition(aOpMode, vv_Constants.SpringPositionsEnum.Position3);
-        }
-        //Changes Angle of the Shooting Mechanism to Position 4
-        if (gamepad2.b) {
-            vvLib.moveSpringMotorToPosition(aOpMode, vv_Constants.SpringPositionsEnum.Position4);
-        }
-*/
-        //TODO Change the Angle slowly using Joystick Y Values
-    }
 
     /**
      * If the gamepad2.left_bumper is pressed x amount of times, the mechanism shoots the ball x
@@ -161,84 +144,65 @@ public class LauncherCalibration extends vv_OpMode {
      */
     private void processLaunch()
             throws InterruptedException {
+        try {
 
-/*
-        if (gamepad1.y) {
-            //shoot a ball
-            //then setup for next shot.
-            //first setupShot should be called from vvLib.init
+            if (gamepad1.a) {
+                //shoot a ball
+                //then setup for next shot.
+                //first setupShot should be called from vvLib.init
 
 
-            try {
-                //first move to position max
-                vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_MAX);
-
-            } catch (vv_Robot.MotorStalledException MSE) {
-                telemetryAddData("Motor Stalled!", "Name", MSE.getMessage());
-                Thread.sleep(500);
+                //first move to position min
+                vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_MIN);
+                //this is a rest position no shoot.
             }
-            if (vvLib.getLauncherPowerPosition(this) > (LAUNCH_POWER_POSITION_MAX - LAUNCH_POWER_INCREMENT)) {
+
+            if (gamepad1.x) {
+                //shoot a ball
+                //then setup for next shot.
+                //first setupShot should be called from vvLib.init
+
+
+                //first move to position auto
+                vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_AUTONOMOUS);
+                vvLib.dropBall(this);
                 vvLib.shootBall(this);
                 vvLib.setupShot(this);
             }
+
+
+            if (gamepad1.y) {
+                //shoot a ball
+                //then setup for next shot.
+                //launch where we are.
+                //used to calibrate the location.
+
+                vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_MID);
+                vvLib.dropBall(this);
+                vvLib.shootBall(this);
+                vvLib.setupShot(this);
+            }
+
+
+            if (gamepad1.b) {
+                //shoot a ball
+                //then setup for next shot.
+                //first setupShot should be called from vvLib.init
+
+
+                //first move to position min
+                vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_MAX);
+                vvLib.dropBall(this);
+                vvLib.shootBall(this);
+                vvLib.setupShot(this);
+            }
+
+
+        } catch (vv_Robot.MotorStalledException MSE) {
+            telemetryAddData("Motor Stalled!", "Motor Name:", MSE.getMessage());
+            telemetryUpdate();
+            Thread.sleep(500);
         }
-
-*/
-
-        /*
-
-        if (gamepad1.x) {
-            //shoot a ball
-            //then setup for next shot.
-            //first setupShot should be called from vvLib.init
-
-
-            //first move to position max
-            vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_MID);
-
-            vvLib.shootBall(this);
-            vvLib.setupShot(this);
-        }
-
-        if (gamepad1.a) {
-            //shoot a ball
-            //then setup for next shot.
-            //first setupShot should be called from vvLib.init
-
-
-            //first move to position max
-            vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_AUTONOMOUS);
-
-            vvLib.shootBall(this);
-            vvLib.setupShot(this);
-        }
-
-*/
-        if (gamepad1.start) {
-            //shoot a ball
-            //then setup for next shot.
-            //launch where we are.
-            //used to calibrate the location.
-
-            vvLib.dropBall(this);
-            vvLib.shootBall(this);
-            vvLib.setupShot(this);
-        }
-
-
-/*
-        if (gamepad1.b) {
-            //shoot a ball
-            //then setup for next shot.
-            //first setupShot should be called from vvLib.init
-
-
-            //first move to position max
-            vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_MIN);
-        }
-
-        */
-
 
     }
 
@@ -262,6 +226,7 @@ public class LauncherCalibration extends vv_OpMode {
             telemetryUpdate();
         } catch (vv_Robot.MotorStalledException MSE) {
             telemetryAddData("Motor Stalled!", "Name", MSE.getMessage());
+            telemetryUpdate();
             Thread.sleep(500);
         }
     }
