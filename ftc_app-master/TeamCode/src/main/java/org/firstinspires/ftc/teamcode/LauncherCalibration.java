@@ -40,6 +40,15 @@ public class LauncherCalibration extends vv_OpMode {
         while (opModeIsActive()) {
 
 
+            try {
+                vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_MAX);
+            } catch (vv_Robot.MotorStalledException e) {
+                e.printStackTrace();
+            }
+            vvLib.dropBall(this);
+            vvLib.shootBall(this);
+            vvLib.setupShot(this);
+
             processLaunchPowerCalibration();
 
             processLaunch();

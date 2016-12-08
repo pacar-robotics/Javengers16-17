@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.BeaconServoStateEnum;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TEAM_RED;
 
@@ -56,35 +58,54 @@ public class AutoOp extends vv_OpMode
         //power of 0.5 is recommended to prevent single motor stalls during turns
         //otherwise code has to be written to solve for this (maybe increase margin ?)
 
+        vvLib.moveWheels(this, 4, .4f, SidewaysRight);
 
-        vvLib.moveWheels(this, 12, 0.2f, SidewaysRight);
+        vvLib.shootBall(this);
+        vvLib.setupShot(this);
 
-        Thread.sleep(100);
+        vvLib.toggleIntake(this);
+        Thread.sleep(750);
+        vvLib.toggleIntake(this);
+        vvLib.dropBall(this);
+        vvLib.shootBall(this);
+        vvLib.setupShot(this);
 
-        vvLib.turnAbsoluteGyroDegrees(this, 35);
+        Thread.sleep(250);
 
-        Thread.sleep(100);
+        vvLib.moveWheels(this, 8, 0.4f, SidewaysRight);
+
+        Thread.sleep(250);
+
+        vvLib.turnAbsoluteGyroDegrees(this, 55);
+
+        Thread.sleep(250);
 
         //distances are by experimentation.
 
         // vvLib.moveWheels(this, 60, 0.9f, SidewaysRight);
         vvLib.moveTillWhiteLineDetect(this, 0.7f);
-        Thread.sleep(100);
+        Thread.sleep(250);
 
         vvLib.turnAbsoluteGyroDegrees(this, 90);
-        Thread.sleep(100);
+        Thread.sleep(250);
         //now we are too far to the side, pull back a bit
 
-        //vvLib.moveWheels(this,6, 0.3f, Backward);
+        vvLib.moveWheels(this, 2.5f, 0.3f, Backward);
 
-        Thread.sleep(100);
-        vvLib.moveWheels(this, 6, 0.3f, SidewaysRight);
+        Thread.sleep(250);
+        vvLib.moveWheels(this, 8, 0.3f, SidewaysRight);
+
+        Thread.sleep(250);
+
+        vvLib.moveWheels(this, 50, .3f, SidewaysLeft);
+        
 
         //code for detecting color of the beacon.
 
 
         //turn to check color
 
+        /*
         vvLib.turnBeaconArm(this, BeaconServoStateEnum.Look);
 
 
