@@ -12,6 +12,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
@@ -233,8 +234,6 @@ public class DiagnosticsOp extends vv_OpMode {
 	 * The names are made to be the same as the tag in the XML file, so they do not follow camel-casing
 	 */
 
-	// TODO 12/3/2016: Fill in method stubs
-
 	// Motors
 	private boolean frontrightwheel() throws InterruptedException {
 		robotLibrary.runAllMotors(this, 0, WHEEL_POWER, 0, 0);
@@ -288,21 +287,34 @@ public class DiagnosticsOp extends vv_OpMode {
 		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
-	private void wormdrive() {
-	}
+	private boolean wormdrive() throws InterruptedException, vv_Robot.MotorStalledException {
+		Calendar cal = new GregorianCalendar();
+		cal.setTimeInMillis(System.currentTimeMillis());
+		while(System.currentTimeMillis() - cal.getTimeInMillis() > 1000) {
+			robotLibrary.increaseLauncherPower(this);
+		}
 
-	private boolean launcher() throws InterruptedException {
-		vv_Robot robot = new vv_Robot();
-		robot.init(hardwareMap, this);
+		Thread.sleep(2000);
 
-		robot.setPower(this, vv_Constants.MotorEnum.armMotor, WHEEL_POWER);
-		Thread.sleep(WHEEL_TIME);
-		robot.stopMotors(this);
+		cal.setTimeInMillis(System.currentTimeMillis());
+		while (System.currentTimeMillis() - cal.getTimeInMillis() > 1000) {
+			robotLibrary.decreaseLauncherPower(this);
+		}
 
 		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
-	private void intake() {
+	private boolean launcher() throws InterruptedException, vv_Robot.MotorStalledException {
+		robotLibrary.shootBall(this);
+		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
+	}
+
+	private boolean intake() throws InterruptedException {
+		robotLibrary.toggleIntake(this);
+		Thread.sleep(2000);
+		robotLibrary.toggleIntake(this);
+
+		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	private void lift() {
@@ -312,12 +324,7 @@ public class DiagnosticsOp extends vv_OpMode {
 	private void intakegate() {
 	}
 
-	private boolean beacon() throws InterruptedException {
-		robotLibrary.pushAButton(this, vv_Constants.ButtonEnum.Left);
-		Thread.sleep(WHEEL_TIME);
-		robotLibrary.pushAButton(this, vv_Constants.ButtonEnum.Right);
-
-		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
+	private void beacon() {
 	}
 
 	private void capball() {
@@ -333,33 +340,58 @@ public class DiagnosticsOp extends vv_OpMode {
 		cal.setTimeInMillis(System.currentTimeMillis());
 
 		// Wait until sensor is touched or 5 seconds have passed
-		while (robotLibrary.senseTouch(this) && (System.currentTimeMillis() - cal.getTimeInMillis() < TOUCH_WAIT_TIME));
+		while (robotLibrary.isBeaconTouchSensorPressed(this) && (System.currentTimeMillis() - cal.getTimeInMillis() < TOUCH_WAIT_TIME));
 
-		return !robotLibrary.senseTouch(this);
+		return !robotLibrary.isBeaconTouchSensorPressed(this);
 	}
 
 	private boolean beaconcolor() throws InterruptedException {
-		vv_Robot robot = new vv_Robot();
-		robot.init(hardwareMap, this);
+		Calendar cal = new GregorianCalendar();
+		cal.setTimeInMillis(System.currentTimeMillis());
 
+		while (System.currentTimeMillis() - cal.getTimeInMillis() > 5000) {
+			robotLibrary.showBeaconColorValuesOnTelemetry(this, true);
+		}
+
+		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
+	}
+
+	private boolean launcherlimittouch() throws InterruptedException {
 		Calendar cal = new GregorianCalendar();
 		cal.setTimeInMillis(System.currentTimeMillis());
 
 		// Wait until sensor is touched or 5 seconds have passed
-		while (robot.isArmAtLimit(this) && (System.currentTimeMillis() - cal.getTimeInMillis() < TOUCH_WAIT_TIME));
+		while (robotLibrary.isArmAtLimit(this) && (System.currentTimeMillis() - cal.getTimeInMillis() < TOUCH_WAIT_TIME));
 
-		return !robot.isArmAtLimit(this);
-	}
-
-	private void launcherlimittouch() {
+		return !robotLibrary.isArmAtLimit(this);
 	}
 
 	private void liftlimittouch() {
 	}
 
-	private void ultrasonic() {
+	private boolean ultrasonic() throws InterruptedException {
+		double readings[] = {0};
+
+		while (gamepad1.a || gamepad1.b) {
+			for (int i = 0, j = 0; i < 3 && j < 10; i++, j++) {
+				readings[i] = robotLibrary.getFloorUltrasonicReading(this);
+				//wait between readings
+				Thread.sleep(20);
+				if (readings[i] == 0) {
+					i--; //bad read, redo. to a maximum of 10 reads
+				}
+			}
+
+			Arrays.sort(readings);
+			telemetryAddData("Ultrasonic", "Readings", String.valueOf(readings[1]));
+		}
+
+		return !gamepad1.a;
 	}
 
-	private void gyro() {
+	private boolean gyro() throws InterruptedException {
+		robotLibrary.turnAbsoluteGyroDegrees(this, 180);
+
+		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 }
