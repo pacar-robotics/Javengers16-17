@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_AUTONOMOUS;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_MAX;
-import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_MID;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_MIN;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_REST;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 
 
@@ -67,23 +67,19 @@ public class LauncherCalibration extends vv_OpMode {
      * gamepad1.dpad_left = changes mechanism to left position gamepad1.dpad_right = changes
      * mechanism to right position gamepad1.dpad_down = changes mechanism to neutral position
      */
+
     private void processBeacon() throws InterruptedException {
         // Changes Beacon Mechanism to left position in order to score the beacon
         if (gamepad1.dpad_left) {
-            vvLib.turnBeaconArm(this, vv_Constants.BeaconServoStateEnum.Left);
+            vvLib.pressLeftBeaconButton(this);
         }
         // Changes Beacon Mechanism to right position in order to score the beacon
         if (gamepad1.dpad_right) {
-            vvLib.turnBeaconArm(this, vv_Constants.BeaconServoStateEnum.Right);
+            vvLib.pressRightBeaconButton(this);
         }
-        // Changes Beacon Mechanism to a Neutral Position
-        if (gamepad1.dpad_down) {
-            vvLib.turnBeaconArm(this, vv_Constants.BeaconServoStateEnum.Neutral);
-        }
-        if (gamepad1.dpad_up) {
-            vvLib.turnBeaconArm(this, vv_Constants.BeaconServoStateEnum.Look);
-        }
+
     }
+
 
     /**
      * Controls the Cap Ball Mechanism by either raising the lift, lowering the lift, or grabbing
@@ -144,7 +140,16 @@ public class LauncherCalibration extends vv_OpMode {
      */
     private void processLaunch()
             throws InterruptedException {
+
+
         try {
+
+            if (gamepad1.right_stick_button) {
+                //just shoot the ball at this position.
+                vvLib.dropBall(this);
+                vvLib.shootBall(this);
+                vvLib.setupShot(this);
+            }
 
             if (gamepad1.a) {
                 //shoot a ball
@@ -153,7 +158,7 @@ public class LauncherCalibration extends vv_OpMode {
 
 
                 //first move to position min
-                vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_MIN);
+                vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_REST);
                 //this is a rest position no shoot.
             }
 
@@ -164,7 +169,7 @@ public class LauncherCalibration extends vv_OpMode {
 
 
                 //first move to position auto
-                vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_AUTONOMOUS);
+                vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_MIN);
                 vvLib.dropBall(this);
                 vvLib.shootBall(this);
                 vvLib.setupShot(this);
@@ -177,7 +182,7 @@ public class LauncherCalibration extends vv_OpMode {
                 //launch where we are.
                 //used to calibrate the location.
 
-                vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_MID);
+                vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_AUTONOMOUS);
                 vvLib.dropBall(this);
                 vvLib.shootBall(this);
                 vvLib.setupShot(this);
@@ -203,6 +208,7 @@ public class LauncherCalibration extends vv_OpMode {
             telemetryUpdate();
             Thread.sleep(500);
         }
+
 
     }
 

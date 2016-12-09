@@ -2,9 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import static org.firstinspires.ftc.teamcode.vv_Constants.BeaconServoStateEnum;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
-import static org.firstinspires.ftc.teamcode.vv_Constants.TEAM_RED;
 
 /**
  * Created by Rachael_ on 10/23/2016.
@@ -12,7 +11,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.TEAM_RED;
 
 
 @Autonomous(name = "BasicBlueRightOp", group = "Test")
-public class AutoOp extends vv_OpMode
+public class AutoOpBlueNoDelay extends vv_OpMode
 {
     vv_Lib vvLib;
     vv_Robot vvRobot;
@@ -57,62 +56,56 @@ public class AutoOp extends vv_OpMode
         //otherwise code has to be written to solve for this (maybe increase margin ?)
 
 
-        vvLib.moveWheels(this, 12, 0.2f, SidewaysRight);
+        vvLib.moveWheels(this, 2, 0.5f, SidewaysRight);
 
         Thread.sleep(100);
 
-        vvLib.turnAbsoluteGyroDegrees(this, 35);
+        //set the ball up and shoot.
+        vvLib.setupShot(this);
+        //drop ball
+        vvLib.dropBall(this);
+        vvLib.shootBall(this);
+
+        Thread.sleep(100);
+
+        vvLib.turnAbsoluteGyroDegrees(this, 50);
 
         Thread.sleep(100);
 
         //distances are by experimentation.
 
         // vvLib.moveWheels(this, 60, 0.9f, SidewaysRight);
+
         vvLib.moveTillWhiteLineDetect(this, 0.7f);
         Thread.sleep(100);
 
         vvLib.turnAbsoluteGyroDegrees(this, 90);
         Thread.sleep(100);
-        //now we are too far to the side, pull back a bit
 
-        //vvLib.moveWheels(this,6, 0.3f, Backward);
+
+        vvLib.moveWheels(this, 2, 0.3f, Backward);
 
         Thread.sleep(100);
-        vvLib.moveWheels(this, 6, 0.3f, SidewaysRight);
+        vvLib.moveWheels(this, 2.5f, 0.3f, SidewaysRight);
 
-        //code for detecting color of the beacon.
+        Thread.sleep(10000);
 
 
-        //turn to check color
-
-        vvLib.turnBeaconArm(this, BeaconServoStateEnum.Look);
-
+        //check color
 
         if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.RED) {
             //logic for choosing team side red or blue.
 
-            if (TEAM_RED) {
-                vvLib.turnBeaconArm(this, BeaconServoStateEnum.Right);
-                Thread.sleep(100);
-            } else {
-                vvLib.turnBeaconArm(this, BeaconServoStateEnum.Left);
-                Thread.sleep(100);
-            }
+            //we are blue and want to press the red button
+            vvLib.pressRightBeaconButton(this);
+            Thread.sleep(100);
 
+        } else {
+            //we are blue and want to press the blue button
+            vvLib.pressLeftBeaconButton(this);
+            Thread.sleep(100);
         }
-        if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.BLUE) {
-            //logic for choosing team side red or blue.
 
-            if (!TEAM_RED) {
-                //we are blue
-                vvLib.turnBeaconArm(this, BeaconServoStateEnum.Right);
-                Thread.sleep(100);
-            } else {
-                vvLib.turnBeaconArm(this, BeaconServoStateEnum.Left);
-                Thread.sleep(100);
-            }
-
-        }
         if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.UNKNOWN) {
             vvLib.showBeaconColorValuesOnTelemetry(this, true);
         }

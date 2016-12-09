@@ -7,6 +7,10 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.ANDYMARK_MOTOR_ENCODER
 import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT_PRESSED;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT_REST;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_RIGHT_PRESSED;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_RIGHT_REST;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
@@ -20,12 +24,13 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_MAX;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_MIN;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LEFT_BEACON_BUTTON_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_MOTOR_LOOP_TIME;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_ROBOT_TURN_MOTOR_VELOCITY;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_DIAMETER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MIN_ROBOT_TURN_MOTOR_VELOCITY;
+import static org.firstinspires.ftc.teamcode.vv_Constants.RIGHT_BEACON_BUTTON_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ROBOT_TRACK_DISTANCE;
-import static org.firstinspires.ftc.teamcode.vv_Constants.TOUCH_SENSE_POWER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TURN_POWER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TurnDirectionEnum;
 
@@ -42,7 +47,8 @@ public class vv_Lib {
             throws InterruptedException {
         robot = new vv_Robot();
         robot.init(aOpMode, aOpMode.hardwareMap);
-        setupShot(aOpMode);
+        //No Setup shot due to auto launching issues with auto op
+        // setupShot(aOpMode);
     }
 
     /**
@@ -146,21 +152,13 @@ public class vv_Lib {
         Thread.sleep(50);
     }
 
-    public void turnBeaconArm(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum BeaconServoStateEnumValue)
-            throws InterruptedException {
-        robot.turnBeaconArm(aOpMode, BeaconServoStateEnumValue);
-    }
-
 
     public void turnUsingGyro(vv_OpMode aOpMode, float power, float angle, TurnDirectionEnum TurnDirection) {
         // do we need direction?
         // absolute vs. relative turns
     }
 
-
-    public boolean senseTouch(vv_OpMode aOpMode) throws InterruptedException {
-        return robot.getButtonTouchValue(aOpMode);
-    }
+    /*
 
     public void moveTillTouch(vv_OpMode aOpMode) throws InterruptedException {
         aOpMode.reset_timer();
@@ -174,6 +172,7 @@ public class vv_Lib {
         }
     }
 
+*/
     /**
      * Method that moves robot until the color white is detected
      * Used to stop at white line when going from first to second beacon
@@ -808,22 +807,31 @@ public class vv_Lib {
         return robot.getFloorLightIntensity(aOpMode);
     }
 
-    public void setBeaconPosition(vv_OpMode aOpMode, double position)
-            throws InterruptedException {
-        robot.setBeaconPosition(aOpMode, position);
-    }
-
-    public double getBeaconPosition(vv_OpMode aOpMode)
-            throws InterruptedException {
-        return robot.getBeaconPosition(aOpMode);
-    }
 
     public double getFloorUltrasonicReading(vv_OpMode aOpMode) {
         return robot.getUltrasonicReading(aOpMode);
     }
 
-    public boolean isBeaconTouchSensorPressed(vv_OpMode aOpMode) throws InterruptedException {
-        return robot.getButtonTouchValue(aOpMode);
+
+    public double getBeaconServoPosition(vv_OpMode aOpMode, int servoName) {
+        return robot.getBeaconServoPosition(aOpMode, servoName);
+    }
+
+    public void setBeaconServoPosition(vv_OpMode aOpMode, int servoName, double position)
+            throws InterruptedException {
+        robot.setBeaconServoPosition(aOpMode, servoName, position);
+    }
+
+    public void pressLeftBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
+        robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
+        Thread.sleep(1000);
+        robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
+    }
+
+    public void pressRightBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
+        robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
+        Thread.sleep(1000);
+        robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
     }
 
 }

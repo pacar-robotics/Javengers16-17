@@ -36,10 +36,10 @@ public class vv_Constants
     final static float TRIGGER_THRESHOLD = .25f;
 
     // Extremes for servo that pushes beacon buttons
-    static final double BEACON_SERVO_LEFT = 0.65f;     // Maximum rotational position
-    static final double BEACON_SERVO_LOOK_FOR_COLOR = 0.55f;
-    static final double BEACON_SERVO_NEUTRAL = 0.5f;
-    static final double BEACON_SERVO_RIGHT = 0.4f;
+    static final double BEACON_SERVO_LEFT_REST = 0.5f;     // Maximum rotational position
+    static final double BEACON_SERVO_RIGHT_REST = 0.6f;
+    static final double BEACON_SERVO_LEFT_PRESSED = 0.25f;
+    static final double BEACON_SERVO_RIGHT_PRESSED = 0.25f;
 
     // Extremes for servo that controls the gate for launch
     static final double LAUNCH_GATE_SERVO_OPEN = 0.8f;     // Maximum rotational position
@@ -82,6 +82,7 @@ public class vv_Constants
     //define the motors as constants instead of enumerations for speed.
 
 
+    //index of motors
     final static int FRONT_LEFT_MOTOR = 0;
     final static int FRONT_RIGHT_MOTOR = 1;
     final static int BACK_LEFT_MOTOR = 2;
@@ -91,13 +92,18 @@ public class vv_Constants
     final static int WORM_DRIVE_MOTOR = 6;
     final static int CAP_BALL_MOTOR = 7;
 
+    //index of servos
+    final static int LEFT_BEACON_BUTTON_SERVO = 0;
+    final static int RIGHT_BEACON_BUTTON_SERVO = 1;
+
+
 
     final static int LAUNCH_POWER_INCREMENT = 150;
 
-    final static int LAUNCH_POWER_POSITION_MIN = 0;
-    final static int LAUNCH_POWER_POSITION_AUTONOMOUS = 4000;
-    final static int LAUNCH_POWER_POSITION_MAX = 4550;
-    final static int LAUNCH_POWER_POSITION_MID = 4200;
+    final static int LAUNCH_POWER_POSITION_REST = 0;
+    final static int LAUNCH_POWER_POSITION_AUTONOMOUS = 1025;
+    final static int LAUNCH_POWER_POSITION_MAX = 1500;
+    final static int LAUNCH_POWER_POSITION_MIN = 750;
 
     final static float WORM_DRIVE_POWER = 0.8f;
     final static float WORM_DRIVE_DURATION_MAX = 3000;

@@ -45,19 +45,13 @@ public class BeaconColorCalibration extends vv_OpMode {
     private void processBeacon() throws InterruptedException {
         // Changes Beacon Mechanism to left position in order to score the beacon
         if (gamepad1.dpad_left) {
-            vvLib.turnBeaconArm(this, vv_Constants.BeaconServoStateEnum.Left);
+            vvLib.pressLeftBeaconButton(this);
         }
         // Changes Beacon Mechanism to right position in order to score the beacon
         if (gamepad1.dpad_right) {
-            vvLib.turnBeaconArm(this, vv_Constants.BeaconServoStateEnum.Right);
+            vvLib.pressRightBeaconButton(this);
         }
-        // Changes Beacon Mechanism to a Neutral Position
-        if (gamepad1.dpad_down) {
-            vvLib.turnBeaconArm(this, vv_Constants.BeaconServoStateEnum.Neutral);
-        }
-        if (gamepad1.dpad_up) {
-            vvLib.turnBeaconArm(this, vv_Constants.BeaconServoStateEnum.Look);
-        }
+
     }
 
 

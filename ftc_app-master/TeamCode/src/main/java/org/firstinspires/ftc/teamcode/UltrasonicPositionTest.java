@@ -58,9 +58,6 @@ public class UltrasonicPositionTest extends vv_OpMode {
 
         vvLib.turnAbsoluteGyroDegrees(this, 0);
 
-        while (!vvLib.isBeaconTouchSensorPressed(this)) {
-            vvLib.moveSidewaysRight(this, 0.2f);
-        }
         vvLib.stopAllMotors(this);
         vvLib.moveWheels(this, 1.0f, 0.4f, vv_Constants.DirectionEnum.SidewaysLeft);
         vvLib.turnAbsoluteGyroDegrees(this, 0);

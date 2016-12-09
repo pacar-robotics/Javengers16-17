@@ -74,8 +74,6 @@ public class protoOp extends vv_OpMode {
         vvLib.moveWheels(this, 46, 0.5f, Forward);
         vvLib.turnAbsoluteGyroDegrees(this, 90);
 
-        //move forward to the beacon panel, until the sensor touches the beacon.
-        vvLib.moveTillTouch(this);
         //back off the panel, 1-2 inches to give space to the beacon press.
 
         vvLib.moveWheels(this, 1.5f, TOUCH_SENSE_POWER, Backward);

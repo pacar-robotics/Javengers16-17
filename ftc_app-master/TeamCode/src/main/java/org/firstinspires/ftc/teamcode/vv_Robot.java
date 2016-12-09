@@ -17,10 +17,8 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_BLUE_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_RED_THRESHOLD;
-import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT;
-import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LOOK_FOR_COLOR;
-import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_NEUTRAL;
-import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_RIGHT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT_REST;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_RIGHT_REST;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DEBUG;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_CLICKS_TETRIX;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_TIME_DELTA;
@@ -30,11 +28,13 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.IntakeStateEnum.Off;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_GATE_SERVO_CLOSED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_GATE_SERVO_OPEN;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LEFT_BEACON_BUTTON_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_MOTOR_LOOP_TIME;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_LOWER_POWER_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_POWER_LOWER_LIMIT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_POWER_UPPER_LIMIT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.RIGHT_BEACON_BUTTON_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_DURATION_MAX;
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_ENCODER_MARGIN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_MOTOR;
@@ -50,8 +50,8 @@ public class vv_Robot {
     private DcMotor motorArray[];
 
 
+    private Servo beaconServoArray[];
 
-    private Servo beaconServo = null;
     private Servo launcherGateServo = null;
     private TouchSensor beaconTouchSensor;
     private TouchSensor wormDriveTouchSensor;
@@ -75,6 +75,7 @@ public class vv_Robot {
 
         motorArray = new DcMotor[10];
 
+
         motorArray[FRONT_LEFT_MOTOR] = hwMap.dcMotor.get("motor_front_left");
         motorArray[FRONT_RIGHT_MOTOR] = hwMap.dcMotor.get("motor_front_right");
         motorArray[BACK_LEFT_MOTOR] = hwMap.dcMotor.get("motor_back_left");
@@ -82,6 +83,11 @@ public class vv_Robot {
         motorArray[ARM_MOTOR] = hwMap.dcMotor.get("motor_arm");
         motorArray[WORM_DRIVE_MOTOR] = hwMap.dcMotor.get("motor_worm");
         motorArray[INTAKE_MOTOR] = hwMap.dcMotor.get("motor_intake");
+
+        beaconServoArray = new Servo[2];
+
+        beaconServoArray[LEFT_BEACON_BUTTON_SERVO] = hwMap.servo.get("servo_beacon_left");
+        beaconServoArray[RIGHT_BEACON_BUTTON_SERVO] = hwMap.servo.get("servo_beacon_right");
 
         floorLightSensor = hwMap.lightSensor.get("floor_light_sensor");
         beaconTouchSensor = hwMap.touchSensor.get("beacon_touch_sensor");
@@ -114,10 +120,10 @@ public class vv_Robot {
 
         armSensor = hwMap.touchSensor.get("touch_arm_sensor");
 
-        beaconServo = hwMap.servo.get("servo_beacon");
 
-        //initialize to the middle position.
-        beaconServo.setPosition(BEACON_SERVO_NEUTRAL);
+        //initialize to the rest position.
+        beaconServoArray[LEFT_BEACON_BUTTON_SERVO].setPosition(BEACON_SERVO_LEFT_REST);
+        beaconServoArray[RIGHT_BEACON_BUTTON_SERVO].setPosition(BEACON_SERVO_RIGHT_REST);
 
 
         launcherGateServo = hwMap.servo.get("servo_launcher_gate");
@@ -138,6 +144,8 @@ public class vv_Robot {
         motorArray[BACK_LEFT_MOTOR].setDirection(DcMotorSimple.Direction.FORWARD);
 
         motorArray[BACK_RIGHT_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
+
+        motorArray[WORM_DRIVE_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
 
 
 
@@ -468,31 +476,6 @@ public class vv_Robot {
         Thread.sleep(100);
     }
 
-    public void turnBeaconArm(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum beaconArmEnum)
-            throws InterruptedException {
-
-        switch (beaconArmEnum) {
-
-            case Left:
-                beaconServo.setPosition(BEACON_SERVO_LEFT);
-                break;
-
-            case Right:
-                beaconServo.setPosition(BEACON_SERVO_RIGHT);
-                break;
-            case Neutral:
-                beaconServo.setPosition(BEACON_SERVO_NEUTRAL);
-                break;
-            case Look:
-                beaconServo.setPosition(BEACON_SERVO_LOOK_FOR_COLOR);
-                break;
-        }
-        Thread.sleep(200);
-    }
-
-    public boolean getButtonTouchValue(vv_OpMode aOpMode) throws InterruptedException {
-        return beaconTouchSensor.isPressed();
-    }
 
     //turn the color sensor LED on the floor of the robot on
     public void enableFloorLightSensorLed(vv_OpMode aOpMode) throws InterruptedException {
@@ -849,17 +832,16 @@ public class vv_Robot {
         IntakeState = IntakeStateValue;
     }
 
-    public void setBeaconPosition(vv_OpMode aOpMode, double position)
+    public double getBeaconServoPosition(vv_OpMode aOpMode, int servoName) {
+        return beaconServoArray[servoName].getPosition();
+    }
+
+    public void setBeaconServoPosition(vv_OpMode aOpMode, int servoName, double position)
             throws InterruptedException {
-        beaconServo.setPosition(position);
+        beaconServoArray[servoName].setPosition(position);
         Thread.sleep(100);
     }
 
-    public double getBeaconPosition(vv_OpMode aOpMode)
-            throws InterruptedException {
-        return beaconServo.getPosition();
-
-    }
 
     public double getUltrasonicReading(vv_OpMode aOPMode) {
 
