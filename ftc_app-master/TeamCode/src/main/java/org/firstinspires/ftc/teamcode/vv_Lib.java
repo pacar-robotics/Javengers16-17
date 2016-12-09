@@ -179,16 +179,32 @@ public class vv_Lib {
      * @param aOpMode - object of vv_OpMode class
      * @throws InterruptedException
      */
-    public void moveTillWhiteLineDetect(vv_OpMode aOpMode, float Power) throws InterruptedException {
+
+    public void moveTillWhiteLineDetect(vv_OpMode aOpMode, float Power, DirectionEnum direction) throws InterruptedException {
         aOpMode.reset_timer();
         while ((robot.getFloorLightIntensity(aOpMode) < FLOOR_WHITE_THRESHOLD) &&
                 aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
-            moveSidewaysRight(aOpMode, Power);
+            switch (direction) {
+                case SidewaysRight:
+                    moveSidewaysRight(aOpMode, Power);
+                    break;
+                case SidewaysLeft:
+                    moveSidewaysLeft(aOpMode, Power);
+                    break;
+                case Forward:
+                    moveForward(aOpMode, Power);
+                    break;
+                case Backward:
+                    moveBackward(aOpMode, Power);
+                    break;
+
+            }
             aOpMode.idle();
         }
         //stop motors
         robot.stopBaseMotors(aOpMode);
     }
+
 
 
     public void showFloorLightSensorIntensityOnTelemetry(vv_OpMode aOpMode,
@@ -832,6 +848,11 @@ public class vv_Lib {
         robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
         Thread.sleep(1000);
         robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
+    }
+
+    public boolean isBeaconTouchSensorPressed(vv_OpMode aOpMode) {
+        return robot.isBeaconTouchSensorPressed(aOpMode);
+
     }
 
 }

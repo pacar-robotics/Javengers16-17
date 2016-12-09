@@ -90,10 +90,10 @@ public class vv_Robot {
         beaconServoArray[RIGHT_BEACON_BUTTON_SERVO] = hwMap.servo.get("servo_beacon_right");
 
         floorLightSensor = hwMap.lightSensor.get("floor_light_sensor");
-        beaconTouchSensor = hwMap.touchSensor.get("beacon_touch_sensor");
         beaconColorSensor = hwMap.colorSensor.get("beacon_color_sensor");
         floorUltrasonicSensor = hwMap.ultrasonicSensor.get("floor_ultrasonic_sensor");
         wormDriveTouchSensor = hwMap.touchSensor.get("touch_worm_sensor");
+        beaconTouchSensor = hwMap.touchSensor.get("touch_beacon_sensor");
 
         //turn the LED on the floor color sensor off at the start.
         //used for compatibility with older SDK code.
@@ -840,6 +840,10 @@ public class vv_Robot {
             throws InterruptedException {
         beaconServoArray[servoName].setPosition(position);
         Thread.sleep(100);
+    }
+
+    public boolean isBeaconTouchSensorPressed(vv_OpMode aOpMode) {
+        return beaconTouchSensor.isPressed();
     }
 
 

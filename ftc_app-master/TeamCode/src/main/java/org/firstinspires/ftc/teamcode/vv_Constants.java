@@ -110,7 +110,7 @@ public class vv_Constants
     final static float WORM_DRIVE_ENCODER_MARGIN = 20;
     final static int BEACON_RED_THRESHOLD = 0;
     final static int BEACON_BLUE_THRESHOLD = 0;
-    final static float FLOOR_WHITE_THRESHOLD = 0.35f; //may need to calibrate
+    final static float FLOOR_WHITE_THRESHOLD = 0.27f; //may need to calibrate
     final static boolean TEAM_RED = false;
     BeaconColorEnum BeaconColor;
     DirectionEnum Direction;
