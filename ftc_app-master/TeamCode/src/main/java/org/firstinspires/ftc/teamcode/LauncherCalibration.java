@@ -38,8 +38,7 @@ public class LauncherCalibration extends vv_OpMode {
 
 
         while (opModeIsActive()) {
-
-
+            
             processLaunchPowerCalibration();
 
             processLaunch();
