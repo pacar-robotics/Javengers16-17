@@ -59,7 +59,7 @@ public class UltrasonicPositionTest extends vv_OpMode {
         vvLib.turnAbsoluteGyroDegrees(this, 0);
 
         vvLib.stopAllMotors(this);
-        vvLib.moveWheels(this, 3.5f, 0.4f, vv_Constants.DirectionEnum.SidewaysRight);
+        vvLib.moveWheels(this, 3.5f, 0.4f, vv_Constants.DirectionEnum.SidewaysRight, true);
         vvLib.turnAbsoluteGyroDegrees(this, 0);
 
 

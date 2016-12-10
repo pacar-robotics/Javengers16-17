@@ -202,10 +202,12 @@ public class vv_Robot {
         //TODO: Finish this method up
     }
 
-    public void runRobotToPositionFB(vv_OpMode aOpMode, int position, float Power)
+    public void runRobotToPositionFB(vv_OpMode aOpMode, int position,
+                                     float Power, boolean isRampedPower)
             throws InterruptedException {
         //using the generic method with all powers set to the same value and all positions set to the same position
-        runRobotToPosition(aOpMode, Power, Power, Power, Power, position, position, position, position);
+        runRobotToPosition(aOpMode, Power, Power, Power, Power,
+                position, position, position, position, isRampedPower);
     }
 
     /**
@@ -216,10 +218,11 @@ public class vv_Robot {
      * @param Power    generic power of the motors
      * @return void
      */
-    public void runRobotToPositionSideways(vv_OpMode aOpMode, int position, float Power)
+    public void runRobotToPositionSideways(vv_OpMode aOpMode, int position,
+                                           float Power, boolean isRampedPower)
             throws InterruptedException {
         //using the generic method with all powers set to the same value and all positions set to the same position
-        runRobotToPosition(aOpMode, Power, Power, Power, Power, -position, position, position, -position);
+        runRobotToPosition(aOpMode, Power, Power, Power, Power, -position, position, position, -position, isRampedPower);
     }
 
     /**
@@ -238,10 +241,13 @@ public class vv_Robot {
      */
     public void runRobotToPosition(vv_OpMode aOpMode, float fl_Power, float fr_Power,
                                    float bl_Power, float br_Power, int fl_Position,
-                                   int fr_Position, int bl_Position, int br_Position)
+                                   int fr_Position, int bl_Position, int br_Position,
+                                   boolean isRampedPower)
             throws InterruptedException {
 
 
+        double startingPower;
+        double rampedPower;
         //reset motor encoders
         motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -274,12 +280,20 @@ public class vv_Robot {
         motorArray[BACK_RIGHT_MOTOR].setTargetPosition(br_Position);
 
 
-        //sets the the power of all motors
-        //since we are ramping up, start at the lowest power allowed.
-        setPower(aOpMode, FRONT_LEFT_MOTOR, MOTOR_LOWER_POWER_THRESHOLD);
-        setPower(aOpMode, FRONT_RIGHT_MOTOR, MOTOR_LOWER_POWER_THRESHOLD);
-        setPower(aOpMode, BACK_LEFT_MOTOR, MOTOR_LOWER_POWER_THRESHOLD);
-        setPower(aOpMode, BACK_RIGHT_MOTOR, MOTOR_LOWER_POWER_THRESHOLD);
+        if (isRampedPower) {
+            //sets the the power of all motors
+            //since we are ramping up, start at the lowest power allowed.
+            setPower(aOpMode, FRONT_LEFT_MOTOR, MOTOR_LOWER_POWER_THRESHOLD);
+            setPower(aOpMode, FRONT_RIGHT_MOTOR, MOTOR_LOWER_POWER_THRESHOLD);
+            setPower(aOpMode, BACK_LEFT_MOTOR, MOTOR_LOWER_POWER_THRESHOLD);
+            setPower(aOpMode, BACK_RIGHT_MOTOR, MOTOR_LOWER_POWER_THRESHOLD);
+
+        } else {
+            setPower(aOpMode, FRONT_LEFT_MOTOR, fl_Power);
+            setPower(aOpMode, FRONT_RIGHT_MOTOR, fr_Power);
+            setPower(aOpMode, BACK_LEFT_MOTOR, bl_Power);
+            setPower(aOpMode, BACK_RIGHT_MOTOR, br_Power);
+        }
 
 
         aOpMode.reset_timer();
@@ -300,7 +314,11 @@ public class vv_Robot {
                     Math.abs((motorArray[FRONT_LEFT_MOTOR].getCurrentPosition() * 1.0f) / fl_Position)), 2.0f))));
 
             //use another variable to check and adjust power limits, so we can display raw power values.
-            float rampedPower = rampedPowerRaw;
+            if (isRampedPower) {
+                rampedPower = rampedPowerRaw;
+            } else {
+                rampedPower = fl_Power; //as proxy for all power.
+            }
 
             //check for upper and lower limits.
             if (rampedPower > MOTOR_RAMP_POWER_UPPER_LIMIT) {

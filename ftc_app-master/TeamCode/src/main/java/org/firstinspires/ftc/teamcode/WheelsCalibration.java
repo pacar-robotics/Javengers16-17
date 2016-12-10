@@ -39,21 +39,21 @@ public class WheelsCalibration extends vv_OpMode {
         telemetryAddData("Test", "Move", "Moving Forward");
         telemetryUpdate();
 
-        vvLib.moveWheels(this, 12, 0.5f, Forward);
+        vvLib.moveWheels(this, 12, 0.5f, Forward, true);
 
         Thread.sleep(3000);
 
         telemetryAddData("Test", "Move", "Moving Backward");
         telemetryUpdate();
 
-        vvLib.moveWheels(this, 12, 0.5f, Backward);
+        vvLib.moveWheels(this, 12, 0.5f, Backward, true);
 
         Thread.sleep(3000);
 
         telemetryAddData("Test", "Move", "Moving Sideways Left");
         telemetryUpdate();
 
-        vvLib.moveWheels(this, 12, 0.5f, SidewaysLeft);
+        vvLib.moveWheels(this, 12, 0.5f, SidewaysLeft, true);
 
         Thread.sleep(3000);
 
@@ -61,7 +61,7 @@ public class WheelsCalibration extends vv_OpMode {
         telemetryAddData("Test", "Move", "Moving Sideways Right");
         telemetryUpdate();
 
-        vvLib.moveWheels(this, 12, 0.5f, SidewaysRight);
+        vvLib.moveWheels(this, 12, 0.5f, SidewaysRight, true);
 
         Thread.sleep(3000);
 

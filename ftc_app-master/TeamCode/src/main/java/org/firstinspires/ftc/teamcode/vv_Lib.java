@@ -59,20 +59,21 @@ public class vv_Lib {
      * @param Direction - forward, backward, sideways left, or sideways right
      * @throws InterruptedException
      */
-    public void moveWheels(vv_OpMode aOpMode, float distance, float Power, DirectionEnum Direction)
+    public void moveWheels(vv_OpMode aOpMode, float distance, float Power,
+                           DirectionEnum Direction, boolean isRampedPower)
             throws InterruptedException {
         if (Direction == Forward) {
             // moving the robot forward
-            moveForwardToPosition(aOpMode, distance, Power);
+            moveForwardToPosition(aOpMode, distance, Power, isRampedPower);
         } else if (Direction == Backward) {
             // moving the robot forward
-            moveBackwardToPosition(aOpMode, distance, Power);
+            moveBackwardToPosition(aOpMode, distance, Power, isRampedPower);
         } else if (Direction == SidewaysLeft) {
             // moving the robot forward
-            moveSidewaysLeftToPosition(aOpMode, distance, Power);
+            moveSidewaysLeftToPosition(aOpMode, distance, Power, isRampedPower);
         } else if (Direction == SidewaysRight) {
             // moving the robot forward
-            moveSidewaysRightToPosition(aOpMode, distance, Power);
+            moveSidewaysRightToPosition(aOpMode, distance, Power, isRampedPower);
         }
         // code for moving forward, backward, sideways
     }
@@ -141,10 +142,10 @@ public class vv_Lib {
 
         switch (TurnDirection) {
             case Clockwise:
-                robot.runRobotToPosition(aOpMode, power, power, power, power, turnDistance, -turnDistance, turnDistance, -turnDistance);
+                robot.runRobotToPosition(aOpMode, power, power, power, power, turnDistance, -turnDistance, turnDistance, -turnDistance, false);
                 break;
             case Counterclockwise:
-                robot.runRobotToPosition(aOpMode, power, power, power, power, -turnDistance, turnDistance, -turnDistance, turnDistance);
+                robot.runRobotToPosition(aOpMode, power, power, power, power, -turnDistance, turnDistance, -turnDistance, turnDistance, false);
                 break;
         }
 
@@ -289,45 +290,49 @@ public class vv_Lib {
     }
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
-    private void moveForwardToPosition(vv_OpMode aOpMode, float distance, float Power)
+    private void moveForwardToPosition(vv_OpMode aOpMode, float distance,
+                                       float Power, boolean isRampedPower)
             throws InterruptedException {
         //we need to store the encoder target position
         int targetPosition;
         //calculate target position from the input distance in cm
         targetPosition = (int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position
-        robot.runRobotToPositionFB(aOpMode, targetPosition, Power);
+        robot.runRobotToPositionFB(aOpMode, targetPosition, Power, isRampedPower);
     }
 
     //Moves robot backward with a distance supplied in centimeters and power between 0 and 1
-    private void moveBackwardToPosition(vv_OpMode aOpMode, float distance, float Power)
+    private void moveBackwardToPosition(vv_OpMode aOpMode,
+                                        float distance, float Power, boolean isRampedPower)
             throws InterruptedException {
         //we need to store the encoder target position
         int targetPosition;
         //calculate target position from the input distance in cm
         targetPosition = -(int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position with negative power
-        robot.runRobotToPositionFB(aOpMode, targetPosition, Power);
+        robot.runRobotToPositionFB(aOpMode, targetPosition, Power, isRampedPower);
     }
 
-    private void moveSidewaysLeftToPosition(vv_OpMode aOpMode, float distance, float Power)
+    private void moveSidewaysLeftToPosition(vv_OpMode aOpMode,
+                                            float distance, float Power, boolean isRampedPower)
             throws InterruptedException {
         //we need to store the encoder target position
         int targetPosition;
         //calculate target position from the input distance in cm
         targetPosition = (int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position with negative power
-        robot.runRobotToPositionSideways(aOpMode, targetPosition, Power);
+        robot.runRobotToPositionSideways(aOpMode, targetPosition, Power, isRampedPower);
     }
 
-    private void moveSidewaysRightToPosition(vv_OpMode aOpMode, float distance, float Power)
+    private void moveSidewaysRightToPosition(vv_OpMode aOpMode,
+                                             float distance, float Power, boolean isRampedPower)
             throws InterruptedException {
         //we need to store the encoder target position
         int targetPosition;
         //calculate target position from the input distance in cm
         targetPosition = -(int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position with negative power
-        robot.runRobotToPositionSideways(aOpMode, targetPosition, Power);
+        robot.runRobotToPositionSideways(aOpMode, targetPosition, Power, isRampedPower);
     }
 
 

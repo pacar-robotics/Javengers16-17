@@ -2,29 +2,37 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
-import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
+import java.util.Arrays;
+
+import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
-import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_AUTONOMOUS;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_REST;
+
 
 /**
  * Created by Rachael_ on 10/23/2016.
  */
 
 
-@Autonomous(name = "BasicBlueRightOp--", group = "Test")
-public class AutoOp extends vv_OpMode
-{
+@Autonomous(name = "BlueRightBeaconDelayOp", group = "Horsham")
+public class AutoOpBlueDelayWithBeacon extends vv_OpMode {
     vv_Lib vvLib;
     vv_Robot vvRobot;
+    double readingsArray[];
 
-    public void runOpMode() throws InterruptedException
-    {
+    public void runOpMode() throws InterruptedException {
         telemetryAddData("Initializing, Please wait", "", "");
         telemetryUpdate();
         try {
             vvLib = new vv_Lib(this);
+
+            readingsArray = new double[7];
+
+            //initialize array
+            for (int i = 0; i < 7; i++) {
+                readingsArray[i] = 0.0f;
+            }
+
             telemetryAddData("Ready to go!", "", "");
             telemetryUpdate();
             //Turn the LED on the Color Sensor mounted on the floor of the Robot on
@@ -35,7 +43,6 @@ public class AutoOp extends vv_OpMode
 
 
             basic_auto_strategy();
-
 
 
             //  vvLib.moveTillColor(this, vvRobot.getColorSensor(this));
@@ -50,7 +57,6 @@ public class AutoOp extends vv_OpMode
     public void basic_auto_strategy() throws InterruptedException, vv_Robot.MotorNameNotKnownException {
 
 
-
         //test the turn of the robot.
 
         //clockwise is positive
@@ -58,16 +64,13 @@ public class AutoOp extends vv_OpMode
         //power of 0.5 is recommended to prevent single motor stalls during turns
         //otherwise code has to be written to solve for this (maybe increase margin ?)
 
-        try {
-            vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_AUTONOMOUS);
-        } catch (vv_Robot.MotorStalledException MSE) {
-            telemetryAddData("Motor Stalled!", "Motor Name:", MSE.getMessage());
-            telemetryUpdate();
-            Thread.sleep(500);
-        }
+
+        //set the ball up and shoot.
+        //wind up to autonomous position.
 
 
-        vvLib.moveWheels(this, 4, .4f, SidewaysRight, true);
+        // Delay
+        Thread.sleep(10000);
 
         vvLib.setupShot(this);
         vvLib.shootBall(this);
@@ -83,35 +86,56 @@ public class AutoOp extends vv_OpMode
             telemetryUpdate();
             Thread.sleep(500);
         }
+        vvLib.moveWheels(this, 6, 0.2f, SidewaysRight, true); //ramped call
 
-        // Autonomous position = 425
-        // Max position = 575
-        // close position = 135
-
-        Thread.sleep(500);
-
-        vvLib.moveWheels(this, 8, 0.4f, SidewaysRight, true);
-
-        Thread.sleep(500);
-
+        Thread.sleep(750);
         vvLib.turnAbsoluteGyroDegrees(this, 55);
 
-        Thread.sleep(500);
+        Thread.sleep(750);
 
         //distances are by experimentation.
 
-        // vvLib.moveWheels(this, 60, 0.9f, SidewaysRight);
-        vvLib.moveTillWhiteLineDetect(this, 0.7f, SidewaysRight);
+        vvLib.moveWheels(this, 75, 0.9f, SidewaysRight, true);
+
+        Thread.sleep(1000);
+        vvLib.turnAbsoluteGyroDegrees(this, 90);
+        Thread.sleep(1000);
+
+
+        vvLib.moveTillWhiteLineDetect(this, 0.4f, Forward);
         Thread.sleep(500);
+
 
         vvLib.turnAbsoluteGyroDegrees(this, 90);
         Thread.sleep(500);
-        //now we are too far to the side, pull back a bit
 
-        vvLib.moveWheels(this, 2.5f, 0.3f, Backward, true);
+        /*
+
+
+        vvLib.moveWheels(this, 1.5f, 0.3f, Backward, true);
 
         Thread.sleep(500);
-        vvLib.moveWheels(this, 6, 0.3f, SidewaysRight, true);
+
+        //looks like the ultrasonic sensor is accurate to about 16cm or 6 inches.
+        vvLib.moveSidewaysRight(this, 0.5f);
+        while (opModeIsActive() && (readUltrasonicDistance() > 30)) { //in cm
+            idle();
+        }
+        vvLib.stopAllMotors(this);
+        Thread.sleep(1000);
+
+        //re-orient
+
+        vvLib.turnAbsoluteGyroDegrees(this, 90);
+
+        vvLib.stopAllMotors(this);
+
+        vvLib.moveTillWhiteLineDetect(this, 0.3f, Forward);
+        vvLib.moveWheels(this, 1.5f, 0.3f, Backward, true);
+
+        vvLib.turnAbsoluteGyroDegrees(this, 90);
+
+        */
 
         vvLib.moveSidewaysRight(this, 0.20f);
         while (!vvLib.isBeaconTouchSensorPressed(this)) {
@@ -122,12 +146,14 @@ public class AutoOp extends vv_OpMode
 
         vvLib.turnAbsoluteGyroDegrees(this, 90);
 
-        Thread.sleep(500);
+
+        //vvLib.moveWheels(this, 2.0f, 0.15f, vv_Constants.DirectionEnum.SidewaysRight);
 
 
-        //code for detecting color of the beacon.
+        Thread.sleep(1000);
 
-//check color
+
+        //check color
 
         if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.RED) {
             //logic for choosing team side red or blue.
@@ -145,9 +171,6 @@ public class AutoOp extends vv_OpMode
         if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.UNKNOWN) {
             vvLib.showBeaconColorValuesOnTelemetry(this, true);
         }
-
-        vvLib.moveWheels(this, 50, .3f, SidewaysLeft, true);
-
 
 
 /*
@@ -183,6 +206,28 @@ Touch Sensor is out of plane, so using dead reckoning till fixed.
         */
 
 
+    }
+
+    public double readUltrasonicDistance() throws InterruptedException {
+
+        return filterUltrasonicReadings();
+
+    }
+
+    public double filterUltrasonicReadings() throws InterruptedException {
+        //take 9 readings
+        for (int i = 0, j = 0; i < 7 && j < 10; i++, j++) {
+            readingsArray[i] = vvLib.getFloorUltrasonicReading(this);
+            //wait between readings
+            Thread.sleep(20);
+            if (readingsArray[i] == 0) {
+                i--; //bad read, redo. to a maximum of 10 reads
+            }
+        }
+        //Now sort the readings
+        Arrays.sort(readingsArray);
+        //return the middle element to reduce noise
+        return readingsArray[3];
     }
 
 

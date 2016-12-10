@@ -4,10 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import java.util.Arrays;
 
-import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
-import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_AUTONOMOUS;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_REST;
 
 
@@ -16,15 +14,13 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_
  */
 
 
-@Autonomous(name = "BasicBlueRightOp", group = "Test")
-public class AutoOpBlueNoDelay extends vv_OpMode
-{
+@Autonomous(name = "BlueRightBeaconNoDelayOp", group = "Horsham")
+public class AutoOpBlueNoDelayWithBeacon extends vv_OpMode {
     vv_Lib vvLib;
     vv_Robot vvRobot;
     double readingsArray[];
 
-    public void runOpMode() throws InterruptedException
-    {
+    public void runOpMode() throws InterruptedException {
         telemetryAddData("Initializing, Please wait", "", "");
         telemetryUpdate();
         try {
@@ -49,7 +45,6 @@ public class AutoOpBlueNoDelay extends vv_OpMode
             basic_auto_strategy();
 
 
-
             //  vvLib.moveTillColor(this, vvRobot.getColorSensor(this));
         } catch (vv_Robot.MotorNameNotKnownException MNNKE) {
             telemetryAddData("Motor Not found", "Values:", MNNKE.getMessage());
@@ -62,7 +57,6 @@ public class AutoOpBlueNoDelay extends vv_OpMode
     public void basic_auto_strategy() throws InterruptedException, vv_Robot.MotorNameNotKnownException {
 
 
-
         //test the turn of the robot.
 
         //clockwise is positive
@@ -71,18 +65,8 @@ public class AutoOpBlueNoDelay extends vv_OpMode
         //otherwise code has to be written to solve for this (maybe increase margin ?)
 
 
-
         //set the ball up and shoot.
         //wind up to autonomous position.
-
-        try {
-            vvLib.setLauncherPowerPosition(this, LAUNCH_POWER_POSITION_AUTONOMOUS);
-        } catch (vv_Robot.MotorStalledException MSE) {
-            telemetryAddData("Motor Stalled!", "Motor Name:", MSE.getMessage());
-            telemetryUpdate();
-            Thread.sleep(500);
-        }
-
 
         vvLib.setupShot(this);
         vvLib.shootBall(this);
@@ -98,25 +82,33 @@ public class AutoOpBlueNoDelay extends vv_OpMode
             telemetryUpdate();
             Thread.sleep(500);
         }
-        vvLib.moveWheels(this, 6, 0.15f, SidewaysRight);
+        vvLib.moveWheels(this, 6, 0.2f, SidewaysRight, true); //ramped call
 
-        Thread.sleep(500);
-        vvLib.turnAbsoluteGyroDegrees(this, 45);
+        Thread.sleep(750);
+        vvLib.turnAbsoluteGyroDegrees(this, 55);
 
-        Thread.sleep(500);
+        Thread.sleep(750);
 
         //distances are by experimentation.
 
-        // vvLib.moveWheels(this, 60, 0.9f, SidewaysRight);
+        vvLib.moveWheels(this, 75, 0.9f, SidewaysRight, true);
 
-        vvLib.moveTillWhiteLineDetect(this, 0.4f, SidewaysRight);
+        Thread.sleep(1000);
+        vvLib.turnAbsoluteGyroDegrees(this, 90);
+        Thread.sleep(1000);
+
+
+        vvLib.moveTillWhiteLineDetect(this, 0.4f, Forward);
         Thread.sleep(500);
+
 
         vvLib.turnAbsoluteGyroDegrees(this, 90);
         Thread.sleep(500);
 
+        /*
 
-        vvLib.moveWheels(this, 1.5f, 0.3f, Backward);
+
+        vvLib.moveWheels(this, 1.5f, 0.3f, Backward, true);
 
         Thread.sleep(500);
 
@@ -135,9 +127,12 @@ public class AutoOpBlueNoDelay extends vv_OpMode
         vvLib.stopAllMotors(this);
 
         vvLib.moveTillWhiteLineDetect(this, 0.3f, Forward);
-        vvLib.moveWheels(this, 1.5f, 0.3f, Backward);
+        vvLib.moveWheels(this, 1.5f, 0.3f, Backward, true);
 
         vvLib.turnAbsoluteGyroDegrees(this, 90);
+
+        */
+
         vvLib.moveSidewaysRight(this, 0.20f);
         while (!vvLib.isBeaconTouchSensorPressed(this)) {
             //idle
@@ -230,7 +225,6 @@ Touch Sensor is out of plane, so using dead reckoning till fixed.
         //return the middle element to reduce noise
         return readingsArray[3];
     }
-
 
 
 }
