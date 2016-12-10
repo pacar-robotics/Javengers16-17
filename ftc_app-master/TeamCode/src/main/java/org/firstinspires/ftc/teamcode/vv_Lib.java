@@ -618,13 +618,13 @@ public class vv_Lib {
     public void driveRobotWithPowerFactor(vv_OpMode aOpMode, float powerFactor)
             throws InterruptedException {
 
-
+        //Old Code
+        /*
         // takes the x and y cooridinates of the joystick and calculates the power for each motor that allows the robot to turn in that direction
         float forwardLeftPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
         float forwardRightPower = -(aOpMode.gamepad1.left_stick_x * Math.abs(aOpMode.gamepad1.left_stick_x)) - ((Math.abs(aOpMode.gamepad1.left_stick_y) * aOpMode.gamepad1.left_stick_y));
         float backLeftPower = -(aOpMode.gamepad1.left_stick_x * Math.abs(aOpMode.gamepad1.left_stick_x)) - ((Math.abs(aOpMode.gamepad1.left_stick_y) * aOpMode.gamepad1.left_stick_y));
         float backRightPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
-
         //Code to round powers when the driver wants to move diagonally
         if ((forwardLeftPower < .5f && forwardLeftPower > -.5f) && (forwardRightPower > .5f || forwardRightPower < .5f)) {
             forwardLeftPower = 0;
@@ -634,14 +634,42 @@ public class vv_Lib {
             forwardRightPower = 0;
             backLeftPower = 0;
         }
-//        float forwardLeftPower = aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x + aOpMode.gamepad1.left_stick_x;
-//        float backLeftPower = aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x - aOpMode.gamepad1.left_stick_x;
-//        float forwardRightPower =  aOpMode.gamepad1.left_stick_y - aOpMode.gamepad1.right_stick_x - aOpMode.gamepad1.left_stick_x;
-//        float backRightPower =  aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x + aOpMode.gamepad1.left_stick_x;
+        float forwardLeftPower = aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x + aOpMode.gamepad1.left_stick_x;
+        float backLeftPower = aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x - aOpMode.gamepad1.left_stick_x;
+        float forwardRightPower =  aOpMode.gamepad1.left_stick_y - aOpMode.gamepad1.right_stick_x - aOpMode.gamepad1.left_stick_x;
+        float backRightPower =  aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x + aOpMode.gamepad1.left_stick_x;
+        */
+
+        float forwardLeftPower = 0;
+        float backLeftPower = 0;
+        float backRightPower = 0;
+        float forwardRightPower = 0;
+
+        if (aOpMode.gamepad1.left_stick_y > vv_Constants.ANALOG_STICK_THRESHOLD &&
+                Math.abs(aOpMode.gamepad1.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD) {
+            forwardLeftPower = aOpMode.gamepad1.left_stick_y;
+            backLeftPower = -aOpMode.gamepad1.left_stick_y;
+            backRightPower = aOpMode.gamepad1.left_stick_y;
+            forwardRightPower = -aOpMode.gamepad1.left_stick_y;
+        } else if (aOpMode.gamepad1.left_stick_y < -vv_Constants.ANALOG_STICK_THRESHOLD &&
+                Math.abs(aOpMode.gamepad1.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD) {
+            forwardLeftPower = aOpMode.gamepad1.left_stick_y;
+            backLeftPower = -aOpMode.gamepad1.left_stick_y;
+            backRightPower = aOpMode.gamepad1.left_stick_y;
+            forwardRightPower = -aOpMode.gamepad1.left_stick_y;
+        } else {
+            forwardLeftPower = -aOpMode.gamepad1.left_stick_x;
+            backLeftPower = -aOpMode.gamepad1.left_stick_x;
+            backRightPower = -aOpMode.gamepad1.left_stick_x;
+            forwardRightPower = -aOpMode.gamepad1.left_stick_x;
+        }
+
+
 
         //rotates or turns the robot
         if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
-            runAllMotors(aOpMode, aOpMode.gamepad1.right_stick_x, -aOpMode.gamepad1.right_stick_x, aOpMode.gamepad1.right_stick_x, -aOpMode.gamepad1.right_stick_x);
+            runAllMotors(aOpMode, (aOpMode.gamepad1.right_stick_x * powerFactor), (-aOpMode.gamepad1.right_stick_x * powerFactor),
+                    (aOpMode.gamepad1.right_stick_x * powerFactor), (-aOpMode.gamepad1.right_stick_x * powerFactor));
         }
         //translates the robot using the Mecanum wheels
         else if (Math.abs(aOpMode.gamepad1.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
@@ -651,6 +679,7 @@ public class vv_Lib {
             stopAllMotors(aOpMode);
         }
     }
+
 
     /**
      * Toggles the power of the Ball Collector Motor to either off or to the power required to
