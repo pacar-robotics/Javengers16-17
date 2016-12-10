@@ -658,10 +658,10 @@ public class vv_Lib {
             backRightPower = aOpMode.gamepad1.left_stick_y;
             forwardRightPower = -aOpMode.gamepad1.left_stick_y;
         } else {
-            forwardLeftPower = -aOpMode.gamepad1.left_stick_x;
-            backLeftPower = -aOpMode.gamepad1.left_stick_x;
-            backRightPower = -aOpMode.gamepad1.left_stick_x;
-            forwardRightPower = -aOpMode.gamepad1.left_stick_x;
+            forwardLeftPower = aOpMode.gamepad1.left_stick_x;
+            backLeftPower = aOpMode.gamepad1.left_stick_x;
+            backRightPower = aOpMode.gamepad1.left_stick_x;
+            forwardRightPower = aOpMode.gamepad1.left_stick_x;
         }
 
 
