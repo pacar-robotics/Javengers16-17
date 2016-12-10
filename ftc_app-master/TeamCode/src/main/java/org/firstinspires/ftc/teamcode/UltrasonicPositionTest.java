@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.Arrays;
 
 
-@TeleOp(name = "UltrasonicPositionTest", group = "Test")
+@TeleOp(name = "UltrasonicPositionTest", group = "Calibrations")
 public class UltrasonicPositionTest extends vv_OpMode {
 
     /* Declare OpMode members. */

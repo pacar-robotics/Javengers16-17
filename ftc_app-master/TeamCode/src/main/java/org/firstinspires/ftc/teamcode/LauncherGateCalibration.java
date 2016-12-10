@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name = "LaunchGateCalibrationOp", group = "Test")
+@TeleOp(name = "LaunchGateCalibrationOp", group = "Calibrations")
 
 public class LauncherGateCalibration extends vv_OpMode {
 

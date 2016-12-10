@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 
 
-@TeleOp(name = "LineDetectCalibrationOp", group = "Test")
+@TeleOp(name = "LineDetectCalibrationOp", group = "Calibrations")
 
 public class FloorLightSensorCalibration extends vv_OpMode {
 

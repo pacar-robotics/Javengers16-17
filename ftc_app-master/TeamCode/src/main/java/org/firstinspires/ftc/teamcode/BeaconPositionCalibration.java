@@ -10,7 +10,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.LEFT_BEACON_BUTTON_SER
 import static org.firstinspires.ftc.teamcode.vv_Constants.RIGHT_BEACON_BUTTON_SERVO;
 
 
-@TeleOp(name = "BeaconPositionCalibrationOp", group = "Test")
+@TeleOp(name = "BeaconPositionCalibrationOp", group = "Calibrations")
 
 public class BeaconPositionCalibration extends vv_OpMode {
 

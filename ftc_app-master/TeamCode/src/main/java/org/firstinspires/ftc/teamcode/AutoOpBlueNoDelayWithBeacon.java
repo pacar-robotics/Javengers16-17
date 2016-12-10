@@ -14,7 +14,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_
  */
 
 
-@Autonomous(name = "BlueRightBeaconNoDelayOp", group = "Horsham")
+@Autonomous(name = "BlueRightBeaconNoDelayOp", group = "HorshamTest")
 public class AutoOpBlueNoDelayWithBeacon extends vv_OpMode {
     vv_Lib vvLib;
     vv_Robot vvRobot;

@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name = "BeaconColorCalibrationOp", group = "Test")
+@TeleOp(name = "BeaconColorCalibrationOp", group = "Calibrations")
 
 public class BeaconColorCalibration extends vv_OpMode {
 

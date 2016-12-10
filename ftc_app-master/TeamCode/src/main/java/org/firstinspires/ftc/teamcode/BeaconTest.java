@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name = "BeaconTestOp", group = "Test")
+@TeleOp(name = "BeaconTestOp", group = "Calibrations")
 
 public class BeaconTest extends vv_OpMode {
 

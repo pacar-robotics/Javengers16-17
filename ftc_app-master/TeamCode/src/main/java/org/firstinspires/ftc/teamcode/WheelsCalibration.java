@@ -8,7 +8,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Sideways
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
 
 
-@TeleOp(name = "WheelCalibrationOp", group = "Test")
+@TeleOp(name = "WheelCalibrationOp", group = "Calibrations")
 public class WheelsCalibration extends vv_OpMode {
 
     /* Declare OpMode members. */

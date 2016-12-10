@@ -9,7 +9,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_
 import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 
 
-@TeleOp(name = "LauncherCalibrationOp", group = "Test")
+@TeleOp(name = "LauncherCalibrationOp", group = "Calibrations")
 
 public class LauncherCalibration extends vv_OpMode {
 

@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name = "GyroCalibrationOp", group = "Test")
+@TeleOp(name = "GyroCalibrationOp", group = "Calibrations")
 public class GyroCalibration extends vv_OpMode {
 
     /* Declare OpMode members. */
