@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 
 
-@TeleOp(name = "HorshamTeleOp", group = "Horsham")
+@TeleOp(name = "HorshamTeleOp", group = "TeleOp")
 
 public class HorshamTeleOp extends vv_OpMode {
 
@@ -44,6 +44,8 @@ public class HorshamTeleOp extends vv_OpMode {
 
             processLaunchPowerCalibration();
 
+            processBeacon();
+
             idle();
 
         }
@@ -79,11 +81,11 @@ public class HorshamTeleOp extends vv_OpMode {
 
     private void processBeacon() throws InterruptedException {
         // Changes Beacon Mechanism to left position in order to score the beacon
-        if (gamepad2.left_bumper) {
+        if (gamepad1.dpad_left) {
             vvLib.pressLeftBeaconButton(this);
         }
         // Changes Beacon Mechanism to right position in order to score the beacon
-        if (gamepad2.right_bumper) {
+        if (gamepad1.dpad_right) {
             vvLib.pressRightBeaconButton(this);
         }
 

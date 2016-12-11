@@ -13,8 +13,8 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Sideways
  */
 
 
-@Autonomous(name = "RedRightNoDelayOp", group = "Horsham")
-public class AutoOpRedNoDelay extends vv_OpMode
+@Autonomous(name = "RedRightWithDelayOp", group = "Horsham")
+public class AutoOpRedWithDelay extends vv_OpMode
 {
     vv_Lib vvLib;
     vv_Robot vvRobot;
@@ -69,6 +69,7 @@ public class AutoOpRedNoDelay extends vv_OpMode
 
         //set the ball up and shoot.
         //wind up to autonomous position.
+        Thread.sleep(10000);
         vvLib.moveWheels(this, 4, .4f, SidewaysRight, true);
         Thread.sleep(250);
         vvLib.turnAbsoluteGyroDegrees(this, -40);
@@ -87,7 +88,7 @@ public class AutoOpRedNoDelay extends vv_OpMode
         vvLib.turnAbsoluteGyroDegrees(this, -30);
         Thread.sleep(250);
 
-        vvLib.moveWheels(this, 50, .9f, SidewaysRight, true);
+        vvLib.moveWheels(this, 47, .9f, SidewaysRight, true);
         Thread.sleep(250);
 
         vvLib.turnAbsoluteGyroDegrees(this, -50);
