@@ -786,6 +786,14 @@ public class vv_Lib {
          */
     }
 
+    public void universalMoveRobotForDuration(vv_OpMode aOpMode, double xAxisVelocity,
+                                              double yAxisVelocity, double rotationalVelocity, long duration)
+            throws InterruptedException {
+        robot.universalMoveRobotForDuration(aOpMode, xAxisVelocity,
+                yAxisVelocity, rotationalVelocity, duration);
+    }
+
+
     public void decreaseLauncherPowerWithLimits(vv_OpMode aOpMode) throws InterruptedException,
             vv_Robot.MotorStalledException {
         int launcherPowerPosition = robot.getLauncherPowerPosition(aOpMode);

@@ -31,9 +31,13 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_GATE_SERVO_OPEN
 import static org.firstinspires.ftc.teamcode.vv_Constants.LEFT_BEACON_BUTTON_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_MOTOR_LOOP_TIME;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_FRONT_TRACK_DISTANCE;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_SIDE_TRACK_DISTANCE;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_LOWER_POWER_THRESHOLD;
-import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_POWER_LOWER_LIMIT;
-import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_POWER_UPPER_LIMIT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_FB_POWER_LOWER_LIMIT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_FB_POWER_UPPER_LIMIT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_SIDEWAYS_POWER_LOWER_LIMIT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_SIDEWAYS_POWER_UPPER_LIMIT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.RIGHT_BEACON_BUTTON_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_DURATION_MAX;
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_ENCODER_MARGIN;
@@ -310,7 +314,10 @@ public class vv_Robot {
             //RP=PMax(1-4*(0.5-DT/DD)^2)
             //where RP=Ramped Power, PMax is maximum power available, DT=Distance Travelled, DD=Distance to be travelled
             //fl_position (target for the front left motor in encoder clicks can be taken as the proxy for all motors.
-            float rampedPowerRaw = (float) (MOTOR_RAMP_POWER_UPPER_LIMIT * (1 - 4 * (Math.pow((0.5f -
+
+            //using fl_power as proxy for all wheel power, the sign is not relevant in this runmode.
+
+            float rampedPowerRaw = (float) (fl_Power * (1 - 4 * (Math.pow((0.5f -
                     Math.abs((motorArray[FRONT_LEFT_MOTOR].getCurrentPosition() * 1.0f) / fl_Position)), 2.0f))));
 
             //use another variable to check and adjust power limits, so we can display raw power values.
@@ -320,12 +327,25 @@ public class vv_Robot {
                 rampedPower = fl_Power; //as proxy for all power.
             }
 
-            //check for upper and lower limits.
-            if (rampedPower > MOTOR_RAMP_POWER_UPPER_LIMIT) {
-                rampedPower = MOTOR_RAMP_POWER_UPPER_LIMIT;
-            }
-            if (rampedPower < MOTOR_RAMP_POWER_LOWER_LIMIT) {
-                rampedPower = MOTOR_RAMP_POWER_LOWER_LIMIT;
+            if (Math.signum(fl_Position) != Math.signum(fr_Position)) {
+                //we are moving sideways, since the front left and right wheels are rotating in opposite directions
+                //we should check against sideways limits.
+                //check for upper and lower limits.
+                if (rampedPower > MOTOR_RAMP_SIDEWAYS_POWER_UPPER_LIMIT) {
+                    rampedPower = MOTOR_RAMP_SIDEWAYS_POWER_UPPER_LIMIT;
+                }
+                if (rampedPower < MOTOR_RAMP_SIDEWAYS_POWER_LOWER_LIMIT) {
+                    rampedPower = MOTOR_RAMP_SIDEWAYS_POWER_LOWER_LIMIT;
+                }
+            } else {
+                //else we are moving forward
+                //check for upper and lower limits.
+                if (rampedPower > MOTOR_RAMP_FB_POWER_UPPER_LIMIT) {
+                    rampedPower = MOTOR_RAMP_FB_POWER_UPPER_LIMIT;
+                }
+                if (rampedPower < MOTOR_RAMP_FB_POWER_LOWER_LIMIT) {
+                    rampedPower = MOTOR_RAMP_FB_POWER_LOWER_LIMIT;
+                }
             }
 
             //apply the new power values.
@@ -868,6 +888,72 @@ public class vv_Robot {
     public double getUltrasonicReading(vv_OpMode aOPMode) {
 
         return floorUltrasonicSensor.getUltrasonicLevel();
+    }
+
+    public void universalMoveRobotForDuration(vv_OpMode aOpMode, double xAxisVelocity,
+                                              double yAxisVelocity, double rotationalVelocity, long duration)
+            throws InterruptedException {
+        double fl_velocity = 0;
+        double fr_velocity = 0;
+        double bl_velocity = 0;
+        double br_velocity = 0;
+        double trackDistanceAverage = (MECCANUM_WHEEL_FRONT_TRACK_DISTANCE +
+                MECCANUM_WHEEL_SIDE_TRACK_DISTANCE) / 2.0f;
+
+        //calculate velocities at each wheel.
+
+        fl_velocity = xAxisVelocity + yAxisVelocity - rotationalVelocity *
+                trackDistanceAverage;
+
+        fr_velocity = xAxisVelocity - yAxisVelocity + rotationalVelocity *
+                trackDistanceAverage;
+
+        bl_velocity = xAxisVelocity - yAxisVelocity - rotationalVelocity *
+                trackDistanceAverage;
+
+        br_velocity = xAxisVelocity + yAxisVelocity + rotationalVelocity *
+                trackDistanceAverage;
+
+        //reset all encoders.
+
+        motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        while (motorArray[FRONT_LEFT_MOTOR].getCurrentPosition() != 0) {
+            //wait for switch to happen.
+            aOpMode.idle();
+        }
+        //switch to RUN_WITH_ENCODERS to normalize for speed.
+
+        motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //wait for switch to happen
+        Thread.sleep(100);
+
+        //apply specific powers to motors to get desired movement
+
+        motorArray[FRONT_LEFT_MOTOR].setPower(fl_velocity);
+        motorArray[FRONT_RIGHT_MOTOR].setPower(fr_velocity);
+        motorArray[BACK_LEFT_MOTOR].setPower(bl_velocity);
+        motorArray[BACK_RIGHT_MOTOR].setPower(br_velocity);
+
+        //
+
+        aOpMode.reset_timer();
+        while (aOpMode.time_elapsed() < duration) {
+            //wait till duration is complete.
+            aOpMode.idle();
+        }
+
+        //stop all motors
+        stopBaseMotors(aOpMode);
+
+
     }
 
 

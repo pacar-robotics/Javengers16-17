@@ -19,8 +19,16 @@ public class vv_Constants
 	final static int ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION = 1120;
 
 	final static float MOTOR_LOWER_POWER_THRESHOLD = 0.35f;
-    final static float MOTOR_RAMP_POWER_LOWER_LIMIT = 0.2f;
-    final static float MOTOR_RAMP_POWER_UPPER_LIMIT = 0.5f;
+
+    //forward/backward power limits
+    final static float MOTOR_RAMP_FB_POWER_LOWER_LIMIT = 0.2f;
+    final static float MOTOR_RAMP_FB_POWER_UPPER_LIMIT = 0.9f;
+
+    //sideways power limit
+    final static float MOTOR_RAMP_SIDEWAYS_POWER_LOWER_LIMIT = 0.6f;
+    final static float MOTOR_RAMP_SIDEWAYS_POWER_UPPER_LIMIT = 0.9f;
+
+
     final static float MOTOR_SLOW_START_THRESHOLD = 0.30f;
 
     final static float COLOR_SENSOR_WHITE_LIMIT = 2.0f;
@@ -31,6 +39,8 @@ public class vv_Constants
     // Mecanum wheel properties
     final static float MECCANUM_WHEEL_DIAMETER = 4f;   //in inches
     final static float MECCANUM_WHEEL_ENCODER_MARGIN = 20;
+    final static float MECCANUM_WHEEL_SIDE_TRACK_DISTANCE = 13.0f;
+    final static float MECCANUM_WHEEL_FRONT_TRACK_DISTANCE = 14.5f;
 
 	final static float ANALOG_STICK_THRESHOLD = .25f;
     final static float TRIGGER_THRESHOLD = .25f;

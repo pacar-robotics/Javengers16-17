@@ -8,8 +8,8 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Sideways
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
 
 
-@TeleOp(name = "WheelCalibrationOp", group = "Calibrations")
-public class WheelsCalibration extends vv_OpMode {
+@TeleOp(name = "WheelCycleCalibrationOp", group = "Calibrations")
+public class WheelsCycleCalibration extends vv_OpMode {
 
     /* Declare OpMode members. */
     vv_Lib vvLib;
@@ -36,35 +36,30 @@ public class WheelsCalibration extends vv_OpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        telemetryAddData("Test", "Move", "Moving Forward 4 inches");
-        telemetryUpdate();
+        telemetryAddData("Testig Wheel Cycling", "Cycle:", "Robot should be in same position " +
+                "after each cycle");
+        for (int i = 0; i < 10; i++) {
 
-        vvLib.moveWheels(this, 4, 0.5f, Forward, true);
+            telemetryAddData("Testing Wheel Cycling", "Cycle:", "Cycle:" + i);
+            telemetryUpdate();
 
-        Thread.sleep(3000);
+            vvLib.moveWheels(this, 4, 0.5f, Forward, true);
 
-        telemetryAddData("Test", "Move", "Moving Backward 4 inches");
-        telemetryUpdate();
+            Thread.sleep(500);
 
-        vvLib.moveWheels(this, 4, 0.5f, Backward, true);
+            vvLib.moveWheels(this, 4, 0.5f, Backward, true);
 
-        Thread.sleep(3000);
-
-
-        telemetryAddData("Test", "Move", "Moving Sideways Left 4 inches");
-        telemetryUpdate();
-
-        vvLib.moveWheels(this, 4, 0.5f, SidewaysLeft, true);
-
-        Thread.sleep(3000);
+            Thread.sleep(500);
 
 
-        telemetryAddData("Test", "Move", "Moving Sideways Right 4 inches");
-        telemetryUpdate();
+            vvLib.moveWheels(this, 4, 0.5f, SidewaysLeft, true);
 
-        vvLib.moveWheels(this, 4, 0.5f, SidewaysRight, true);
+            Thread.sleep(500);
 
-        Thread.sleep(3000);
+            vvLib.moveWheels(this, 4, 0.5f, SidewaysRight, true);
+
+            Thread.sleep(500);
+        }
 
 
     }
