@@ -39,5 +39,8 @@ public abstract class vv_OpMode extends LinearOpMode
         return System.currentTimeMillis() - clock_start_time;
     }
 
+    public interface StopCondition {
+        boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException;
+    }
 
 }

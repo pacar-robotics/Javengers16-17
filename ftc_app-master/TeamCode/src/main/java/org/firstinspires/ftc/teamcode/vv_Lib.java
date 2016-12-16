@@ -793,6 +793,34 @@ public class vv_Lib {
                 yAxisVelocity, rotationalVelocity, duration);
     }
 
+    public void universalMoveRobotByAngleDirection(vv_OpMode aOpMode, double directionAngle,
+                                                   double velocity, double rotationalVelocity,
+                                                   long duration, vv_OpMode.StopCondition condition)
+            throws InterruptedException {
+        if (velocity > 0.45) {
+            velocity = -0.45;
+        }
+        if (velocity < 0.2) {
+            velocity = 0.2;
+        }
+
+        double xAxisVelocity = velocity * Math.cos(directionAngle);
+        double yAxisVelocity = velocity * Math.sin(directionAngle);
+
+        robot.universalMoveRobot(aOpMode, xAxisVelocity,
+                yAxisVelocity, rotationalVelocity, duration, condition);
+    }
+
+    public void universalMoveRobotByAxisVelocity(vv_OpMode aOpMode, double xAxisVelocity,
+                                                 double yAxisVelocity, double rotationalVelocity,
+                                                 long duration, vv_OpMode.StopCondition condition)
+            throws InterruptedException {
+
+        robot.universalMoveRobot(aOpMode, xAxisVelocity,
+                yAxisVelocity, rotationalVelocity, duration, condition);
+    }
+
+
 
     public void decreaseLauncherPowerWithLimits(vv_OpMode aOpMode) throws InterruptedException,
             vv_Robot.MotorStalledException {

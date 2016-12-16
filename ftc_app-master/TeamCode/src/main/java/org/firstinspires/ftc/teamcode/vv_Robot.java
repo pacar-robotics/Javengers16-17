@@ -507,11 +507,14 @@ public class vv_Robot {
     }
 
     public void stopBaseMotors(vv_OpMode aOpMode) throws InterruptedException {
+
         motorArray[FRONT_LEFT_MOTOR].setPower(0);
         motorArray[FRONT_RIGHT_MOTOR].setPower(0);
         motorArray[BACK_LEFT_MOTOR].setPower(0);
         motorArray[BACK_RIGHT_MOTOR].setPower(0);
-        Thread.sleep(100);
+        while (motorArray[BACK_RIGHT_MOTOR].getPower() != 0) {
+            aOpMode.idle();
+        }
     }
 
 
@@ -902,6 +905,7 @@ public class vv_Robot {
 
         //calculate velocities at each wheel.
 
+
         fl_velocity = xAxisVelocity + yAxisVelocity - rotationalVelocity *
                 trackDistanceAverage;
 
@@ -935,20 +939,149 @@ public class vv_Robot {
         //wait for switch to happen
         Thread.sleep(100);
 
-        //apply specific powers to motors to get desired movement
+        //start slow to prevent skid.
+        //may replace with ramp to improve performance.
 
-        motorArray[FRONT_LEFT_MOTOR].setPower(fl_velocity);
-        motorArray[FRONT_RIGHT_MOTOR].setPower(fr_velocity);
-        motorArray[BACK_LEFT_MOTOR].setPower(bl_velocity);
-        motorArray[BACK_RIGHT_MOTOR].setPower(br_velocity);
+        motorArray[FRONT_LEFT_MOTOR].setPower(Math.abs(fl_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
+                Math.signum(fl_velocity) * MOTOR_LOWER_POWER_THRESHOLD : fl_velocity);
+        motorArray[FRONT_RIGHT_MOTOR].setPower(Math.abs(fr_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
+                Math.signum(fr_velocity) * MOTOR_LOWER_POWER_THRESHOLD : fr_velocity);
+        motorArray[BACK_LEFT_MOTOR].setPower(Math.abs(bl_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
+                Math.signum(bl_velocity) * MOTOR_LOWER_POWER_THRESHOLD : bl_velocity);
+        motorArray[BACK_RIGHT_MOTOR].setPower(Math.abs(br_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
+                Math.signum(br_velocity) * MOTOR_LOWER_POWER_THRESHOLD : br_velocity);
 
         //
 
         aOpMode.reset_timer();
-        while (aOpMode.time_elapsed() < duration) {
+        //stop 100 ms before end
+        while (aOpMode.time_elapsed() < duration - 100) {
+
+            //apply specific powers to motors to get desired movement
             //wait till duration is complete.
+            motorArray[FRONT_LEFT_MOTOR].setPower(fl_velocity);
+            motorArray[FRONT_RIGHT_MOTOR].setPower(fr_velocity);
+            motorArray[BACK_LEFT_MOTOR].setPower(bl_velocity);
+            motorArray[BACK_RIGHT_MOTOR].setPower(br_velocity);
             aOpMode.idle();
         }
+
+        //end slow
+        motorArray[FRONT_LEFT_MOTOR].setPower(Math.abs(fl_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
+                Math.signum(fl_velocity) * MOTOR_LOWER_POWER_THRESHOLD : fl_velocity);
+        motorArray[FRONT_RIGHT_MOTOR].setPower(Math.abs(fr_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
+                Math.signum(fr_velocity) * MOTOR_LOWER_POWER_THRESHOLD : fr_velocity);
+        motorArray[BACK_LEFT_MOTOR].setPower(Math.abs(bl_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
+                Math.signum(bl_velocity) * MOTOR_LOWER_POWER_THRESHOLD : bl_velocity);
+        motorArray[BACK_RIGHT_MOTOR].setPower(Math.abs(br_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
+                Math.signum(br_velocity) * MOTOR_LOWER_POWER_THRESHOLD : br_velocity);
+
+        aOpMode.reset_timer();
+        //stop 100 ms before end
+        while (aOpMode.time_elapsed() < 100) {
+            aOpMode.idle();
+        }
+
+
+        //stop all motors
+        stopBaseMotors(aOpMode);
+
+
+    }
+
+    public void universalMoveRobot(vv_OpMode aOpMode, double xAxisVelocity,
+                                   double yAxisVelocity, double rotationalVelocity,
+                                   long duration, vv_OpMode.StopCondition condition)
+            throws InterruptedException {
+        double fl_velocity = 0;
+        double fr_velocity = 0;
+        double bl_velocity = 0;
+        double br_velocity = 0;
+        double trackDistanceAverage = (MECCANUM_WHEEL_FRONT_TRACK_DISTANCE +
+                MECCANUM_WHEEL_SIDE_TRACK_DISTANCE) / 2.0f;
+
+
+        //calculate velocities at each wheel.
+
+        fl_velocity = yAxisVelocity + xAxisVelocity - rotationalVelocity *
+                trackDistanceAverage;
+
+        fr_velocity = yAxisVelocity - xAxisVelocity + rotationalVelocity *
+                trackDistanceAverage;
+
+        bl_velocity = yAxisVelocity - xAxisVelocity - rotationalVelocity *
+                trackDistanceAverage;
+
+        br_velocity = yAxisVelocity + xAxisVelocity + rotationalVelocity *
+                trackDistanceAverage;
+
+        //reset all encoders.
+
+        motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        while (motorArray[FRONT_LEFT_MOTOR].getCurrentPosition() != 0) {
+            //wait for switch to happen.
+            aOpMode.idle();
+        }
+        //switch to RUN_WITH_ENCODERS to normalize for speed.
+
+        motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //wait for switch to happen
+        Thread.sleep(100);
+
+        //start slow to prevent skid.
+        //may replace with ramp to improve performance.
+
+        motorArray[FRONT_LEFT_MOTOR].setPower(Math.abs(fl_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
+                Math.signum(fl_velocity) * MOTOR_LOWER_POWER_THRESHOLD : fl_velocity);
+        motorArray[FRONT_RIGHT_MOTOR].setPower(Math.abs(fr_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
+                Math.signum(fr_velocity) * MOTOR_LOWER_POWER_THRESHOLD : fr_velocity);
+        motorArray[BACK_LEFT_MOTOR].setPower(Math.abs(bl_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
+                Math.signum(bl_velocity) * MOTOR_LOWER_POWER_THRESHOLD : bl_velocity);
+        motorArray[BACK_RIGHT_MOTOR].setPower(Math.abs(br_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
+                Math.signum(br_velocity) * MOTOR_LOWER_POWER_THRESHOLD : br_velocity);
+
+        //
+
+        aOpMode.reset_timer();
+        //stop 100 ms before end
+        while ((aOpMode.time_elapsed() < duration - 100) &&
+                (!condition.StopCondition(aOpMode))) {
+
+            //condition will return true when it reaches state meant to stop movement
+
+            //apply specific powers to motors to get desired movement
+            //wait till duration is complete.
+            motorArray[FRONT_LEFT_MOTOR].setPower(fl_velocity);
+            motorArray[FRONT_RIGHT_MOTOR].setPower(fr_velocity);
+            motorArray[BACK_LEFT_MOTOR].setPower(bl_velocity);
+            motorArray[BACK_RIGHT_MOTOR].setPower(br_velocity);
+            aOpMode.idle();
+        }
+
+        //end slow
+        motorArray[FRONT_LEFT_MOTOR].setPower(Math.abs(fl_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
+                Math.signum(fl_velocity) * MOTOR_LOWER_POWER_THRESHOLD : fl_velocity);
+        motorArray[FRONT_RIGHT_MOTOR].setPower(Math.abs(fr_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
+                Math.signum(fr_velocity) * MOTOR_LOWER_POWER_THRESHOLD : fr_velocity);
+        motorArray[BACK_LEFT_MOTOR].setPower(Math.abs(bl_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
+                Math.signum(bl_velocity) * MOTOR_LOWER_POWER_THRESHOLD : bl_velocity);
+        motorArray[BACK_RIGHT_MOTOR].setPower(Math.abs(br_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
+                Math.signum(br_velocity) * MOTOR_LOWER_POWER_THRESHOLD : br_velocity);
+
+        aOpMode.reset_timer();
+        //stop 100 ms before end
+        while (aOpMode.time_elapsed() < 100) {
+            aOpMode.idle();
+        }
+
 
         //stop all motors
         stopBaseMotors(aOpMode);

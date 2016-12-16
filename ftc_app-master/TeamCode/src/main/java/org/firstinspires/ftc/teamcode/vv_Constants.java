@@ -18,7 +18,7 @@ public class vv_Constants
 	final static int TETRIX_MOTOR_ENCODER_COUNTS_PER_REVOLUTION = 1440;
 	final static int ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION = 1120;
 
-	final static float MOTOR_LOWER_POWER_THRESHOLD = 0.35f;
+    final static float MOTOR_LOWER_POWER_THRESHOLD = 0.20f;
 
     //forward/backward power limits
     final static float MOTOR_RAMP_FB_POWER_LOWER_LIMIT = 0.2f;
