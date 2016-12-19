@@ -991,7 +991,8 @@ public class vv_Robot {
 
     public void universalMoveRobot(vv_OpMode aOpMode, double xAxisVelocity,
                                    double yAxisVelocity, double rotationalVelocity,
-                                   long duration, vv_OpMode.StopCondition condition)
+                                   long duration, vv_OpMode.StopCondition condition,
+                                   boolean isPulsed, long pulseWidthDuration, long pulseRestDuration)
             throws InterruptedException {
         double fl_velocity = 0;
         double fr_velocity = 0;
@@ -1052,7 +1053,7 @@ public class vv_Robot {
 
         aOpMode.reset_timer();
         //stop 100 ms before end
-        while ((aOpMode.time_elapsed() < duration - 100) &&
+        while ((aOpMode.time_elapsed() < (duration - 100)) &&
                 (!condition.StopCondition(aOpMode))) {
 
             //condition will return true when it reaches state meant to stop movement
@@ -1063,6 +1064,18 @@ public class vv_Robot {
             motorArray[FRONT_RIGHT_MOTOR].setPower(fr_velocity);
             motorArray[BACK_LEFT_MOTOR].setPower(bl_velocity);
             motorArray[BACK_RIGHT_MOTOR].setPower(br_velocity);
+
+            if (isPulsed) {
+                //run the motors for the pulseWidthDuration
+                //by sleeping, we let the motors that are running to continue to run
+                Thread.sleep(pulseWidthDuration);
+
+                //stop motors
+                stopBaseMotors(aOpMode);
+                //pause for pulseRestDuration
+                Thread.sleep(pulseRestDuration);
+                //this allows the robot to move slowly and gives the sensor time to read
+            }
             aOpMode.idle();
         }
 

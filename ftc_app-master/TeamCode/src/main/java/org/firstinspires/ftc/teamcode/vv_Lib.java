@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import java.util.Arrays;
+
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANALOG_STICK_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
@@ -795,8 +797,12 @@ public class vv_Lib {
 
     public void universalMoveRobotByAngleDirection(vv_OpMode aOpMode, double directionAngle,
                                                    double velocity, double rotationalVelocity,
-                                                   long duration, vv_OpMode.StopCondition condition)
+                                                   long duration, vv_OpMode.StopCondition condition,
+                                                   boolean isPulsed, long pulseWidthDuration, long pulseRestDuration)
             throws InterruptedException {
+
+        //should be refined for full scale.
+        //
         if (velocity > 0.45) {
             velocity = -0.45;
         }
@@ -808,16 +814,17 @@ public class vv_Lib {
         double yAxisVelocity = velocity * Math.sin(directionAngle);
 
         robot.universalMoveRobot(aOpMode, xAxisVelocity,
-                yAxisVelocity, rotationalVelocity, duration, condition);
+                yAxisVelocity, rotationalVelocity, duration, condition, isPulsed, pulseWidthDuration, pulseRestDuration);
     }
 
     public void universalMoveRobotByAxisVelocity(vv_OpMode aOpMode, double xAxisVelocity,
                                                  double yAxisVelocity, double rotationalVelocity,
-                                                 long duration, vv_OpMode.StopCondition condition)
+                                                 long duration, vv_OpMode.StopCondition condition,
+                                                 boolean isPulsed, long pulseWidthDuration, long pulseRestDuration)
             throws InterruptedException {
 
         robot.universalMoveRobot(aOpMode, xAxisVelocity,
-                yAxisVelocity, rotationalVelocity, duration, condition);
+                yAxisVelocity, rotationalVelocity, duration, condition, isPulsed, pulseWidthDuration, pulseRestDuration);
     }
 
 
@@ -894,8 +901,9 @@ public class vv_Lib {
     }
 
 
-    public double getFloorUltrasonicReading(vv_OpMode aOpMode) {
-        return robot.getUltrasonicReading(aOpMode);
+    public double getFloorUltrasonicReading(vv_OpMode aOpMode, int ReadingSetSize)
+            throws InterruptedException {
+        return readUltrasonicDistance(aOpMode, ReadingSetSize);
     }
 
 
@@ -923,6 +931,49 @@ public class vv_Lib {
     public boolean isBeaconTouchSensorPressed(vv_OpMode aOpMode) {
         return robot.isBeaconTouchSensorPressed(aOpMode);
 
+    }
+
+    public double readUltrasonicDistance(vv_OpMode aOpMode, int readingSetSize) throws InterruptedException {
+
+        return filterUltrasonicReadings(aOpMode, readingSetSize);
+
+    }
+
+    public double filterUltrasonicReadings(vv_OpMode aOpMode, int readingSetSize)
+            throws InterruptedException {
+
+        double readingsArray[];
+
+        if (readingSetSize < 3) {
+            readingSetSize = 3;
+        }
+
+        if (readingSetSize > 15) {
+            readingSetSize = 15;
+        }
+
+
+        if ((readingSetSize % 2) == 0) {
+            //even number
+            readingSetSize++;
+        }
+
+        readingsArray = new double[readingSetSize];
+
+        //take 9 readings
+        for (int i = 0, j = 0; i < readingSetSize && j < readingSetSize * 2; i++, j++) {
+            //get raw reading
+            readingsArray[i] = robot.getUltrasonicReading(aOpMode);
+            //wait between readings
+            Thread.sleep(30);
+            if (readingsArray[i] == 0) {
+                i--; //bad read, redo. to a maximum of 10 reads
+            }
+        }
+        //Now sort the readings
+        Arrays.sort(readingsArray);
+        //return the middle element to reduce noise
+        return readingsArray[((int) Math.round((double) readingSetSize) / 2) - 1];
     }
 
 }

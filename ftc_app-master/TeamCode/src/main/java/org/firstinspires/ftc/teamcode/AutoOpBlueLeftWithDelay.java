@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import java.util.Arrays;
-
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
 
@@ -91,27 +89,6 @@ public class AutoOpBlueLeftWithDelay extends vv_OpMode {
 
     }
 
-    public double readUltrasonicDistance() throws InterruptedException {
-
-        return filterUltrasonicReadings();
-
-    }
-
-    public double filterUltrasonicReadings() throws InterruptedException {
-        //take 9 readings
-        for (int i = 0, j = 0; i < 7 && j < 10; i++, j++) {
-            readingsArray[i] = vvLib.getFloorUltrasonicReading(this);
-            //wait between readings
-            Thread.sleep(20);
-            if (readingsArray[i] == 0) {
-                i--; //bad read, redo. to a maximum of 10 reads
-            }
-        }
-        //Now sort the readings
-        Arrays.sort(readingsArray);
-        //return the middle element to reduce noise
-        return readingsArray[3];
-    }
 
 
 }

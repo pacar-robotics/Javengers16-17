@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import java.util.Arrays;
-
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FLOOR_WHITE_THRESHOLD;
@@ -52,41 +50,30 @@ public class AutoOpBlueNoDelayWithBeacon extends vv_OpMode {
 
 
         //lets move the robot at 45 degrees till we detect the line.
-        lineDetectCondition condition = new lineDetectCondition();
-        vvLib.universalMoveRobotByAxisVelocity(this, 0.3, -0.4, 0.0, 7000, condition);
+        lineDetectCondition ldCondition = new lineDetectCondition();
+        //move the robot with no pulsed movement
+        vvLib.universalMoveRobotByAxisVelocity(this, 0.3, -0.4, 0.0, 7000, ldCondition, false, 0, 0);
         //rotate to face beacon press mode
         vvLib.turnAbsoluteGyroDegrees(this, 92); //with trim
         vvLib.moveWheels(this, 5, 0.2f, Backward, true); // adjust face position to match beacons
-        double distanceToBeaconWall = vvLib.getFloorUltrasonicReading(this) / 2.54; //in inches
+        //read distance from ultrasonic sensor, noise filtered, with 7 readings in a set.
+
+        double distanceToBeaconWall = vvLib.getFloorUltrasonicReading(this, 7) / 2.54; //in inches
+
         vvLib.turnAbsoluteGyroDegrees(this, 92); //with trim
         //now try moving that distance, adjusting for inset of ultrasonic sensor
-        vvLib.moveWheels(this, (float) (distanceToBeaconWall - 4.5), 0.2f, SidewaysRight, true);
+        //move toward the beacons but stop short (approx 1.5 inches short).
+        vvLib.moveWheels(this, (float) (distanceToBeaconWall - 6), 0.2f, SidewaysRight, true);
 
+        //lets do a pulse move until the beacon touch sensor is pressed
+        beaconTouchSensorPressedCondition btspCondition = new beaconTouchSensorPressedCondition();
+        //run for 200 ms, rest for 100, max of 7000 ms, until the beaconTouchSensor is pressed
+        vvLib.universalMoveRobotByAxisVelocity(this, 0.2, 0, 0.0, 7000, btspCondition, true, 100, 100);
 
 
     }
 
-    public double readUltrasonicDistance() throws InterruptedException {
 
-        return filterUltrasonicReadings();
-
-    }
-
-    public double filterUltrasonicReadings() throws InterruptedException {
-        //take 9 readings
-        for (int i = 0, j = 0; i < 7 && j < 10; i++, j++) {
-            readingsArray[i] = vvLib.getFloorUltrasonicReading(this);
-            //wait between readings
-            Thread.sleep(20);
-            if (readingsArray[i] == 0) {
-                i--; //bad read, redo. to a maximum of 10 reads
-            }
-        }
-        //Now sort the readings
-        Arrays.sort(readingsArray);
-        //return the middle element to reduce noise
-        return readingsArray[3];
-    }
 
 //conditions that can stop the robot.
 
@@ -94,6 +81,19 @@ public class AutoOpBlueNoDelayWithBeacon extends vv_OpMode {
     public class lineDetectCondition implements vv_OpMode.StopCondition {
         public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
             return ((vvLib.getFloorLightIntensity(aOpMode) >= FLOOR_WHITE_THRESHOLD));
+        }
+    }
+
+    public class beaconTouchSensorPressedCondition implements vv_OpMode.StopCondition {
+        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+            return (vvLib.isBeaconTouchSensorPressed(aOpMode));
+        }
+    }
+
+    public class falseCondition implements vv_OpMode.StopCondition {
+        //can be used as an empty condition, so the robot keeps running in universal movement
+        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+            return (false);
         }
     }
 
