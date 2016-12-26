@@ -200,6 +200,10 @@ public class DiagnosticsOp extends vv_OpMode {
 			Log.e(LOG_TAG, e.getMessage());
 			choicesEntry.getValue().setErrorStatus(true);
 			choicesEntry.getValue().addErrorMessage("Could not access method: " + choicesEntry.getKey());
+		} catch (NullPointerException e) {
+			Log.e(LOG_TAG, e.getMessage());
+			choicesEntry.getValue().setErrorStatus(true);
+			choicesEntry.getValue().addErrorMessage("Method did not return boolean value; Method may be empty");
 		}
 	}
 
