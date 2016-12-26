@@ -42,7 +42,6 @@ public class vv_Lib {
 			throws InterruptedException {
 		robot = new vv_Robot();
 		robot.init(aOpMode, aOpMode.hardwareMap);
-		setupShot(aOpMode);
 	}
 
 	/**
@@ -142,10 +141,10 @@ public class vv_Lib {
 		Thread.sleep(50);
 	}
 
-	public void turnBeaconArm(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum BeaconServoStateEnumValue)
-			throws InterruptedException {
-		robot.turnBeaconArm(aOpMode, BeaconServoStateEnumValue);
-	}
+//	public void turnBeaconArm(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum BeaconServoStateEnumValue)
+//			throws InterruptedException {
+//		robot.turnBeaconArm(aOpMode, BeaconServoStateEnumValue);
+//	}
 
 
 	public void turnUsingGyro(vv_OpMode aOpMode, float power, float angle, TurnDirectionEnum TurnDirection) {
@@ -154,21 +153,21 @@ public class vv_Lib {
 	}
 
 
-	public boolean senseTouch(vv_OpMode aOpMode) throws InterruptedException {
-		return robot.getButtonTouchValue(aOpMode);
-	}
+//	public boolean senseTouch(vv_OpMode aOpMode) throws InterruptedException {
+//		return robot.getButtonTouchValue(aOpMode);
+//	}
 
-	public void moveTillTouch(vv_OpMode aOpMode) throws InterruptedException {
-		aOpMode.reset_timer();
-		while (!senseTouch(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
-			robot.runMotorsSidewaysRight(aOpMode, TOUCH_SENSE_POWER);
-			aOpMode.idle();
-		}
-		robot.stopBaseMotors(aOpMode);
-		if (senseTouch(aOpMode)) {
-			aOpMode.DBG("Touched Sensor");
-		}
-	}
+//	public void moveTillTouch(vv_OpMode aOpMode) throws InterruptedException {
+//		aOpMode.reset_timer();
+//		while (!senseTouch(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
+//			robot.runMotorsSidewaysRight(aOpMode, TOUCH_SENSE_POWER);
+//			aOpMode.idle();
+//		}
+//		robot.stopBaseMotors(aOpMode);
+//		if (senseTouch(aOpMode)) {
+//			aOpMode.DBG("Touched Sensor");
+//		}
+//	}
 
 	/**
 	 * Method that moves robot until the color white is detected
@@ -805,22 +804,22 @@ public class vv_Lib {
 		return robot.getFloorLightIntensity(aOpMode);
 	}
 
-	public void setBeaconPosition(vv_OpMode aOpMode, double position)
-			throws InterruptedException {
-		robot.setBeaconPosition(aOpMode, position);
-	}
-
-	public double getBeaconPosition(vv_OpMode aOpMode)
-			throws InterruptedException {
-		return robot.getBeaconPosition(aOpMode);
-	}
+//	public void setBeaconPosition(vv_OpMode aOpMode, double position)
+//			throws InterruptedException {
+//		robot.setBeaconPosition(aOpMode, position);
+//	}
+//
+//	public double getBeaconPosition(vv_OpMode aOpMode)
+//			throws InterruptedException {
+//		return robot.getBeaconPosition(aOpMode);
+//	}
 
 	public double getFloorUltrasonicReading(vv_OpMode aOpMode) {
 		return robot.getUltrasonicReading(aOpMode);
 	}
 
-	public boolean isBeaconTouchSensorPressed(vv_OpMode aOpMode) throws InterruptedException {
-		return robot.getButtonTouchValue(aOpMode);
-	}
+//	public boolean isBeaconTouchSensorPressed(vv_OpMode aOpMode) throws InterruptedException {
+//		return robot.getButtonTouchValue(aOpMode);
+//	}
 
 }

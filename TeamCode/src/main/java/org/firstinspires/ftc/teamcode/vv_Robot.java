@@ -50,9 +50,9 @@ public class vv_Robot {
 	private DcMotor motorArray[];
 
 
-	private Servo beaconServo = null;
+//	private Servo beaconServo = null;
 	private Servo launcherGateServo = null;
-	private TouchSensor beaconTouchSensor;
+//	private TouchSensor beaconTouchSensor;
 	private TouchSensor wormDriveTouchSensor;
 	private ColorSensor beaconColorSensor;
 	private TouchSensor armSensor;
@@ -83,7 +83,7 @@ public class vv_Robot {
 		motorArray[INTAKE_MOTOR] = hwMap.dcMotor.get("motor_intake");
 
 		floorLightSensor = hwMap.lightSensor.get("floor_light_sensor");
-		beaconTouchSensor = hwMap.touchSensor.get("beacon_touch_sensor");
+//		beaconTouchSensor = hwMap.touchSensor.get("beacon_touch_sensor");
 		beaconColorSensor = hwMap.colorSensor.get("beacon_color_sensor");
 		floorUltrasonicSensor = hwMap.ultrasonicSensor.get("floor_ultrasonic_sensor");
 		wormDriveTouchSensor = hwMap.touchSensor.get("touch_worm_sensor");
@@ -113,10 +113,10 @@ public class vv_Robot {
 
 		armSensor = hwMap.touchSensor.get("touch_arm_sensor");
 
-		beaconServo = hwMap.servo.get("servo_beacon");
+//		beaconServo = hwMap.servo.get("servo_beacon");
 
 		//initialize to the middle position.
-		beaconServo.setPosition(BEACON_SERVO_NEUTRAL);
+//		beaconServo.setPosition(BEACON_SERVO_NEUTRAL);
 
 
 		launcherGateServo = hwMap.servo.get("servo_launcher_gate");
@@ -464,31 +464,31 @@ public class vv_Robot {
 		Thread.sleep(100);
 	}
 
-	public void turnBeaconArm(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum beaconArmEnum)
-			throws InterruptedException {
+//	public void turnBeaconArm(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum beaconArmEnum)
+//			throws InterruptedException {
+//
+//		switch (beaconArmEnum) {
+//
+//			case Left:
+//				beaconServo.setPosition(BEACON_SERVO_LEFT);
+//				break;
+//
+//			case Right:
+//				beaconServo.setPosition(BEACON_SERVO_RIGHT);
+//				break;
+//			case Neutral:
+//				beaconServo.setPosition(BEACON_SERVO_NEUTRAL);
+//				break;
+//			case Look:
+//				beaconServo.setPosition(BEACON_SERVO_LOOK_FOR_COLOR);
+//				break;
+//		}
+//		Thread.sleep(200);
+//	}
 
-		switch (beaconArmEnum) {
-
-			case Left:
-				beaconServo.setPosition(BEACON_SERVO_LEFT);
-				break;
-
-			case Right:
-				beaconServo.setPosition(BEACON_SERVO_RIGHT);
-				break;
-			case Neutral:
-				beaconServo.setPosition(BEACON_SERVO_NEUTRAL);
-				break;
-			case Look:
-				beaconServo.setPosition(BEACON_SERVO_LOOK_FOR_COLOR);
-				break;
-		}
-		Thread.sleep(200);
-	}
-
-	public boolean getButtonTouchValue(vv_OpMode aOpMode) throws InterruptedException {
-		return beaconTouchSensor.isPressed();
-	}
+//	public boolean getButtonTouchValue(vv_OpMode aOpMode) throws InterruptedException {
+//		return beaconTouchSensor.isPressed();
+//	}
 
 	//turn the color sensor LED on the floor of the robot on
 	public void enableFloorLightSensorLed(vv_OpMode aOpMode) throws InterruptedException {
@@ -844,17 +844,17 @@ public class vv_Robot {
 		IntakeState = IntakeStateValue;
 	}
 
-	public void setBeaconPosition(vv_OpMode aOpMode, double position)
-			throws InterruptedException {
-		beaconServo.setPosition(position);
-		Thread.sleep(100);
-	}
-
-	public double getBeaconPosition(vv_OpMode aOpMode)
-			throws InterruptedException {
-		return beaconServo.getPosition();
-
-	}
+//	public void setBeaconPosition(vv_OpMode aOpMode, double position)
+//			throws InterruptedException {
+//		beaconServo.setPosition(position);
+//		Thread.sleep(100);
+//	}
+//
+//	public double getBeaconPosition(vv_OpMode aOpMode)
+//			throws InterruptedException {
+//		return beaconServo.getPosition();
+//
+//	}
 
 	public double getUltrasonicReading(vv_OpMode aOPMode) {
 

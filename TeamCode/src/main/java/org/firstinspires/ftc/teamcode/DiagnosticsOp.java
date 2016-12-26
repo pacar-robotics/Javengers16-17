@@ -125,6 +125,8 @@ public class DiagnosticsOp extends vv_OpMode {
 
 	@Override
 	public void runOpMode() throws InterruptedException {
+		telemetryAddData(LOG_TAG, OUTPUT_TELEMETRY_KEY, "Initializing...");
+		telemetryUpdate();
 		initialize();
 		telemetryAddData(LOG_TAG, OUTPUT_TELEMETRY_KEY, "Done with initialization");
 		telemetryUpdate();
@@ -151,11 +153,6 @@ public class DiagnosticsOp extends vv_OpMode {
 				gamepadInputWait(); // Wait for a bit so gamepad input does not get read twice
 			}
 		}
-
-
-		telemetryAddData(LOG_TAG, OUTPUT_TELEMETRY_KEY, "End of program");
-		telemetryUpdate();
-		while (opModeIsActive());   // Wait until user stops program
 	}
 
 	private void initialize() throws InterruptedException {
