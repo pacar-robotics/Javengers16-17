@@ -384,7 +384,7 @@ public class DiagnosticsOp extends vv_OpMode {
 		cal.setTimeInMillis(System.currentTimeMillis());
 
 		// Wait until sensor is touched or 5 seconds have passed
-		while (robotLibrary.isArmAtLimit(this) && (System.currentTimeMillis() - cal.getTimeInMillis() < TOUCH_WAIT_TIME));
+		while (!robotLibrary.isArmAtLimit(this) && (System.currentTimeMillis() - cal.getTimeInMillis() < TOUCH_WAIT_TIME));
 
 		return !robotLibrary.isArmAtLimit(this);
 	}
