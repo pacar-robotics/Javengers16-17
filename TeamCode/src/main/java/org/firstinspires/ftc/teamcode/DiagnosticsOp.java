@@ -301,7 +301,7 @@ public class DiagnosticsOp extends vv_OpMode {
 		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
-	private boolean sidwaysleft() throws InterruptedException {
+	private boolean sidewaysleft() throws InterruptedException {
 		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.SidewaysLeft);
 		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
