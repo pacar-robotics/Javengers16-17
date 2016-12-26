@@ -67,18 +67,18 @@ public class DiagnosticsOp extends vv_OpMode {
 	// Code is based off of AutoXMLParser:
 	// https://gist.github.com/rsquared226/21cf8b0d3e3476b38f22982f698d0388
 	private static class XmlParser {
-		private final String FILE_NAME = Environment.getExternalStorageDirectory().getPath() +
-				"/PACAR/AutoChoices.xml";
-		private final String LOG_TAG = "XmlParser";
+		private static final String FILE_NAME = Environment.getExternalStorageDirectory().getPath() +
+				"/PACAR/DiagChoices.xml";
+		private static final String LOG_TAG = "XmlParser";
 
 		private LinkedHashMap<String, Boolean> choicesMap;
 
 		public XmlParser() {
-			choicesMap = parseXml();
+			choicesMap = new LinkedHashMap<>();
+			parseXml();
 		}
 
-		private LinkedHashMap<String, Boolean> parseXml() {
-			LinkedHashMap<String, Boolean> choicesMap = new LinkedHashMap<>();
+		private void parseXml() {
 			try {
 				File xmlFile = new File(FILE_NAME);
 				DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -86,7 +86,6 @@ public class DiagnosticsOp extends vv_OpMode {
 
 				// Attempt to parse XML into DOM structure, initializing document
 				Document document = documentBuilder.parse(xmlFile);
-
 
 				// Find choices in XML DOM using XPATH
 				XPath xPath = XPathFactory.newInstance().newXPath();
@@ -99,15 +98,12 @@ public class DiagnosticsOp extends vv_OpMode {
 				NodeList nodes = (NodeList) expression.evaluate(document, XPathConstants.NODESET);
 
 				for (int i = 0; i < nodes.getLength(); i++) {
-					choicesMap.put(nodes.item(i).getNodeName(), Boolean.valueOf(nodes.item(i).getTextContent()));
+					choicesMap.put(nodes.item(i).getNodeName().toLowerCase(), Boolean.parseBoolean(nodes.item(i).getTextContent()));
 				}
-
 			} catch (Exception e) {
 				Log.e(LOG_TAG, e.getMessage());
-				return null;
+				e.printStackTrace();
 			}
-
-			return choicesMap;
 		}
 
 		public LinkedHashMap<String, Boolean> getChoicesMap() {
@@ -119,21 +115,30 @@ public class DiagnosticsOp extends vv_OpMode {
 	private LinkedHashMap<String, ChoiceRecord> choices;
 
 	private static final String LOG_TAG = "DiagnosticsOp";
-	private static final String INPUT_TELEMETRY_MESSAGE = "input: ";
+	private static final String INPUT_TELEMETRY_KEY = "Input";
+	private static final String OUTPUT_TELEMETRY_KEY = "Output";
 	private static final int WHEEL_POWER = 50;
 	private static final int WHEEL_DISTANCE = 15; // Centimeters
 	private static final int WHEEL_TIME = 2000; // milliseconds
 	private static final int TOUCH_WAIT_TIME = 5000; // milliseconds
+	private static final int INPUT_WAIT_TIME = 1000; // milliseconds
 
 	@Override
 	public void runOpMode() throws InterruptedException {
 		initialize();
+		telemetryAddData(LOG_TAG, OUTPUT_TELEMETRY_KEY, "Done with initialization");
+		telemetryUpdate();
+		waitForStart();
+
 
 		// Go through all choices
 		for (Map.Entry<String, ChoiceRecord> choicesEntry : choices.entrySet()) {
-			// First check if we need to do the test through XML file, then ask the user
-			if (choicesEntry.getValue().getTestMotor() && getUserConfirmation(choicesEntry.getKey())) {
-				callTestElementMethod(choicesEntry);
+			if (choicesEntry.getValue().getTestMotor()) {   // Check if we need to do the test through XML file
+				if (getUserConfirmation(String.format("Test the %s? A for yes; B for no",
+						choicesEntry.getKey()))) {   // Check if user wants to do test
+					callTestElementMethod(choicesEntry);
+				}
+				gamepadInputWait();
 			}
 		}
 
@@ -141,8 +146,16 @@ public class DiagnosticsOp extends vv_OpMode {
 		for (Map.Entry<String, ChoiceRecord> choicesEntry : choices.entrySet()) {
 			if (choicesEntry.getValue().getErrorStatus()) {
 				printElementError(choicesEntry);
+
+				getUserConfirmation("Press A or B to continue");    // Wait until user reads it completely
+				gamepadInputWait(); // Wait for a bit so gamepad input does not get read twice
 			}
 		}
+
+
+		telemetryAddData(LOG_TAG, OUTPUT_TELEMETRY_KEY, "End of program");
+		telemetryUpdate();
+		while (opModeIsActive());   // Wait until user stops program
 	}
 
 	private void initialize() throws InterruptedException {
@@ -169,6 +182,8 @@ public class DiagnosticsOp extends vv_OpMode {
 	private void callTestElementMethod(Map.Entry<String, ChoiceRecord> choicesEntry) {
 		try {
 			Method method = DiagnosticsOp.class.getDeclaredMethod(choicesEntry.getKey());
+			telemetryAddData(LOG_TAG, OUTPUT_TELEMETRY_KEY, "Running " + choicesEntry.getKey());
+			telemetryUpdate();
 			choicesEntry.getValue().setErrorStatus((Boolean) method.invoke(this));
 		} catch (NoSuchMethodException e) {
 			Log.e(LOG_TAG, e.getMessage());
@@ -192,7 +207,6 @@ public class DiagnosticsOp extends vv_OpMode {
 	}
 
 	private void printElementError(Map.Entry<String, ChoiceRecord> choicesEntry) {
-		telemetryUpdate();
 		telemetryAddData(LOG_TAG, "Test failed", choicesEntry.getKey());
 
 		// Print all error messages
@@ -201,14 +215,17 @@ public class DiagnosticsOp extends vv_OpMode {
 			// Must have different key each time or line with same key will be overwritten
 			telemetryAddData(LOG_TAG, "Reason" + errorMessageCount++, errorMessage);
 		}
+
+		// If there are no messages, the user said the robot element wasn't working; it wasn't a fault with this program
+		if (errorMessageCount == 0) {
+			telemetryAddData(LOG_TAG, "Reason", "User said it wasn't working");
+		}
 	}
 
-	private boolean getUserConfirmation(String testName) {
+	private boolean getUserConfirmation(String message) {
 		// Clear screen and print message
+		telemetryAddData(LOG_TAG, INPUT_TELEMETRY_KEY, message);
 		telemetryUpdate();
-		telemetryAddData(LOG_TAG, INPUT_TELEMETRY_MESSAGE,
-				String.format("Test the %s? A for yes; B for no", testName));
-
 		// Wait until A or B is pressed
 		while (!gamepad1.a && !gamepad1.b) ;
 
@@ -217,15 +234,20 @@ public class DiagnosticsOp extends vv_OpMode {
 	}
 
 	private boolean didItRun(String testName) {
-		telemetryUpdate();
-		telemetryAddData(LOG_TAG, INPUT_TELEMETRY_MESSAGE,
+		telemetryAddData(LOG_TAG, INPUT_TELEMETRY_KEY,
 				String.format("Did %s work? A for yes; B for no", testName));
-
+		telemetryUpdate();
 		// Wait until A or B is pressed
 		while (!gamepad1.a && !gamepad1.b) ;
 
 		// If A is pressed, return yes. Otherwise, return no
 		return gamepad1.a;
+	}
+
+	private void gamepadInputWait() throws InterruptedException {
+		telemetryAddData(LOG_TAG, OUTPUT_TELEMETRY_KEY, "Waiting...");
+		telemetryUpdate();
+		Thread.sleep(INPUT_WAIT_TIME);
 	}
 
 
