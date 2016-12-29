@@ -10,8 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.BindViews;
@@ -34,6 +36,9 @@ public class DiagnosticsFragment extends Fragment {
 	@BindView(R.id.platform_movement_check_all) CheckBox checkAllPlatformMovement;
 	@BindView(R.id.servos_check_all) CheckBox checkAllServos;
 	@BindView(R.id.sensors_check_all) CheckBox checkAllSensors;
+	@BindViews({R.id.motors_check_all, R.id.base_motor_check_all, R.id.platform_movement_check_all,
+	R.id.servos_check_all, R.id.sensors_check_all})
+	List<CheckBox> checkAllCheckAll;
 
 	@BindViews({R.id.front_right_wheel, R.id.front_left_wheel, R.id.back_right_wheel, R.id.back_left_wheel,
 			R.id.forwards_platform, R.id.backwards_platform, R.id.right_platform, R.id.left_platform,
@@ -47,6 +52,13 @@ public class DiagnosticsFragment extends Fragment {
 	List<CheckBox> servosList;
 	@BindViews({R.id.floor_color_sensor, R.id.beacon_color_sensor, R.id.beacon_touch_sensor, R.id.launcher_limit_touch_sensor, R.id.lift_limit_touch_sensor, R.id.ultrasonic_sensor, R.id.gyro_sensor})
 	List<CheckBox> sensorsList;
+	@BindViews({R.id.front_right_wheel, R.id.front_left_wheel, R.id.back_right_wheel, R.id.back_left_wheel,
+			R.id.forwards_platform, R.id.backwards_platform, R.id.right_platform, R.id.left_platform,
+			R.id.worm_drive_motor, R.id.launcher_motor, R.id.intake_motor, R.id.lift_motor,
+			R.id.intake_gate_servo, R.id.beacon_servo, R.id.capball_servo,
+			R.id.floor_color_sensor, R.id.beacon_color_sensor, R.id.beacon_touch_sensor,
+			R.id.launcher_limit_touch_sensor, R.id.lift_limit_touch_sensor, R.id.ultrasonic_sensor, R.id.gyro_sensor})
+	List<CheckBox> everythingList;
 
 	XmlWriter xmlWriter;
 
@@ -159,6 +171,19 @@ public class DiagnosticsFragment extends Fragment {
 	                         Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_diagnostics, container, false);
 		unbinder = ButterKnife.bind(this, rootView);
+
+		LinkedHashMap<String, Boolean> xmlChoicesMap = new XmlParser(FILE).getChoicesMap();
+
+		// If the XML file exists, show previous choices
+		if (xmlChoicesMap.size() > 0) {
+			ButterKnife.apply(checkAllCheckAll, UNCHECK);
+			Iterator<CheckBox> checkboxIterator = everythingList.iterator();
+			for (Map.Entry<String, Boolean> entry : xmlChoicesMap.entrySet()) {
+				CheckBox checkbox = checkboxIterator.next();
+				checkbox.setChecked(entry.getValue());
+			}
+		}
+
 		return rootView;
 	}
 
