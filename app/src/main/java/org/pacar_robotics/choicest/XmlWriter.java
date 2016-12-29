@@ -31,15 +31,18 @@ import javax.xml.transform.stream.StreamResult;
 class XmlWriter {
 
 	private String filePath;
-	private Map<String, String> choicesMap;
+	private HashMap<String, String> autoChoicesMap;
+	private LinkedHashMap<String, String> diagChoicesMap;
 	private Activity activity;
 
 	private static final int MY_PERMISSION_REQUEST_STORAGE = 101;
 	private static final String LOG_TAG = "XmlWriter";
 
-	public XmlWriter(String filePath, Map choicesMap, Activity activity) {
+	public XmlWriter(String filePath, HashMap<String, String> autoChoicesMap,
+	                 LinkedHashMap<String, String> diagChoicesMap, Activity activity) {
 		this.filePath = filePath;
-		this.choicesMap = choicesMap;
+		this.autoChoicesMap = autoChoicesMap;
+		this.diagChoicesMap = diagChoicesMap;
 		this.activity = activity;
 
 		getWritePermission();
@@ -63,7 +66,7 @@ class XmlWriter {
 			Element root = doc.createElement("AutoChoices");
 			doc.appendChild(root);
 
-			for (Map.Entry<String, String> entry : choicesMap.entrySet()) {
+			for (Map.Entry<String, String> entry : (autoChoicesMap == null ? diagChoicesMap : autoChoicesMap).entrySet()) {
 				Element i = doc.createElement(entry.getKey());
 				i.appendChild(doc.createTextNode(entry.getValue()));
 				root.appendChild(i);

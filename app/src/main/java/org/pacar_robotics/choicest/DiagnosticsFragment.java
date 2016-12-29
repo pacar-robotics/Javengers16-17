@@ -58,7 +58,7 @@ public class DiagnosticsFragment extends Fragment {
 
 	@OnClick(R.id.btn_save)
 	void saveButtonClicked() {
-		xmlWriter = new XmlWriter(FILE, createHashMap(), getActivity());
+		xmlWriter = new XmlWriter(FILE, null, createHashMap(), getActivity());
 	}
 
 	private LinkedHashMap<String, String> createHashMap() {

@@ -80,7 +80,7 @@ public class AutonomousFragment extends Fragment {
 
 	@OnClick(R.id.btn_save)
 	void saveButtonClicked() {
-		xmlWriter = new XmlWriter(FILE, createHashMap(), getActivity());
+		xmlWriter = new XmlWriter(FILE, createHashMap(), null, getActivity());
 	}
 
 	@OnCheckedChanged(R.id.center_vortex)
