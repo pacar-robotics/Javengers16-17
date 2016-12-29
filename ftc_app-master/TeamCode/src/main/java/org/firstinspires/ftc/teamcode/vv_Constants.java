@@ -61,7 +61,7 @@ public class vv_Constants
     //max time to wait in a tight loop, for example in robot turns or autonomous moves
     final static int MAX_MOTOR_LOOP_TIME = 10000;
     //max turn velocity for a motor, to be used in autonomous turns of the robot
-    final static float MAX_ROBOT_TURN_MOTOR_VELOCITY = 0.5f;
+    final static float MAX_ROBOT_TURN_MOTOR_VELOCITY = 1.0f;
     //min turn velocity for a motor, to be used in autonomous turns of the robot
     final static float MIN_ROBOT_TURN_MOTOR_VELOCITY = 0.15f;
     //gyro offset to address inertia and gyro lag

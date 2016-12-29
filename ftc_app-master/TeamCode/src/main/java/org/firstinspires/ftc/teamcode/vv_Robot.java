@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.kauailabs.navx.ftc.AHRS;
+import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -31,9 +32,11 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_GATE_SERVO_CLOS
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_GATE_SERVO_OPEN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LEFT_BEACON_BUTTON_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_MOTOR_LOOP_TIME;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_ROBOT_TURN_MOTOR_VELOCITY;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_FRONT_TRACK_DISTANCE;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_SIDE_TRACK_DISTANCE;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MIN_ROBOT_TURN_MOTOR_VELOCITY;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_LOWER_POWER_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_FB_POWER_LOWER_LIMIT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_FB_POWER_UPPER_LIMIT;
@@ -53,6 +56,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_POWER;
 
 public class vv_Robot {
     private final int NAVX_DIM_I2C_PORT = 2;
+    protected navXPIDController yawPIDController;
     HardwareMap hwMap = null;
     private DcMotor motorArray[];
     private Servo beaconServoArray[];
@@ -63,7 +67,12 @@ public class vv_Robot {
     private TouchSensor armSensor;
     private LightSensor floorLightSensor;
     private ModernRoboticsI2cGyro baseGyroSensor;
+    //NavX mxp gyro senor related items
+    //**
     private AHRS baseMxpGyroSensor; //NavX MXP gyro
+
+
+    //**
     private UltrasonicSensor floorUltrasonicSensor;
     private ElapsedTime period = new ElapsedTime();
     private vv_Constants.IntakeStateEnum IntakeState = Off;
@@ -122,6 +131,7 @@ public class vv_Robot {
         }
         aOpMode.DBG("after gyro calib");
 
+        //allocate the mxp gyro sensor.
 
         baseMxpGyroSensor = AHRS.getInstance(hwMap.deviceInterfaceModule.get("dim"),
                 NAVX_DIM_I2C_PORT,
@@ -136,6 +146,16 @@ public class vv_Robot {
                             "CALIBRATING" : "Calibration Complete");
             aOpMode.telemetryUpdate();
         }
+
+        // the mxp gyro sensor classes include a built in
+        // proportional Integrated Derivative (PID) adjusted control loop function
+        //lets set that up for reading the YAW value (rotation around the z axis for the robot).
+
+        yawPIDController = new navXPIDController(baseMxpGyroSensor,
+                navXPIDController.navXTimestampedDataSource.YAW);
+
+        //zero out the yaw value, so this will be the frame of reference for future calls.
+        //do not call this for duration of run after this.
         baseMxpGyroSensor.zeroYaw();
 
 
@@ -523,6 +543,21 @@ public class vv_Robot {
         setPower(aOpMode, FRONT_RIGHT_MOTOR, fr_Power);
         setPower(aOpMode, BACK_LEFT_MOTOR, bl_Power);
         setPower(aOpMode, BACK_RIGHT_MOTOR, br_Power);
+    }
+
+    public void runMotorsUsingEncoders(vv_OpMode aOpMode, float fl_Power, float fr_Power, float bl_Power, float br_Power)
+            throws InterruptedException {
+
+        motorArray[0].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorArray[1].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorArray[2].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorArray[3].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //sets the the power of all motors
+        setPower(aOpMode, FRONT_LEFT_MOTOR, limit_power(aOpMode, fl_Power));
+        setPower(aOpMode, FRONT_RIGHT_MOTOR, limit_power(aOpMode, fr_Power));
+        setPower(aOpMode, BACK_LEFT_MOTOR, limit_power(aOpMode, bl_Power));
+        setPower(aOpMode, BACK_RIGHT_MOTOR, limit_power(aOpMode, br_Power));
     }
 
     public void stopBaseMotors(vv_OpMode aOpMode) throws InterruptedException {
@@ -1125,6 +1160,18 @@ public class vv_Robot {
 
 
     }
+
+    public float limit_power(vv_OpMode aOpMode, float power) {
+        //Check and limit the power being applied to motors during turns
+        if (power == 0) {
+            return 0;
+        } else {
+            return ((power < MIN_ROBOT_TURN_MOTOR_VELOCITY ? MIN_ROBOT_TURN_MOTOR_VELOCITY :
+                    (power > MAX_ROBOT_TURN_MOTOR_VELOCITY ? MAX_ROBOT_TURN_MOTOR_VELOCITY : power)));
+        }
+    }
+
+
 
 
     class MotorNameNotKnownException extends Exception {

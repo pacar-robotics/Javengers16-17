@@ -1,7 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
+import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANALOG_STICK_THRESHOLD;
@@ -42,7 +46,19 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.TurnDirectionEnum;
  */
 
 public class vv_Lib {
+    //NavX mxp related values
+    //**
+    private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
+    private final double TARGET_ANGLE_DEGREES = 90.0;
+    private final double MIN_MOTOR_OUTPUT_VALUE = -1.0;
+    private final double MAX_MOTOR_OUTPUT_VALUE = 1.0;
+    private final double YAW_PID_P = 0.005;
+    private final double YAW_PID_I = 0.0;
+    private final double YAW_PID_D = 0.0;
+    private final int DEVICE_TIMEOUT_MS = 500;
     private vv_Robot robot;
+    //**
+
 
 
     public vv_Lib(vv_OpMode aOpMode)
@@ -599,6 +615,63 @@ public class vv_Lib {
                 turnDegrees > 0 ? TurnDirectionEnum.Clockwise :
                         TurnDirectionEnum.Counterclockwise);
 
+
+    }
+
+    public void turnPidMxpAbsoluteDegrees(vv_OpMode aOpMode, float turndegrees, float toleranceDegrees)
+            throws InterruptedException {
+         /* Create a PID Controller which uses the Yaw Angle as input. */
+
+
+        //Configure the PID controller for the turn degrees we want
+        robot.yawPIDController.setSetpoint(turndegrees);
+        robot.yawPIDController.setContinuous(true);
+
+        //limits of motor values (-1.0 to 1.0)
+        robot.yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
+        //tolerance degrees is defined to prevent oscillation at high accuracy levels.
+        robot.yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, toleranceDegrees);
+        //PID initial parameters, usually found by trial and error.
+
+        robot.yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
+
+
+        //by default the PIDController is disabled. turn it on.
+        robot.yawPIDController.enable(true);
+
+        /* Wait for new Yaw PID output values, then update the motors
+           with the new PID value with each new output value.
+         */
+
+        navXPIDController.PIDResult yawPIDResult = new navXPIDController.PIDResult();
+
+        DecimalFormat df = new DecimalFormat("#.##");
+
+        aOpMode.reset_timer();
+
+        while ((aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) &&
+                !Thread.currentThread().isInterrupted()) {
+            if (robot.yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS)) {
+                if (yawPIDResult.isOnTarget()) {
+                    //we have reached turn target within tolerance requested.
+                    //stop
+                    break;
+                } else {
+                    //get the new adjustment for direction from the PID Controller
+                    float output = (float) yawPIDResult.getOutput();
+                    //apply it to the motors, using one of our functions.
+                    //if output was positive, the method below would turn the robot clockwise
+
+                    robot.runMotorsUsingEncoders(aOpMode, output, -output, output, -output);
+                    aOpMode.telemetryAddData("PIDOutput", ":Value:", df.format(output) + ", " +
+                            df.format(-output));
+                }
+            } else {
+                /* A timeout occurred */
+                Log.w("navXRotateOp", "Yaw PID waitForNewUpdate() TIMEOUT.");
+            }
+            aOpMode.telemetryAddData("Yaw", ":Value:", df.format(robot.getMxpGyroSensorHeading(aOpMode)));
+        }
 
     }
 
