@@ -260,6 +260,12 @@ public class vv_Lib {
         }
     }
 
+    public void showMxpGyroSensorHeadingOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
+        aOpMode.telemetryAddData("MXP Gyro Sensor", "Heading", ":" + robot.getMxpGyroSensorHeading(aOpMode));
+        if (updateTheDisplay) {
+            aOpMode.telemetryUpdate();
+        }
+    }
 
     public void showBaseGyroSensorIntegratedZValueOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
 
@@ -561,6 +567,41 @@ public class vv_Lib {
 
 
     }
+
+
+    public void turnAbsoluteMxpGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
+        //clockwise is represented by clockwise numbers.
+        //counterclockwise by negative angle numbers in degrees.
+        //the fieldReferenceDegrees parameters measures degrees off the initial reference frame when the robot is started and the gyro is
+        //calibrated.
+        // >> IMPORTANT: This depends on the zIntegratedHeading not being altered by relative turns !!!
+
+        //first take the absolute degrees and modulus down to 0 and 359.
+
+        float targetDegrees = fieldReferenceDegrees % 360;
+
+        //compare to the current gyro zIntegrated heading and store the result.
+        //the Integrated zValue returned is positive for clockwise turns
+        float turnDegrees = targetDegrees - robot.getMxpGyroSensorHeading(aOpMode);
+
+        //make the turn using encoders
+
+        aOpMode.telemetryAddData("targetDegrees", "Value",
+                ":" + targetDegrees);
+        aOpMode.telemetryAddData("Starting Z", "Value",
+                ":" + robot.getMxpGyroSensorHeading(aOpMode));
+        aOpMode.telemetryAddData("Turn Degrees", "Value",
+                ":" + turnDegrees);
+
+        aOpMode.telemetryUpdate();
+
+        turnUsingEncoders(aOpMode, TURN_POWER, Math.abs(turnDegrees),
+                turnDegrees > 0 ? TurnDirectionEnum.Clockwise :
+                        TurnDirectionEnum.Counterclockwise);
+
+
+    }
+
 
     public void drive1RobotWithPowerFactor(vv_OpMode aOpMode, float powerFactor)
             throws InterruptedException, vv_Robot.MotorNameNotKnownException {

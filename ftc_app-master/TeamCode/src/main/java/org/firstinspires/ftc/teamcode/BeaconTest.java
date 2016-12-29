@@ -23,7 +23,6 @@ public class BeaconTest extends vv_OpMode {
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Hello Driver", ":I am", ":ready!");    //
-        telemetry.addData("Move Robot over line", ":To read", ":values!");    //
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
 
@@ -31,10 +30,9 @@ public class BeaconTest extends vv_OpMode {
 
         telemetry.setAutoClear(true);
 
-
-        telemetryAddData("Stage 2 Test", "Value;", "Testing color positions");
+        telemetryAddData("Testing for TEAM BLUE:", "Value;", ":Reposition to touch Beacon");
         telemetryUpdate();
-        Thread.sleep(2000);
+        Thread.sleep(10000);
 
         telemetryAddData("TEAM BLUE:", "Value;", ":Looking for color");
         telemetryUpdate();
@@ -45,10 +43,10 @@ public class BeaconTest extends vv_OpMode {
             telemetryUpdate();
             Thread.sleep(2000);
             //must press right button
-            telemetryAddData("TEAM BLUE:", "Value;", ":Pressing Right Button");
+            telemetryAddData("TEAM BLUE:", "Value;", ":Pressing LEFT Button");
             telemetryUpdate();
             Thread.sleep(2000);
-            vvLib.pressRightBeaconButton(this);
+            vvLib.pressLeftBeaconButton(this);
             Thread.sleep(1000);
         }
 
@@ -57,7 +55,46 @@ public class BeaconTest extends vv_OpMode {
             telemetryUpdate();
             Thread.sleep(2000);
             //must press right button
-            telemetryAddData("TEAM BLUE:", "Value;", ":Pressing LEFT Button");
+            telemetryAddData("TEAM BLUE:", "Value;", ":Pressing RIGHT Button");
+            telemetryUpdate();
+            Thread.sleep(2000);
+            vvLib.pressRightBeaconButton(this);
+            Thread.sleep(1000);
+        }
+
+        if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.UNKNOWN) {
+            telemetryAddData("TEAM BLUE:", "Value;", ":Found NO COLOR");
+            telemetryUpdate();
+            Thread.sleep(2000);
+        }
+
+        telemetryAddData("Testing for TEAM RED:", "Value;", ":Reposition to touch Beacon");
+        telemetryUpdate();
+        Thread.sleep(10000);
+
+
+        telemetryAddData("TEAM RED:", "Value;", ":Looking for color");
+        telemetryUpdate();
+        Thread.sleep(2000);
+
+        if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.BLUE) {
+            telemetryAddData("TEAM RED:", "Value;", ":Found Blue");
+            telemetryUpdate();
+            Thread.sleep(2000);
+            //must press right button
+            telemetryAddData("TEAM RED:", "Value;", ":Pressing RIGHT Button");
+            telemetryUpdate();
+            Thread.sleep(2000);
+            vvLib.pressRightBeaconButton(this);
+            Thread.sleep(1000);
+        }
+
+        if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.RED) {
+            telemetryAddData("TEAM RED:", "Value;", ":Found RED");
+            telemetryUpdate();
+            Thread.sleep(2000);
+            //must press right button
+            telemetryAddData("TEAM RED:", "Value;", ":Pressing LEFT Button");
             telemetryUpdate();
             Thread.sleep(2000);
             vvLib.pressLeftBeaconButton(this);
@@ -65,7 +102,7 @@ public class BeaconTest extends vv_OpMode {
         }
 
         if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.UNKNOWN) {
-            telemetryAddData("TEAM BLUE:", "Value;", ":Found NO COLOR");
+            telemetryAddData("TEAM RED:", "Value;", ":Found NO COLOR");
             telemetryUpdate();
             Thread.sleep(2000);
         }

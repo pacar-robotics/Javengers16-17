@@ -32,9 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.robotcontroller.internal.testcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /**
  * {@link TestInfiniteLoopLinear} is a simple test that runs an infinite loop
@@ -53,6 +53,7 @@ public class TestInfiniteLoopLinear extends LinearOpMode {
                 telemetry.addData("count", count);
                 updateTelemetry(telemetry);
                 idle();
+                Thread.sleep(1);
             } catch (InterruptedException e) {
                 // ignore: we're trying to do an infinite loop!
             }

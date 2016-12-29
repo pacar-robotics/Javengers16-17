@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -45,30 +46,30 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_POWER;
 
 
+
 /**
  * Created by thomas on 9/25/2016.
  */
 
 public class vv_Robot {
+    private final int NAVX_DIM_I2C_PORT = 2;
     HardwareMap hwMap = null;
     private DcMotor motorArray[];
-
-
     private Servo beaconServoArray[];
-
     private Servo launcherGateServo = null;
     private TouchSensor beaconTouchSensor;
     private TouchSensor wormDriveTouchSensor;
     private ColorSensor beaconColorSensor;
     private TouchSensor armSensor;
     private LightSensor floorLightSensor;
-    private ModernRoboticsI2cGyro base_gyro_sensor;
+    private ModernRoboticsI2cGyro baseGyroSensor;
+    private AHRS baseMxpGyroSensor; //NavX MXP gyro
     private UltrasonicSensor floorUltrasonicSensor;
     private ElapsedTime period = new ElapsedTime();
     private vv_Constants.IntakeStateEnum IntakeState = Off;
 
 
-    public void init(vv_OpMode aOpMode, HardwareMap ahwMap) throws InterruptedException{
+    public void init(vv_OpMode aOpMode, HardwareMap ahwMap) throws InterruptedException {
         // save reference to HW Map
         aOpMode.DBG("in Robot init");
         hwMap = ahwMap;
@@ -111,15 +112,33 @@ public class vv_Robot {
 
         aOpMode.DBG("before gyro calib");
 
-        base_gyro_sensor = (ModernRoboticsI2cGyro) hwMap.gyroSensor.get("base_gyro_sensor");
-        base_gyro_sensor.calibrate();
+        baseGyroSensor = (ModernRoboticsI2cGyro) hwMap.gyroSensor.get("base_gyro_sensor");
+        baseGyroSensor.calibrate();
         Thread.sleep(100);
-        while (base_gyro_sensor.isCalibrating()) {
+        while (baseGyroSensor.isCalibrating()) {
             //wait for calibration completion
             Thread.sleep(50);
             aOpMode.idle();
         }
         aOpMode.DBG("after gyro calib");
+
+
+        baseMxpGyroSensor = AHRS.getInstance(hwMap.deviceInterfaceModule.get("dim"),
+                NAVX_DIM_I2C_PORT,
+                AHRS.DeviceDataType.kProcessedData);
+
+
+        while (baseMxpGyroSensor.isCalibrating()) {
+            aOpMode.idle();
+            Thread.sleep(50);
+            aOpMode.telemetryAddData("1 navX-Device", "Status:",
+                    baseMxpGyroSensor.isCalibrating() ?
+                            "CALIBRATING" : "Calibration Complete");
+            aOpMode.telemetryUpdate();
+        }
+        baseMxpGyroSensor.zeroYaw();
+
+
 
 
         armSensor = hwMap.touchSensor.get("touch_arm_sensor");
@@ -582,15 +601,20 @@ public class vv_Robot {
     //high luminosity will be found with a white surface.
 
     public int getBaseGyroSensorHeading(vv_OpMode aOpMode) {
-        return base_gyro_sensor.getHeading();
+        return baseGyroSensor.getHeading();
     }
 
+    public float getMxpGyroSensorHeading(vv_OpMode aOpMode) {
+        return baseMxpGyroSensor.getYaw();
+    }
+
+
     public int getBaseGyroSensorIntegratedZValue(vv_OpMode aOpMode) {
-        return base_gyro_sensor.getIntegratedZValue();
+        return baseGyroSensor.getIntegratedZValue();
     }
 
     public void resetBaseGyroZIntegrator(vv_OpMode aOpMode) throws InterruptedException {
-        base_gyro_sensor.resetZAxisIntegrator();
+        baseGyroSensor.resetZAxisIntegrator();
         Thread.sleep(1000);
     }
 

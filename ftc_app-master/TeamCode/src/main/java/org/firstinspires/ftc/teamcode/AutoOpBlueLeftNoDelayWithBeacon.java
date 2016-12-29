@@ -121,7 +121,7 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
         vvLib.moveWheels(this, (float) (distanceToBeaconWall - 6), 0.2f, SidewaysRight, true);
 
         //lets do a pulse move until the beacon touch sensor is pressed
-        //run for 200 ms, rest for 100, max of 7000 ms, until the beaconTouchSensor is pressed
+        //run for 200 ms, rest for 100, max of 1500 ms, until the beaconTouchSensor is pressed
         vvLib.universalMoveRobotByAxisVelocity(this, 0.2, 0, 0.0, 1500, btdcCondition, true, 100, 100);
 
         //now sense beacon color
