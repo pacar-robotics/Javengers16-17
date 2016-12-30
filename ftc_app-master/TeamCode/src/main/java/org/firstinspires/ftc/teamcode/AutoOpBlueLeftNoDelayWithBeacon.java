@@ -53,6 +53,21 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
         //consistency in positioning.
         //duration is found by estimation and test.
 
+
+        //first shoot two balls.
+
+        // Shoot the first ball
+        vvLib.shootBall(this);
+        vvLib.setupShot(this);
+
+        //drop ball
+        vvLib.dropBall(this);
+
+        //Shoot the second ball.
+        vvLib.shootBall(this);
+        Thread.sleep(50);
+
+
         falseCondition falseCondition = new falseCondition();
 
         vvLib.universalMoveRobotByAxisVelocity(this, 0.35, -0.55, 0.0, 3500, falseCondition, false, 0, 0);

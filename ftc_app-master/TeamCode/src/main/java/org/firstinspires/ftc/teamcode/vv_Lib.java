@@ -53,8 +53,7 @@ public class vv_Lib {
             throws InterruptedException {
         robot = new vv_Robot();
         robot.init(aOpMode, aOpMode.hardwareMap);
-        //No Setup shot due to auto launching issues with auto op
-        // setupShot(aOpMode);
+        setupShot(aOpMode);
     }
 
     /**
@@ -93,7 +92,7 @@ public class vv_Lib {
         aOpMode.reset_timer();
         while (!robot.isArmAtLimit(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
 
-            robot.setPower(aOpMode, ARM_MOTOR, 1.0f);
+            robot.setPower(aOpMode, ARM_MOTOR, 0.6f);
             aOpMode.idle();
         }
         robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
@@ -120,7 +119,7 @@ public class vv_Lib {
 
         robot.setPower(aOpMode, ARM_MOTOR, 0.9f);
 
-        Thread.sleep(500);
+        Thread.sleep(300);
 
         robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
     }
