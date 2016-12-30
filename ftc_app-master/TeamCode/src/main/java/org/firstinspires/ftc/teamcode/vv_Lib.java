@@ -1,11 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.util.Log;
-
-import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import java.text.DecimalFormat;
 import java.util.Arrays;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANALOG_STICK_THRESHOLD;
@@ -46,18 +42,10 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.TurnDirectionEnum;
  */
 
 public class vv_Lib {
-    //NavX mxp related values
-    //**
-    private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
-    private final double TARGET_ANGLE_DEGREES = 90.0;
-    private final double MIN_MOTOR_OUTPUT_VALUE = -1.0;
-    private final double MAX_MOTOR_OUTPUT_VALUE = 1.0;
-    private final double YAW_PID_P = 0.005;
-    private final double YAW_PID_I = 0.0;
-    private final double YAW_PID_D = 0.0;
-    private final int DEVICE_TIMEOUT_MS = 500;
+
+
     private vv_Robot robot;
-    //**
+
 
 
 
@@ -615,63 +603,20 @@ public class vv_Lib {
                 turnDegrees > 0 ? TurnDirectionEnum.Clockwise :
                         TurnDirectionEnum.Counterclockwise);
 
+        float finalDegrees = robot.getMxpGyroSensorHeading(aOpMode);
+
+        aOpMode.telemetryAddData("New Bearing Degrees", "Value:",
+                ":" + finalDegrees);
+        aOpMode.telemetryAddData("Turn Error Degrees", "Value:",
+                ":" + (targetDegrees - finalDegrees));
+        aOpMode.telemetryUpdate();
 
     }
 
     public void turnPidMxpAbsoluteDegrees(vv_OpMode aOpMode, float turndegrees, float toleranceDegrees)
             throws InterruptedException {
-         /* Create a PID Controller which uses the Yaw Angle as input. */
 
-
-        //Configure the PID controller for the turn degrees we want
-        robot.yawPIDController.setSetpoint(turndegrees);
-        robot.yawPIDController.setContinuous(true);
-
-        //limits of motor values (-1.0 to 1.0)
-        robot.yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
-        //tolerance degrees is defined to prevent oscillation at high accuracy levels.
-        robot.yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, toleranceDegrees);
-        //PID initial parameters, usually found by trial and error.
-
-        robot.yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
-
-
-        //by default the PIDController is disabled. turn it on.
-        robot.yawPIDController.enable(true);
-
-        /* Wait for new Yaw PID output values, then update the motors
-           with the new PID value with each new output value.
-         */
-
-        navXPIDController.PIDResult yawPIDResult = new navXPIDController.PIDResult();
-
-        DecimalFormat df = new DecimalFormat("#.##");
-
-        aOpMode.reset_timer();
-
-        while ((aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) &&
-                !Thread.currentThread().isInterrupted()) {
-            if (robot.yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS)) {
-                if (yawPIDResult.isOnTarget()) {
-                    //we have reached turn target within tolerance requested.
-                    //stop
-                    break;
-                } else {
-                    //get the new adjustment for direction from the PID Controller
-                    float output = (float) yawPIDResult.getOutput();
-                    //apply it to the motors, using one of our functions.
-                    //if output was positive, the method below would turn the robot clockwise
-
-                    robot.runMotorsUsingEncoders(aOpMode, output, -output, output, -output);
-                    aOpMode.telemetryAddData("PIDOutput", ":Value:", df.format(output) + ", " +
-                            df.format(-output));
-                }
-            } else {
-                /* A timeout occurred */
-                Log.w("navXRotateOp", "Yaw PID waitForNewUpdate() TIMEOUT.");
-            }
-            aOpMode.telemetryAddData("Yaw", ":Value:", df.format(robot.getMxpGyroSensorHeading(aOpMode)));
-        }
+        robot.turnPidMxpAbsoluteDegrees(aOpMode, turndegrees, toleranceDegrees);
 
     }
 
@@ -1088,6 +1033,48 @@ public class vv_Lib {
         Arrays.sort(readingsArray);
         //return the middle element to reduce noise
         return readingsArray[((int) Math.round((double) readingSetSize) / 2) - 1];
+    }
+
+    public void showEopdValueOnTelemetry(vv_OpMode aOpMode) {
+        aOpMode.telemetryAddData("EOPD raw Value:", "Value", ":" +
+                robot.getEopdRawValue(aOpMode));
+        aOpMode.telemetryUpdate();
+    }
+
+    public double getEopdRawValue(vv_OpMode aOpMode) {
+
+        return robot.getEopdRawValue(aOpMode);
+    }
+
+
+    public void detectColorAndPressBeacon(vv_OpMode aOpMode,
+                                          vv_Constants.BeaconColorEnum teamColor) throws
+            InterruptedException {
+
+        if (teamColor == vv_Constants.BeaconColorEnum.BLUE) {
+            //team blue
+            if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE) {
+                //found blue
+                //press left beacon button
+                pressLeftBeaconButton(aOpMode);
+            } else {
+                //found red
+                //press right button
+                pressLeftBeaconButton(aOpMode);
+            }
+        }
+        if (teamColor == vv_Constants.BeaconColorEnum.RED) {
+            //team blue
+            if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
+                //found red
+                //press left beacon button
+                pressLeftBeaconButton(aOpMode);
+            } else {
+                //found blue
+                //press right button
+                pressLeftBeaconButton(aOpMode);
+            }
+        }
     }
 
 }

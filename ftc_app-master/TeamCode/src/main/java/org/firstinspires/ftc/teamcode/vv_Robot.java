@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import android.util.Log;
+
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
@@ -9,10 +11,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LightSensor;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import java.text.DecimalFormat;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
@@ -56,6 +61,17 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_POWER;
 
 public class vv_Robot {
     private final int NAVX_DIM_I2C_PORT = 2;
+    //NavX mxp gyro senor related items
+    //NavX mxp related values
+    //**
+    private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
+    private final double TARGET_ANGLE_DEGREES = 90.0;
+    private final double MIN_MOTOR_OUTPUT_VALUE = -1.0;
+    private final double MAX_MOTOR_OUTPUT_VALUE = 1.0;
+    private final double YAW_PID_P = 0.005;
+    private final double YAW_PID_I = 0.0;
+    private final double YAW_PID_D = 0.0;
+    private final int DEVICE_TIMEOUT_MS = 500;
     protected navXPIDController yawPIDController;
     HardwareMap hwMap = null;
     private DcMotor motorArray[];
@@ -67,7 +83,8 @@ public class vv_Robot {
     private TouchSensor armSensor;
     private LightSensor floorLightSensor;
     private ModernRoboticsI2cGyro baseGyroSensor;
-    //NavX mxp gyro senor related items
+    private OpticalDistanceSensor baseEopdSensor;
+    //**
     //**
     private AHRS baseMxpGyroSensor; //NavX MXP gyro
 
@@ -108,6 +125,7 @@ public class vv_Robot {
         floorUltrasonicSensor = hwMap.ultrasonicSensor.get("floor_ultrasonic_sensor");
         wormDriveTouchSensor = hwMap.touchSensor.get("touch_worm_sensor");
         beaconTouchSensor = hwMap.touchSensor.get("touch_beacon_sensor");
+        baseEopdSensor = hwMap.opticalDistanceSensor.get("base_eopd_sensor");
 
         //turn the LED on the floor color sensor off at the start.
         //used for compatibility with older SDK code.
@@ -120,6 +138,7 @@ public class vv_Robot {
         Thread.sleep(300);
 
         aOpMode.DBG("before gyro calib");
+
 
         baseGyroSensor = (ModernRoboticsI2cGyro) hwMap.gyroSensor.get("base_gyro_sensor");
         baseGyroSensor.calibrate();
@@ -147,12 +166,7 @@ public class vv_Robot {
             aOpMode.telemetryUpdate();
         }
 
-        // the mxp gyro sensor classes include a built in
-        // proportional Integrated Derivative (PID) adjusted control loop function
-        //lets set that up for reading the YAW value (rotation around the z axis for the robot).
 
-        yawPIDController = new navXPIDController(baseMxpGyroSensor,
-                navXPIDController.navXTimestampedDataSource.YAW);
 
         //zero out the yaw value, so this will be the frame of reference for future calls.
         //do not call this for duration of run after this.
@@ -1171,7 +1185,77 @@ public class vv_Robot {
         }
     }
 
+    public void turnPidMxpAbsoluteDegrees(vv_OpMode aOpMode, float turndegrees, float toleranceDegrees)
+            throws InterruptedException {
+         /* Create a PID Controller which uses the Yaw Angle as input. */
+        //by default the PIDController is disabled. turn it on.
 
+        // the mxp gyro sensor classes include a built in
+        // proportional Integrated Derivative (PID) adjusted control loop function
+        //lets set that up for reading the YAW value (rotation around the z axis for the robot).
+
+        yawPIDController = new navXPIDController(baseMxpGyroSensor,
+                navXPIDController.navXTimestampedDataSource.YAW);
+
+        //Configure the PID controller for the turn degrees we want
+        yawPIDController.setSetpoint(turndegrees);
+        yawPIDController.setContinuous(true);
+
+        //limits of motor values (-1.0 to 1.0)
+        yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
+        //tolerance degrees is defined to prevent oscillation at high accuracy levels.
+        yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, toleranceDegrees);
+        //PID initial parameters, usually found by trial and error.
+
+        yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
+
+        yawPIDController.enable(true);
+
+
+        /* Wait for new Yaw PID output values, then update the motors
+           with the new PID value with each new output value.
+         */
+
+        navXPIDController.PIDResult yawPIDResult = new navXPIDController.PIDResult();
+
+        DecimalFormat df = new DecimalFormat("#.##");
+
+        aOpMode.reset_timer();
+
+        while ((aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) &&
+                !Thread.currentThread().isInterrupted()) {
+            if (yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS)) {
+                if (yawPIDResult.isOnTarget()) {
+                    //we have reached turn target within tolerance requested.
+                    //stop
+                    aOpMode.telemetryAddData("On Target", ":Value:",
+                            df.format(getMxpGyroSensorHeading(aOpMode)));
+                    aOpMode.telemetryUpdate();
+                    break;
+                } else {
+                    //get the new adjustment for direction from the PID Controller
+                    float output = (float) yawPIDResult.getOutput();
+                    //apply it to the motors, using one of our functions.
+                    //if output was positive, the method below would turn the robot clockwise
+                    runMotorsUsingEncoders(aOpMode, output, -output, output, -output);
+                    aOpMode.telemetryAddData("PIDOutput", ":Value:", df.format(output) + ", " +
+                            df.format(-output));
+                    aOpMode.telemetryUpdate();
+                }
+            } else {
+                /* A timeout occurred */
+                Log.w("navXRotateOp", "Yaw PID waitForNewUpdate() TIMEOUT.");
+            }
+            aOpMode.idle();
+            aOpMode.telemetryAddData("Yaw", ":Value:", df.format(getMxpGyroSensorHeading(aOpMode)));
+            aOpMode.idle();
+        }
+
+    }
+
+    public double getEopdRawValue(vv_OpMode aOpMode) {
+        return baseEopdSensor.getRawLightDetected();
+    }
 
 
     class MotorNameNotKnownException extends Exception {

@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
+import static org.firstinspires.ftc.teamcode.vv_Constants.EOPD_PROXIMITY_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FLOOR_WHITE_THRESHOLD;
 
 
@@ -79,15 +80,14 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
         vvLib.moveWheels(this, (float) (distanceToBeaconWall - 6), 0.8f, SidewaysRight, true);
 
         //lets do a pulse move until the beacon touch sensor is pressed
-        beaconTouchOrDistanceClosedCondition btdcCondition = new beaconTouchOrDistanceClosedCondition();
+        eopdProximityOrDistanceClosedCondition epdcCondition = new eopdProximityOrDistanceClosedCondition();
         //run for 200 ms, rest for 100, max of 7000 ms, until the beaconTouchSensor is pressed
-        vvLib.universalMoveRobotByAxisVelocity(this, 0.2, 0, 0.0, 1500, btdcCondition, true, 100, 100);
 
-        //now sense beacon color
+        vvLib.universalMoveRobotByAxisVelocity(this, 0.2, 0, 0.0, 1500, epdcCondition, true, 100, 100);
 
-        //code for beacon color sense
+        //now sense beacon color and press beacon
 
-        //pause stub for pressing beacon button
+        vvLib.detectColorAndPressBeacon(this, vv_Constants.BeaconColorEnum.BLUE);
 
         Thread.sleep(1500);
 
@@ -98,7 +98,7 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
 
         //orient to 90 degrees to field
 
-        vvLib.turnAbsoluteGyroDegrees(this, 92); //with trim
+        vvLib.turnAbsoluteGyroDegrees(this, 90); //with trim
 
 
         //lets move over the first beacon line, to prevent stopping at wrong line.
@@ -115,20 +115,19 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
         //read distance from ultrasonic sensor, noise filtered, with 7 readings in a set.
         distanceToBeaconWall = vvLib.getFloorUltrasonicReading(this, 7) / 2.54; //in inches
 
-        vvLib.turnAbsoluteGyroDegrees(this, 92); //with trim
+        vvLib.turnAbsoluteGyroDegrees(this, 90); //with trim
         //now try moving that distance, adjusting for inset of ultrasonic sensor
         //move toward the beacons but stop short (approx 1.5 inches short).
         vvLib.moveWheels(this, (float) (distanceToBeaconWall - 6), 0.2f, SidewaysRight, true);
 
         //lets do a pulse move until the beacon touch sensor is pressed
         //run for 200 ms, rest for 100, max of 1500 ms, until the beaconTouchSensor is pressed
-        vvLib.universalMoveRobotByAxisVelocity(this, 0.2, 0, 0.0, 1500, btdcCondition, true, 100, 100);
+        vvLib.universalMoveRobotByAxisVelocity(this, 0.2, 0, 0.0, 1500, epdcCondition, true, 100, 100);
 
-        //now sense beacon color
+        //now sense beacon color and press beacon
 
-        //code for beacon color sense
+        vvLib.detectColorAndPressBeacon(this, vv_Constants.BeaconColorEnum.BLUE);
 
-        //pause stub for pressing beacon button
 
         Thread.sleep(1500);
 
@@ -165,5 +164,11 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
         }
     }
 
+    public class eopdProximityOrDistanceClosedCondition implements vv_OpMode.StopCondition {
+        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+            return (vvLib.getEopdRawValue(aOpMode) > EOPD_PROXIMITY_THRESHOLD ||
+                    ((vvLib.getFloorUltrasonicReading(aOpMode, 7) / 2.54) < 5));
+        }
+    }
 
 }
