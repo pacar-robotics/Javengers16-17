@@ -46,10 +46,10 @@ public class vv_Constants
     final static float TRIGGER_THRESHOLD = .25f;
 
     // Extremes for servo that pushes beacon buttons
-    static final double BEACON_SERVO_LEFT_REST = 0.5f;     // Maximum rotational position
-    static final double BEACON_SERVO_RIGHT_REST = 0.5f;
-    static final double BEACON_SERVO_LEFT_PRESSED = 0.1f;
-    static final double BEACON_SERVO_RIGHT_PRESSED = 0.1f;
+    static final double BEACON_SERVO_LEFT_REST = 0.6f;     // Maximum rotational position
+    static final double BEACON_SERVO_RIGHT_REST = 0.65f;
+    static final double BEACON_SERVO_LEFT_PRESSED = 0.05f;
+    static final double BEACON_SERVO_RIGHT_PRESSED = 0.05f;
 
     // Extremes for servo that controls the gate for launch
     static final double LAUNCH_GATE_SERVO_OPEN = 0.8f;     // Maximum rotational position
@@ -126,7 +126,7 @@ public class vv_Constants
     final static int BEACON_BLUE_THRESHOLD = 0;
     final static float FLOOR_WHITE_THRESHOLD = 0.27f; //may need to calibrate
     final static boolean TEAM_RED = false;
-    final static double EOPD_PROXIMITY_THRESHOLD = 0.30d;
+    final static double EOPD_PROXIMITY_THRESHOLD = 0.01d;
     BeaconColorEnum BeaconColor;
     DirectionEnum Direction;
     TurnDirectionEnum TurnDirection;

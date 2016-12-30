@@ -977,13 +977,16 @@ public class vv_Lib {
 
     public void pressLeftBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
         robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
-        Thread.sleep(1000);
+        Thread.sleep(50);
+        //push the robot forward to ensure button pressed.
+        moveWheels(aOpMode, 0.4f, 0.2f, SidewaysRight, false);
         robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
     }
 
     public void pressRightBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
         robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
-        Thread.sleep(1000);
+        Thread.sleep(50);
+        moveWheels(aOpMode, 0.4f, 0.2f, SidewaysRight, false);
         robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
     }
 
@@ -1060,11 +1063,11 @@ public class vv_Lib {
             } else {
                 //found red
                 //press right button
-                pressLeftBeaconButton(aOpMode);
+                pressRightBeaconButton(aOpMode);
             }
         }
         if (teamColor == vv_Constants.BeaconColorEnum.RED) {
-            //team blue
+            //team red
             if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
                 //found red
                 //press left beacon button
@@ -1072,7 +1075,7 @@ public class vv_Lib {
             } else {
                 //found blue
                 //press right button
-                pressLeftBeaconButton(aOpMode);
+                pressRightBeaconButton(aOpMode);
             }
         }
     }
