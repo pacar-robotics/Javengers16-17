@@ -46,10 +46,10 @@ public class vv_Constants
     final static float TRIGGER_THRESHOLD = .25f;
 
     // Extremes for servo that pushes beacon buttons
-    static final double BEACON_SERVO_LEFT_REST = 0.6f;     // Maximum rotational position
-    static final double BEACON_SERVO_RIGHT_REST = 0.65f;
-    static final double BEACON_SERVO_LEFT_PRESSED = 0.05f;
-    static final double BEACON_SERVO_RIGHT_PRESSED = 0.05f;
+    static final double BEACON_SERVO_LEFT_REST = 0.7f;     // Maximum rotational position
+    static final double BEACON_SERVO_RIGHT_REST = 0.75f;
+    static final double BEACON_SERVO_LEFT_PRESSED = 0.15f;
+    static final double BEACON_SERVO_RIGHT_PRESSED = 0.1f;
 
     // Extremes for servo that controls the gate for launch
     static final double LAUNCH_GATE_SERVO_OPEN = 0.8f;     // Maximum rotational position

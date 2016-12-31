@@ -56,6 +56,10 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
 
         //first shoot two balls.
 
+        //** disabled to allow for mechanical fixes to hold the choo - choo to frame
+        //12/31/2016
+        /*
+
         // Shoot the first ball
         vvLib.shootBall(this);
         vvLib.setupShot(this);
@@ -66,6 +70,8 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
         //Shoot the second ball.
         vvLib.shootBall(this);
         Thread.sleep(50);
+        */
+
 
 
         falseCondition falseCondition = new falseCondition();

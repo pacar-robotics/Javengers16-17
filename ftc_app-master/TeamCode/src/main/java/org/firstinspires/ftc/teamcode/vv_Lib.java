@@ -53,7 +53,10 @@ public class vv_Lib {
             throws InterruptedException {
         robot = new vv_Robot();
         robot.init(aOpMode, aOpMode.hardwareMap);
+        //** disabled to allow for mechanical repairs 12/31/2016
+        /*
         setupShot(aOpMode);
+        */
     }
 
     /**
