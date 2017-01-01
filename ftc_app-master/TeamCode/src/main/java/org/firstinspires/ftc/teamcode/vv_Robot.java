@@ -1062,6 +1062,131 @@ public class vv_Robot {
 
     }
 
+    public void universalGyroStabilizedMoveRobot(vv_OpMode aOpMode, double xAxisVelocity,
+                                                 double yAxisVelocity,
+                                                 long duration, vv_OpMode.StopCondition condition)
+            throws InterruptedException {
+
+
+        //PID constants
+        final double YAW_PID_P = 0.005;
+        final double YAW_PID_I = 0.0;
+        final double YAW_PID_D = 0.0;
+
+        //create a PID controller that uses YAW data.
+        navXPIDController mxpPidController = new navXPIDController(baseMxpGyroSensor,
+                navXPIDController.navXTimestampedDataSource.YAW);
+
+
+
+
+
+
+
+        double fl_velocity = 0;
+        double fr_velocity = 0;
+        double bl_velocity = 0;
+        double br_velocity = 0;
+        double trackDistanceAverage = (MECCANUM_WHEEL_FRONT_TRACK_DISTANCE +
+                MECCANUM_WHEEL_SIDE_TRACK_DISTANCE) / 2.0f;
+
+
+        //calculate velocities at each wheel.
+        //no rotation components
+
+        fl_velocity = yAxisVelocity + xAxisVelocity;
+
+        fr_velocity = yAxisVelocity - xAxisVelocity;
+
+        bl_velocity = yAxisVelocity - xAxisVelocity;
+
+        br_velocity = yAxisVelocity + xAxisVelocity;
+
+        //reset all encoders.
+
+        motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        while (motorArray[FRONT_LEFT_MOTOR].getCurrentPosition() != 0) {
+            //wait for switch to happen.
+            aOpMode.idle();
+        }
+        //switch to RUN_WITH_ENCODERS to normalize for speed.
+
+        motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //wait for switch to happen
+        Thread.sleep(100);
+
+
+        //we want to go straight, from this point
+
+
+        //set the target angle to be the current angle.
+        //we will try to stay on this path, while trimming to maintain the angle.
+
+        mxpPidController.setSetpoint(baseMxpGyroSensor.getYaw());
+
+        mxpPidController.setInputRange(-180, 180);
+        mxpPidController.setOutputRange(-1.0, 1.0);
+        mxpPidController.setContinuous(true);
+        mxpPidController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, 1.0f);
+        mxpPidController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
+
+        //lets enable the PIDController
+
+        mxpPidController.enable(true);
+
+        navXPIDController.PIDResult mxpPIDResult = new navXPIDController.PIDResult();
+
+        aOpMode.reset_timer();
+        while ((aOpMode.time_elapsed() < duration) &&
+                (!condition.StopCondition(aOpMode))) {
+            if (mxpPidController.waitForNewUpdate(mxpPIDResult, DEVICE_TIMEOUT_MS)) {
+                if (mxpPIDResult.isOnTarget()) {
+
+
+                    motorArray[FRONT_LEFT_MOTOR].setPower(fl_velocity);
+                    motorArray[FRONT_RIGHT_MOTOR].setPower(fr_velocity);
+                    motorArray[BACK_LEFT_MOTOR].setPower(bl_velocity);
+                    motorArray[BACK_RIGHT_MOTOR].setPower(br_velocity);
+
+                } else {
+                    double output = mxpPIDResult.getOutput();
+                    motorArray[FRONT_LEFT_MOTOR].setPower(limit_power(aOpMode, (float) (fl_velocity + output)));
+                    motorArray[FRONT_RIGHT_MOTOR].setPower(limit_power(aOpMode, (float) (fr_velocity - output)));
+                    motorArray[BACK_LEFT_MOTOR].setPower(limit_power(aOpMode, (float) (bl_velocity + output)));
+                    motorArray[BACK_RIGHT_MOTOR].setPower(limit_power(aOpMode, (float) (br_velocity - output)));
+
+
+                }
+            } else {
+                    /* A timeout occurred */
+                Log.w("navXDriveStraightOp", "Yaw PID waitForNewUpdate() TIMEOUT.");
+            }
+
+            //condition will return true when it reaches state meant to stop movement
+
+            //apply specific powers to motors to get desired movement
+            //wait till duration is complete.
+
+
+            aOpMode.idle();
+        }
+
+
+
+        //stop all motors
+        stopBaseMotors(aOpMode);
+
+
+    }
+
     public void universalMoveRobot(vv_OpMode aOpMode, double xAxisVelocity,
                                    double yAxisVelocity, double rotationalVelocity,
                                    long duration, vv_OpMode.StopCondition condition,

@@ -54,9 +54,9 @@ public class vv_Lib {
         robot = new vv_Robot();
         robot.init(aOpMode, aOpMode.hardwareMap);
         //** disabled to allow for mechanical repairs 12/31/2016
-        /*
+
         setupShot(aOpMode);
-        */
+
     }
 
     /**
@@ -888,6 +888,16 @@ public class vv_Lib {
                 yAxisVelocity, rotationalVelocity, duration, condition, isPulsed, pulseWidthDuration, pulseRestDuration);
     }
 
+    public void universalGyroStabilizedMoveRobotByAxisVelocity(vv_OpMode aOpMode, double xAxisVelocity,
+                                                               double yAxisVelocity,
+                                                               long duration, vv_OpMode.StopCondition condition
+    )
+            throws InterruptedException {
+
+        robot.universalGyroStabilizedMoveRobot(aOpMode, xAxisVelocity,
+                yAxisVelocity, duration, condition);
+    }
+
 
 
     public void decreaseLauncherPowerWithLimits(vv_OpMode aOpMode) throws InterruptedException,
@@ -981,16 +991,16 @@ public class vv_Lib {
         robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
         Thread.sleep(200);
         //push the robot forward to ensure button pressed.
-        moveWheels(aOpMode, 0.5f, 0.2f, SidewaysRight, false);
-        Thread.sleep(200);
+        moveWheels(aOpMode, 0.2f, 0.2f, SidewaysRight, false);
+        Thread.sleep(50);
         robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
     }
 
     public void pressRightBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
         robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
         Thread.sleep(200);
-        moveWheels(aOpMode, 0.5f, 0.2f, SidewaysRight, false);
-        Thread.sleep(200);
+        moveWheels(aOpMode, 0.2f, 0.2f, SidewaysRight, false);
+        Thread.sleep(50);
         robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
     }
 

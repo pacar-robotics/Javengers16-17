@@ -57,7 +57,7 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
 
         //** disabled to allow for mechanical fixes to hold the choo - choo to frame
         //12/31/2016
-        /*
+
 
         // Shoot the first ball
         vvLib.shootBall(this);
@@ -68,8 +68,9 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
 
         //Shoot the second ball.
         vvLib.shootBall(this);
+        vvLib.shootBall(this);
         Thread.sleep(50);
-        */
+
 
 
 
@@ -89,7 +90,7 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
 
         Thread.sleep(50);
 
-        vvLib.moveWheels(this, 3.25f, 0.8f, Backward, true); // adjust face position to match beacons
+        vvLib.moveWheels(this, 3.25f, 0.9f, Backward, true); // adjust face position to match beacons
 
         Thread.sleep(50);
 
@@ -119,8 +120,8 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
 
         //now move to second beacon
 
-        //pull back 10 inches to create clearance
-        vvLib.moveWheels(this, 10, 0.8f, SidewaysLeft, true);
+        //pull back 4 inches to create clearance
+        vvLib.moveWheels(this, 4, 0.8f, SidewaysLeft, true);
 
         //orient to 90 degrees to field
 
@@ -133,7 +134,7 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
 
         //vvLib.moveWheels(this, 40.0f, 0.9f, Forward, true);
 
-        vvLib.universalMoveRobotByAxisVelocity(this, 0.0, 0.8, 0.0, 1200, falseCondition, false, 0, 0);
+        vvLib.universalMoveRobotByAxisVelocity(this, -0.1, 0.8, 0.0, 1200, falseCondition, false, 0, 0);
 
 
 
@@ -168,6 +169,15 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
 
         vvLib.detectColorAndPressBeacon(this, vv_Constants.BeaconColorEnum.BLUE);
 
+        vvLib.moveWheels(this, 10, 0.8f, SidewaysLeft, true);
+
+        Thread.sleep(50);
+
+        vvLib.turnAbsoluteMxpGyroDegrees(this, 140);
+
+        Thread.sleep(50);
+
+        vvLib.universalMoveRobotByAxisVelocity(this, 0.0, -0.9, 0.0, 2000, falseCondition, false, 0, 0);
 
         Thread.sleep(50);
 
