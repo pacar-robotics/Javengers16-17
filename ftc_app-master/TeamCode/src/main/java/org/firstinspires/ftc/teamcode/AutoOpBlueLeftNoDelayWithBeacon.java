@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
-import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
 import static org.firstinspires.ftc.teamcode.vv_Constants.EOPD_PROXIMITY_THRESHOLD;
@@ -127,20 +126,24 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
 
         Thread.sleep(50);
 
-        vvLib.turnAbsoluteMxpGyroDegrees(this, 92); //with trim
+        vvLib.turnAbsoluteMxpGyroDegrees(this, 87); //with trim
 
 
         //lets move over the first beacon line, to prevent stopping at wrong line.
 
-        vvLib.moveWheels(this, 40.0f, 0.9f, Forward, true);
+        //vvLib.moveWheels(this, 40.0f, 0.9f, Forward, true);
+
+        vvLib.universalMoveRobotByAxisVelocity(this, 0.0, 0.8, 0.0, 1200, falseCondition, false, 0, 0);
+
+
 
         //move till detect second beacon
-        vvLib.universalMoveRobotByAxisVelocity(this, 0.0, 0.4, 0.0, 3000, ldCondition, false, 0, 0);
+        vvLib.universalMoveRobotByAxisVelocity(this, 0.0, 0.3, 0.0, 3000, ldCondition, false, 0, 0);
         //now detect the line but at right angles
 
         Thread.sleep(50);
 
-        vvLib.moveWheels(this, 3.5f, 0.8f, Backward, true); // adjust face position to match beacons
+        vvLib.moveWheels(this, 3.25f, 0.8f, Backward, true); // adjust face position to match beacons
 
         Thread.sleep(50);
 
@@ -157,6 +160,7 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
         //lets do a pulse move until the eopd proximity is triggered
 
         //run for 200 ms, rest for 100, max of 7000 ms, until the beaconTouchSensor is pressed
+        vvLib.turnAbsoluteMxpGyroDegrees(this, 90); //
 
         vvLib.universalMoveRobotByAxisVelocity(this, 0.2, 0, 0.0, 1500, epdcCondition, true, 50, 100);
 

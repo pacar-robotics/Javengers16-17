@@ -979,16 +979,18 @@ public class vv_Lib {
 
     public void pressLeftBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
         robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
-        Thread.sleep(50);
+        Thread.sleep(200);
         //push the robot forward to ensure button pressed.
-        moveWheels(aOpMode, 0.4f, 0.2f, SidewaysRight, false);
+        moveWheels(aOpMode, 0.5f, 0.2f, SidewaysRight, false);
+        Thread.sleep(200);
         robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
     }
 
     public void pressRightBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
         robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
-        Thread.sleep(50);
-        moveWheels(aOpMode, 0.4f, 0.2f, SidewaysRight, false);
+        Thread.sleep(200);
+        moveWheels(aOpMode, 0.5f, 0.2f, SidewaysRight, false);
+        Thread.sleep(200);
         robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
     }
 
