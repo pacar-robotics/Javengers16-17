@@ -18,6 +18,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
+import static org.firstinspires.ftc.teamcode.vv_Constants.EOPD_PROXIMITY_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FLOOR_WHITE_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
@@ -44,26 +45,35 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.TurnDirectionEnum;
 public class vv_Lib {
 
 
+    protected falseCondition falseStop;
+    protected eopdOrUltrasonicProximityCondition proximityStop;
+    protected lineDetectCondition lineDectectStop;
     private vv_Robot robot;
-
-
 
 
     public vv_Lib(vv_OpMode aOpMode)
             throws InterruptedException {
         robot = new vv_Robot();
         robot.init(aOpMode, aOpMode.hardwareMap);
+
+        //initialize stop conditions.
+
+        falseStop = new falseCondition();
+        proximityStop = new eopdOrUltrasonicProximityCondition();
+        lineDectectStop = new lineDetectCondition();
+
         //** disabled to allow for mechanical repairs 12/31/2016
 
-        setupShot(aOpMode);
+        //setupShot(aOpMode);
 
     }
 
     /**
      * moveWheels method
-     * @param aOpMode - object of vv_OpMode class
-     * @param distance - in centimeters
-     * @param Power - float
+     *
+     * @param aOpMode   - object of vv_OpMode class
+     * @param distance  - in centimeters
+     * @param Power     - float
      * @param Direction - forward, backward, sideways left, or sideways right
      * @throws InterruptedException
      */
@@ -86,8 +96,7 @@ public class vv_Lib {
         // code for moving forward, backward, sideways
     }
 
-    public void setupShot(vv_OpMode aOpMode) throws InterruptedException
-    {
+    public void setupShot(vv_OpMode aOpMode) throws InterruptedException {
 
 
         robot.setMotorMode(aOpMode, ARM_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -99,7 +108,6 @@ public class vv_Lib {
             aOpMode.idle();
         }
         robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
-
 
 
     }
@@ -115,9 +123,7 @@ public class vv_Lib {
     }
 
 
-
-    public void shootBall(vv_OpMode aOpMode) throws InterruptedException
-    {
+    public void shootBall(vv_OpMode aOpMode) throws InterruptedException {
         robot.setMotorMode(aOpMode, ARM_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         robot.setPower(aOpMode, ARM_MOTOR, 0.9f);
@@ -126,14 +132,14 @@ public class vv_Lib {
 
         robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
     }
-    
+
     /**
      * Using encoders, this method turns the Robot clockwise or counter clockwise based on angle given.
-     Calculates the turn distance by multiplying the angle by conversion factors to get to an encoder value
+     * Calculates the turn distance by multiplying the angle by conversion factors to get to an encoder value
      *
-     * @param aOpMode an object of the vv_OpMode class
-     * @param power power in which to apply to each motor
-     * @param angle angle in which the robot will turn to based on the current position as 0 degree
+     * @param aOpMode       an object of the vv_OpMode class
+     * @param power         power in which to apply to each motor
+     * @param angle         angle in which the robot will turn to based on the current position as 0 degree
      * @param TurnDirection Turns either Clockwise or Counterclockwise
      * @throws InterruptedException
      */
@@ -182,9 +188,11 @@ public class vv_Lib {
     }
 
 */
+
     /**
      * Method that moves robot until the color white is detected
      * Used to stop at white line when going from first to second beacon
+     *
      * @param aOpMode - object of vv_OpMode class
      * @throws InterruptedException
      */
@@ -213,7 +221,6 @@ public class vv_Lib {
         //stop motors
         robot.stopBaseMotors(aOpMode);
     }
-
 
 
     public void showFloorLightSensorIntensityOnTelemetry(vv_OpMode aOpMode,
@@ -286,7 +293,7 @@ public class vv_Lib {
         robot.enableFloorLightSensorLed(aOpMode);
     }
 
-    public void turnFloorColorSensorLedOff(vv_OpMode aOpMode)throws InterruptedException{
+    public void turnFloorColorSensorLedOff(vv_OpMode aOpMode) throws InterruptedException {
         robot.disableFloorLightSensorLed(aOpMode);
     }
 
@@ -728,7 +735,6 @@ public class vv_Lib {
         }
 
 
-
         //rotates or turns the robot
         if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
             runAllMotors(aOpMode, (aOpMode.gamepad1.right_stick_x * powerFactor), (-aOpMode.gamepad1.right_stick_x * powerFactor),
@@ -899,7 +905,6 @@ public class vv_Lib {
     }
 
 
-
     public void decreaseLauncherPowerWithLimits(vv_OpMode aOpMode) throws InterruptedException,
             vv_Robot.MotorStalledException {
         int launcherPowerPosition = robot.getLauncherPowerPosition(aOpMode);
@@ -991,7 +996,7 @@ public class vv_Lib {
         robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
         Thread.sleep(200);
         //push the robot forward to ensure button pressed.
-        moveWheels(aOpMode, 0.2f, 0.2f, SidewaysRight, false);
+        moveWheels(aOpMode, 0.75f, 0.2f, SidewaysRight, false);
         Thread.sleep(50);
         robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
     }
@@ -999,7 +1004,7 @@ public class vv_Lib {
     public void pressRightBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
         robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
         Thread.sleep(200);
-        moveWheels(aOpMode, 0.2f, 0.2f, SidewaysRight, false);
+        moveWheels(aOpMode, 0.75f, 0.2f, SidewaysRight, false);
         Thread.sleep(50);
         robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
     }
@@ -1091,6 +1096,75 @@ public class vv_Lib {
                 //press right button
                 pressRightBeaconButton(aOpMode);
             }
+        }
+    }
+
+    public void ScoreBeaconFromTheRight(vv_OpMode aOpMode) throws InterruptedException {
+
+        //assume the robot is at right angles and facing the beacon but to the left of the white line
+        //when this method is called.
+
+
+        //now detect the line but at right angles
+        //for first beacon
+
+
+        universalMoveRobotByAxisVelocity(aOpMode, 0.0, 0.4, 0.0, 3000, lineDectectStop, false, 0, 0);
+        //now detect the line but at right angles
+
+        Thread.sleep(50);
+
+        moveWheels(aOpMode, 3.5f, 0.9f, Backward, true); // adjust face position to match beacons
+
+        Thread.sleep(50);
+
+        turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim, readjust to prep for ultrasomic read
+
+        //read distance from ultrasonic sensor, noise filtered, with 7 readings in a set.
+        double distanceToBeaconWall = getFloorUltrasonicReading(aOpMode, 7) / 2.54; //in inches
+
+
+        //now try moving that distance, adjusting for inset of ultrasonic sensor
+        //move toward the beacons but stop short (approx 1.5 inches short).
+        moveWheels(aOpMode, (float) (distanceToBeaconWall - 2.0), 0.8f, SidewaysRight, true);
+
+        //lets do a pulse move until the beacon touch sensor is pressed
+
+        //run for 200 ms, rest for 100, max of 7000 ms, until the beaconTouchSensor is pressed
+
+        universalMoveRobotByAxisVelocity(aOpMode, 0.2, 0, 0.0, 1500, proximityStop, true, 50, 100);
+
+        //now sense beacon color and press beacon
+
+        detectColorAndPressBeacon(aOpMode, vv_Constants.BeaconColorEnum.BLUE);
+
+        //now to work on second beacon.
+
+        Thread.sleep(50);
+
+    }
+
+    //conditions that can stop the robot.
+
+
+    public class lineDetectCondition implements vv_OpMode.StopCondition {
+        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+            return ((getFloorLightIntensity(aOpMode) >= FLOOR_WHITE_THRESHOLD));
+        }
+    }
+
+    public class falseCondition implements vv_OpMode.StopCondition {
+        //can be used as an empty condition, so the robot keeps running in universal movement
+        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+            return (false);
+        }
+    }
+
+
+    public class eopdOrUltrasonicProximityCondition implements vv_OpMode.StopCondition {
+        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+            return ((getEopdRawValue(aOpMode) > EOPD_PROXIMITY_THRESHOLD) ||
+                    ((getFloorUltrasonicReading(aOpMode, 7) / 2.54) < 5));
         }
     }
 

@@ -102,6 +102,9 @@ public class vv_Constants
     final static int WORM_DRIVE_MOTOR = 6;
     final static int CAP_BALL_MOTOR = 7;
 
+    final static float LEFT_MOTOR_TRIM_FACTOR = 0.95f;
+    final static float RIGHT_MOTOR_TRIM_FACTOR = 1.0f;
+
     //index of servos
     final static int LEFT_BEACON_BUTTON_SERVO = 0;
     final static int RIGHT_BEACON_BUTTON_SERVO = 1;

@@ -34,8 +34,9 @@ public class WheelsForwardGyroStabilizedCalibration extends vv_OpMode {
         telemetryAddData("Test", "Move", "Moving Forward 48 inches");
         telemetryUpdate();
 
-        falseCondition falseCondition = new falseCondition();
-        vvLib.universalGyroStabilizedMoveRobotByAxisVelocity(this, 0.0f, 0.8f, 2000, falseCondition);
+        //using stop conditions defined in vvLib.
+
+        vvLib.universalGyroStabilizedMoveRobotByAxisVelocity(this, 0.5f, 0.0f, 2000, vvLib.falseStop);
 
     }
 

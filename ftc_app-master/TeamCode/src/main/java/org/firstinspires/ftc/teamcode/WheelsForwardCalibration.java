@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
-
 
 @TeleOp(name = "WheelForwardCalibrationOp", group = "Calibrations")
 public class WheelsForwardCalibration extends vv_OpMode {
@@ -36,7 +34,7 @@ public class WheelsForwardCalibration extends vv_OpMode {
         telemetryAddData("Test", "Move", "Moving Forward 48 inches");
         telemetryUpdate();
 
-        vvLib.moveWheels(this, 48, 0.5f, Forward, true);
+        vvLib.universalMoveRobotByAxisVelocity(this, 0.0, 0.5f, 0.0f, 2000, vvLib.falseStop, false, 0, 0);
 
     }
 

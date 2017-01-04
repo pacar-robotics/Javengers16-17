@@ -36,6 +36,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.IntakeStateEnum.Off;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_GATE_SERVO_CLOSED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_GATE_SERVO_OPEN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LEFT_BEACON_BUTTON_SERVO;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LEFT_MOTOR_TRIM_FACTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_MOTOR_LOOP_TIME;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_ROBOT_TURN_MOTOR_VELOCITY;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN;
@@ -48,6 +49,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_FB_POWER_UP
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_SIDEWAYS_POWER_LOWER_LIMIT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_SIDEWAYS_POWER_UPPER_LIMIT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.RIGHT_BEACON_BUTTON_SERVO;
+import static org.firstinspires.ftc.teamcode.vv_Constants.RIGHT_MOTOR_TRIM_FACTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_DURATION_MAX;
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_ENCODER_MARGIN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_MOTOR;
@@ -346,10 +348,10 @@ public class vv_Robot {
             setPower(aOpMode, BACK_RIGHT_MOTOR, MOTOR_LOWER_POWER_THRESHOLD);
 
         } else {
-            setPower(aOpMode, FRONT_LEFT_MOTOR, fl_Power);
-            setPower(aOpMode, FRONT_RIGHT_MOTOR, fr_Power);
-            setPower(aOpMode, BACK_LEFT_MOTOR, bl_Power);
-            setPower(aOpMode, BACK_RIGHT_MOTOR, br_Power);
+            setPower(aOpMode, FRONT_LEFT_MOTOR, fl_Power * LEFT_MOTOR_TRIM_FACTOR);
+            setPower(aOpMode, FRONT_RIGHT_MOTOR, fr_Power * RIGHT_MOTOR_TRIM_FACTOR);
+            setPower(aOpMode, BACK_LEFT_MOTOR, bl_Power * LEFT_MOTOR_TRIM_FACTOR);
+            setPower(aOpMode, BACK_RIGHT_MOTOR, br_Power * RIGHT_MOTOR_TRIM_FACTOR);
         }
 
 
@@ -406,10 +408,10 @@ public class vv_Robot {
 
             //in this runmode, the power does not control direction but the sign of the target position does.
 
-            motorArray[FRONT_LEFT_MOTOR].setPower(rampedPower);
-            motorArray[FRONT_RIGHT_MOTOR].setPower(rampedPower);
-            motorArray[BACK_LEFT_MOTOR].setPower(rampedPower);
-            motorArray[BACK_RIGHT_MOTOR].setPower(rampedPower);
+            motorArray[FRONT_LEFT_MOTOR].setPower(rampedPower * LEFT_MOTOR_TRIM_FACTOR);
+            motorArray[FRONT_RIGHT_MOTOR].setPower(rampedPower * RIGHT_MOTOR_TRIM_FACTOR);
+            motorArray[BACK_LEFT_MOTOR].setPower(rampedPower * LEFT_MOTOR_TRIM_FACTOR);
+            motorArray[BACK_RIGHT_MOTOR].setPower(rampedPower * RIGHT_MOTOR_TRIM_FACTOR);
 
 
             // TODO: UNCOMMENT THIS!!!!
@@ -1069,7 +1071,7 @@ public class vv_Robot {
 
 
         //PID constants
-        final double YAW_PID_P = 0.005;
+        final double YAW_PID_P = 0.01;
         final double YAW_PID_I = 0.0;
         final double YAW_PID_D = 0.0;
 
@@ -1130,9 +1132,8 @@ public class vv_Robot {
         //set the target angle to be the current angle.
         //we will try to stay on this path, while trimming to maintain the angle.
 
-        mxpPidController.setSetpoint(baseMxpGyroSensor.getYaw());
 
-        mxpPidController.setInputRange(-180, 180);
+        mxpPidController.setSetpoint(baseMxpGyroSensor.getYaw());
         mxpPidController.setOutputRange(-1.0, 1.0);
         mxpPidController.setContinuous(true);
         mxpPidController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, 1.0f);
@@ -1150,11 +1151,13 @@ public class vv_Robot {
             if (mxpPidController.waitForNewUpdate(mxpPIDResult, DEVICE_TIMEOUT_MS)) {
                 if (mxpPIDResult.isOnTarget()) {
 
-
-                    motorArray[FRONT_LEFT_MOTOR].setPower(fl_velocity);
                     motorArray[FRONT_RIGHT_MOTOR].setPower(fr_velocity);
-                    motorArray[BACK_LEFT_MOTOR].setPower(bl_velocity);
+                    motorArray[FRONT_LEFT_MOTOR].setPower(fl_velocity * 0.95);
                     motorArray[BACK_RIGHT_MOTOR].setPower(br_velocity);
+                    motorArray[BACK_LEFT_MOTOR].setPower(bl_velocity * 0.95);
+
+                    aOpMode.telemetryAddData("PID:", "Value:", "On track");
+                    aOpMode.telemetryUpdate();
 
                 } else {
                     double output = mxpPIDResult.getOutput();
@@ -1162,7 +1165,8 @@ public class vv_Robot {
                     motorArray[FRONT_RIGHT_MOTOR].setPower(limit_power(aOpMode, (float) (fr_velocity - output)));
                     motorArray[BACK_LEFT_MOTOR].setPower(limit_power(aOpMode, (float) (bl_velocity + output)));
                     motorArray[BACK_RIGHT_MOTOR].setPower(limit_power(aOpMode, (float) (br_velocity - output)));
-
+                    aOpMode.telemetryAddData("PID:", "Value:", "Output degrees:" + output);
+                    aOpMode.telemetryUpdate();
 
                 }
             } else {
@@ -1176,6 +1180,7 @@ public class vv_Robot {
             //wait till duration is complete.
 
 
+            Thread.sleep(25); //sleep for loop control to Android and update from mxp gyro
             aOpMode.idle();
         }
 
@@ -1239,13 +1244,13 @@ public class vv_Robot {
         //may replace with ramp to improve performance.
 
         motorArray[FRONT_LEFT_MOTOR].setPower(Math.abs(fl_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
-                Math.signum(fl_velocity) * MOTOR_LOWER_POWER_THRESHOLD : fl_velocity);
+                Math.signum(fl_velocity) * MOTOR_LOWER_POWER_THRESHOLD : fl_velocity * LEFT_MOTOR_TRIM_FACTOR);
         motorArray[FRONT_RIGHT_MOTOR].setPower(Math.abs(fr_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
-                Math.signum(fr_velocity) * MOTOR_LOWER_POWER_THRESHOLD : fr_velocity);
+                Math.signum(fr_velocity) * MOTOR_LOWER_POWER_THRESHOLD : fr_velocity * RIGHT_MOTOR_TRIM_FACTOR);
         motorArray[BACK_LEFT_MOTOR].setPower(Math.abs(bl_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
-                Math.signum(bl_velocity) * MOTOR_LOWER_POWER_THRESHOLD : bl_velocity);
+                Math.signum(bl_velocity) * MOTOR_LOWER_POWER_THRESHOLD : bl_velocity * LEFT_MOTOR_TRIM_FACTOR);
         motorArray[BACK_RIGHT_MOTOR].setPower(Math.abs(br_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
-                Math.signum(br_velocity) * MOTOR_LOWER_POWER_THRESHOLD : br_velocity);
+                Math.signum(br_velocity) * MOTOR_LOWER_POWER_THRESHOLD : br_velocity * RIGHT_MOTOR_TRIM_FACTOR);
 
         //
 
@@ -1258,10 +1263,10 @@ public class vv_Robot {
 
             //apply specific powers to motors to get desired movement
             //wait till duration is complete.
-            motorArray[FRONT_LEFT_MOTOR].setPower(fl_velocity);
-            motorArray[FRONT_RIGHT_MOTOR].setPower(fr_velocity);
-            motorArray[BACK_LEFT_MOTOR].setPower(bl_velocity);
-            motorArray[BACK_RIGHT_MOTOR].setPower(br_velocity);
+            motorArray[FRONT_LEFT_MOTOR].setPower(fl_velocity * LEFT_MOTOR_TRIM_FACTOR);
+            motorArray[FRONT_RIGHT_MOTOR].setPower(fr_velocity * RIGHT_MOTOR_TRIM_FACTOR);
+            motorArray[BACK_LEFT_MOTOR].setPower(bl_velocity * LEFT_MOTOR_TRIM_FACTOR);
+            motorArray[BACK_RIGHT_MOTOR].setPower(br_velocity * RIGHT_MOTOR_TRIM_FACTOR);
 
             if (isPulsed) {
                 //run the motors for the pulseWidthDuration
@@ -1279,13 +1284,13 @@ public class vv_Robot {
 
         //end slow
         motorArray[FRONT_LEFT_MOTOR].setPower(Math.abs(fl_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
-                Math.signum(fl_velocity) * MOTOR_LOWER_POWER_THRESHOLD : fl_velocity);
+                Math.signum(fl_velocity) * MOTOR_LOWER_POWER_THRESHOLD : fl_velocity * LEFT_MOTOR_TRIM_FACTOR);
         motorArray[FRONT_RIGHT_MOTOR].setPower(Math.abs(fr_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
-                Math.signum(fr_velocity) * MOTOR_LOWER_POWER_THRESHOLD : fr_velocity);
+                Math.signum(fr_velocity) * MOTOR_LOWER_POWER_THRESHOLD : fr_velocity * RIGHT_MOTOR_TRIM_FACTOR);
         motorArray[BACK_LEFT_MOTOR].setPower(Math.abs(bl_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
-                Math.signum(bl_velocity) * MOTOR_LOWER_POWER_THRESHOLD : bl_velocity);
+                Math.signum(bl_velocity) * MOTOR_LOWER_POWER_THRESHOLD : bl_velocity * LEFT_MOTOR_TRIM_FACTOR);
         motorArray[BACK_RIGHT_MOTOR].setPower(Math.abs(br_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
-                Math.signum(br_velocity) * MOTOR_LOWER_POWER_THRESHOLD : br_velocity);
+                Math.signum(br_velocity) * MOTOR_LOWER_POWER_THRESHOLD : br_velocity * RIGHT_MOTOR_TRIM_FACTOR);
 
         aOpMode.reset_timer();
         //stop 100 ms before end

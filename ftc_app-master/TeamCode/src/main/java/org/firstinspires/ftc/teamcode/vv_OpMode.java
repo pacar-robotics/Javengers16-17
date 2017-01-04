@@ -43,4 +43,5 @@ public abstract class vv_OpMode extends LinearOpMode
         boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException;
     }
 
+
 }
