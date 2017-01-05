@@ -54,7 +54,7 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
         //** disabled to allow for mechanical fixes to hold the choo - choo to frame
         //12/31/2016
 
-        /*
+/*
 
 
         // Shoot the first ball
@@ -74,7 +74,7 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
 
         //move robot diagonally in prep for first beacon
 
-        vvLib.universalMoveRobotByAxisVelocity(this, 0.35, -0.55, 0.0, 3500, vvLib.falseStop, false, 0, 0);
+        vvLib.universalMoveRobotByAxisVelocity(this, 0.45, -0.55, 0.0, 3500, vvLib.falseStop, false, 0, 0);
 
         //rotate to face beacon
         vvLib.turnAbsoluteMxpGyroDegrees(this, 90); //with trim
@@ -103,7 +103,7 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
 
         //vvLib.moveWheels(this, 40.0f, 0.9f, Forward, true);
 
-        vvLib.universalMoveRobotByAxisVelocity(this, -0.1, 0.8, 0.0, 1200, vvLib.falseStop, false, 0, 0);
+        vvLib.universalMoveRobotByAxisVelocity(this, -0.3, 0.8, 0.0, 1600, vvLib.falseStop, false, 0, 0);
 
         vvLib.turnAbsoluteMxpGyroDegrees(this, 90); //with trim
 

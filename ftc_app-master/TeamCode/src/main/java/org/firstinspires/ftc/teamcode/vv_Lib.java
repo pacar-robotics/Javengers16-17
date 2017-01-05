@@ -36,6 +36,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.RIGHT_BEACON_BUTTON_SE
 import static org.firstinspires.ftc.teamcode.vv_Constants.ROBOT_TRACK_DISTANCE;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TURN_POWER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TurnDirectionEnum;
+import static org.firstinspires.ftc.teamcode.vv_Constants.ULTRASONIC_PROXIMITY_THRESHOLD;
 
 
 /**
@@ -46,7 +47,9 @@ public class vv_Lib {
 
 
     protected falseCondition falseStop;
-    protected eopdOrUltrasonicProximityCondition proximityStop;
+    protected eopdProximityCondition eopdProximityStop;
+    protected eopdOrUltrasonicProximityCondition eopdOrUltrasonicProximityStop;
+
     protected lineDetectCondition lineDectectStop;
     private vv_Robot robot;
 
@@ -59,7 +62,8 @@ public class vv_Lib {
         //initialize stop conditions.
 
         falseStop = new falseCondition();
-        proximityStop = new eopdOrUltrasonicProximityCondition();
+        eopdProximityStop = new eopdProximityCondition();
+        eopdOrUltrasonicProximityStop = new eopdOrUltrasonicProximityCondition();
         lineDectectStop = new lineDetectCondition();
 
         //** disabled to allow for mechanical repairs 12/31/2016
@@ -613,6 +617,8 @@ public class vv_Lib {
                         TurnDirectionEnum.Counterclockwise);
 
         float finalDegrees = robot.getMxpGyroSensorHeading(aOpMode);
+        Thread.sleep(100); //cooling off after gyro read to prevent error in next run.
+
 
         aOpMode.telemetryAddData("New Bearing Degrees", "Value:",
                 ":" + finalDegrees);
@@ -995,19 +1001,33 @@ public class vv_Lib {
     public void pressLeftBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
         robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
         Thread.sleep(200);
-        //push the robot forward to ensure button pressed.
-        moveWheels(aOpMode, 0.75f, 0.2f, SidewaysRight, false);
-        Thread.sleep(50);
         robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
     }
 
     public void pressRightBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
         robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
         Thread.sleep(200);
-        moveWheels(aOpMode, 0.75f, 0.2f, SidewaysRight, false);
-        Thread.sleep(50);
         robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
     }
+
+    public void extendLeftBeaconButtonPress(vv_OpMode aOpMode) throws InterruptedException {
+        robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
+    }
+
+    public void extendRightBeaconButtonPress(vv_OpMode aOpMode) throws InterruptedException {
+        robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
+    }
+
+    public void closeLeftBeaconButtonPress(vv_OpMode aOpMode) throws InterruptedException {
+        robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
+    }
+
+    public void closeRightBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
+        robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
+    }
+
+
+
 
     public boolean isBeaconTouchSensorPressed(vv_OpMode aOpMode) {
         return robot.isBeaconTouchSensorPressed(aOpMode);
@@ -1073,16 +1093,17 @@ public class vv_Lib {
                                           vv_Constants.BeaconColorEnum teamColor) throws
             InterruptedException {
 
+
         if (teamColor == vv_Constants.BeaconColorEnum.BLUE) {
             //team blue
             if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE) {
                 //found blue
                 //press left beacon button
-                pressLeftBeaconButton(aOpMode);
+                extendLeftBeaconButtonPress(aOpMode);
             } else {
                 //found red
                 //press right button
-                pressRightBeaconButton(aOpMode);
+                extendRightBeaconButtonPress(aOpMode);
             }
         }
         if (teamColor == vv_Constants.BeaconColorEnum.RED) {
@@ -1090,13 +1111,28 @@ public class vv_Lib {
             if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
                 //found red
                 //press left beacon button
-                pressLeftBeaconButton(aOpMode);
+                extendLeftBeaconButtonPress(aOpMode);
             } else {
                 //found blue
                 //press right button
-                pressRightBeaconButton(aOpMode);
+                extendRightBeaconButtonPress(aOpMode);
             }
         }
+        //lets do a pulse move until the proximity is closed
+
+
+        universalMoveRobotByAxisVelocity(aOpMode, 0.2, 0, 0.0, 2000,
+                eopdOrUltrasonicProximityStop, false, 0, 0);
+
+        universalMoveRobotByAxisVelocity(aOpMode, 0.2, 0, 0.0, 75,
+                eopdProximityStop, true, 75, 25);
+
+        Thread.sleep(100);
+
+
+        //now retract both beacon presses
+        closeLeftBeaconButtonPress(aOpMode);
+        closeRightBeaconButton(aOpMode);
     }
 
     public void ScoreBeaconFromTheRight(vv_OpMode aOpMode) throws InterruptedException {
@@ -1105,36 +1141,27 @@ public class vv_Lib {
         //when this method is called.
 
 
+        //read distance from ultrasonic sensor, noise filtered, with 7 readings in a set.
+        double distanceToBeaconWall = getFloorUltrasonicReading(aOpMode, 7) / 2.54; //in inches
+        //now try moving that distance, adjusting for inset of ultrasonic sensor
+        //move toward the beacons but stop short (approx 1.5 inches short).
+        moveWheels(aOpMode, (float) (distanceToBeaconWall - 3.5), 0.8f, SidewaysRight, true);
+
         //now detect the line but at right angles
         //for first beacon
 
 
-        universalMoveRobotByAxisVelocity(aOpMode, 0.0, 0.4, 0.0, 3000, lineDectectStop, false, 0, 0);
+        universalMoveRobotByAxisVelocity(aOpMode, 0.0, 0.25, 0.0, 3000, lineDectectStop, false, 0, 0);
         //now detect the line but at right angles
 
         Thread.sleep(50);
 
-        moveWheels(aOpMode, 3.5f, 0.9f, Backward, true); // adjust face position to match beacons
+        moveWheels(aOpMode, 4.3f, 0.20f, Backward, false); // adjust face position to match beacons
 
         Thread.sleep(50);
 
-        turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim, readjust to prep for ultrasomic read
 
-        //read distance from ultrasonic sensor, noise filtered, with 7 readings in a set.
-        double distanceToBeaconWall = getFloorUltrasonicReading(aOpMode, 7) / 2.54; //in inches
-
-
-        //now try moving that distance, adjusting for inset of ultrasonic sensor
-        //move toward the beacons but stop short (approx 1.5 inches short).
-        moveWheels(aOpMode, (float) (distanceToBeaconWall - 2.0), 0.8f, SidewaysRight, true);
-
-        //lets do a pulse move until the beacon touch sensor is pressed
-
-        //run for 200 ms, rest for 100, max of 7000 ms, until the beaconTouchSensor is pressed
-
-        universalMoveRobotByAxisVelocity(aOpMode, 0.2, 0, 0.0, 1500, proximityStop, true, 50, 100);
-
-        //now sense beacon color and press beacon
+        turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim, readjust to prep for color read
 
         detectColorAndPressBeacon(aOpMode, vv_Constants.BeaconColorEnum.BLUE);
 
@@ -1161,10 +1188,17 @@ public class vv_Lib {
     }
 
 
+    public class eopdProximityCondition implements vv_OpMode.StopCondition {
+        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+            return (getEopdRawValue(aOpMode) > EOPD_PROXIMITY_THRESHOLD);
+        }
+    }
+
     public class eopdOrUltrasonicProximityCondition implements vv_OpMode.StopCondition {
         public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
             return ((getEopdRawValue(aOpMode) > EOPD_PROXIMITY_THRESHOLD) ||
-                    ((getFloorUltrasonicReading(aOpMode, 7) / 2.54) < 5));
+                    ((getFloorUltrasonicReading(aOpMode, 7) / 2.54) < ULTRASONIC_PROXIMITY_THRESHOLD));
+
         }
     }
 
