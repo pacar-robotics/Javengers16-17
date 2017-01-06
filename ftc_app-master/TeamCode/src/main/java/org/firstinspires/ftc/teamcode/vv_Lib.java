@@ -1255,7 +1255,7 @@ public class vv_Lib {
         double distanceToBeaconWall = getFloorUltrasonicReading(aOpMode, 7) / 2.54; //in inches
         //now try moving that distance, adjusting for inset of ultrasonic sensor
         //move toward the beacons but stop short (approx 1.5 inches short).
-        moveWheels(aOpMode, (float) (distanceToBeaconWall - 3.5), 0.8f, SidewaysRight, true);
+        moveWheels(aOpMode, (float) (distanceToBeaconWall - 3.25), 0.8f, SidewaysRight, true);
 
         //now detect the line but at right angles
         //for first beacon
@@ -1291,7 +1291,7 @@ public class vv_Lib {
         double distanceToBeaconWall = getFloorUltrasonicReading(aOpMode, 7) / 2.54; //in inches
         //now try moving that distance, adjusting for inset of ultrasonic sensor
         //move toward the beacons but stop short (approx 1.5 inches short).
-        moveWheels(aOpMode, (float) (distanceToBeaconWall - 3.5), 0.8f, SidewaysRight, true);
+        moveWheels(aOpMode, (float) (distanceToBeaconWall - 3.25), 0.8f, SidewaysRight, true);
 
         Thread.sleep(50);
 
@@ -1302,23 +1302,20 @@ public class vv_Lib {
         universalMoveRobotByAxisVelocity(aOpMode, 0.0, -0.25, 0.0, 3000, lineDectectStop, false, 0, 0);
         //now detect the line but at right angles
 
-        Thread.sleep(50);
+        Thread.sleep(25);
 
         turnAbsoluteMxpGyroDegrees(aOpMode, -90); //with trim, readjust to prep for color read
 
-        Thread.sleep(50);
+        Thread.sleep(25);
 
-        moveWheels(aOpMode, 1.5f, 0.20f, Backward, false); // adjust face position to match beacons
+        //moveWheels(aOpMode, 2.5f, 0.20f, Backward, false); // adjust face position to match beacons
 
-        Thread.sleep(50);
+        Thread.sleep(25);
 
         turnAbsoluteMxpGyroDegrees(aOpMode, -90); //with trim, readjust to prep for color read
 
         detectColorAndPressBeacon(aOpMode, vv_Constants.BeaconColorEnum.RED);
 
-        //now to work on second beacon.
-
-        Thread.sleep(50);
 
     }
     //conditions that can stop the robot.

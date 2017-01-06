@@ -11,8 +11,8 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Sideways
  */
 
 
-@Autonomous(name = "RedLeftBeaconNoDelayOp", group = "HorshamTest")
-public class AutoOpRedLeftNoDelayWithBeacon extends vv_OpMode {
+@Autonomous(name = "RedRightBeaconNoDelayOp", group = "HorshamTest")
+public class AutoOpRedRightNoDelayWithBeacon extends vv_OpMode {
     vv_Lib vvLib;
     vv_Robot vvRobot;
     double readingsArray[];
@@ -24,7 +24,7 @@ public class AutoOpRedLeftNoDelayWithBeacon extends vv_OpMode {
         vvLib = new vv_Lib(this);
 
 
-        telemetryAddData("<< RED ALLIANCE >>:LEFT TILE  Ready to go!", "", "");
+        telemetryAddData("<< RED ALLIANCE >>:RIGHT TILE  Ready to go!", "", "");
         telemetryUpdate();
         //Turn the LED on the Color Sensor mounted on the floor of the Robot on
         vvLib.turnFloorLightSensorLedOn(this);
@@ -52,11 +52,9 @@ public class AutoOpRedLeftNoDelayWithBeacon extends vv_OpMode {
 
         //first shoot two balls.
 
-        //** disabled to allow for mechanical fixes to hold the choo - choo to frame
-        //12/31/2016
-
         vvLib.moveWheels(this, 4, .4f, SidewaysRight, true);
-        vvLib.turnAbsoluteGyroDegrees(this, -20.0f);
+        vvLib.turnAbsoluteGyroDegrees(this, -45.0f);
+        Thread.sleep(25);
 
         // Shoot the first ball
         vvLib.shootBall(this);
@@ -69,11 +67,12 @@ public class AutoOpRedLeftNoDelayWithBeacon extends vv_OpMode {
         vvLib.shootBall(this);
         vvLib.shootBall(this);
 
+
         vvLib.turnAbsoluteGyroDegrees(this, 0);
 
         //move robot diagonally in prep for first beacon
 
-        vvLib.universalMoveRobotByAxisVelocity(this, 0.45, 0.45, 0.0, 2850, vvLib.falseStop, false, 0, 0);
+        vvLib.universalMoveRobotByAxisVelocity(this, 0.65, 0.86, 0.0, 3250, vvLib.falseStop, false, 0, 0);
 
         //rotate to face beacon
         vvLib.turnAbsoluteMxpGyroDegrees(this, -90); //with trim
@@ -100,19 +99,19 @@ public class AutoOpRedLeftNoDelayWithBeacon extends vv_OpMode {
         //lets move over the first beacon line, to prevent stopping at wrong line.
 
 
-        vvLib.universalMoveRobotByAxisVelocity(this, -0.3, -0.8, 0.0, 1600, vvLib.falseStop, false, 0, 0);
+        vvLib.universalMoveRobotByAxisVelocity(this, -0.2, -0.8, 0.0, 1700, vvLib.falseStop, false, 0, 0);
 
         vvLib.turnAbsoluteMxpGyroDegrees(this, -90); //with trim
 
 
         vvLib.ScoreBeaconFromTheLeft(this);
 
-        vvLib.moveWheels(this, 10, .8f, SidewaysLeft, true);
+        vvLib.moveWheels(this, 10, .95f, SidewaysLeft, true);
         Thread.sleep(25);
         vvLib.turnAbsoluteMxpGyroDegrees(this, -135);
         Thread.sleep(25);
 
-        vvLib.universalMoveRobotByAxisVelocity(this, 0.0f, 9.0f, 0.0, 2000, vvLib.falseStop, false, 0, 0);
+        vvLib.universalMoveRobotByAxisVelocity(this, 0.0f, 0.95f, 0.0, 2000, vvLib.falseStop, false, 0, 0);
 
 
     }
