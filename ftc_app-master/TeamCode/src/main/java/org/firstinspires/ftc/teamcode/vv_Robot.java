@@ -324,7 +324,6 @@ public class vv_Robot {
             aOpMode.idle();
         }
 
-
         //sets all motors to run to a position
         motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -657,6 +656,10 @@ public class vv_Robot {
 
     public float getMxpGyroSensorHeading(vv_OpMode aOpMode) {
         return baseMxpGyroSensor.getYaw();
+    }
+
+    public float getMxpFusedGyroSensorHeading(vv_OpMode aOpMode) {
+        return baseMxpGyroSensor.getFusedHeading();
     }
 
 
@@ -1304,6 +1307,48 @@ public class vv_Robot {
 
 
     }
+
+    public void universalMoveRobotForTelOp(vv_OpMode aOpMode, double xAxisVelocity,
+                                           double yAxisVelocity)
+            throws InterruptedException {
+        double fl_velocity = 0;
+        double fr_velocity = 0;
+        double bl_velocity = 0;
+        double br_velocity = 0;
+        double trackDistanceAverage = (MECCANUM_WHEEL_FRONT_TRACK_DISTANCE +
+                MECCANUM_WHEEL_SIDE_TRACK_DISTANCE) / 2.0f;
+
+
+        //calculate velocities at each wheel.
+
+        fl_velocity = yAxisVelocity + xAxisVelocity;
+
+        fr_velocity = yAxisVelocity - xAxisVelocity;
+
+        bl_velocity = yAxisVelocity - xAxisVelocity;
+
+        br_velocity = yAxisVelocity + xAxisVelocity;
+
+
+        motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        //wait for switch to happen
+        Thread.sleep(50);
+
+        //apply specific powers to motors to get desired movement
+        //wait till duration is complete.
+        motorArray[FRONT_LEFT_MOTOR].setPower(fl_velocity * LEFT_MOTOR_TRIM_FACTOR);
+        motorArray[FRONT_RIGHT_MOTOR].setPower(fr_velocity * RIGHT_MOTOR_TRIM_FACTOR);
+        motorArray[BACK_LEFT_MOTOR].setPower(bl_velocity * LEFT_MOTOR_TRIM_FACTOR);
+        motorArray[BACK_RIGHT_MOTOR].setPower(br_velocity * RIGHT_MOTOR_TRIM_FACTOR);
+
+
+    }
+
+
 
     public float limit_power(vv_OpMode aOpMode, float power) {
         //Check and limit the power being applied to motors during turns

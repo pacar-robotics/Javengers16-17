@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
 
 
 /**
@@ -10,8 +11,8 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Sideways
  */
 
 
-@Autonomous(name = "BlueLeftBeaconNoDelayOp", group = "HorshamTest")
-public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
+@Autonomous(name = "RedLeftBeaconNoDelayOp", group = "HorshamTest")
+public class AutoOpRedLeftNoDelayWithBeacon extends vv_OpMode {
     vv_Lib vvLib;
     vv_Robot vvRobot;
     double readingsArray[];
@@ -23,7 +24,7 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
         vvLib = new vv_Lib(this);
 
 
-        telemetryAddData("<< BLUE ALLIANCE : LEFT TILE >> Ready to go!", "", "");
+        telemetryAddData("Ready to go!", "", "");
         telemetryUpdate();
         //Turn the LED on the Color Sensor mounted on the floor of the Robot on
         vvLib.turnFloorLightSensorLedOn(this);
@@ -54,8 +55,10 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
         //** disabled to allow for mechanical fixes to hold the choo - choo to frame
         //12/31/2016
 
-
-
+        vvLib.moveWheels(this, 4, .4f, SidewaysRight, true);
+        Thread.sleep(250);
+        vvLib.turnAbsoluteGyroDegrees(this, -20);
+        Thread.sleep(250);
 
         // Shoot the first ball
         vvLib.shootBall(this);
@@ -69,23 +72,23 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
         vvLib.shootBall(this);
         Thread.sleep(50);
 
-
-
+        vvLib.turnAbsoluteGyroDegrees(this, 0);
+        Thread.sleep(250);
 
         //move robot diagonally in prep for first beacon
 
-        vvLib.universalMoveRobotByAxisVelocity(this, 0.45, -0.55, 0.0, 3500, vvLib.falseStop, false, 0, 0);
+        vvLib.universalMoveRobotByAxisVelocity(this, 0.45, 0.45, 0.0, 3000, vvLib.falseStop, false, 0, 0);
 
         //rotate to face beacon
-        vvLib.turnAbsoluteMxpGyroDegrees(this, 90); //with trim
+        vvLib.turnAbsoluteMxpGyroDegrees(this, -90); //with trim
 
         //detect the line and score beacon.
 
-        vvLib.ScoreBeaconFromTheRight(this);
+        vvLib.ScoreBeaconFromTheLeft(this);
 
         //now to work on second beacon.
 
-        Thread.sleep(50);
+        Thread.sleep(10000);
 
         //now move to second beacon
 
@@ -96,26 +99,22 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
 
         Thread.sleep(50);
 
-        vvLib.turnAbsoluteMxpGyroDegrees(this, 90); //with trim
+        vvLib.turnAbsoluteMxpGyroDegrees(this, -87); //with trim
 
 
         //lets move over the first beacon line, to prevent stopping at wrong line.
 
         //vvLib.moveWheels(this, 40.0f, 0.9f, Forward, true);
 
-        vvLib.universalMoveRobotByAxisVelocity(this, -0.3, 0.8, 0.0, 1600, vvLib.falseStop, false, 0, 0);
+        vvLib.universalMoveRobotByAxisVelocity(this, -0.3, -0.8, 0.0, 1600, vvLib.falseStop, false, 0, 0);
 
-        vvLib.turnAbsoluteMxpGyroDegrees(this, 90); //with trim
+        vvLib.turnAbsoluteMxpGyroDegrees(this, -90); //with trim
 
 
-        vvLib.ScoreBeaconFromTheRight(this);
+        vvLib.ScoreBeaconFromTheLeft(this);
 
-        vvLib.moveWheels(this, 10, .8f, SidewaysLeft, true);
-        Thread.sleep(50);
-        vvLib.turnAbsoluteMxpGyroDegrees(this, 140);
-        Thread.sleep(50);
 
-        vvLib.universalMoveRobotByAxisVelocity(this, 0.0, -0.9, 0.0, 2000, vvLib.falseStop, false, 0, 0);
+        vvLib.universalMoveRobotByAxisVelocity(this, -0.45, 0.45, 0.0, 2000, vvLib.falseStop, false, 0, 0);
 
 
     }

@@ -38,7 +38,7 @@ public class vv_Constants
 
     // Mecanum wheel properties
     final static float MECCANUM_WHEEL_DIAMETER = 4f;   //in inches
-    final static float MECCANUM_WHEEL_ENCODER_MARGIN = 20;
+    final static float MECCANUM_WHEEL_ENCODER_MARGIN = 10;
     final static float MECCANUM_WHEEL_SIDE_TRACK_DISTANCE = 13.0f;
     final static float MECCANUM_WHEEL_FRONT_TRACK_DISTANCE = 14.5f;
 
@@ -127,7 +127,7 @@ public class vv_Constants
     final static float WORM_DRIVE_ENCODER_MARGIN = 20;
     final static int BEACON_RED_THRESHOLD = 0;
     final static int BEACON_BLUE_THRESHOLD = 0;
-    final static float FLOOR_WHITE_THRESHOLD = 0.23f; //may need to calibrate
+    final static float FLOOR_WHITE_THRESHOLD = 0.26f; //may need to calibrate
     final static boolean TEAM_RED = false;
     final static double EOPD_PROXIMITY_THRESHOLD = 0.00d;
     final static double ULTRASONIC_PROXIMITY_THRESHOLD = 4.8d;

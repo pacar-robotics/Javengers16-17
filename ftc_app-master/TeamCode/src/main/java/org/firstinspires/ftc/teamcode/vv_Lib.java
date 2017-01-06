@@ -68,7 +68,7 @@ public class vv_Lib {
 
         //** disabled to allow for mechanical repairs 12/31/2016
 
-        //setupShot(aOpMode);
+        setupShot(aOpMode);
 
     }
 
@@ -283,6 +283,14 @@ public class vv_Lib {
             aOpMode.telemetryUpdate();
         }
     }
+
+    public void showMxpFusedGyroSensorHeadingOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
+        aOpMode.telemetryAddData("MXP Gyro Sensor", "Heading", ":" + robot.getMxpFusedGyroSensorHeading(aOpMode));
+        if (updateTheDisplay) {
+            aOpMode.telemetryUpdate();
+        }
+    }
+
 
     public void showBaseGyroSensorIntegratedZValueOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
 
@@ -599,14 +607,17 @@ public class vv_Lib {
 
         //compare to the current gyro zIntegrated heading and store the result.
         //the Integrated zValue returned is positive for clockwise turns
-        float turnDegrees = targetDegrees - robot.getMxpGyroSensorHeading(aOpMode);
+        //read the heading and store it.
+
+        float startingHeading = robot.getMxpGyroSensorHeading(aOpMode);
+        float turnDegrees = targetDegrees - startingHeading;
 
         //make the turn using encoders
 
         aOpMode.telemetryAddData("targetDegrees", "Value",
                 ":" + targetDegrees);
         aOpMode.telemetryAddData("Starting Z", "Value",
-                ":" + robot.getMxpGyroSensorHeading(aOpMode));
+                ":" + startingHeading);
         aOpMode.telemetryAddData("Turn Degrees", "Value",
                 ":" + turnDegrees);
 
@@ -627,6 +638,58 @@ public class vv_Lib {
         aOpMode.telemetryUpdate();
 
     }
+
+    public void turnAbsoluteMxpFusedGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
+        //clockwise is represented by clockwise numbers.
+        //counterclockwise by negative angle numbers in degrees.
+        //the fieldReferenceDegrees parameters measures degrees off the initial reference frame when the robot is started and the gyro is
+        //calibrated.
+        // >> IMPORTANT: This depends on the zIntegratedHeading not being altered by relative turns !!!
+
+        //first take the absolute degrees and modulus down to 0 and 359.
+
+        float targetDegrees = fieldReferenceDegrees % 360;
+
+        //compare to the current gyro zIntegrated heading and store the result.
+        //the Integrated zValue returned is positive for clockwise turns
+        //read the heading and store it.
+
+        float startingHeading = robot.getMxpFusedGyroSensorHeading(aOpMode);
+        //convert to low angles.
+
+        if (startingHeading > 180) {
+            startingHeading = startingHeading - 360;
+        }
+
+        float turnDegrees = targetDegrees - startingHeading;
+
+        //make the turn using encoders
+
+        aOpMode.telemetryAddData("targetDegrees", "Value",
+                ":" + targetDegrees);
+        aOpMode.telemetryAddData("Fused Starting Heading", "Value",
+                ":" + startingHeading);
+        aOpMode.telemetryAddData("Turn Degrees", "Value",
+                ":" + turnDegrees);
+
+        aOpMode.telemetryUpdate();
+
+        turnUsingEncoders(aOpMode, TURN_POWER, Math.abs(turnDegrees),
+                turnDegrees > 0 ? TurnDirectionEnum.Clockwise :
+                        TurnDirectionEnum.Counterclockwise);
+
+        float finalDegrees = robot.getMxpFusedGyroSensorHeading(aOpMode);
+        Thread.sleep(100); //cooling off after gyro read to prevent error in next run.
+
+
+        aOpMode.telemetryAddData("New Fused Heading Degrees", "Value:",
+                ":" + finalDegrees);
+        aOpMode.telemetryAddData("Turn Error Degrees", "Value:",
+                ":" + (targetDegrees - finalDegrees));
+        aOpMode.telemetryUpdate();
+
+    }
+
 
     public void turnPidMxpAbsoluteDegrees(vv_OpMode aOpMode, float turndegrees, float toleranceDegrees)
             throws InterruptedException {
@@ -689,7 +752,6 @@ public class vv_Lib {
 
 
     }
-
 
     public void driveRobotWithPowerFactor(vv_OpMode aOpMode, float powerFactor)
             throws InterruptedException {
@@ -754,6 +816,46 @@ public class vv_Lib {
             stopAllMotors(aOpMode);
         }
     }
+
+
+    public void driveRobotFieldOrientedWithPowerFactor(vv_OpMode aOpMode, float powerFactor)
+            throws InterruptedException {
+
+        if (Math.abs(aOpMode.gamepad1.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
+                Math.abs(aOpMode.gamepad1.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
+            //we are not in deadzone. Driver is pushing left joystick
+
+            universalMoveRobotForTeleOp(aOpMode, aOpMode.gamepad1.left_stick_x * powerFactor,
+                    aOpMode.gamepad1.left_stick_y * powerFactor);
+
+        } else {
+            if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
+                    Math.abs(aOpMode.gamepad1.right_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
+                //we are not in deadzone. Driver is pushing right joystick
+
+                //the angle in degrees of the joystick is
+
+                double joystickDegrees = Math.atan2(aOpMode.gamepad1.right_stick_y, aOpMode.gamepad1.right_stick_x);
+                //this angle is in radians.
+                //we need to convert to degrees.
+                joystickDegrees = Math.toDegrees(joystickDegrees);
+                //we can ignore the magnitude, as we are only interested in turn angles.
+
+                //now lets turn the robot head to mirror the direction of joystick
+                turnAbsoluteMxpGyroDegrees(aOpMode, (float) joystickDegrees);
+                Thread.sleep(50);
+
+            } else {
+                //both joysticks are at rest, stop the robot.
+
+                stopAllMotors(aOpMode);
+            }
+        }
+
+    }
+
+
+
 
 
     /**
@@ -899,6 +1001,14 @@ public class vv_Lib {
         robot.universalMoveRobot(aOpMode, xAxisVelocity,
                 yAxisVelocity, rotationalVelocity, duration, condition, isPulsed, pulseWidthDuration, pulseRestDuration);
     }
+
+    public void universalMoveRobotForTeleOp(vv_OpMode aOpMode, double xAxisVelocity,
+                                            double yAxisVelocity)
+            throws InterruptedException {
+
+        robot.universalMoveRobotForTelOp(aOpMode, xAxisVelocity, yAxisVelocity);
+    }
+
 
     public void universalGyroStabilizedMoveRobotByAxisVelocity(vv_OpMode aOpMode, double xAxisVelocity,
                                                                double yAxisVelocity,
@@ -1161,7 +1271,7 @@ public class vv_Lib {
         Thread.sleep(50);
 
 
-        turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim, readjust to prep for color read
+        //turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim, readjust to prep for color read
 
         detectColorAndPressBeacon(aOpMode, vv_Constants.BeaconColorEnum.BLUE);
 
@@ -1171,6 +1281,46 @@ public class vv_Lib {
 
     }
 
+    public void ScoreBeaconFromTheLeft(vv_OpMode aOpMode) throws InterruptedException {
+
+        //assume the robot is at right angles and facing the beacon but to the right of the white line
+        //when this method is called.
+
+
+        //read distance from ultrasonic sensor, noise filtered, with 7 readings in a set.
+        double distanceToBeaconWall = getFloorUltrasonicReading(aOpMode, 7) / 2.54; //in inches
+        //now try moving that distance, adjusting for inset of ultrasonic sensor
+        //move toward the beacons but stop short (approx 1.5 inches short).
+        moveWheels(aOpMode, (float) (distanceToBeaconWall - 3.5), 0.8f, SidewaysRight, true);
+
+        Thread.sleep(50);
+
+        //now detect the line but at right angles
+        //for first beacon
+
+
+        universalMoveRobotByAxisVelocity(aOpMode, 0.0, -0.25, 0.0, 3000, lineDectectStop, false, 0, 0);
+        //now detect the line but at right angles
+
+        Thread.sleep(50);
+
+        turnAbsoluteMxpGyroDegrees(aOpMode, -90); //with trim, readjust to prep for color read
+
+        Thread.sleep(50);
+
+        moveWheels(aOpMode, 1.5f, 0.20f, Backward, false); // adjust face position to match beacons
+
+        Thread.sleep(50);
+
+        turnAbsoluteMxpGyroDegrees(aOpMode, -90); //with trim, readjust to prep for color read
+
+        detectColorAndPressBeacon(aOpMode, vv_Constants.BeaconColorEnum.RED);
+
+        //now to work on second beacon.
+
+        Thread.sleep(50);
+
+    }
     //conditions that can stop the robot.
 
 
