@@ -118,11 +118,20 @@ public class vv_Lib {
 
     public void dropBall(vv_OpMode aOpMode) throws InterruptedException {
 
+        //close the rear launcher gate
+        robot.closeRearLauncherGate();
+
         //open the launcher gate
-        robot.openLauncherGate();
+        robot.openFrontLauncherGate();
+
         Thread.sleep(550);
+
+
         //wait for a ball to fall.
-        robot.closeLauncherGate();
+        robot.closeFrontLauncherGate();
+
+        robot.openRearLauncherGate();
+
         //close the gate
     }
 
@@ -1074,12 +1083,12 @@ public class vv_Lib {
         robot.setLauncherPowerPosition(aOpMode, position);
     }
 
-    public double getLauncherGatePosition(vv_OpMode aOpMode) {
-        return robot.getLauncherGateServoPosition(aOpMode);
+    public double getFrontLauncherGatePosition(vv_OpMode aOpMode) {
+        return robot.getFrontLauncherGateServoPosition(aOpMode);
     }
 
-    public void setLauncherGatePosition(vv_OpMode aOpMode, double position) {
-        robot.setLauncherGateServoPosition(aOpMode, position);
+    public void setFrontLauncherGatePosition(vv_OpMode aOpMode, double position) {
+        robot.setFrontLauncherGateServoPosition(aOpMode, position);
     }
 
 

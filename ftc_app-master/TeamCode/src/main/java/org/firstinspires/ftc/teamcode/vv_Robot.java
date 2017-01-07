@@ -33,8 +33,10 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.IntakeStateEnum.Off;
-import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_GATE_SERVO_CLOSED;
-import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_GATE_SERVO_OPEN;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_FRONT_GATE_SERVO_CLOSED;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_FRONT_GATE_SERVO_OPEN;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_REAR_GATE_SERVO_CLOSED;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_REAR_GATE_SERVO_OPEN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LEFT_BEACON_BUTTON_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LEFT_MOTOR_TRIM_FACTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_MOTOR_LOOP_TIME;
@@ -78,7 +80,9 @@ public class vv_Robot {
     HardwareMap hwMap = null;
     private DcMotor motorArray[];
     private Servo beaconServoArray[];
-    private Servo launcherGateServo = null;
+    private Servo launcherFrontGateServo = null;
+    private Servo launcherRearGateServo = null;
+
     private TouchSensor beaconTouchSensor;
     private TouchSensor wormDriveTouchSensor;
     private ColorSensor beaconColorSensor;
@@ -185,10 +189,16 @@ public class vv_Robot {
         beaconServoArray[RIGHT_BEACON_BUTTON_SERVO].setPosition(BEACON_SERVO_RIGHT_REST);
 
 
-        launcherGateServo = hwMap.servo.get("servo_launcher_gate");
+        launcherFrontGateServo = hwMap.servo.get("servo_launcher_front_gate");
         //initialize to the closed position
-        launcherGateServo.setPosition(LAUNCH_GATE_SERVO_CLOSED);
+        launcherFrontGateServo.setPosition(LAUNCH_FRONT_GATE_SERVO_CLOSED);
         //wait for these servos to reach desired state
+
+        launcherRearGateServo = hwMap.servo.get("servo_launcher_rear_gate");
+        //initialize to the closed position
+        launcherRearGateServo.setPosition(LAUNCH_REAR_GATE_SERVO_CLOSED);
+        //wait for these servos to reach desired state
+
         Thread.sleep(100);
 
 
@@ -911,22 +921,32 @@ public class vv_Robot {
 
     }
 
-    public void openLauncherGate() throws InterruptedException {
-        launcherGateServo.setPosition(LAUNCH_GATE_SERVO_OPEN);
+    public void openFrontLauncherGate() throws InterruptedException {
+        launcherFrontGateServo.setPosition(LAUNCH_FRONT_GATE_SERVO_OPEN);
         Thread.sleep(100);
     }
 
-    public void closeLauncherGate() throws InterruptedException {
-        launcherGateServo.setPosition(LAUNCH_GATE_SERVO_CLOSED);
+    public void closeFrontLauncherGate() throws InterruptedException {
+        launcherFrontGateServo.setPosition(LAUNCH_FRONT_GATE_SERVO_CLOSED);
         Thread.sleep(100);
     }
 
-    public double getLauncherGateServoPosition(vv_OpMode aOpMode) {
-        return launcherGateServo.getPosition();
+    public void openRearLauncherGate() throws InterruptedException {
+        launcherRearGateServo.setPosition(LAUNCH_REAR_GATE_SERVO_OPEN);
+        Thread.sleep(100);
     }
 
-    public void setLauncherGateServoPosition(vv_OpMode aOpMode, double position) {
-        launcherGateServo.setPosition(position);
+    public void closeRearLauncherGate() throws InterruptedException {
+        launcherRearGateServo.setPosition(LAUNCH_REAR_GATE_SERVO_CLOSED);
+        Thread.sleep(100);
+    }
+
+    public double getFrontLauncherGateServoPosition(vv_OpMode aOpMode) {
+        return launcherFrontGateServo.getPosition();
+    }
+
+    public void setFrontLauncherGateServoPosition(vv_OpMode aOpMode, double position) {
+        launcherFrontGateServo.setPosition(position);
     }
 
     public int getBeaconColorRedValue(vv_OpMode aOpMode) {

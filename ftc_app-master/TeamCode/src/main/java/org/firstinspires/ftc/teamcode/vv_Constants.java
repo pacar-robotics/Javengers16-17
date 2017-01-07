@@ -52,8 +52,11 @@ public class vv_Constants
     static final double BEACON_SERVO_RIGHT_PRESSED = 0.1f;
 
     // Extremes for servo that controls the gate for launch
-    static final double LAUNCH_GATE_SERVO_OPEN = 0.8f;     // Maximum rotational position
-    static final double LAUNCH_GATE_SERVO_CLOSED = 0.3f;
+    static final double LAUNCH_FRONT_GATE_SERVO_OPEN = 0.8f;     // Maximum rotational position
+    static final double LAUNCH_FRONT_GATE_SERVO_CLOSED = 0.3f;
+
+    static final double LAUNCH_REAR_GATE_SERVO_OPEN = 0.6f;     // Maximum rotational position
+    static final double LAUNCH_REAR_GATE_SERVO_CLOSED = 0.1f;
 
 
     //distance between wheels left to right of the Robot in inches.

@@ -33,8 +33,8 @@ public class LauncherGateCalibration extends vv_OpMode {
 
         telemetry.setAutoClear(true);
         for (double i = 0.0f; i < 1.0f; i += 0.1f) {
-            vvLib.setLauncherGatePosition(this, i);
-            telemetryAddData("Servo Position", "Value;", "" + vvLib.getLauncherGatePosition(this));
+            vvLib.setFrontLauncherGatePosition(this, i);
+            telemetryAddData("Servo Position", "Value;", "" + vvLib.getFrontLauncherGatePosition(this));
             telemetryUpdate();
             Thread.sleep(2000);
         }
