@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 
 
-@TeleOp(name = "OxfordFieldOrientedTeleOp", group = "TeleOp")
+@TeleOp(name = "OxfordTeleOp", group = "TeleOp")
 
 public class OxfordTeleOp extends vv_OpMode {
 
@@ -38,7 +38,7 @@ public class OxfordTeleOp extends vv_OpMode {
 
             processLaunch();
 
-            vvLib.driveRobotFieldOrientedWithPowerFactor(this, 0.6f);
+            vvLib.driveRobotWithPowerFactor(this, 0.6f);
 
             processIntake();
 
@@ -76,6 +76,15 @@ public class OxfordTeleOp extends vv_OpMode {
             vvLib.dropBall(this);
             vvLib.shootBall(this);
             vvLib.setupShot(this);
+        }
+        if (gamepad1.b) {
+            vvLib.shootBall(this);
+            vvLib.setupShot(this);
+            Thread.sleep(150);
+        }
+        if (gamepad1.x) {
+            vvLib.dropBall(this);
+            Thread.sleep(150);
         }
     }
 
