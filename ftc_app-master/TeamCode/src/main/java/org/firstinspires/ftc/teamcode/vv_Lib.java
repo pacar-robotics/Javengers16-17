@@ -1219,7 +1219,7 @@ public class vv_Lib {
                 //found blue
                 //press left beacon button
                 extendLeftBeaconButtonPress(aOpMode);
-            } else {
+            } else if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
                 //found red
                 //press right button
                 extendRightBeaconButtonPress(aOpMode);
@@ -1231,20 +1231,23 @@ public class vv_Lib {
                 //found red
                 //press left beacon button
                 extendLeftBeaconButtonPress(aOpMode);
-            } else {
+            } else if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE){
                 //found blue
                 //press right button
                 extendRightBeaconButtonPress(aOpMode);
             }
         }
+
         //lets do a pulse move until the proximity is closed
 
-
+ 
         universalMoveRobotByAxisVelocity(aOpMode, 0.2, 0, 0.0, 2000,
                 eopdOrUltrasonicProximityStop, false, 0, 0);
 
-        universalMoveRobotByAxisVelocity(aOpMode, 0.2, 0, 0.0, 75,
-                eopdProximityStop, true, 75, 25);
+        universalMoveRobotByAxisVelocity(aOpMode, 0.2, 0, 0.0, 210,
+                eopdProximityStop, true, 200, 25);
+
+
 
         Thread.sleep(100);
 
@@ -1264,7 +1267,7 @@ public class vv_Lib {
         double distanceToBeaconWall = getFloorUltrasonicReading(aOpMode, 7) / 2.54; //in inches
         //now try moving that distance, adjusting for inset of ultrasonic sensor
         //move toward the beacons but stop short (approx 1.5 inches short).
-        moveWheels(aOpMode, (float) (distanceToBeaconWall - 3.25), 0.8f, SidewaysRight, true);
+        moveWheels(aOpMode, (float) (distanceToBeaconWall - 2.25), 0.8f, SidewaysRight, true);
 
         //now detect the line but at right angles
         //for first beacon

@@ -22,6 +22,8 @@ repositories {
     flatDir {
         dirs '../libs'
         dirs 'libs', 'C:\\Users\\Krittika\\navx-micro\\android\\libs'
+        dirs 'libs', 'C:\\Users\\Kenneth\\navx-micro\\android\\libs'
+
 
     }
 }

@@ -55,7 +55,7 @@ public class vv_Constants
     static final double LAUNCH_FRONT_GATE_SERVO_OPEN = 0.8f;     // Maximum rotational position
     static final double LAUNCH_FRONT_GATE_SERVO_CLOSED = 0.3f;
 
-    static final double LAUNCH_REAR_GATE_SERVO_OPEN = 0.6f;     // Maximum rotational position
+    static final double LAUNCH_REAR_GATE_SERVO_OPEN = 0.7f;     // Maximum rotational position
     static final double LAUNCH_REAR_GATE_SERVO_CLOSED = 0.1f;
 
 
@@ -130,6 +130,7 @@ public class vv_Constants
     final static float WORM_DRIVE_ENCODER_MARGIN = 20;
     final static int BEACON_RED_THRESHOLD = 0;
     final static int BEACON_BLUE_THRESHOLD = 0;
+    // Average of values is .26f. Half on, Half off is .23f to .24f
     final static float FLOOR_WHITE_THRESHOLD = 0.26f; //may need to calibrate
     final static boolean TEAM_RED = false;
     final static double EOPD_PROXIMITY_THRESHOLD = 0.00d;
