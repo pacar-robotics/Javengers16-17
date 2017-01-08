@@ -633,15 +633,16 @@ public class vv_Robot {
 
     public vv_Constants.BeaconColorEnum getBeaconColor(vv_OpMode aOpMode) throws InterruptedException {
         Thread.sleep(30);
-        if (beaconColorSensor.red() > BEACON_RED_THRESHOLD) {
+        if ((beaconColorSensor.red() > BEACON_RED_THRESHOLD) &&
+                (beaconColorSensor.red() > beaconColorSensor.blue())) {
             return vv_Constants.BeaconColorEnum.RED;
         }
-        if (beaconColorSensor.blue() > BEACON_BLUE_THRESHOLD) {
+        if ((beaconColorSensor.blue() > BEACON_BLUE_THRESHOLD) &&
+                (beaconColorSensor.blue() > beaconColorSensor.red())) {
             return vv_Constants.BeaconColorEnum.BLUE;
         }
+
         return vv_Constants.BeaconColorEnum.UNKNOWN;
-
-
     }
 
 /*
