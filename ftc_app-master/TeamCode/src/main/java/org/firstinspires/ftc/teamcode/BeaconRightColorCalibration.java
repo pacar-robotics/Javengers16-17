@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name = "BeaconColorCalibrationOp", group = "Calibrations")
+@TeleOp(name = "BeaconRightColorCalibrationOp", group = "Calibrations")
 
-public class BeaconColorCalibration extends vv_OpMode {
+public class BeaconRightColorCalibration extends vv_OpMode {
 
     vv_Lib vvLib;
 
@@ -34,7 +34,7 @@ public class BeaconColorCalibration extends vv_OpMode {
 
         while (opModeIsActive()) {
             telemetry.setAutoClear(true);
-            vvLib.showBeaconColorValuesOnTelemetry(this, true);
+            vvLib.showBeaconRightColorValuesOnTelemetry(this, true);
             processBeacon();
             idle();
         }

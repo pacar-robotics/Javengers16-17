@@ -12,7 +12,6 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
@@ -32,88 +31,6 @@ import javax.xml.xpath.XPathFactory;
 @TeleOp
 public class DiagnosticsOp extends vv_OpMode {
 
-	private static class ChoiceRecord {
-		private boolean testMotor;
-		private boolean errorStatus;
-		private ArrayList<String> errorMessages;
-
-		public ChoiceRecord(boolean testMotor) {
-			this.testMotor = testMotor;
-			errorStatus = false;
-			errorMessages = new ArrayList<>();
-		}
-
-		public void addErrorMessage(String errorMessage) {
-			errorMessages.add(errorMessage);
-		}
-
-		public void setErrorStatus(boolean errorStatus) {
-			this.errorStatus = errorStatus;
-		}
-
-		public boolean getTestMotor() {
-			return testMotor;
-		}
-
-		public boolean getErrorStatus() {
-			return errorStatus;
-		}
-
-		public ArrayList<String> getErrorMessages() {
-			return errorMessages;
-		}
-	}
-
-	// Code is based off of AutoXMLParser:
-	// https://gist.github.com/rsquared226/21cf8b0d3e3476b38f22982f698d0388
-	private static class XmlParser {
-		private static final String FILE_NAME = Environment.getExternalStorageDirectory().getPath() +
-				"/PACAR/DiagChoices.xml";
-		private static final String LOG_TAG = "XmlParser";
-
-		private LinkedHashMap<String, Boolean> choicesMap;
-
-		public XmlParser() {
-			choicesMap = new LinkedHashMap<>();
-			parseXml();
-		}
-
-		private void parseXml() {
-			try {
-				File xmlFile = new File(FILE_NAME);
-				DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-				DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-
-				// Attempt to parse XML into DOM structure, initializing document
-				Document document = documentBuilder.parse(xmlFile);
-
-				// Find choices in XML DOM using XPATH
-				XPath xPath = XPathFactory.newInstance().newXPath();
-
-				// xpression is used to identify nodes. Needs to be compiled and stored
-				// Retrieve all elements that are children of Choices
-				// TODO: Change root node in app. For now, node is AutoChoices because I forgot to change it
-				XPathExpression expression = xPath.compile("/AutoChoices/*");
-
-				NodeList nodes = (NodeList) expression.evaluate(document, XPathConstants.NODESET);
-
-				for (int i = 0; i < nodes.getLength(); i++) {
-					choicesMap.put(nodes.item(i).getNodeName().toLowerCase(), Boolean.parseBoolean(nodes.item(i).getTextContent()));
-				}
-			} catch (Exception e) {
-				Log.e(LOG_TAG, e.getMessage());
-				e.printStackTrace();
-			}
-		}
-
-		public LinkedHashMap<String, Boolean> getChoicesMap() {
-			return choicesMap;
-		}
-	}
-
-	private vv_Lib robotLibrary;
-	private LinkedHashMap<String, ChoiceRecord> choices;
-
 	private static final String LOG_TAG = "DiagnosticsOp";
 	private static final String INPUT_TELEMETRY_KEY = "Input";
 	private static final String OUTPUT_TELEMETRY_KEY = "Output";
@@ -122,6 +39,8 @@ public class DiagnosticsOp extends vv_OpMode {
 	private static final int WHEEL_TIME = 2000; // milliseconds
 	private static final int TOUCH_WAIT_TIME = 5000; // milliseconds
 	private static final int INPUT_WAIT_TIME = 1000; // milliseconds
+	private vv_Lib robotLibrary;
+	private LinkedHashMap<String, ChoiceRecord> choices;
 
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -251,12 +170,6 @@ public class DiagnosticsOp extends vv_OpMode {
 		Thread.sleep(INPUT_WAIT_TIME);
 	}
 
-
-	/*
-	 * Robot element testing methods
-	 * The names are made to be the same as the tag in the XML file, so they do not follow camel-casing
-	 */
-
 	// Motors
 	private boolean frontrightwheel() throws InterruptedException {
 		robotLibrary.runAllMotors(this, 0, WHEEL_POWER, 0, 0);
@@ -273,6 +186,12 @@ public class DiagnosticsOp extends vv_OpMode {
 
 		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
+
+
+	/*
+	 * Robot element testing methods
+	 * The names are made to be the same as the tag in the XML file, so they do not follow camel-casing
+	 */
 
 	private boolean backrightwheel() throws InterruptedException {
 		robotLibrary.runAllMotors(this, 0, 0, 0, WHEEL_POWER);
@@ -373,7 +292,7 @@ public class DiagnosticsOp extends vv_OpMode {
 		cal.setTimeInMillis(System.currentTimeMillis());
 
 		while (System.currentTimeMillis() - cal.getTimeInMillis() > 5000) {
-			robotLibrary.showBeaconColorValuesOnTelemetry(this, true);
+			robotLibrary.showBeaconLeftColorValuesOnTelemetry(this, true);
 		}
 
 		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
@@ -416,5 +335,84 @@ public class DiagnosticsOp extends vv_OpMode {
 		robotLibrary.turnAbsoluteGyroDegrees(this, 180);
 
 		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
+	}
+
+	private static class ChoiceRecord {
+		private boolean testMotor;
+		private boolean errorStatus;
+		private ArrayList<String> errorMessages;
+
+		public ChoiceRecord(boolean testMotor) {
+			this.testMotor = testMotor;
+			errorStatus = false;
+			errorMessages = new ArrayList<>();
+		}
+
+		public void addErrorMessage(String errorMessage) {
+			errorMessages.add(errorMessage);
+		}
+
+		public boolean getTestMotor() {
+			return testMotor;
+		}
+
+		public boolean getErrorStatus() {
+			return errorStatus;
+		}
+
+		public void setErrorStatus(boolean errorStatus) {
+			this.errorStatus = errorStatus;
+		}
+
+		public ArrayList<String> getErrorMessages() {
+			return errorMessages;
+		}
+	}
+
+	// Code is based off of AutoXMLParser:
+	// https://gist.github.com/rsquared226/21cf8b0d3e3476b38f22982f698d0388
+	private static class XmlParser {
+		private static final String FILE_NAME = Environment.getExternalStorageDirectory().getPath() +
+				"/PACAR/DiagChoices.xml";
+		private static final String LOG_TAG = "XmlParser";
+
+		private LinkedHashMap<String, Boolean> choicesMap;
+
+		public XmlParser() {
+			choicesMap = new LinkedHashMap<>();
+			parseXml();
+		}
+
+		private void parseXml() {
+			try {
+				File xmlFile = new File(FILE_NAME);
+				DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+
+				// Attempt to parse XML into DOM structure, initializing document
+				Document document = documentBuilder.parse(xmlFile);
+
+				// Find choices in XML DOM using XPATH
+				XPath xPath = XPathFactory.newInstance().newXPath();
+
+				// xpression is used to identify nodes. Needs to be compiled and stored
+				// Retrieve all elements that are children of Choices
+				// TODO: Change root node in app. For now, node is AutoChoices because I forgot to change it
+				XPathExpression expression = xPath.compile("/AutoChoices/*");
+
+				NodeList nodes = (NodeList) expression.evaluate(document, XPathConstants.NODESET);
+
+				for (int i = 0; i < nodes.getLength(); i++) {
+					choicesMap.put(nodes.item(i).getNodeName().toLowerCase(), Boolean.parseBoolean(nodes.item(i).getTextContent()));
+				}
+			} catch (Exception e) {
+				Log.e(LOG_TAG, e.getMessage());
+				e.printStackTrace();
+			}
+		}
+
+		public LinkedHashMap<String, Boolean> getChoicesMap() {
+			return choicesMap;
+		}
 	}
 }

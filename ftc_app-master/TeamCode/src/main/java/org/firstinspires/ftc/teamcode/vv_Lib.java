@@ -49,6 +49,7 @@ public class vv_Lib {
     protected falseCondition falseStop;
     protected eopdProximityCondition eopdProximityStop;
     protected eopdOrUltrasonicProximityCondition eopdOrUltrasonicProximityStop;
+    protected colorPressVerifiedCondition colorPressVerifiedConditionStop;
 
     protected lineDetectCondition lineDectectStop;
     private vv_Robot robot;
@@ -65,6 +66,7 @@ public class vv_Lib {
         eopdProximityStop = new eopdProximityCondition();
         eopdOrUltrasonicProximityStop = new eopdOrUltrasonicProximityCondition();
         lineDectectStop = new lineDetectCondition();
+        colorPressVerifiedConditionStop = new colorPressVerifiedCondition();
 
         //** disabled to allow for mechanical repairs 12/31/2016
 
@@ -247,36 +249,68 @@ public class vv_Lib {
         }
     }
 
-    public void showBeaconColorValuesOnTelemetry(vv_OpMode aOpMode,
-                                                 boolean updateTheDisplay)
+    public void showBeaconLeftColorValuesOnTelemetry(vv_OpMode aOpMode,
+                                                     boolean updateTheDisplay)
             throws InterruptedException {
 
         String color = "Unknown";
 
-        if (robot.getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
+        if (robot.getBeaconLeftColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
             color = "RED";
         }
 
-        if (robot.getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE) {
+        if (robot.getBeaconLeftColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE) {
             color = "BLUE";
         }
-        if (robot.getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.UNKNOWN) {
+        if (robot.getBeaconLeftColor(aOpMode) == vv_Constants.BeaconColorEnum.UNKNOWN) {
             color = "Dont Know";
         }
 
-        aOpMode.telemetryAddData("Beacon red Val", "values:",
-                "Red:" + robot.getBeaconColorRedValue(aOpMode));
-        aOpMode.telemetryAddData("Beacon red Val", "values:",
-                "Green:" + robot.getBeaconColorGreenValue(aOpMode));
-        aOpMode.telemetryAddData("Beacon red Val", "values:",
-                "Blue:" + robot.getBeaconColorBlueValue(aOpMode));
+        aOpMode.telemetryAddData("Beacon Left Red Val", "values:",
+                "Red:" + robot.getBeaconLeftColorRedValue(aOpMode));
+        aOpMode.telemetryAddData("Beacon Left Green Val", "values:",
+                "Green:" + robot.getBeaconLeftColorGreenValue(aOpMode));
+        aOpMode.telemetryAddData("Beacon Left Blue Val", "values:",
+                "Blue:" + robot.getBeaconLeftColorBlueValue(aOpMode));
 
-        aOpMode.telemetryAddData("Beacon Color Choice", "Choice", color);
+        aOpMode.telemetryAddData("Beacon LEFT  Color Choice", "Choice", color);
 
         if (updateTheDisplay) {
             aOpMode.telemetryUpdate();
         }
     }
+
+    public void showBeaconRightColorValuesOnTelemetry(vv_OpMode aOpMode,
+                                                      boolean updateTheDisplay)
+            throws InterruptedException {
+
+        String color = "Unknown";
+
+        if (robot.getBeaconRightColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
+            color = "RED";
+        }
+
+        if (robot.getBeaconRightColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE) {
+            color = "BLUE";
+        }
+        if (robot.getBeaconRightColor(aOpMode) == vv_Constants.BeaconColorEnum.UNKNOWN) {
+            color = "Dont Know";
+        }
+
+        aOpMode.telemetryAddData("Beacon Right Red Val", "values:",
+                "Red:" + robot.getBeaconRightColorRedValue(aOpMode));
+        aOpMode.telemetryAddData("Beacon Right Green Val", "values:",
+                "Green:" + robot.getBeaconRightColorGreenValue(aOpMode));
+        aOpMode.telemetryAddData("Beacon Right Val", "values:",
+                "Blue:" + robot.getBeaconRightColorBlueValue(aOpMode));
+
+        aOpMode.telemetryAddData("Beacon RIGHT Color Choice", "Choice", color);
+
+        if (updateTheDisplay) {
+            aOpMode.telemetryUpdate();
+        }
+    }
+
 
 
     public void showBaseGyroSensorHeadingOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
@@ -319,17 +353,23 @@ public class vv_Lib {
     }
 
     public void turnBeaconColorSensorLedOn(vv_OpMode aOpMode) throws InterruptedException {
-        robot.enableBeaconColorSensorLed(aOpMode);
+        robot.enableBeaconLeftColorSensorLed(aOpMode);
     }
 
     public void turnBeaconColorSensorLedOff(vv_OpMode aOpMode) throws InterruptedException {
-        robot.disableBeaconColorSensorLed(aOpMode);
+        robot.disableBeaconLeftColorSensorLed(aOpMode);
     }
 
-    public vv_Constants.BeaconColorEnum getBeaconColor(vv_OpMode aOpMode)
+    public vv_Constants.BeaconColorEnum getBeaconLeftColor(vv_OpMode aOpMode)
             throws InterruptedException {
-        return robot.getBeaconColor(aOpMode);
+        return robot.getBeaconLeftColor(aOpMode);
     }
+
+    public vv_Constants.BeaconColorEnum getBeaconRightColor(vv_OpMode aOpMode)
+            throws InterruptedException {
+        return robot.getBeaconRightColor(aOpMode);
+    }
+
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
     private void moveForwardToPosition(vv_OpMode aOpMode, float distance,
@@ -1215,11 +1255,11 @@ public class vv_Lib {
 
         if (teamColor == vv_Constants.BeaconColorEnum.BLUE) {
             //team blue
-            if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE) {
+            if (getBeaconLeftColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE) {
                 //found blue
                 //press left beacon button
                 extendLeftBeaconButtonPress(aOpMode);
-            } else if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
+            } else if (getBeaconLeftColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
                 //found red
                 //press right button
                 extendRightBeaconButtonPress(aOpMode);
@@ -1227,11 +1267,11 @@ public class vv_Lib {
         }
         if (teamColor == vv_Constants.BeaconColorEnum.RED) {
             //team red
-            if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
+            if (getBeaconLeftColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
                 //found red
                 //press left beacon button
                 extendLeftBeaconButtonPress(aOpMode);
-            } else if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE){
+            } else if (getBeaconLeftColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE) {
                 //found blue
                 //press right button
                 extendRightBeaconButtonPress(aOpMode);
@@ -1244,8 +1284,9 @@ public class vv_Lib {
         universalMoveRobotByAxisVelocity(aOpMode, 0.2, 0, 0.0, 2000,
                 eopdOrUltrasonicProximityStop, false, 0, 0);
 
-        universalMoveRobotByAxisVelocity(aOpMode, 0.2, 0, 0.0, 210,
-                eopdProximityStop, true, 200, 25);
+        //lets keep pulsing forward until the color changes or time runs out.
+        universalMoveRobotByAxisVelocity(aOpMode, 0.2, 0, 0.0, 1500,
+                colorPressVerifiedConditionStop, true, 100, 100);
 
 
 
@@ -1267,7 +1308,7 @@ public class vv_Lib {
         double distanceToBeaconWall = getFloorUltrasonicReading(aOpMode, 7) / 2.54; //in inches
         //now try moving that distance, adjusting for inset of ultrasonic sensor
         //move toward the beacons but stop short (approx 1.5 inches short).
-        moveWheels(aOpMode, (float) (distanceToBeaconWall - 2.25), 0.8f, SidewaysRight, true);
+        moveWheels(aOpMode, (float) (distanceToBeaconWall - 4.0), 0.8f, SidewaysRight, true);
 
         //now detect the line but at right angles
         //for first beacon
@@ -1276,21 +1317,17 @@ public class vv_Lib {
         universalMoveRobotByAxisVelocity(aOpMode, 0.0, 0.25, 0.0, 3000, lineDectectStop, false, 0, 0);
         //now detect the line but at right angles
 
-        Thread.sleep(50);
+        Thread.sleep(25);
 
         moveWheels(aOpMode, 4.3f, 0.20f, Backward, false); // adjust face position to match beacons
 
-        Thread.sleep(50);
-
+        Thread.sleep(25);
 
         //turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim, readjust to prep for color read
 
         detectColorAndPressBeacon(aOpMode, vv_Constants.BeaconColorEnum.BLUE);
 
-        //now to work on second beacon.
-
-        Thread.sleep(50);
-
+        Thread.sleep(25);
     }
 
     public void ScoreBeaconFromTheLeft(vv_OpMode aOpMode) throws InterruptedException {
@@ -1303,9 +1340,9 @@ public class vv_Lib {
         double distanceToBeaconWall = getFloorUltrasonicReading(aOpMode, 7) / 2.54; //in inches
         //now try moving that distance, adjusting for inset of ultrasonic sensor
         //move toward the beacons but stop short (approx 1.5 inches short).
-        moveWheels(aOpMode, (float) (distanceToBeaconWall - 3.25), 0.8f, SidewaysRight, true);
+        moveWheels(aOpMode, (float) (distanceToBeaconWall - 4), 0.8f, SidewaysRight, true);
 
-        Thread.sleep(50);
+        Thread.sleep(25);
 
         //now detect the line but at right angles
         //for first beacon
@@ -1357,6 +1394,15 @@ public class vv_Lib {
         public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
             return ((getEopdRawValue(aOpMode) > EOPD_PROXIMITY_THRESHOLD) ||
                     ((getFloorUltrasonicReading(aOpMode, 7) / 2.54) < ULTRASONIC_PROXIMITY_THRESHOLD));
+
+        }
+    }
+
+    public class colorPressVerifiedCondition implements vv_OpMode.StopCondition {
+        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+            //button is pressed because both colors match , not a strong test but a good starting point for
+            //teleop.
+            return (getBeaconLeftColor(aOpMode) == getBeaconRightColor(aOpMode));
 
         }
     }

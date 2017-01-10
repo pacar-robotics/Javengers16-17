@@ -38,7 +38,7 @@ public class BeaconTest extends vv_OpMode {
         telemetryUpdate();
         Thread.sleep(2000);
 
-        if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.BLUE) {
+        if (vvLib.getBeaconLeftColor(this) == vv_Constants.BeaconColorEnum.BLUE) {
             telemetryAddData("TEAM BLUE:", "Value;", ":Found Blue");
             telemetryUpdate();
             Thread.sleep(2000);
@@ -50,7 +50,7 @@ public class BeaconTest extends vv_OpMode {
             Thread.sleep(1000);
         }
 
-        if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.RED) {
+        if (vvLib.getBeaconLeftColor(this) == vv_Constants.BeaconColorEnum.RED) {
             telemetryAddData("TEAM BLUE:", "Value;", ":Found RED");
             telemetryUpdate();
             Thread.sleep(2000);
@@ -62,7 +62,7 @@ public class BeaconTest extends vv_OpMode {
             Thread.sleep(1000);
         }
 
-        if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.UNKNOWN) {
+        if (vvLib.getBeaconLeftColor(this) == vv_Constants.BeaconColorEnum.UNKNOWN) {
             telemetryAddData("TEAM BLUE:", "Value;", ":Found NO COLOR");
             telemetryUpdate();
             Thread.sleep(2000);
@@ -77,7 +77,7 @@ public class BeaconTest extends vv_OpMode {
         telemetryUpdate();
         Thread.sleep(2000);
 
-        if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.BLUE) {
+        if (vvLib.getBeaconLeftColor(this) == vv_Constants.BeaconColorEnum.BLUE) {
             telemetryAddData("TEAM RED:", "Value;", ":Found Blue");
             telemetryUpdate();
             Thread.sleep(2000);
@@ -89,7 +89,7 @@ public class BeaconTest extends vv_OpMode {
             Thread.sleep(1000);
         }
 
-        if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.RED) {
+        if (vvLib.getBeaconLeftColor(this) == vv_Constants.BeaconColorEnum.RED) {
             telemetryAddData("TEAM RED:", "Value;", ":Found RED");
             telemetryUpdate();
             Thread.sleep(2000);
@@ -101,7 +101,7 @@ public class BeaconTest extends vv_OpMode {
             Thread.sleep(1000);
         }
 
-        if (vvLib.getBeaconColor(this) == vv_Constants.BeaconColorEnum.UNKNOWN) {
+        if (vvLib.getBeaconLeftColor(this) == vv_Constants.BeaconColorEnum.UNKNOWN) {
             telemetryAddData("TEAM RED:", "Value;", ":Found NO COLOR");
             telemetryUpdate();
             Thread.sleep(2000);
