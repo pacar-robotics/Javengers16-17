@@ -870,34 +870,50 @@ public class vv_Lib {
     public void driveRobotFieldOrientedWithPowerFactor(vv_OpMode aOpMode, float powerFactor)
             throws InterruptedException {
 
+        //process joysticks
+
         if (Math.abs(aOpMode.gamepad1.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
                 Math.abs(aOpMode.gamepad1.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
             //we are not in deadzone. Driver is pushing left joystick
+            //lets make the robot move in chosen angle and magnitude.
 
-            universalMoveRobotForTeleOp(aOpMode, aOpMode.gamepad1.left_stick_x * powerFactor,
-                    aOpMode.gamepad1.left_stick_y * powerFactor);
+            universalMoveRobotForFieldOrientedTeleOp(aOpMode,
+                    robot.getGamePad1LeftJoystickPolarMagnitude(aOpMode) * powerFactor,
+                    robot.getGamePad1LeftJoystickPolarAngle(aOpMode)
+                            + 90 - //for rotated orientation of robot at start of game.
+                            robot.getMxpGyroSensorHeading(aOpMode)); //for yaw on field.
+
 
         } else {
-            if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
-                    Math.abs(aOpMode.gamepad1.right_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
-                //we are not in deadzone. Driver is pushing right joystick
+            if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
 
-                //the angle in degrees of the joystick is
+                //we are not in deadzone. Driver is pushing right joystick, sideways
+                float turnVelocity = (float) robot.getGamePad1RightJoystickPolarMagnitude(aOpMode) * powerFactor;
 
-                double joystickDegrees = Math.atan2(aOpMode.gamepad1.right_stick_y, aOpMode.gamepad1.right_stick_x);
-                //this angle is in radians.
-                //we need to convert to degrees.
-                joystickDegrees = Math.toDegrees(joystickDegrees);
-                //we can ignore the magnitude, as we are only interested in turn angles.
+                if (aOpMode.gamepad1.right_stick_x > 0) {
+                    //turn clockwise to correct magnitude
+                    robot.runMotors(aOpMode, turnVelocity, -turnVelocity, turnVelocity, -turnVelocity);
+                } else {
+                    //turn counter-clockwise
+                    robot.runMotors(aOpMode, -turnVelocity, turnVelocity, -turnVelocity, turnVelocity);
+                }
 
-                //now lets turn the robot head to mirror the direction of joystick
-                turnAbsoluteMxpGyroDegrees(aOpMode, (float) joystickDegrees);
-                Thread.sleep(50);
 
             } else {
                 //both joysticks are at rest, stop the robot.
 
                 stopAllMotors(aOpMode);
+            }
+
+            //process dpads
+            if (aOpMode.gamepad1.dpad_down) {
+                turnAbsoluteMxpGyroDegrees(aOpMode, 0);
+            } else if (aOpMode.gamepad1.dpad_up) {
+                turnAbsoluteMxpGyroDegrees(aOpMode, 180);
+            } else if (aOpMode.gamepad1.dpad_left) {
+                turnAbsoluteMxpGyroDegrees(aOpMode, -90);
+            } else if (aOpMode.gamepad1.dpad_right) {
+                turnAbsoluteMxpGyroDegrees(aOpMode, 90);
             }
         }
 
@@ -1056,6 +1072,15 @@ public class vv_Lib {
             throws InterruptedException {
 
         robot.universalMoveRobotForTelOp(aOpMode, xAxisVelocity, yAxisVelocity);
+    }
+
+    public void universalMoveRobotForFieldOrientedTeleOp(vv_OpMode aOpMode, double polarMagnitude,
+                                                         double polarAngle)
+            throws InterruptedException {
+
+        robot.universalMoveRobotForTelOp(aOpMode,
+                polarMagnitude * Math.sin(Math.toRadians(polarAngle)), //trig in radians
+                polarMagnitude * Math.cos(Math.toRadians(polarAngle)));
     }
 
 
@@ -1239,6 +1264,20 @@ public class vv_Lib {
     public void showEopdValueOnTelemetry(vv_OpMode aOpMode) {
         aOpMode.telemetryAddData("EOPD raw Value:", "Value", ":" +
                 robot.getEopdRawValue(aOpMode));
+        aOpMode.telemetryUpdate();
+    }
+
+    public void showGamepad1PolarCoordinates(vv_OpMode aOpMode) {
+        aOpMode.telemetryAddData("Rot Left Stick:", "Angle:", ":" +
+                robot.getGamePad1LeftJoystickPolarAngle(aOpMode) + "degrees ");
+        aOpMode.telemetryAddData("Rot Left Stick:", "Magnitude:", ":" +
+                robot.getGamePad1LeftJoystickPolarMagnitude(aOpMode));
+
+        aOpMode.telemetryAddData("Rot Right Stick:", "Angle:", ":" +
+                robot.getGamePad1RightJoystickPolarAngle(aOpMode) + "degrees ");
+        aOpMode.telemetryAddData("Rot Right Stick:", "Magnitude:", ":" +
+                robot.getGamePad1RightJoystickPolarMagnitude(aOpMode));
+
         aOpMode.telemetryUpdate();
     }
 

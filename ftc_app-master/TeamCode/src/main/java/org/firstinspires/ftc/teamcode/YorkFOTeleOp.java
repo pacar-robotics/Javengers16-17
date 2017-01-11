@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 
 
-@TeleOp(name = "OxfordFieldOrientedTeleOp", group = "TeleOp")
+@TeleOp(name = "YorkFieldOrientedTeleOp", group = "TeleOp")
 
-public class OxfordFOTeleOp extends vv_OpMode {
+public class YorkFOTeleOp extends vv_OpMode {
 
     vv_Lib vvLib;
 
@@ -44,7 +44,7 @@ public class OxfordFOTeleOp extends vv_OpMode {
 
             processLaunchPowerCalibration();
 
-            processBeacon();
+            //processBeacon();
 
             idle();
 

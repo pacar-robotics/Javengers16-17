@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.text.DecimalFormat;
 
+import static org.firstinspires.ftc.teamcode.vv_Constants.ANALOG_STICK_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
@@ -1495,6 +1496,60 @@ public class vv_Robot {
         }
 
     }
+
+    public double getGamePad1RightJoystickPolarMagnitude(vv_OpMode aOpMode) {
+        //returns the magnitude of the polar vector for the rotation calculations
+        //for field oriented drive
+        //inverted y
+        if ((Math.abs(aOpMode.gamepad1.right_stick_x) > ANALOG_STICK_THRESHOLD) ||
+                (Math.abs(aOpMode.gamepad1.right_stick_y) > ANALOG_STICK_THRESHOLD)) {
+            return (Math.sqrt(Math.pow(aOpMode.gamepad1.right_stick_x, 2.0) +
+                    Math.pow(-aOpMode.gamepad1.right_stick_y, 2.0)));
+        } else {
+            return 0;
+        }
+
+    }
+
+    public double getGamePad1RightJoystickPolarAngle(vv_OpMode aOpMode) {
+        //returns polar angle in degrees of vector for the rotation calculations
+        //for field oriented drive.
+        //inverted y
+        if ((Math.abs(aOpMode.gamepad1.right_stick_x) > ANALOG_STICK_THRESHOLD) ||
+                (Math.abs(aOpMode.gamepad1.right_stick_y) > ANALOG_STICK_THRESHOLD)) {
+            return (Math.toDegrees(Math.atan2(aOpMode.gamepad1.right_stick_x,
+                    -aOpMode.gamepad1.right_stick_y)));
+        } else {
+            return 0;
+        }
+    }
+
+    public double getGamePad1LeftJoystickPolarMagnitude(vv_OpMode aOpMode) {
+        //returns the magnitude of the polar vector for the rotation calculations
+        //for field oriented drive
+        //inverted y
+        if ((Math.abs(aOpMode.gamepad1.left_stick_x) > ANALOG_STICK_THRESHOLD) ||
+                (Math.abs(aOpMode.gamepad1.left_stick_y) > ANALOG_STICK_THRESHOLD)) {
+            return (Math.sqrt(Math.pow(aOpMode.gamepad1.left_stick_x, 2.0) +
+                    Math.pow(-aOpMode.gamepad1.left_stick_y, 2.0)));
+        } else {
+            return 0;
+        }
+    }
+
+    public double getGamePad1LeftJoystickPolarAngle(vv_OpMode aOpMode) {
+        //returns polar angle in degrees of vector for the rotation calculations
+        //for field oriented drive.
+        //inverted y
+        if ((Math.abs(aOpMode.gamepad1.left_stick_x) > ANALOG_STICK_THRESHOLD) ||
+                (Math.abs(aOpMode.gamepad1.left_stick_y) > ANALOG_STICK_THRESHOLD)) {
+            return (Math.toDegrees(Math.atan2(aOpMode.gamepad1.left_stick_x,
+                    -aOpMode.gamepad1.left_stick_y)));
+        } else {
+            return 0;
+        }
+    }
+
 
     public double getEopdRawValue(vv_OpMode aOpMode) {
         return baseEopdSensor.getRawLightDetected();
