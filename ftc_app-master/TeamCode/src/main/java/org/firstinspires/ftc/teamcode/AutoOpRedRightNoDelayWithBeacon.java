@@ -72,7 +72,7 @@ public class AutoOpRedRightNoDelayWithBeacon extends vv_OpMode {
 
         //move robot diagonally in prep for first beacon
 
-        vvLib.universalMoveRobotByAxisVelocity(this, 0.65, 0.86, 0.0, 3250, vvLib.falseStop, false, 0, 0);
+        vvLib.universalMoveRobotByAxisVelocity(this, 0.45, 0.55, 0.0, 3500, vvLib.falseStop, false, 0, 0);
 
         //rotate to face beacon
         vvLib.turnAbsoluteMxpGyroDegrees(this, -90); //with trim
