@@ -78,14 +78,14 @@ public class YorkFOTeleOp extends vv_OpMode {
             vvLib.setupShot(this);
         }
         if (gamepad1.b) {
-            //dont drop the ball but shoot whats there
-            vvLib.shootBall(this);
-            vvLib.setupShot(this);
+            //drop the ball but do not shoot.
+            vvLib.dropBall(this);
             Thread.sleep(150);
         }
         if (gamepad1.x) {
-            //drop the ball but do not shoot.
-            vvLib.dropBall(this);
+            //dont drop the ball but shoot whats there
+            vvLib.shootBall(this);
+            vvLib.setupShot(this);
             Thread.sleep(150);
         }
     }
