@@ -22,11 +22,11 @@ public class YorkFOTeleOp extends vv_OpMode {
         telemetry.setAutoClear(true);
 
 
-        vvLib = new vv_Lib(this);
+        vvLib = new vv_Lib(this); //field oriented init, to not disturb the gyro readings
 
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Hello Driver", ":I am", ":ready!");    //
+        telemetry.addData("TeleOp Driver", ":I am", ":ready!");    //
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
 
@@ -76,6 +76,17 @@ public class YorkFOTeleOp extends vv_OpMode {
             vvLib.dropBall(this);
             vvLib.shootBall(this);
             vvLib.setupShot(this);
+        }
+        if (gamepad1.b) {
+            //dont drop the ball but shoot whats there
+            vvLib.shootBall(this);
+            vvLib.setupShot(this);
+            Thread.sleep(150);
+        }
+        if (gamepad1.x) {
+            //drop the ball but do not shoot.
+            vvLib.dropBall(this);
+            Thread.sleep(150);
         }
     }
 

@@ -133,6 +133,8 @@ public class vv_Constants
     // Average of values is .26f. Half on, Half off is .23f to .24f
     final static float FLOOR_WHITE_THRESHOLD = 0.26f; //may need to calibrate
     final static boolean TEAM_RED = false;
+
+
     final static double EOPD_PROXIMITY_THRESHOLD = 0.00d;
     final static double ULTRASONIC_PROXIMITY_THRESHOLD = 4.8d;
     BeaconColorEnum BeaconColor;
@@ -143,6 +145,11 @@ public class vv_Constants
         RED,
         BLUE,
         UNKNOWN
+    }
+
+    enum AllianceColorEnum {
+        BLUE,
+        RED
     }
 
     //values that control the worm drive motor to adjust tension of the Launch arm

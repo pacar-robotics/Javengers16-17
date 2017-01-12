@@ -158,6 +158,13 @@ public class vv_Robot {
 
 
         baseGyroSensor = (ModernRoboticsI2cGyro) hwMap.gyroSensor.get("base_gyro_sensor");
+        //allocate the mxp gyro sensor.
+
+        baseMxpGyroSensor = AHRS.getInstance(hwMap.deviceInterfaceModule.get("dim"),
+                NAVX_DIM_I2C_PORT,
+                AHRS.DeviceDataType.kProcessedData);
+
+
         baseGyroSensor.calibrate();
         Thread.sleep(100);
         while (baseGyroSensor.isCalibrating()) {
@@ -166,12 +173,6 @@ public class vv_Robot {
             aOpMode.idle();
         }
         aOpMode.DBG("after gyro calib");
-
-        //allocate the mxp gyro sensor.
-
-        baseMxpGyroSensor = AHRS.getInstance(hwMap.deviceInterfaceModule.get("dim"),
-                NAVX_DIM_I2C_PORT,
-                AHRS.DeviceDataType.kProcessedData);
 
 
         while (baseMxpGyroSensor.isCalibrating()) {
@@ -184,12 +185,9 @@ public class vv_Robot {
         }
 
 
-
         //zero out the yaw value, so this will be the frame of reference for future calls.
         //do not call this for duration of run after this.
         baseMxpGyroSensor.zeroYaw();
-
-
 
 
         armSensor = hwMap.touchSensor.get("touch_arm_sensor");
@@ -228,11 +226,9 @@ public class vv_Robot {
         motorArray[WORM_DRIVE_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
 
 
-
         //reset encoders for motors always used in encoded mode
         motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
 
 
         while (motorArray[WORM_DRIVE_MOTOR].getCurrentPosition() != 0) {
@@ -246,7 +242,6 @@ public class vv_Robot {
         motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-
         // Set all base motors to zero power
         stopBaseMotors(aOpMode);
 
@@ -254,6 +249,15 @@ public class vv_Robot {
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
+
+        //final initialization countdown to ensure gyro stability if not Field Oriented
+
+        for (int i = 10; i > 0; i--) {
+            aOpMode.telemetryAddData("Completing ", " Initialization Countdown->", "[[ " + i + " ]]");
+            aOpMode.telemetryUpdate();
+            Thread.sleep(1000);
+        }
+
 
     }
 
@@ -1553,6 +1557,10 @@ public class vv_Robot {
 
     public double getEopdRawValue(vv_OpMode aOpMode) {
         return baseEopdSensor.getRawLightDetected();
+    }
+
+    protected void setMxpGyroZeroYaw(vv_OpMode aOpMode) {
+        baseMxpGyroSensor.zeroYaw();
     }
 
 

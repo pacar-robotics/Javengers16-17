@@ -74,6 +74,7 @@ public class vv_Lib {
 
     }
 
+
     /**
      * moveWheels method
      *
@@ -884,37 +885,46 @@ public class vv_Lib {
                             robot.getMxpGyroSensorHeading(aOpMode)); //for yaw on field.
 
 
-        } else {
-            if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
+        }
+        if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
 
-                //we are not in deadzone. Driver is pushing right joystick, sideways
-                float turnVelocity = (float) robot.getGamePad1RightJoystickPolarMagnitude(aOpMode) * powerFactor;
+            //we are not in deadzone. Driver is pushing right joystick, sideways
+            float turnVelocity = (float) robot.getGamePad1RightJoystickPolarMagnitude(aOpMode) * powerFactor;
 
-                if (aOpMode.gamepad1.right_stick_x > 0) {
-                    //turn clockwise to correct magnitude
-                    robot.runMotors(aOpMode, turnVelocity, -turnVelocity, turnVelocity, -turnVelocity);
-                } else {
-                    //turn counter-clockwise
-                    robot.runMotors(aOpMode, -turnVelocity, turnVelocity, -turnVelocity, turnVelocity);
-                }
-
-
+            if (aOpMode.gamepad1.right_stick_x > 0) {
+                //turn clockwise to correct magnitude
+                robot.runMotors(aOpMode, turnVelocity, -turnVelocity, turnVelocity, -turnVelocity);
             } else {
-                //both joysticks are at rest, stop the robot.
-
-                stopAllMotors(aOpMode);
+                //turn counter-clockwise
+                robot.runMotors(aOpMode, -turnVelocity, turnVelocity, -turnVelocity, turnVelocity);
             }
 
-            //process dpads
-            if (aOpMode.gamepad1.dpad_down) {
-                turnAbsoluteMxpGyroDegrees(aOpMode, 0);
-            } else if (aOpMode.gamepad1.dpad_up) {
-                turnAbsoluteMxpGyroDegrees(aOpMode, 180);
-            } else if (aOpMode.gamepad1.dpad_left) {
-                turnAbsoluteMxpGyroDegrees(aOpMode, -90);
-            } else if (aOpMode.gamepad1.dpad_right) {
-                turnAbsoluteMxpGyroDegrees(aOpMode, 90);
-            }
+
+        }
+
+        if ((Math.abs(aOpMode.gamepad1.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
+                Math.abs(aOpMode.gamepad1.left_stick_y) < vv_Constants.ANALOG_STICK_THRESHOLD) &&
+                Math.abs(aOpMode.gamepad1.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD) {
+            //both joysticks are at rest, stop the robot.
+
+            stopAllMotors(aOpMode);
+        }
+
+        //process dpads
+        if (aOpMode.gamepad1.dpad_down) {
+            turnAbsoluteMxpGyroDegrees(aOpMode, -90);
+        } else if (aOpMode.gamepad1.dpad_up) {
+            turnAbsoluteMxpGyroDegrees(aOpMode, +90);
+        } else if (aOpMode.gamepad1.dpad_left) {
+            turnAbsoluteMxpGyroDegrees(aOpMode, 0);
+        } else if (aOpMode.gamepad1.dpad_right) {
+            turnAbsoluteMxpGyroDegrees(aOpMode, +180);
+        }
+
+        //process yaw reset
+
+        if (aOpMode.gamepad1.y) {
+            robot.setMxpGyroZeroYaw(aOpMode);
         }
 
     }
@@ -954,9 +964,13 @@ public class vv_Lib {
         // else set the ball collector motor power to the intake power
         if (robot.getIntakeState() == vv_Constants.IntakeStateEnum.In ||
                 robot.getIntakeState() == vv_Constants.IntakeStateEnum.Out) {
+            //first close the rear intake servo
+            robot.closeRearLauncherGate();
             robot.setPower(anOp, INTAKE_MOTOR, 0.0f);
             robot.setIntakeState(vv_Constants.IntakeStateEnum.Off);
         } else {
+            //first raise the rear intake servo
+            robot.openRearLauncherGate();
             robot.setPower(anOp, INTAKE_MOTOR, -vv_Constants.INTAKE_POWER); //TODO: Check negate
             robot.setIntakeState(vv_Constants.IntakeStateEnum.In);
         }
