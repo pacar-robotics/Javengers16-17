@@ -380,13 +380,7 @@ public class DiagnosticsOp extends vv_OpMode {
 	}
 
 	private boolean launcherlimittouch() throws InterruptedException {
-		Calendar cal = new GregorianCalendar();
-		cal.setTimeInMillis(System.currentTimeMillis());
-
-		// Wait until sensor is touched or 5 seconds have passed
-		while (!robotLibrary.isArmAtLimit(this) && (System.currentTimeMillis() - cal.getTimeInMillis() < TOUCH_WAIT_TIME));
-
-		return !robotLibrary.isArmAtLimit(this);
+		return robotLibrary.testLauncherTouch(this);
 	}
 
 	private void liftlimittouch() {

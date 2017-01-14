@@ -116,6 +116,24 @@ public class vv_Lib {
 
 	}
 
+	public boolean testLauncherTouch(vv_OpMode aOpMode) throws InterruptedException {
+		robot.setMotorMode(aOpMode, ARM_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+		aOpMode.reset_timer();
+		while (!robot.isArmAtLimit(aOpMode)) {
+			robot.setPower(aOpMode, ARM_MOTOR, 0.6f);
+
+			// If the sensor doesn't detect the touch, something is wrong
+			if (aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
+				return false;
+			}
+			aOpMode.idle();
+		}
+
+		// It exited out of the loop because the sensor has been touched
+		return true;
+	}
+
 	public boolean isArmAtLimit(vv_OpMode aOpMode) {
 		return robot.isArmAtLimit(aOpMode);
 	}
