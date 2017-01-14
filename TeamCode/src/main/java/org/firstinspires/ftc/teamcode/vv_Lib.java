@@ -315,6 +315,10 @@ public class vv_Lib {
 		}
 	}
 
+	public float getMxpGyroSensorHeading(vv_OpMode aOpMode) {
+		return robot.getMxpGyroSensorHeading(aOpMode);
+	}
+
 	public void showMxpFusedGyroSensorHeadingOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
 		aOpMode.telemetryAddData("MXP Gyro Sensor", "Heading", ":" + robot.getMxpFusedGyroSensorHeading(aOpMode));
 		if (updateTheDisplay) {

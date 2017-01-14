@@ -122,6 +122,8 @@ public class DiagnosticsOp extends vv_OpMode {
 	private static final int WHEEL_TIME = 2000; // milliseconds
 	private static final int TOUCH_WAIT_TIME = 5000; // milliseconds
 	private static final int INPUT_WAIT_TIME = 1000; // milliseconds
+	private static final int GYRO_THRESHOLD = 10; // degrees
+	private static final int GYRO_TURN = 90; // degrees
 
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -407,8 +409,13 @@ public class DiagnosticsOp extends vv_OpMode {
 	}
 
 	private boolean gyro() throws InterruptedException {
-		robotLibrary.turnAbsoluteGyroDegrees(this, 180);
+		robotLibrary.turnAbsoluteGyroDegrees(this, GYRO_TURN);
 
-		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
+		// If the two gyros don't match up, then something is wrong
+		if (Math.abs(GYRO_TURN - robotLibrary.getMxpGyroSensorHeading(this)) > GYRO_THRESHOLD) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
