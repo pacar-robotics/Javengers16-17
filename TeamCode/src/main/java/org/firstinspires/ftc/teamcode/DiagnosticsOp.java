@@ -291,22 +291,22 @@ public class DiagnosticsOp extends vv_OpMode {
 	}
 
 	private boolean forwards() throws InterruptedException {
-		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.Forward);
+		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.Forward, false);
 		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	private boolean backwards() throws InterruptedException {
-		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.Backward);
+		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.Backward, false);
 		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	private boolean sidewaysright() throws InterruptedException {
-		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.SidewaysRight);
+		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.SidewaysRight, false);
 		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	private boolean sidewaysleft() throws InterruptedException {
-		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.SidewaysLeft);
+		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.SidewaysLeft, false);
 		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
@@ -397,7 +397,7 @@ public class DiagnosticsOp extends vv_OpMode {
 
 		while (gamepad1.a || gamepad1.b) {
 			for (int i = 0, j = 0; i < 3 && j < 10; i++, j++) {
-				readings[i] = robotLibrary.getFloorUltrasonicReading(this);
+				readings[i] = robotLibrary.getFloorUltrasonicReading(this, 15);
 				//wait between readings
 				Thread.sleep(20);
 				if (readings[i] == 0) {

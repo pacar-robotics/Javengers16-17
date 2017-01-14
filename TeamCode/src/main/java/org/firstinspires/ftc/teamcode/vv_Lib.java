@@ -2,16 +2,23 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import java.util.Arrays;
+
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANALOG_STICK_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT_PRESSED;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT_REST;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_RIGHT_PRESSED;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_RIGHT_REST;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
+import static org.firstinspires.ftc.teamcode.vv_Constants.EOPD_PROXIMITY_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FLOOR_WHITE_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
@@ -20,14 +27,16 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_MAX;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_MIN;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LEFT_BEACON_BUTTON_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_MOTOR_LOOP_TIME;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_ROBOT_TURN_MOTOR_VELOCITY;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_DIAMETER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MIN_ROBOT_TURN_MOTOR_VELOCITY;
+import static org.firstinspires.ftc.teamcode.vv_Constants.RIGHT_BEACON_BUTTON_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ROBOT_TRACK_DISTANCE;
-import static org.firstinspires.ftc.teamcode.vv_Constants.TOUCH_SENSE_POWER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TURN_POWER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TurnDirectionEnum;
+import static org.firstinspires.ftc.teamcode.vv_Constants.ULTRASONIC_PROXIMITY_THRESHOLD;
 
 
 /**
@@ -35,6 +44,13 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.TurnDirectionEnum;
  */
 
 public class vv_Lib {
+
+
+	protected falseCondition falseStop;
+	protected eopdProximityCondition eopdProximityStop;
+	protected eopdOrUltrasonicProximityCondition eopdOrUltrasonicProximityStop;
+
+	protected lineDetectCondition lineDectectStop;
 	private vv_Robot robot;
 
 
@@ -42,6 +58,18 @@ public class vv_Lib {
 			throws InterruptedException {
 		robot = new vv_Robot();
 		robot.init(aOpMode, aOpMode.hardwareMap);
+
+		//initialize stop conditions.
+
+		falseStop = new falseCondition();
+		eopdProximityStop = new eopdProximityCondition();
+		eopdOrUltrasonicProximityStop = new eopdOrUltrasonicProximityCondition();
+		lineDectectStop = new lineDetectCondition();
+
+		//** disabled to allow for mechanical repairs 12/31/2016
+
+		setupShot(aOpMode);
+
 	}
 
 	/**
@@ -53,34 +81,39 @@ public class vv_Lib {
 	 * @param Direction - forward, backward, sideways left, or sideways right
 	 * @throws InterruptedException
 	 */
-	public void moveWheels(vv_OpMode aOpMode, float distance, float Power, DirectionEnum Direction)
+	public void moveWheels(vv_OpMode aOpMode, float distance, float Power,
+	                       DirectionEnum Direction, boolean isRampedPower)
 			throws InterruptedException {
 		if (Direction == Forward) {
 			// moving the robot forward
-			moveForwardToPosition(aOpMode, distance, Power);
+			moveForwardToPosition(aOpMode, distance, Power, isRampedPower);
 		} else if (Direction == Backward) {
 			// moving the robot forward
-			moveBackwardToPosition(aOpMode, distance, Power);
+			moveBackwardToPosition(aOpMode, distance, Power, isRampedPower);
 		} else if (Direction == SidewaysLeft) {
 			// moving the robot forward
-			moveSidewaysLeftToPosition(aOpMode, distance, Power);
+			moveSidewaysLeftToPosition(aOpMode, distance, Power, isRampedPower);
 		} else if (Direction == SidewaysRight) {
 			// moving the robot forward
-			moveSidewaysRightToPosition(aOpMode, distance, Power);
+			moveSidewaysRightToPosition(aOpMode, distance, Power, isRampedPower);
 		}
 		// code for moving forward, backward, sideways
 	}
 
 	public void setupShot(vv_OpMode aOpMode) throws InterruptedException {
+
+
 		robot.setMotorMode(aOpMode, ARM_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 		aOpMode.reset_timer();
 		while (!robot.isArmAtLimit(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
 
-			robot.setPower(aOpMode, ARM_MOTOR, 1.0f);
+			robot.setPower(aOpMode, ARM_MOTOR, 0.6f);
 			aOpMode.idle();
 		}
 		robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
+
+
 	}
 
 	public boolean isArmAtLimit(vv_OpMode aOpMode) {
@@ -88,11 +121,21 @@ public class vv_Lib {
 	}
 
 	public void dropBall(vv_OpMode aOpMode) throws InterruptedException {
+
+		//close the rear launcher gate
+		robot.closeRearLauncherGate();
+
 		//open the launcher gate
-		robot.openLauncherGate();
+		robot.openFrontLauncherGate();
+
 		Thread.sleep(550);
+
+
 		//wait for a ball to fall.
-		robot.closeLauncherGate();
+		robot.closeFrontLauncherGate();
+
+		robot.openRearLauncherGate();
+
 		//close the gate
 	}
 
@@ -102,7 +145,7 @@ public class vv_Lib {
 
 		robot.setPower(aOpMode, ARM_MOTOR, 0.9f);
 
-		Thread.sleep(500);
+		Thread.sleep(300);
 
 		robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
 	}
@@ -130,10 +173,10 @@ public class vv_Lib {
 
 		switch (TurnDirection) {
 			case Clockwise:
-				robot.runRobotToPosition(aOpMode, power, power, power, power, turnDistance, -turnDistance, turnDistance, -turnDistance);
+				robot.runRobotToPosition(aOpMode, power, power, power, power, turnDistance, -turnDistance, turnDistance, -turnDistance, false);
 				break;
 			case Counterclockwise:
-				robot.runRobotToPosition(aOpMode, power, power, power, power, -turnDistance, turnDistance, -turnDistance, turnDistance);
+				robot.runRobotToPosition(aOpMode, power, power, power, power, -turnDistance, turnDistance, -turnDistance, turnDistance, false);
 				break;
 		}
 
@@ -141,33 +184,27 @@ public class vv_Lib {
 		Thread.sleep(50);
 	}
 
-//	public void turnBeaconArm(vv_OpMode aOpMode, vv_Constants.BeaconServoStateEnum BeaconServoStateEnumValue)
-//			throws InterruptedException {
-//		robot.turnBeaconArm(aOpMode, BeaconServoStateEnumValue);
-//	}
-
 
 	public void turnUsingGyro(vv_OpMode aOpMode, float power, float angle, TurnDirectionEnum TurnDirection) {
 		// do we need direction?
 		// absolute vs. relative turns
 	}
 
+    /*
 
-//	public boolean senseTouch(vv_OpMode aOpMode) throws InterruptedException {
-//		return robot.getButtonTouchValue(aOpMode);
-//	}
+    public void moveTillTouch(vv_OpMode aOpMode) throws InterruptedException {
+        aOpMode.reset_timer();
+        while (!senseTouch(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
+            robot.runMotorsSidewaysRight(aOpMode, TOUCH_SENSE_POWER);
+            aOpMode.idle();
+        }
+        robot.stopBaseMotors(aOpMode);
+        if (senseTouch(aOpMode)) {
+            aOpMode.DBG("Touched Sensor");
+        }
+    }
 
-//	public void moveTillTouch(vv_OpMode aOpMode) throws InterruptedException {
-//		aOpMode.reset_timer();
-//		while (!senseTouch(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
-//			robot.runMotorsSidewaysRight(aOpMode, TOUCH_SENSE_POWER);
-//			aOpMode.idle();
-//		}
-//		robot.stopBaseMotors(aOpMode);
-//		if (senseTouch(aOpMode)) {
-//			aOpMode.DBG("Touched Sensor");
-//		}
-//	}
+*/
 
 	/**
 	 * Method that moves robot until the color white is detected
@@ -176,11 +213,26 @@ public class vv_Lib {
 	 * @param aOpMode - object of vv_OpMode class
 	 * @throws InterruptedException
 	 */
-	public void moveTillWhiteLineDetect(vv_OpMode aOpMode, float Power) throws InterruptedException {
+
+	public void moveTillWhiteLineDetect(vv_OpMode aOpMode, float Power, DirectionEnum direction) throws InterruptedException {
 		aOpMode.reset_timer();
 		while ((robot.getFloorLightIntensity(aOpMode) < FLOOR_WHITE_THRESHOLD) &&
 				aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
-			moveSidewaysRight(aOpMode, Power);
+			switch (direction) {
+				case SidewaysRight:
+					moveSidewaysRight(aOpMode, Power);
+					break;
+				case SidewaysLeft:
+					moveSidewaysLeft(aOpMode, Power);
+					break;
+				case Forward:
+					moveForward(aOpMode, Power);
+					break;
+				case Backward:
+					moveBackward(aOpMode, Power);
+					break;
+
+			}
 			aOpMode.idle();
 		}
 		//stop motors
@@ -238,6 +290,20 @@ public class vv_Lib {
 		}
 	}
 
+	public void showMxpGyroSensorHeadingOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
+		aOpMode.telemetryAddData("MXP Gyro Sensor", "Heading", ":" + robot.getMxpGyroSensorHeading(aOpMode));
+		if (updateTheDisplay) {
+			aOpMode.telemetryUpdate();
+		}
+	}
+
+	public void showMxpFusedGyroSensorHeadingOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
+		aOpMode.telemetryAddData("MXP Gyro Sensor", "Heading", ":" + robot.getMxpFusedGyroSensorHeading(aOpMode));
+		if (updateTheDisplay) {
+			aOpMode.telemetryUpdate();
+		}
+	}
+
 
 	public void showBaseGyroSensorIntegratedZValueOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
 
@@ -270,45 +336,49 @@ public class vv_Lib {
 	}
 
 	//Moves robot forward with a distance supplied in centimeters and power between 0 and 1
-	private void moveForwardToPosition(vv_OpMode aOpMode, float distance, float Power)
+	private void moveForwardToPosition(vv_OpMode aOpMode, float distance,
+	                                   float Power, boolean isRampedPower)
 			throws InterruptedException {
 		//we need to store the encoder target position
 		int targetPosition;
 		//calculate target position from the input distance in cm
 		targetPosition = (int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
 		//runs the robot to position
-		robot.runRobotToPositionFB(aOpMode, targetPosition, Power);
+		robot.runRobotToPositionFB(aOpMode, targetPosition, Power, isRampedPower);
 	}
 
 	//Moves robot backward with a distance supplied in centimeters and power between 0 and 1
-	private void moveBackwardToPosition(vv_OpMode aOpMode, float distance, float Power)
+	private void moveBackwardToPosition(vv_OpMode aOpMode,
+	                                    float distance, float Power, boolean isRampedPower)
 			throws InterruptedException {
 		//we need to store the encoder target position
 		int targetPosition;
 		//calculate target position from the input distance in cm
 		targetPosition = -(int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
 		//runs the robot to position with negative power
-		robot.runRobotToPositionFB(aOpMode, targetPosition, Power);
+		robot.runRobotToPositionFB(aOpMode, targetPosition, Power, isRampedPower);
 	}
 
-	private void moveSidewaysLeftToPosition(vv_OpMode aOpMode, float distance, float Power)
+	private void moveSidewaysLeftToPosition(vv_OpMode aOpMode,
+	                                        float distance, float Power, boolean isRampedPower)
 			throws InterruptedException {
 		//we need to store the encoder target position
 		int targetPosition;
 		//calculate target position from the input distance in cm
 		targetPosition = (int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
 		//runs the robot to position with negative power
-		robot.runRobotToPositionSideways(aOpMode, targetPosition, Power);
+		robot.runRobotToPositionSideways(aOpMode, targetPosition, Power, isRampedPower);
 	}
 
-	private void moveSidewaysRightToPosition(vv_OpMode aOpMode, float distance, float Power)
+	private void moveSidewaysRightToPosition(vv_OpMode aOpMode,
+	                                         float distance, float Power, boolean isRampedPower)
 			throws InterruptedException {
 		//we need to store the encoder target position
 		int targetPosition;
 		//calculate target position from the input distance in cm
 		targetPosition = -(int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
 		//runs the robot to position with negative power
-		robot.runRobotToPositionSideways(aOpMode, targetPosition, Power);
+		robot.runRobotToPositionSideways(aOpMode, targetPosition, Power, isRampedPower);
 	}
 
 
@@ -536,6 +606,112 @@ public class vv_Lib {
 
 	}
 
+
+	public void turnAbsoluteMxpGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
+		//clockwise is represented by clockwise numbers.
+		//counterclockwise by negative angle numbers in degrees.
+		//the fieldReferenceDegrees parameters measures degrees off the initial reference frame when the robot is started and the gyro is
+		//calibrated.
+		// >> IMPORTANT: This depends on the zIntegratedHeading not being altered by relative turns !!!
+
+		//first take the absolute degrees and modulus down to 0 and 359.
+
+		float targetDegrees = fieldReferenceDegrees % 360;
+
+		//compare to the current gyro zIntegrated heading and store the result.
+		//the Integrated zValue returned is positive for clockwise turns
+		//read the heading and store it.
+
+		float startingHeading = robot.getMxpGyroSensorHeading(aOpMode);
+		float turnDegrees = targetDegrees - startingHeading;
+
+		//make the turn using encoders
+
+		aOpMode.telemetryAddData("targetDegrees", "Value",
+				":" + targetDegrees);
+		aOpMode.telemetryAddData("Starting Z", "Value",
+				":" + startingHeading);
+		aOpMode.telemetryAddData("Turn Degrees", "Value",
+				":" + turnDegrees);
+
+		aOpMode.telemetryUpdate();
+
+		turnUsingEncoders(aOpMode, TURN_POWER, Math.abs(turnDegrees),
+				turnDegrees > 0 ? TurnDirectionEnum.Clockwise :
+						TurnDirectionEnum.Counterclockwise);
+
+		float finalDegrees = robot.getMxpGyroSensorHeading(aOpMode);
+		Thread.sleep(100); //cooling off after gyro read to prevent error in next run.
+
+
+		aOpMode.telemetryAddData("New Bearing Degrees", "Value:",
+				":" + finalDegrees);
+		aOpMode.telemetryAddData("Turn Error Degrees", "Value:",
+				":" + (targetDegrees - finalDegrees));
+		aOpMode.telemetryUpdate();
+
+	}
+
+	public void turnAbsoluteMxpFusedGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
+		//clockwise is represented by clockwise numbers.
+		//counterclockwise by negative angle numbers in degrees.
+		//the fieldReferenceDegrees parameters measures degrees off the initial reference frame when the robot is started and the gyro is
+		//calibrated.
+		// >> IMPORTANT: This depends on the zIntegratedHeading not being altered by relative turns !!!
+
+		//first take the absolute degrees and modulus down to 0 and 359.
+
+		float targetDegrees = fieldReferenceDegrees % 360;
+
+		//compare to the current gyro zIntegrated heading and store the result.
+		//the Integrated zValue returned is positive for clockwise turns
+		//read the heading and store it.
+
+		float startingHeading = robot.getMxpFusedGyroSensorHeading(aOpMode);
+		//convert to low angles.
+
+		if (startingHeading > 180) {
+			startingHeading = startingHeading - 360;
+		}
+
+		float turnDegrees = targetDegrees - startingHeading;
+
+		//make the turn using encoders
+
+		aOpMode.telemetryAddData("targetDegrees", "Value",
+				":" + targetDegrees);
+		aOpMode.telemetryAddData("Fused Starting Heading", "Value",
+				":" + startingHeading);
+		aOpMode.telemetryAddData("Turn Degrees", "Value",
+				":" + turnDegrees);
+
+		aOpMode.telemetryUpdate();
+
+		turnUsingEncoders(aOpMode, TURN_POWER, Math.abs(turnDegrees),
+				turnDegrees > 0 ? TurnDirectionEnum.Clockwise :
+						TurnDirectionEnum.Counterclockwise);
+
+		float finalDegrees = robot.getMxpFusedGyroSensorHeading(aOpMode);
+		Thread.sleep(100); //cooling off after gyro read to prevent error in next run.
+
+
+		aOpMode.telemetryAddData("New Fused Heading Degrees", "Value:",
+				":" + finalDegrees);
+		aOpMode.telemetryAddData("Turn Error Degrees", "Value:",
+				":" + (targetDegrees - finalDegrees));
+		aOpMode.telemetryUpdate();
+
+	}
+
+
+	public void turnPidMxpAbsoluteDegrees(vv_OpMode aOpMode, float turndegrees, float toleranceDegrees)
+			throws InterruptedException {
+
+		robot.turnPidMxpAbsoluteDegrees(aOpMode, turndegrees, toleranceDegrees);
+
+	}
+
+
 	public void drive1RobotWithPowerFactor(vv_OpMode aOpMode, float powerFactor)
 			throws InterruptedException, vv_Robot.MotorNameNotKnownException {
 
@@ -590,34 +766,60 @@ public class vv_Lib {
 
 	}
 
-
 	public void driveRobotWithPowerFactor(vv_OpMode aOpMode, float powerFactor)
 			throws InterruptedException {
 
+		//Old Code
+        /*
+        // takes the x and y cooridinates of the joystick and calculates the power for each motor that allows the robot to turn in that direction
+        float forwardLeftPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
+        float forwardRightPower = -(aOpMode.gamepad1.left_stick_x * Math.abs(aOpMode.gamepad1.left_stick_x)) - ((Math.abs(aOpMode.gamepad1.left_stick_y) * aOpMode.gamepad1.left_stick_y));
+        float backLeftPower = -(aOpMode.gamepad1.left_stick_x * Math.abs(aOpMode.gamepad1.left_stick_x)) - ((Math.abs(aOpMode.gamepad1.left_stick_y) * aOpMode.gamepad1.left_stick_y));
+        float backRightPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
+        //Code to round powers when the driver wants to move diagonally
+        if ((forwardLeftPower < .5f && forwardLeftPower > -.5f) && (forwardRightPower > .5f || forwardRightPower < .5f)) {
+            forwardLeftPower = 0;
+            backRightPower = 0;
+        }
+        if ((forwardRightPower < .5f && forwardRightPower > -.5f) && (forwardLeftPower > .5f || forwardLeftPower < .5f)) {
+            forwardRightPower = 0;
+            backLeftPower = 0;
+        }
+        float forwardLeftPower = aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x + aOpMode.gamepad1.left_stick_x;
+        float backLeftPower = aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x - aOpMode.gamepad1.left_stick_x;
+        float forwardRightPower =  aOpMode.gamepad1.left_stick_y - aOpMode.gamepad1.right_stick_x - aOpMode.gamepad1.left_stick_x;
+        float backRightPower =  aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x + aOpMode.gamepad1.left_stick_x;
+        */
 
-		// takes the x and y cooridinates of the joystick and calculates the power for each motor that allows the robot to turn in that direction
-		float forwardLeftPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
-		float forwardRightPower = -(aOpMode.gamepad1.left_stick_x * Math.abs(aOpMode.gamepad1.left_stick_x)) - ((Math.abs(aOpMode.gamepad1.left_stick_y) * aOpMode.gamepad1.left_stick_y));
-		float backLeftPower = -(aOpMode.gamepad1.left_stick_x * Math.abs(aOpMode.gamepad1.left_stick_x)) - ((Math.abs(aOpMode.gamepad1.left_stick_y) * aOpMode.gamepad1.left_stick_y));
-		float backRightPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
+		float forwardLeftPower = 0;
+		float backLeftPower = 0;
+		float backRightPower = 0;
+		float forwardRightPower = 0;
 
-		//Code to round powers when the driver wants to move diagonally
-		if ((forwardLeftPower < .5f && forwardLeftPower > -.5f) && (forwardRightPower > .5f || forwardRightPower < .5f)) {
-			forwardLeftPower = 0;
-			backRightPower = 0;
+		if (aOpMode.gamepad1.left_stick_y > vv_Constants.ANALOG_STICK_THRESHOLD &&
+				Math.abs(aOpMode.gamepad1.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD) {
+			forwardLeftPower = aOpMode.gamepad1.left_stick_y;
+			backLeftPower = -aOpMode.gamepad1.left_stick_y;
+			backRightPower = aOpMode.gamepad1.left_stick_y;
+			forwardRightPower = -aOpMode.gamepad1.left_stick_y;
+		} else if (aOpMode.gamepad1.left_stick_y < -vv_Constants.ANALOG_STICK_THRESHOLD &&
+				Math.abs(aOpMode.gamepad1.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD) {
+			forwardLeftPower = aOpMode.gamepad1.left_stick_y;
+			backLeftPower = -aOpMode.gamepad1.left_stick_y;
+			backRightPower = aOpMode.gamepad1.left_stick_y;
+			forwardRightPower = -aOpMode.gamepad1.left_stick_y;
+		} else {
+			forwardLeftPower = aOpMode.gamepad1.left_stick_x;
+			backLeftPower = aOpMode.gamepad1.left_stick_x;
+			backRightPower = aOpMode.gamepad1.left_stick_x;
+			forwardRightPower = aOpMode.gamepad1.left_stick_x;
 		}
-		if ((forwardRightPower < .5f && forwardRightPower > -.5f) && (forwardLeftPower > .5f || forwardLeftPower < .5f)) {
-			forwardRightPower = 0;
-			backLeftPower = 0;
-		}
-//        float forwardLeftPower = aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x + aOpMode.gamepad1.left_stick_x;
-//        float backLeftPower = aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x - aOpMode.gamepad1.left_stick_x;
-//        float forwardRightPower =  aOpMode.gamepad1.left_stick_y - aOpMode.gamepad1.right_stick_x - aOpMode.gamepad1.left_stick_x;
-//        float backRightPower =  aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x + aOpMode.gamepad1.left_stick_x;
+
 
 		//rotates or turns the robot
 		if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
-			runAllMotors(aOpMode, aOpMode.gamepad1.right_stick_x, -aOpMode.gamepad1.right_stick_x, aOpMode.gamepad1.right_stick_x, -aOpMode.gamepad1.right_stick_x);
+			runAllMotors(aOpMode, (aOpMode.gamepad1.right_stick_x * powerFactor), (-aOpMode.gamepad1.right_stick_x * powerFactor),
+					(aOpMode.gamepad1.right_stick_x * powerFactor), (-aOpMode.gamepad1.right_stick_x * powerFactor));
 		}
 		//translates the robot using the Mecanum wheels
 		else if (Math.abs(aOpMode.gamepad1.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
@@ -627,6 +829,47 @@ public class vv_Lib {
 			stopAllMotors(aOpMode);
 		}
 	}
+
+
+	public void driveRobotFieldOrientedWithPowerFactor(vv_OpMode aOpMode, float powerFactor)
+			throws InterruptedException {
+
+		if (Math.abs(aOpMode.gamepad1.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
+				Math.abs(aOpMode.gamepad1.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
+			//we are not in deadzone. Driver is pushing left joystick
+
+			universalMoveRobotForTeleOp(aOpMode, aOpMode.gamepad1.left_stick_x * powerFactor,
+					aOpMode.gamepad1.left_stick_y * powerFactor);
+
+		} else {
+			if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
+					Math.abs(aOpMode.gamepad1.right_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
+				//we are not in deadzone. Driver is pushing right joystick
+
+				//the angle in degrees of the joystick is
+
+				double joystickDegrees = Math.atan2(aOpMode.gamepad1.right_stick_y, aOpMode.gamepad1.right_stick_x);
+				//this angle is in radians.
+				//we need to convert to degrees.
+				joystickDegrees = Math.toDegrees(joystickDegrees);
+				//we can ignore the magnitude, as we are only interested in turn angles.
+
+				//now lets turn the robot head to mirror the direction of joystick
+				turnAbsoluteMxpGyroDegrees(aOpMode, (float) joystickDegrees);
+				Thread.sleep(50);
+
+			} else {
+				//both joysticks are at rest, stop the robot.
+
+				stopAllMotors(aOpMode);
+			}
+		}
+
+	}
+
+
+
+
 
 	/**
 	 * Toggles the power of the Ball Collector Motor to either off or to the power required to
@@ -725,13 +968,71 @@ public class vv_Lib {
 
 
 		// TO MOVE SIDEWAYS RIGHT:
-		/*
+        /*
         front left - backwards
         back right - backwards
         front right - forwards
         back left - forwards
          */
 	}
+
+	public void universalMoveRobotForDuration(vv_OpMode aOpMode, double xAxisVelocity,
+	                                          double yAxisVelocity, double rotationalVelocity, long duration)
+			throws InterruptedException {
+		robot.universalMoveRobotForDuration(aOpMode, xAxisVelocity,
+				yAxisVelocity, rotationalVelocity, duration);
+	}
+
+	public void universalMoveRobotByAngleDirection(vv_OpMode aOpMode, double directionAngle,
+	                                               double velocity, double rotationalVelocity,
+	                                               long duration, vv_OpMode.StopCondition condition,
+	                                               boolean isPulsed, long pulseWidthDuration, long pulseRestDuration)
+			throws InterruptedException {
+
+		//should be refined for full scale.
+		//
+		if (velocity > 0.45) {
+			velocity = -0.45;
+		}
+		if (velocity < 0.2) {
+			velocity = 0.2;
+		}
+
+		double xAxisVelocity = velocity * Math.cos(directionAngle);
+		double yAxisVelocity = velocity * Math.sin(directionAngle);
+
+		robot.universalMoveRobot(aOpMode, xAxisVelocity,
+				yAxisVelocity, rotationalVelocity, duration, condition, isPulsed, pulseWidthDuration, pulseRestDuration);
+	}
+
+	public void universalMoveRobotByAxisVelocity(vv_OpMode aOpMode, double xAxisVelocity,
+	                                             double yAxisVelocity, double rotationalVelocity,
+	                                             long duration, vv_OpMode.StopCondition condition,
+	                                             boolean isPulsed, long pulseWidthDuration, long pulseRestDuration)
+			throws InterruptedException {
+
+		robot.universalMoveRobot(aOpMode, xAxisVelocity,
+				yAxisVelocity, rotationalVelocity, duration, condition, isPulsed, pulseWidthDuration, pulseRestDuration);
+	}
+
+	public void universalMoveRobotForTeleOp(vv_OpMode aOpMode, double xAxisVelocity,
+	                                        double yAxisVelocity)
+			throws InterruptedException {
+
+		robot.universalMoveRobotForTelOp(aOpMode, xAxisVelocity, yAxisVelocity);
+	}
+
+
+	public void universalGyroStabilizedMoveRobotByAxisVelocity(vv_OpMode aOpMode, double xAxisVelocity,
+	                                                           double yAxisVelocity,
+	                                                           long duration, vv_OpMode.StopCondition condition
+	)
+			throws InterruptedException {
+
+		robot.universalGyroStabilizedMoveRobot(aOpMode, xAxisVelocity,
+				yAxisVelocity, duration, condition);
+	}
+
 
 	public void decreaseLauncherPowerWithLimits(vv_OpMode aOpMode) throws InterruptedException,
 			vv_Robot.MotorStalledException {
@@ -786,12 +1087,12 @@ public class vv_Lib {
 		robot.setLauncherPowerPosition(aOpMode, position);
 	}
 
-	public double getLauncherGatePosition(vv_OpMode aOpMode) {
-		return robot.getLauncherGateServoPosition(aOpMode);
+	public double getFrontLauncherGatePosition(vv_OpMode aOpMode) {
+		return robot.getFrontLauncherGateServoPosition(aOpMode);
 	}
 
-	public void setLauncherGatePosition(vv_OpMode aOpMode, double position) {
-		robot.setLauncherGateServoPosition(aOpMode, position);
+	public void setFrontLauncherGatePosition(vv_OpMode aOpMode, double position) {
+		robot.setFrontLauncherGateServoPosition(aOpMode, position);
 	}
 
 
@@ -804,22 +1105,264 @@ public class vv_Lib {
 		return robot.getFloorLightIntensity(aOpMode);
 	}
 
-//	public void setBeaconPosition(vv_OpMode aOpMode, double position)
-//			throws InterruptedException {
-//		robot.setBeaconPosition(aOpMode, position);
-//	}
-//
-//	public double getBeaconPosition(vv_OpMode aOpMode)
-//			throws InterruptedException {
-//		return robot.getBeaconPosition(aOpMode);
-//	}
 
-	public double getFloorUltrasonicReading(vv_OpMode aOpMode) {
-		return robot.getUltrasonicReading(aOpMode);
+	public double getFloorUltrasonicReading(vv_OpMode aOpMode, int ReadingSetSize)
+			throws InterruptedException {
+		return readUltrasonicDistance(aOpMode, ReadingSetSize);
 	}
 
-//	public boolean isBeaconTouchSensorPressed(vv_OpMode aOpMode) throws InterruptedException {
-//		return robot.getButtonTouchValue(aOpMode);
-//	}
+
+	public double getBeaconServoPosition(vv_OpMode aOpMode, int servoName) {
+		return robot.getBeaconServoPosition(aOpMode, servoName);
+	}
+
+	public void setBeaconServoPosition(vv_OpMode aOpMode, int servoName, double position)
+			throws InterruptedException {
+		robot.setBeaconServoPosition(aOpMode, servoName, position);
+	}
+
+	public void pressLeftBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
+		robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
+		Thread.sleep(200);
+		robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
+	}
+
+	public void pressRightBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
+		robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
+		Thread.sleep(200);
+		robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
+	}
+
+	public void extendLeftBeaconButtonPress(vv_OpMode aOpMode) throws InterruptedException {
+		robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
+	}
+
+	public void extendRightBeaconButtonPress(vv_OpMode aOpMode) throws InterruptedException {
+		robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
+	}
+
+	public void closeLeftBeaconButtonPress(vv_OpMode aOpMode) throws InterruptedException {
+		robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
+	}
+
+	public void closeRightBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
+		robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
+	}
+
+
+
+
+	public boolean isBeaconTouchSensorPressed(vv_OpMode aOpMode) {
+		return robot.isBeaconTouchSensorPressed(aOpMode);
+
+	}
+
+	public double readUltrasonicDistance(vv_OpMode aOpMode, int readingSetSize) throws InterruptedException {
+
+		return filterUltrasonicReadings(aOpMode, readingSetSize);
+
+	}
+
+	public double filterUltrasonicReadings(vv_OpMode aOpMode, int readingSetSize)
+			throws InterruptedException {
+
+		double readingsArray[];
+
+		if (readingSetSize < 3) {
+			readingSetSize = 3;
+		}
+
+		if (readingSetSize > 15) {
+			readingSetSize = 15;
+		}
+
+
+		if ((readingSetSize % 2) == 0) {
+			//even number
+			readingSetSize++;
+		}
+
+		readingsArray = new double[readingSetSize];
+
+		//take 9 readings
+		for (int i = 0, j = 0; i < readingSetSize && j < readingSetSize * 2; i++, j++) {
+			//get raw reading
+			readingsArray[i] = robot.getUltrasonicReading(aOpMode);
+			//wait between readings
+			Thread.sleep(30);
+			if (readingsArray[i] == 0) {
+				i--; //bad read, redo. to a maximum of 10 reads
+			}
+		}
+		//Now sort the readings
+		Arrays.sort(readingsArray);
+		//return the middle element to reduce noise
+		return readingsArray[((int) Math.round((double) readingSetSize) / 2) - 1];
+	}
+
+	public void showEopdValueOnTelemetry(vv_OpMode aOpMode) {
+		aOpMode.telemetryAddData("EOPD raw Value:", "Value", ":" +
+				robot.getEopdRawValue(aOpMode));
+		aOpMode.telemetryUpdate();
+	}
+
+	public double getEopdRawValue(vv_OpMode aOpMode) {
+
+		return robot.getEopdRawValue(aOpMode);
+	}
+
+
+	public void detectColorAndPressBeacon(vv_OpMode aOpMode,
+	                                      vv_Constants.BeaconColorEnum teamColor) throws
+			InterruptedException {
+
+
+		if (teamColor == vv_Constants.BeaconColorEnum.BLUE) {
+			//team blue
+			if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE) {
+				//found blue
+				//press left beacon button
+				extendLeftBeaconButtonPress(aOpMode);
+			} else if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
+				//found red
+				//press right button
+				extendRightBeaconButtonPress(aOpMode);
+			}
+		}
+		if (teamColor == vv_Constants.BeaconColorEnum.RED) {
+			//team red
+			if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
+				//found red
+				//press left beacon button
+				extendLeftBeaconButtonPress(aOpMode);
+			} else if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE){
+				//found blue
+				//press right button
+				extendRightBeaconButtonPress(aOpMode);
+			}
+		}
+
+		//lets do a pulse move until the proximity is closed
+
+
+		universalMoveRobotByAxisVelocity(aOpMode, 0.2, 0, 0.0, 2000,
+				eopdOrUltrasonicProximityStop, false, 0, 0);
+
+		universalMoveRobotByAxisVelocity(aOpMode, 0.2, 0, 0.0, 210,
+				eopdProximityStop, true, 200, 25);
+
+
+
+		Thread.sleep(100);
+
+
+		//now retract both beacon presses
+		closeLeftBeaconButtonPress(aOpMode);
+		closeRightBeaconButton(aOpMode);
+	}
+
+	public void ScoreBeaconFromTheRight(vv_OpMode aOpMode) throws InterruptedException {
+
+		//assume the robot is at right angles and facing the beacon but to the left of the white line
+		//when this method is called.
+
+
+		//read distance from ultrasonic sensor, noise filtered, with 7 readings in a set.
+		double distanceToBeaconWall = getFloorUltrasonicReading(aOpMode, 7) / 2.54; //in inches
+		//now try moving that distance, adjusting for inset of ultrasonic sensor
+		//move toward the beacons but stop short (approx 1.5 inches short).
+		moveWheels(aOpMode, (float) (distanceToBeaconWall - 2.25), 0.8f, SidewaysRight, true);
+
+		//now detect the line but at right angles
+		//for first beacon
+
+
+		universalMoveRobotByAxisVelocity(aOpMode, 0.0, 0.25, 0.0, 3000, lineDectectStop, false, 0, 0);
+		//now detect the line but at right angles
+
+		Thread.sleep(50);
+
+		moveWheels(aOpMode, 4.3f, 0.20f, Backward, false); // adjust face position to match beacons
+
+		Thread.sleep(50);
+
+
+		//turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim, readjust to prep for color read
+
+		detectColorAndPressBeacon(aOpMode, vv_Constants.BeaconColorEnum.BLUE);
+
+		//now to work on second beacon.
+
+		Thread.sleep(50);
+
+	}
+
+	public void ScoreBeaconFromTheLeft(vv_OpMode aOpMode) throws InterruptedException {
+
+		//assume the robot is at right angles and facing the beacon but to the right of the white line
+		//when this method is called.
+
+
+		//read distance from ultrasonic sensor, noise filtered, with 7 readings in a set.
+		double distanceToBeaconWall = getFloorUltrasonicReading(aOpMode, 7) / 2.54; //in inches
+		//now try moving that distance, adjusting for inset of ultrasonic sensor
+		//move toward the beacons but stop short (approx 1.5 inches short).
+		moveWheels(aOpMode, (float) (distanceToBeaconWall - 3.25), 0.8f, SidewaysRight, true);
+
+		Thread.sleep(50);
+
+		//now detect the line but at right angles
+		//for first beacon
+
+
+		universalMoveRobotByAxisVelocity(aOpMode, 0.0, -0.25, 0.0, 3000, lineDectectStop, false, 0, 0);
+		//now detect the line but at right angles
+
+		Thread.sleep(25);
+
+		turnAbsoluteMxpGyroDegrees(aOpMode, -90); //with trim, readjust to prep for color read
+
+		Thread.sleep(25);
+
+		//moveWheels(aOpMode, 2.5f, 0.20f, Backward, false); // adjust face position to match beacons
+
+		Thread.sleep(25);
+
+		turnAbsoluteMxpGyroDegrees(aOpMode, -90); //with trim, readjust to prep for color read
+
+		detectColorAndPressBeacon(aOpMode, vv_Constants.BeaconColorEnum.RED);
+
+
+	}
+	//conditions that can stop the robot.
+
+
+	public class lineDetectCondition implements vv_OpMode.StopCondition {
+		public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+			return ((getFloorLightIntensity(aOpMode) >= FLOOR_WHITE_THRESHOLD));
+		}
+	}
+
+	public class falseCondition implements vv_OpMode.StopCondition {
+		//can be used as an empty condition, so the robot keeps running in universal movement
+		public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+			return (false);
+		}
+	}
+
+
+	public class eopdProximityCondition implements vv_OpMode.StopCondition {
+		public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+			return (getEopdRawValue(aOpMode) > EOPD_PROXIMITY_THRESHOLD);
+		}
+	}
+
+	public class eopdOrUltrasonicProximityCondition implements vv_OpMode.StopCondition {
+		public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+			return ((getEopdRawValue(aOpMode) > EOPD_PROXIMITY_THRESHOLD) ||
+					((getFloorUltrasonicReading(aOpMode, 7) / 2.54) < ULTRASONIC_PROXIMITY_THRESHOLD));
+
+		}
+	}
 
 }
