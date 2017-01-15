@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name = "WheelForwardCalibrationOp", group = "Calibrations")
-public class WheelsForwardCalibration extends vv_OpMode {
+@TeleOp(name = "WheelSidewaysCalibrationOp", group = "Calibrations")
+public class WheelsSidewaysCalibration extends vv_OpMode {
 
     /* Declare OpMode members. */
     vv_Lib vvLib;
@@ -31,11 +31,10 @@ public class WheelsForwardCalibration extends vv_OpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        telemetryAddData("Test", "Move", "Moving Forward 48 inches");
+        telemetryAddData("Test", "Move", "Moving Sideways Right 10 inches");
         telemetryUpdate();
 
-        vvLib.universalMoveRobotByAxisVelocity(this, 0.0, 0.5f, 0.0f, 2000, vvLib.falseStop, false, 0, 0);
-
+        vvLib.moveWheels(this, 10f, 0.6f, vv_Constants.DirectionEnum.SidewaysRight, true);
     }
 
 }

@@ -6,6 +6,7 @@ import android.util.Log;
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -15,7 +16,6 @@ import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.text.DecimalFormat;
@@ -24,6 +24,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.ANALOG_STICK_THRESHOLD
 import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BALL_FLAG_SERVO_LOWERED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_BLUE_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_RED_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT_REST;
@@ -84,6 +85,8 @@ public class vv_Robot {
     private Servo beaconServoArray[];
     private Servo launcherFrontGateServo = null;
     private Servo launcherRearGateServo = null;
+    private Servo ballFlagServo = null;
+
 
     private TouchSensor beaconTouchSensor;
     private TouchSensor wormDriveTouchSensor;
@@ -99,7 +102,10 @@ public class vv_Robot {
 
 
     //**
-    private UltrasonicSensor floorUltrasonicSensor;
+    //private UltrasonicSensor floorUltrasonicSensor; //replaced by MR range sensor.
+
+    private ModernRoboticsI2cRangeSensor rangeSensor;
+
     private ElapsedTime period = new ElapsedTime();
     private vv_Constants.IntakeStateEnum IntakeState = Off;
 
@@ -138,7 +144,11 @@ public class vv_Robot {
         beaconLeftColorSensor.setI2cAddress(I2cAddr.create7bit(0x26));
         beaconRightColorSensor.setI2cAddress(I2cAddr.create7bit(0x2e));
 
-        floorUltrasonicSensor = hwMap.ultrasonicSensor.get("floor_ultrasonic_sensor");
+        //floorUltrasonicSensor = hwMap.ultrasonicSensor.get("floor_ultrasonic_sensor");
+        //replaced by mr range sensor.
+
+        rangeSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "range_sensor");
+
         wormDriveTouchSensor = hwMap.touchSensor.get("touch_worm_sensor");
         beaconTouchSensor = hwMap.touchSensor.get("touch_beacon_sensor");
         baseEopdSensor = hwMap.opticalDistanceSensor.get("base_eopd_sensor");
@@ -201,13 +211,15 @@ public class vv_Robot {
         launcherFrontGateServo = hwMap.servo.get("servo_launcher_front_gate");
         //initialize to the closed position
         launcherFrontGateServo.setPosition(LAUNCH_FRONT_GATE_SERVO_CLOSED);
-        //wait for these servos to reach desired state
 
         launcherRearGateServo = hwMap.servo.get("servo_launcher_rear_gate");
         //initialize to the closed position
         launcherRearGateServo.setPosition(LAUNCH_REAR_GATE_SERVO_CLOSED);
-        //wait for these servos to reach desired state
 
+        ballFlagServo = hwMap.servo.get("servo_ball_flag");
+        ballFlagServo.setPosition(BALL_FLAG_SERVO_LOWERED);
+
+        //wait for these servos to reach desired state
         Thread.sleep(100);
 
 
@@ -252,7 +264,7 @@ public class vv_Robot {
 
         //final initialization countdown to ensure gyro stability if not Field Oriented
 
-        for (int i = 10; i > 0; i--) {
+        for (int i = 3; i > 0; i--) {
             aOpMode.telemetryAddData("Completing ", " Initialization Countdown->", "[[ " + i + " ]]");
             aOpMode.telemetryUpdate();
             Thread.sleep(1000);
@@ -573,10 +585,11 @@ public class vv_Robot {
     public void runMotors(vv_OpMode aOpMode, float fl_Power, float fr_Power, float bl_Power, float br_Power)
             throws InterruptedException {
 
-        motorArray[0].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorArray[1].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorArray[2].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorArray[3].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorArray[0].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorArray[1].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorArray[2].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorArray[3].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
         //sets the the power of all motors
         setPower(aOpMode, FRONT_LEFT_MOTOR, fl_Power);
@@ -655,16 +668,6 @@ public class vv_Robot {
     }
 
 
-    public int getBeaconLeftColorSensorAlpha(vv_OpMode aOpMode) throws InterruptedException {
-        Thread.sleep(30);
-        return beaconLeftColorSensor.alpha();
-    }
-
-    public int getBeaconRightColorSensorAlpha(vv_OpMode aOpMode) throws InterruptedException {
-        Thread.sleep(30);
-        return beaconLeftColorSensor.alpha();
-    }
-
     public vv_Constants.BeaconColorEnum getBeaconLeftColor(vv_OpMode aOpMode) throws InterruptedException {
         Thread.sleep(30);
         if ((beaconLeftColorSensor.red() > BEACON_RED_THRESHOLD) &&
@@ -719,17 +722,6 @@ public class vv_Robot {
         Thread.sleep(1000);
     }
 
-    public void waitForTick(vv_OpMode aOpMode, long periodMs) throws InterruptedException {
-
-        long remaining = periodMs - (long) period.milliseconds();
-
-        // sleep for the remaining portion of the regular cycle period.
-        if (remaining > 0)
-            Thread.sleep(remaining);
-
-        // Reset the cycle clock for the next pass.
-        period.reset();
-    }
 
     public boolean baseMotorsAreBusy() {
         return (motorArray[FRONT_LEFT_MOTOR].isBusy() || motorArray[FRONT_RIGHT_MOTOR].isBusy() ||
@@ -1034,14 +1026,27 @@ public class vv_Robot {
         Thread.sleep(100);
     }
 
+    public void setBallFlagServoPosition(vv_OpMode aOpMode, double position)
+            throws InterruptedException {
+        ballFlagServo.setPosition(position);
+        Thread.sleep(100);
+    }
+
+    public double getBallFlagServoPosition(vv_OpMode aOpMode)
+            throws InterruptedException {
+        return ballFlagServo.getPosition();
+    }
+
     public boolean isBeaconTouchSensorPressed(vv_OpMode aOpMode) {
         return beaconTouchSensor.isPressed();
     }
 
+    public double getUltrasonicDistance(vv_OpMode aOpMode) {
+        return rangeSensor.cmUltrasonic() / 2.54; //in inches
+    }
 
-    public double getUltrasonicReading(vv_OpMode aOPMode) {
-
-        return floorUltrasonicSensor.getUltrasonicLevel();
+    public double getOpticalDistance(vv_OpMode aOpMode) {
+        return rangeSensor.cmOptical() / 2.54; //in inches
     }
 
     public void universalMoveRobotForDuration(vv_OpMode aOpMode, double xAxisVelocity,
@@ -1381,8 +1386,8 @@ public class vv_Robot {
 
     }
 
-    public void universalMoveRobotForTelOp(vv_OpMode aOpMode, double xAxisVelocity,
-                                           double yAxisVelocity)
+    public void universalMoveRobotForTeleOp(vv_OpMode aOpMode, double xAxisVelocity,
+                                            double yAxisVelocity)
             throws InterruptedException {
         double fl_velocity = 0;
         double fr_velocity = 0;

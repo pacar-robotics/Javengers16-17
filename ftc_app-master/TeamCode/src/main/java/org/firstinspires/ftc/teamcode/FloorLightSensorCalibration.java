@@ -45,7 +45,7 @@ public class FloorLightSensorCalibration extends vv_OpMode {
 
     public void processDrive()
             throws InterruptedException, vv_Robot.MotorNameNotKnownException {
-        vvLib.drive1RobotWithPowerFactor(this, 0.4f);
+        vvLib.driveRobotWithPowerFactor(this, 0.4f);
     }
 
 

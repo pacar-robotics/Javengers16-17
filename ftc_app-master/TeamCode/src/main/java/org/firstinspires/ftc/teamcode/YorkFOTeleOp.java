@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import static org.firstinspires.ftc.teamcode.vv_Constants.EOPD_PROXIMITY_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 
 
@@ -44,7 +45,7 @@ public class YorkFOTeleOp extends vv_OpMode {
 
             processLaunchPowerCalibration();
 
-            //processBeacon();
+            processBallFlag();
 
             idle();
 
@@ -98,6 +99,17 @@ public class YorkFOTeleOp extends vv_OpMode {
         // Changes Beacon Mechanism to right position in order to score the beacon
         if (gamepad1.dpad_right) {
             vvLib.pressRightBeaconButton(this);
+        }
+
+    }
+
+    private void processBallFlag() throws InterruptedException {
+        //detect if there is a ball in the intake ready to be dropped into
+        //launcher.
+        if (vvLib.getEopdRawValue(this) > EOPD_PROXIMITY_THRESHOLD) {
+            vvLib.raiseBallFlagServo(this);
+        } else {
+            vvLib.lowerBallFlagServo(this);
         }
 
     }

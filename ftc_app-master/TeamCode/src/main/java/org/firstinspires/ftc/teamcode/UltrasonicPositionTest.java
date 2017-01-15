@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
+
 
 @TeleOp(name = "UltrasonicPositionTest", group = "Calibrations")
 public class UltrasonicPositionTest extends vv_OpMode {
@@ -16,13 +18,6 @@ public class UltrasonicPositionTest extends vv_OpMode {
         telemetryUpdate();
         DBG("before try");
 
-
-        readingsArray = new double[3];
-
-        //initialize array
-        for (int i = 0; i < 3; i++) {
-            readingsArray[i] = 0.0f;
-        }
 
         //Initialize library which in turn initializes the robot plus its hardware map
         //We need to pass the this pointer into vv_Lib in order to call some value added functions
@@ -40,25 +35,12 @@ public class UltrasonicPositionTest extends vv_OpMode {
         waitForStart();
 
 
-        telemetryAddData("Positioning Robot to be 4 inches distance from sensor", ":", ".");
+        telemetryAddData("Positioning Robot to be 4 inches distance from wall", ":", ".");
         telemetryUpdate();
-        Thread.sleep(2000);
 
-        //looks like the ultrasonic sensor is accurate to about 16cm or 6 inches.
-        vvLib.moveSidewaysRight(this, 0.5f);
-        while (opModeIsActive() && (vvLib.readUltrasonicDistance(this, 7) > 30)) { //in cm
-            idle();
-        }
-        vvLib.stopAllMotors(this);
-        Thread.sleep(1000);
 
-        //re-orient
-
-        vvLib.turnAbsoluteGyroDegrees(this, 0);
-
-        vvLib.stopAllMotors(this);
-        vvLib.moveWheels(this, 3.5f, 0.4f, vv_Constants.DirectionEnum.SidewaysRight, true);
-        vvLib.turnAbsoluteGyroDegrees(this, 0);
+        double distanceToWall = vvLib.getUltrasonicDistance(this); //in inches
+        vvLib.moveWheels(this, (float) (distanceToWall - 4.0), 0.6f, SidewaysRight, true);
 
 
     }
