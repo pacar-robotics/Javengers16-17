@@ -21,12 +21,16 @@ public class vv_Constants
 	final static float MOTOR_LOWER_POWER_THRESHOLD = 0.20f;
 
 	//forward/backward power limits
-	final static float MOTOR_RAMP_FB_POWER_LOWER_LIMIT = 0.2f;
-	final static float MOTOR_RAMP_FB_POWER_UPPER_LIMIT = 0.9f;
+	final static float MOTOR_RAMP_FB_POWER_LOWER_LIMIT = 0.3f;
+	final static float MOTOR_RAMP_FB_POWER_UPPER_LIMIT = 0.78f;
 
 	//sideways power limit
 	final static float MOTOR_RAMP_SIDEWAYS_POWER_LOWER_LIMIT = 0.6f;
-	final static float MOTOR_RAMP_SIDEWAYS_POWER_UPPER_LIMIT = 0.9f;
+	final static float MOTOR_RAMP_SIDEWAYS_POWER_UPPER_LIMIT = 0.78f;
+
+	//sideways ultrasonic travel power limit
+	final static float MOTOR_ULTRASONIC_SIDEWAYS_POWER_LOWER_LIMIT = 0.18f;
+	final static float MOTOR_ULTRASONIC_SIDEWAYS_POWER_UPPER_LIMIT = 0.78f;
 
 
 	final static float MOTOR_SLOW_START_THRESHOLD = 0.30f;
@@ -46,17 +50,21 @@ public class vv_Constants
 	final static float TRIGGER_THRESHOLD = .25f;
 
 	// Extremes for servo that pushes beacon buttons
-	static final double BEACON_SERVO_LEFT_REST = 0.7f;     // Maximum rotational position
-	static final double BEACON_SERVO_RIGHT_REST = 0.75f;
+	static final double BEACON_SERVO_LEFT_REST = 0.65f;     // Maximum rotational position
+	static final double BEACON_SERVO_RIGHT_REST = 0.65f;
 	static final double BEACON_SERVO_LEFT_PRESSED = 0.15f;
-	static final double BEACON_SERVO_RIGHT_PRESSED = 0.1f;
+	static final double BEACON_SERVO_RIGHT_PRESSED = 0.23f;
 
 	// Extremes for servo that controls the gate for launch
 	static final double LAUNCH_FRONT_GATE_SERVO_OPEN = 0.8f;     // Maximum rotational position
-	static final double LAUNCH_FRONT_GATE_SERVO_CLOSED = 0.3f;
+	static final double LAUNCH_FRONT_GATE_SERVO_CLOSED = 0.45f;
 
 	static final double LAUNCH_REAR_GATE_SERVO_OPEN = 0.7f;     // Maximum rotational position
 	static final double LAUNCH_REAR_GATE_SERVO_CLOSED = 0.1f;
+
+	static final double BALL_FLAG_SERVO_LOWERED = 0.0f;
+	static final double BALL_FLAG_SERVO_RAISED = 0.8f;
+	static final double BALL_FLAG_SERVO_ALARM = 0.1f;
 
 
 	//distance between wheels left to right of the Robot in inches.
@@ -64,15 +72,14 @@ public class vv_Constants
 	//max time to wait in a tight loop, for example in robot turns or autonomous moves
 	final static int MAX_MOTOR_LOOP_TIME = 10000;
 	//max turn velocity for a motor, to be used in autonomous turns of the robot
-	final static float MAX_ROBOT_TURN_MOTOR_VELOCITY = 1.0f;
+	final static float MAX_ROBOT_TURN_MOTOR_VELOCITY = 0.78f;
 	//min turn velocity for a motor, to be used in autonomous turns of the robot
 	final static float MIN_ROBOT_TURN_MOTOR_VELOCITY = 0.15f;
 	//gyro offset to address inertia and gyro lag
 	final static int GYRO_OFFSET = 10;
 
-	final static float TURN_POWER = 0.7f;
+	final static float TURN_POWER = 0.95f;
 	final static float TOUCH_SENSE_POWER = 0.2f;
-
 	//turn this one for debugging messages.
 
 	final static boolean DEBUG = false;
@@ -111,6 +118,9 @@ public class vv_Constants
 	//index of servos
 	final static int LEFT_BEACON_BUTTON_SERVO = 0;
 	final static int RIGHT_BEACON_BUTTON_SERVO = 1;
+	final static int FRONT_GATE_SERVO = 2;
+	final static int REAR_GATE_SERVO = 3;
+	final static int FLAG_SERVO = 4;
 
 
 
@@ -133,8 +143,13 @@ public class vv_Constants
 	// Average of values is .26f. Half on, Half off is .23f to .24f
 	final static float FLOOR_WHITE_THRESHOLD = 0.26f; //may need to calibrate
 	final static boolean TEAM_RED = false;
+
+
 	final static double EOPD_PROXIMITY_THRESHOLD = 0.00d;
-	final static double ULTRASONIC_PROXIMITY_THRESHOLD = 4.8d;
+	final static double RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD = 1.2d;
+	final static double RANGESENSOR_OPTICAL_PROXIMITY_THRESHOLD = 1.0d;
+
+
 	BeaconColorEnum BeaconColor;
 	DirectionEnum Direction;
 	TurnDirectionEnum TurnDirection;
@@ -143,6 +158,11 @@ public class vv_Constants
 		RED,
 		BLUE,
 		UNKNOWN
+	}
+
+	enum AllianceColorEnum {
+		BLUE,
+		RED
 	}
 
 	//values that control the worm drive motor to adjust tension of the Launch arm

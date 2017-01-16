@@ -6,22 +6,25 @@ import android.util.Log;
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.text.DecimalFormat;
 
+import static org.firstinspires.ftc.teamcode.vv_Constants.ANALOG_STICK_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BALL_FLAG_SERVO_LOWERED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_BLUE_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_RED_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT_REST;
@@ -29,6 +32,8 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_RIGHT_RES
 import static org.firstinspires.ftc.teamcode.vv_Constants.DEBUG;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_CLICKS_TETRIX;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_TIME_DELTA;
+import static org.firstinspires.ftc.teamcode.vv_Constants.FLAG_SERVO;
+import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_GATE_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
@@ -50,6 +55,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_FB_POWER_LO
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_FB_POWER_UPPER_LIMIT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_SIDEWAYS_POWER_LOWER_LIMIT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_RAMP_SIDEWAYS_POWER_UPPER_LIMIT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.REAR_GATE_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.RIGHT_BEACON_BUTTON_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.RIGHT_MOTOR_TRIM_FACTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_DURATION_MAX;
@@ -79,13 +85,13 @@ public class vv_Robot {
 	protected navXPIDController yawPIDController;
 	HardwareMap hwMap = null;
 	private DcMotor motorArray[];
-	private Servo beaconServoArray[];
-	private Servo launcherFrontGateServo = null;
-	private Servo launcherRearGateServo = null;
+	private Servo servoArray[];
+
 
 	private TouchSensor beaconTouchSensor;
 	private TouchSensor wormDriveTouchSensor;
-	private ColorSensor beaconColorSensor;
+	private ColorSensor beaconLeftColorSensor;
+	private ColorSensor beaconRightColorSensor;
 	private TouchSensor armSensor;
 	private LightSensor floorLightSensor;
 	private ModernRoboticsI2cGyro baseGyroSensor;
@@ -96,7 +102,10 @@ public class vv_Robot {
 
 
 	//**
-	private UltrasonicSensor floorUltrasonicSensor;
+	//private UltrasonicSensor floorUltrasonicSensor; //replaced by MR range sensor.
+
+	private ModernRoboticsI2cRangeSensor rangeSensor;
+
 	private ElapsedTime period = new ElapsedTime();
 	private vv_Constants.IntakeStateEnum IntakeState = Off;
 
@@ -121,48 +130,53 @@ public class vv_Robot {
 		motorArray[WORM_DRIVE_MOTOR] = hwMap.dcMotor.get("motor_worm");
 		motorArray[INTAKE_MOTOR] = hwMap.dcMotor.get("motor_intake");
 
-		beaconServoArray = new Servo[2];
+		servoArray = new Servo[6];
 
-		beaconServoArray[LEFT_BEACON_BUTTON_SERVO] = hwMap.servo.get("servo_beacon_left");
-		beaconServoArray[RIGHT_BEACON_BUTTON_SERVO] = hwMap.servo.get("servo_beacon_right");
+		servoArray[LEFT_BEACON_BUTTON_SERVO] = hwMap.servo.get("servo_beacon_left");
+		servoArray[RIGHT_BEACON_BUTTON_SERVO] = hwMap.servo.get("servo_beacon_right");
+		servoArray[FRONT_GATE_SERVO] = hwMap.servo.get("servo_launcher_front_gate");
+		servoArray[REAR_GATE_SERVO] = hwMap.servo.get("servo_launcher_rear_gate");
+		servoArray[FLAG_SERVO] = hwMap.servo.get("servo_ball_flag");
 
+		//map Sensors
 		floorLightSensor = hwMap.lightSensor.get("floor_light_sensor");
-		beaconColorSensor = hwMap.colorSensor.get("beacon_color_sensor");
-		floorUltrasonicSensor = hwMap.ultrasonicSensor.get("floor_ultrasonic_sensor");
+		beaconLeftColorSensor = hwMap.colorSensor.get("beacon_left_color_sensor");
+		beaconRightColorSensor = hwMap.colorSensor.get("beacon_right_color_sensor");
+		rangeSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "range_sensor");
 		wormDriveTouchSensor = hwMap.touchSensor.get("touch_worm_sensor");
 		beaconTouchSensor = hwMap.touchSensor.get("touch_beacon_sensor");
 		baseEopdSensor = hwMap.opticalDistanceSensor.get("base_eopd_sensor");
+		baseGyroSensor = (ModernRoboticsI2cGyro) hwMap.gyroSensor.get("base_gyro_sensor");
+		baseMxpGyroSensor = AHRS.getInstance(hwMap.deviceInterfaceModule.get("dim"),
+				NAVX_DIM_I2C_PORT,
+				AHRS.DeviceDataType.kProcessedData);
+		armSensor = hwMap.touchSensor.get("touch_arm_sensor");
+
+
+		//change the internal I2C numbers for the color sensors, since we want to use 2.
+		//default color sensor I2C addresses are all hardwared to (3c ?)
+		beaconLeftColorSensor.setI2cAddress(I2cAddr.create7bit(0x26));
+		beaconRightColorSensor.setI2cAddress(I2cAddr.create7bit(0x2e));
+
 
 		//turn the LED on the floor color sensor off at the start.
 		//used for compatibility with older SDK code.
 		floorLightSensor.enableLed(false);
+		beaconLeftColorSensor.enableLed(false);
+		beaconRightColorSensor.enableLed(false);
 		//wait for it to turn off.
 		Thread.sleep(300);
 
-		beaconColorSensor.enableLed(false);
-		//wait for it to turn off.
-		Thread.sleep(300);
-
+		//Gyro Sensors
 		aOpMode.DBG("before gyro calib");
-
-
-		baseGyroSensor = (ModernRoboticsI2cGyro) hwMap.gyroSensor.get("base_gyro_sensor");
 		baseGyroSensor.calibrate();
 		Thread.sleep(100);
+
 		while (baseGyroSensor.isCalibrating()) {
 			//wait for calibration completion
 			Thread.sleep(50);
 			aOpMode.idle();
 		}
-		aOpMode.DBG("after gyro calib");
-
-		//allocate the mxp gyro sensor.
-
-		baseMxpGyroSensor = AHRS.getInstance(hwMap.deviceInterfaceModule.get("dim"),
-				NAVX_DIM_I2C_PORT,
-				AHRS.DeviceDataType.kProcessedData);
-
-
 		while (baseMxpGyroSensor.isCalibrating()) {
 			aOpMode.idle();
 			Thread.sleep(50);
@@ -171,57 +185,37 @@ public class vv_Robot {
 							"CALIBRATING" : "Calibration Complete");
 			aOpMode.telemetryUpdate();
 		}
-
+		aOpMode.DBG("after gyro calib");
 
 
 		//zero out the yaw value, so this will be the frame of reference for future calls.
 		//do not call this for duration of run after this.
 		baseMxpGyroSensor.zeroYaw();
 
+		//initialize servos
+		servoArray[LEFT_BEACON_BUTTON_SERVO].setPosition(BEACON_SERVO_LEFT_REST);
+		servoArray[RIGHT_BEACON_BUTTON_SERVO].setPosition(BEACON_SERVO_RIGHT_REST);
+		servoArray[FRONT_GATE_SERVO].setPosition(LAUNCH_FRONT_GATE_SERVO_CLOSED);
+		servoArray[REAR_GATE_SERVO].setPosition(LAUNCH_REAR_GATE_SERVO_CLOSED);
+		servoArray[FLAG_SERVO].setPosition(BALL_FLAG_SERVO_LOWERED);
 
-
-
-		armSensor = hwMap.touchSensor.get("touch_arm_sensor");
-
-
-		//initialize to the rest position.
-		beaconServoArray[LEFT_BEACON_BUTTON_SERVO].setPosition(BEACON_SERVO_LEFT_REST);
-		beaconServoArray[RIGHT_BEACON_BUTTON_SERVO].setPosition(BEACON_SERVO_RIGHT_REST);
-
-
-		launcherFrontGateServo = hwMap.servo.get("servo_launcher_front_gate");
-		//initialize to the closed position
-		launcherFrontGateServo.setPosition(LAUNCH_FRONT_GATE_SERVO_CLOSED);
 		//wait for these servos to reach desired state
-
-		launcherRearGateServo = hwMap.servo.get("servo_launcher_rear_gate");
-		//initialize to the closed position
-		launcherRearGateServo.setPosition(LAUNCH_REAR_GATE_SERVO_CLOSED);
-		//wait for these servos to reach desired state
-
 		Thread.sleep(100);
 
 
-		//buttonServo.setPosition(0.65);
-
+		//set motor direction
 		aOpMode.DBG("before motor dir set");
 
 		motorArray[FRONT_LEFT_MOTOR].setDirection(DcMotorSimple.Direction.FORWARD);
-
 		motorArray[FRONT_RIGHT_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
-
 		motorArray[BACK_LEFT_MOTOR].setDirection(DcMotorSimple.Direction.FORWARD);
-
 		motorArray[BACK_RIGHT_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
-
 		motorArray[WORM_DRIVE_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
-
 
 
 		//reset encoders for motors always used in encoded mode
 		motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		//motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
 
 
 		while (motorArray[WORM_DRIVE_MOTOR].getCurrentPosition() != 0) {
@@ -235,7 +229,6 @@ public class vv_Robot {
 		motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-
 		// Set all base motors to zero power
 		stopBaseMotors(aOpMode);
 
@@ -244,6 +237,13 @@ public class vv_Robot {
 		// Set all motors to run without encoders.
 		// May want to use RUN_USING_ENCODERS if encoders are installed.
 
+		//final initialization countdown to ensure gyro stability if not Field Oriented
+
+		for (int i = 3; i > 0; i--) {
+			aOpMode.telemetryAddData("Completing ", " Initialization Countdown->", "[[ " + i + " ]]");
+			aOpMode.telemetryUpdate();
+			Thread.sleep(1000);
+		}
 	}
 
 	public void setPower(vv_OpMode aOpMode, int motorName, float power)
@@ -252,15 +252,13 @@ public class vv_Robot {
 		motorArray[motorName].setPower(power);
 	}
 
-	public DcMotor.RunMode getMotorMode(vv_OpMode aOpMode, int motorName
-	) throws InterruptedException {
+	public DcMotor.RunMode getMotorMode(vv_OpMode aOpMode, int motorName) throws InterruptedException {
 
 		return motorArray[motorName].getMode();
 
 	}
 
-	public void setMotorMode(vv_OpMode aOpMode, int motorName,
-	                         DcMotor.RunMode runMode)
+	public void setMotorMode(vv_OpMode aOpMode, int motorName, DcMotor.RunMode runMode)
 			throws InterruptedException {
 
 		motorArray[motorName].setMode(runMode);
@@ -268,31 +266,29 @@ public class vv_Robot {
 
 	public boolean isArmAtLimit(vv_OpMode aOpMode) {
 		return armSensor.isPressed();
-		//TODO: Finish this method up
 	}
 
-	public void runRobotToPositionFB(vv_OpMode aOpMode, int position,
-	                                 float Power, boolean isRampedPower)
+	public void runRobotCentimeters (vv_OpMode aOpMode, int position,
+	                                 float Power, boolean isRampedPower, vv_Constants.DirectionEnum direction)
 			throws InterruptedException {
-		//using the generic method with all powers set to the same value and all positions set to the same position
-		runRobotToPosition(aOpMode, Power, Power, Power, Power,
-				position, position, position, position, isRampedPower);
+		switch (direction) {
+			case Forward:
+				runRobotToPosition(aOpMode, Power, Power, Power, Power,
+						position, position, position, position, isRampedPower);
+				break;
+			case Backward:
+				runRobotToPosition(aOpMode, Power, Power, Power, Power,
+						position, position, position, position, isRampedPower);
+				break;
+			case SidewaysLeft:
+				runRobotToPosition(aOpMode, Power, Power, Power, Power, -position, position, position, -position, isRampedPower);
+				break;
+			case SidewaysRight:
+				runRobotToPosition(aOpMode, Power, Power, Power, Power, -position, position, position, -position, isRampedPower);
+				break;
+		}
 	}
 
-	/**
-	 * Runs robot to a specific position while driving sideways.
-	 *
-	 * @param aOpMode  an object of the vv_OpMode class
-	 * @param position generic position of the motors
-	 * @param Power    generic power of the motors
-	 * @return void
-	 */
-	public void runRobotToPositionSideways(vv_OpMode aOpMode, int position,
-	                                       float Power, boolean isRampedPower)
-			throws InterruptedException {
-		//using the generic method with all powers set to the same value and all positions set to the same position
-		runRobotToPosition(aOpMode, Power, Power, Power, Power, -position, position, position, -position, isRampedPower);
-	}
 
 	/**
 	 * Runs robot to a specific position. Can be called by other, more specific methods to move forwards and backwards or sideways.
@@ -516,32 +512,23 @@ public class vv_Robot {
 		Thread.sleep(100);
 	}
 
-	/**
-	 * Runs motors forwards and backwards.
-	 *
-	 * @param Power each motor will run at the same float value
-	 * @return void
-	 */
-	public void runMotorsFB(vv_OpMode aOpMode, float Power)
+
+	public void runMotorsUsingPower (vv_OpMode aOpMode, float Power, vv_Constants.DirectionEnum direction)
 			throws InterruptedException {
-
-		runMotors(aOpMode, Power, Power, Power, Power);
-	}
-
-	/**
-	 * Runs motors sideways (right and left).
-	 *
-	 * @param Power each motor will run at the same float value
-	 * @return void
-	 */
-	public void runMotorsSidewaysRight(vv_OpMode aOpMode, float Power) throws InterruptedException {
-
-		runMotors(aOpMode, Power, -Power, -Power, Power);
-	}
-
-	public void runMotorsSidewaysLeft(vv_OpMode aOpMode, float Power) throws InterruptedException {
-
-		runMotors(aOpMode, -Power, Power, Power, -Power);
+		switch (direction){
+			case Forward:
+				runMotors(aOpMode, Power, Power, Power, Power);
+				break;
+			case Backward:
+				runMotors(aOpMode, Power, Power, Power, Power);
+				break;
+			case SidewaysLeft:
+				runMotors(aOpMode, -Power, Power, Power, -Power);
+				break;
+			case SidewaysRight:
+				runMotors(aOpMode, Power, -Power, -Power, Power);
+				break;
+		}
 	}
 
 
@@ -558,10 +545,11 @@ public class vv_Robot {
 	public void runMotors(vv_OpMode aOpMode, float fl_Power, float fr_Power, float bl_Power, float br_Power)
 			throws InterruptedException {
 
-		motorArray[0].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-		motorArray[1].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-		motorArray[2].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-		motorArray[3].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+		motorArray[0].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		motorArray[1].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		motorArray[2].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		motorArray[3].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
 		//sets the the power of all motors
 		setPower(aOpMode, FRONT_LEFT_MOTOR, fl_Power);
@@ -612,51 +600,62 @@ public class vv_Robot {
 	}
 
 	//turn the color sensor LED on the floor of the robot on
-	public void enableBeaconColorSensorLed(vv_OpMode aOpMode) throws InterruptedException {
-		beaconColorSensor.enableLed(true);
+	public void enableBeaconLeftColorSensorLed(vv_OpMode aOpMode) throws InterruptedException {
+		beaconLeftColorSensor.enableLed(true);
 		//wait for it to turn on.
 		Thread.sleep(300);
 	}
 
 	//turn the color sensor LED on the floor of the robot off
-	public void disableBeaconColorSensorLed(vv_OpMode aOPMode) throws InterruptedException {
-		beaconColorSensor.enableLed(false);
+	public void disableBeaconLeftColorSensorLed(vv_OpMode aOPMode) throws InterruptedException {
+		beaconLeftColorSensor.enableLed(false);
+		//wait for it to turn off.
+		Thread.sleep(300);
+	}
+
+	//turn the color sensor LED on the floor of the robot on
+	public void enableBeaconRightColorSensorLed(vv_OpMode aOpMode) throws InterruptedException {
+		beaconLeftColorSensor.enableLed(true);
+		//wait for it to turn on.
+		Thread.sleep(300);
+	}
+
+	//turn the color sensor LED on the floor of the robot off
+	public void disableBeaconRightColorSensorLed(vv_OpMode aOPMode) throws InterruptedException {
+		beaconLeftColorSensor.enableLed(false);
 		//wait for it to turn off.
 		Thread.sleep(300);
 	}
 
 
-	public int getBeaconColorSensorAlpha(vv_OpMode aOpMode) throws InterruptedException {
+	public vv_Constants.BeaconColorEnum getBeaconLeftColor(vv_OpMode aOpMode) throws InterruptedException {
 		Thread.sleep(30);
-		return beaconColorSensor.alpha();
-	}
-
-	public vv_Constants.BeaconColorEnum getBeaconColor(vv_OpMode aOpMode) throws InterruptedException {
-		Thread.sleep(30);
-		if ((beaconColorSensor.red() > BEACON_RED_THRESHOLD) &&
-				(beaconColorSensor.red() > beaconColorSensor.blue())) {
+		if ((beaconLeftColorSensor.red() > BEACON_RED_THRESHOLD) &&
+				(beaconLeftColorSensor.red() > beaconLeftColorSensor.blue())) {
 			return vv_Constants.BeaconColorEnum.RED;
 		}
-		if ((beaconColorSensor.blue() > BEACON_BLUE_THRESHOLD) &&
-				(beaconColorSensor.blue() > beaconColorSensor.red())) {
+		if ((beaconLeftColorSensor.blue() > BEACON_BLUE_THRESHOLD) &&
+				(beaconLeftColorSensor.blue() > beaconLeftColorSensor.red())) {
 			return vv_Constants.BeaconColorEnum.BLUE;
 		}
 
 		return vv_Constants.BeaconColorEnum.UNKNOWN;
 	}
 
-/*
-    public int getbeaconLightSensorGreen(vv_OpMode aOpMode) throws InterruptedException {
-        Thread.sleep(30);
-        return beaconLightSensor.green();
-    }
+	public vv_Constants.BeaconColorEnum getBeaconRightColor(vv_OpMode aOpMode) throws InterruptedException {
+		Thread.sleep(30);
+		if ((beaconRightColorSensor.red() > BEACON_RED_THRESHOLD) &&
+				(beaconRightColorSensor.red() > beaconRightColorSensor.blue())) {
+			return vv_Constants.BeaconColorEnum.RED;
+		}
+		if ((beaconRightColorSensor.blue() > BEACON_BLUE_THRESHOLD) &&
+				(beaconRightColorSensor.blue() > beaconRightColorSensor.red())) {
+			return vv_Constants.BeaconColorEnum.BLUE;
+		}
 
-    public int getbeaconLightSensorBlue(vv_OpMode aOpMode) throws InterruptedException {
-        Thread.sleep(30);
-        return beaconLightSensor.blue();
-    }
+		return vv_Constants.BeaconColorEnum.UNKNOWN;
+	}
 
-*/
 
 	//get the alpha (luminosity being read in reflected light from LED)
 	//high luminosity will be found with a white surface.
@@ -683,17 +682,6 @@ public class vv_Robot {
 		Thread.sleep(1000);
 	}
 
-	public void waitForTick(vv_OpMode aOpMode, long periodMs) throws InterruptedException {
-
-		long remaining = periodMs - (long) period.milliseconds();
-
-		// sleep for the remaining portion of the regular cycle period.
-		if (remaining > 0)
-			Thread.sleep(remaining);
-
-		// Reset the cycle clock for the next pass.
-		period.reset();
-	}
 
 	public boolean baseMotorsAreBusy() {
 		return (motorArray[FRONT_LEFT_MOTOR].isBusy() || motorArray[FRONT_RIGHT_MOTOR].isBusy() ||
@@ -923,46 +911,105 @@ public class vv_Robot {
 	}
 
 	public void openFrontLauncherGate() throws InterruptedException {
-		launcherFrontGateServo.setPosition(LAUNCH_FRONT_GATE_SERVO_OPEN);
+		servoArray[FRONT_GATE_SERVO].setPosition(LAUNCH_FRONT_GATE_SERVO_OPEN);
 		Thread.sleep(100);
 	}
 
 	public void closeFrontLauncherGate() throws InterruptedException {
-		launcherFrontGateServo.setPosition(LAUNCH_FRONT_GATE_SERVO_CLOSED);
+		servoArray[FRONT_GATE_SERVO].setPosition(LAUNCH_FRONT_GATE_SERVO_CLOSED);
 		Thread.sleep(100);
 	}
 
 	public void openRearLauncherGate() throws InterruptedException {
-		launcherRearGateServo.setPosition(LAUNCH_REAR_GATE_SERVO_OPEN);
+		servoArray[REAR_GATE_SERVO].setPosition(LAUNCH_REAR_GATE_SERVO_OPEN);
 		Thread.sleep(100);
 	}
 
 	public void closeRearLauncherGate() throws InterruptedException {
-		launcherRearGateServo.setPosition(LAUNCH_REAR_GATE_SERVO_CLOSED);
+		servoArray[REAR_GATE_SERVO].setPosition(LAUNCH_REAR_GATE_SERVO_CLOSED);
 		Thread.sleep(100);
 	}
 
 	public double getFrontLauncherGateServoPosition(vv_OpMode aOpMode) {
-		return launcherFrontGateServo.getPosition();
+		return servoArray[FRONT_GATE_SERVO].getPosition();
 	}
 
 	public void setFrontLauncherGateServoPosition(vv_OpMode aOpMode, double position) {
-		launcherFrontGateServo.setPosition(position);
+		servoArray[FRONT_GATE_SERVO].setPosition(position);
 	}
 
-	public int getBeaconColorRedValue(vv_OpMode aOpMode) {
-		return beaconColorSensor.red();
+	public int getBeaconLeftColorRedValue(vv_OpMode aOpMode) {
+
+		return beaconLeftColorSensor.red();
 	}
 
-	public int getBeaconColorGreenValue(vv_OpMode aOpMode) {
-		return beaconColorSensor.green();
+	public int getBeaconLeftColorGreenValue(vv_OpMode aOpMode) {
+
+		return beaconLeftColorSensor.green();
 	}
 
-	public int getBeaconColorBlueValue(vv_OpMode aOpMode) {
-		return beaconColorSensor.blue();
+	public int getBeaconLeftColorBlueValue(vv_OpMode aOpMode) {
+		return beaconLeftColorSensor.blue();
+	}
+
+	public int getBeaconRightColorRedValue(vv_OpMode aOpMode) {
+
+		return beaconLeftColorSensor.red();
+	}
+
+	public int getBeaconRightColorGreenValue(vv_OpMode aOpMode) {
+
+		return beaconLeftColorSensor.green();
+	}
+
+	public int getBeaconRightColorBlueValue(vv_OpMode aOpMode) {
+		return beaconLeftColorSensor.blue();
 	}
 
 
+	public void setServoPosition (vv_OpMode aOpMode, int servoName, double position) throws InterruptedException {
+		switch (servoName) {
+			case LEFT_BEACON_BUTTON_SERVO:
+				servoArray[LEFT_BEACON_BUTTON_SERVO].setPosition(position);
+				break;
+			case RIGHT_BEACON_BUTTON_SERVO:
+				servoArray[RIGHT_BEACON_BUTTON_SERVO].setPosition(position);
+				break;
+			case FRONT_GATE_SERVO:
+				servoArray[FRONT_GATE_SERVO].setPosition(position);
+				break;
+			case REAR_GATE_SERVO:
+				servoArray[REAR_GATE_SERVO].setPosition(position);
+				break;
+			case FLAG_SERVO:
+				servoArray[FLAG_SERVO].setPosition(position);
+				break;
+		}
+	}
+
+	public double getServoPosition (vv_OpMode aOpMode, int servoName) {
+		//WILL RETURN AN ERROR
+		double position = 6;
+
+		switch (servoName) {
+			case LEFT_BEACON_BUTTON_SERVO:
+				position =  servoArray[LEFT_BEACON_BUTTON_SERVO].getPosition();
+				break;
+			case RIGHT_BEACON_BUTTON_SERVO:
+				position =  servoArray[RIGHT_BEACON_BUTTON_SERVO].getPosition();
+				break;
+			case FRONT_GATE_SERVO:
+				position =  servoArray[FRONT_GATE_SERVO].getPosition();
+				break;
+			case REAR_GATE_SERVO:
+				position =  servoArray[REAR_GATE_SERVO].getPosition();
+				break;
+			case FLAG_SERVO:
+				position =  servoArray[FLAG_SERVO].getPosition();
+				break;
+		}
+		return position;
+	}
 
 	public vv_Constants.IntakeStateEnum getIntakeState() {
 		return IntakeState;
@@ -972,24 +1019,17 @@ public class vv_Robot {
 		IntakeState = IntakeStateValue;
 	}
 
-	public double getBeaconServoPosition(vv_OpMode aOpMode, int servoName) {
-		return beaconServoArray[servoName].getPosition();
-	}
-
-	public void setBeaconServoPosition(vv_OpMode aOpMode, int servoName, double position)
-			throws InterruptedException {
-		beaconServoArray[servoName].setPosition(position);
-		Thread.sleep(100);
-	}
 
 	public boolean isBeaconTouchSensorPressed(vv_OpMode aOpMode) {
 		return beaconTouchSensor.isPressed();
 	}
 
+	public double getUltrasonicDistance(vv_OpMode aOpMode) {
+		return rangeSensor.cmUltrasonic() / 2.54; //in inches
+	}
 
-	public double getUltrasonicReading(vv_OpMode aOPMode) {
-
-		return floorUltrasonicSensor.getUltrasonicLevel();
+	public double getOpticalDistance(vv_OpMode aOpMode) {
+		return rangeSensor.cmOptical() / 2.54; //in inches
 	}
 
 	public void universalMoveRobotForDuration(vv_OpMode aOpMode, double xAxisVelocity,
@@ -1329,8 +1369,8 @@ public class vv_Robot {
 
 	}
 
-	public void universalMoveRobotForTelOp(vv_OpMode aOpMode, double xAxisVelocity,
-	                                       double yAxisVelocity)
+	public void universalMoveRobotForTeleOp(vv_OpMode aOpMode, double xAxisVelocity,
+	                                        double yAxisVelocity)
 			throws InterruptedException {
 		double fl_velocity = 0;
 		double fr_velocity = 0;
@@ -1449,8 +1489,66 @@ public class vv_Robot {
 
 	}
 
+	public double getGamePad1RightJoystickPolarMagnitude(vv_OpMode aOpMode) {
+		//returns the magnitude of the polar vector for the rotation calculations
+		//for field oriented drive
+		//inverted y
+		if ((Math.abs(aOpMode.gamepad1.right_stick_x) > ANALOG_STICK_THRESHOLD) ||
+				(Math.abs(aOpMode.gamepad1.right_stick_y) > ANALOG_STICK_THRESHOLD)) {
+			return (Math.sqrt(Math.pow(aOpMode.gamepad1.right_stick_x, 2.0) +
+					Math.pow(-aOpMode.gamepad1.right_stick_y, 2.0)));
+		} else {
+			return 0;
+		}
+
+	}
+
+	public double getGamePad1RightJoystickPolarAngle(vv_OpMode aOpMode) {
+		//returns polar angle in degrees of vector for the rotation calculations
+		//for field oriented drive.
+		//inverted y
+		if ((Math.abs(aOpMode.gamepad1.right_stick_x) > ANALOG_STICK_THRESHOLD) ||
+				(Math.abs(aOpMode.gamepad1.right_stick_y) > ANALOG_STICK_THRESHOLD)) {
+			return (Math.toDegrees(Math.atan2(aOpMode.gamepad1.right_stick_x,
+					-aOpMode.gamepad1.right_stick_y)));
+		} else {
+			return 0;
+		}
+	}
+
+	public double getGamePad1LeftJoystickPolarMagnitude(vv_OpMode aOpMode) {
+		//returns the magnitude of the polar vector for the rotation calculations
+		//for field oriented drive
+		//inverted y
+		if ((Math.abs(aOpMode.gamepad1.left_stick_x) > ANALOG_STICK_THRESHOLD) ||
+				(Math.abs(aOpMode.gamepad1.left_stick_y) > ANALOG_STICK_THRESHOLD)) {
+			return (Math.sqrt(Math.pow(aOpMode.gamepad1.left_stick_x, 2.0) +
+					Math.pow(-aOpMode.gamepad1.left_stick_y, 2.0)));
+		} else {
+			return 0;
+		}
+	}
+
+	public double getGamePad1LeftJoystickPolarAngle(vv_OpMode aOpMode) {
+		//returns polar angle in degrees of vector for the rotation calculations
+		//for field oriented drive.
+		//inverted y
+		if ((Math.abs(aOpMode.gamepad1.left_stick_x) > ANALOG_STICK_THRESHOLD) ||
+				(Math.abs(aOpMode.gamepad1.left_stick_y) > ANALOG_STICK_THRESHOLD)) {
+			return (Math.toDegrees(Math.atan2(aOpMode.gamepad1.left_stick_x,
+					-aOpMode.gamepad1.left_stick_y)));
+		} else {
+			return 0;
+		}
+	}
+
+
 	public double getEopdRawValue(vv_OpMode aOpMode) {
 		return baseEopdSensor.getRawLightDetected();
+	}
+
+	protected void setMxpGyroZeroYaw(vv_OpMode aOpMode) {
+		baseMxpGyroSensor.zeroYaw();
 	}
 
 

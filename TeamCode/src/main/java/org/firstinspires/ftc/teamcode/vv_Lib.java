@@ -2,23 +2,25 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import java.util.Arrays;
-
-import static org.firstinspires.ftc.teamcode.vv_Constants.ANALOG_STICK_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BALL_FLAG_SERVO_ALARM;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BALL_FLAG_SERVO_LOWERED;
+import static org.firstinspires.ftc.teamcode.vv_Constants.BALL_FLAG_SERVO_RAISED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT_PRESSED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT_REST;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_RIGHT_PRESSED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_RIGHT_REST;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DEBUG;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
 import static org.firstinspires.ftc.teamcode.vv_Constants.EOPD_PROXIMITY_THRESHOLD;
+import static org.firstinspires.ftc.teamcode.vv_Constants.FLAG_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FLOOR_WHITE_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
@@ -32,12 +34,14 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_MOTOR_LOOP_TIME;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_ROBOT_TURN_MOTOR_VELOCITY;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_DIAMETER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MIN_ROBOT_TURN_MOTOR_VELOCITY;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_ULTRASONIC_SIDEWAYS_POWER_LOWER_LIMIT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_ULTRASONIC_SIDEWAYS_POWER_UPPER_LIMIT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.RANGESENSOR_OPTICAL_PROXIMITY_THRESHOLD;
+import static org.firstinspires.ftc.teamcode.vv_Constants.RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.RIGHT_BEACON_BUTTON_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ROBOT_TRACK_DISTANCE;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TURN_POWER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TurnDirectionEnum;
-import static org.firstinspires.ftc.teamcode.vv_Constants.ULTRASONIC_PROXIMITY_THRESHOLD;
-
 
 /**
  * Created by thomas on 9/25/2016.
@@ -48,7 +52,11 @@ public class vv_Lib {
 
 	protected falseCondition falseStop;
 	protected eopdProximityCondition eopdProximityStop;
-	protected eopdOrUltrasonicProximityCondition eopdOrUltrasonicProximityStop;
+	protected RangeSensorProximityOrColorVerifiedCondition rangeSensorProximityOrColorVerifiedStop;
+	protected RangeSensorOpticalProximityCondition rangeSensorOpticalProximityStop;
+	protected RangeSensorUltraSonicProximityCondition rangeSensorUltraSonicProximityStop;
+	protected colorPressVerifiedCondition colorPressVerifiedConditionStop;
+	protected RangeSensorUltraSonicCornerPositioningCondition rangeSensorUltraSonicCornerPositioningStop;
 
 	protected lineDetectCondition lineDectectStop;
 	private vv_Robot robot;
@@ -63,14 +71,19 @@ public class vv_Lib {
 
 		falseStop = new falseCondition();
 		eopdProximityStop = new eopdProximityCondition();
-		eopdOrUltrasonicProximityStop = new eopdOrUltrasonicProximityCondition();
+		rangeSensorProximityOrColorVerifiedStop = new RangeSensorProximityOrColorVerifiedCondition();
+		rangeSensorOpticalProximityStop = new RangeSensorOpticalProximityCondition();
+		rangeSensorUltraSonicProximityStop = new RangeSensorUltraSonicProximityCondition();
+		rangeSensorUltraSonicCornerPositioningStop = new RangeSensorUltraSonicCornerPositioningCondition();
 		lineDectectStop = new lineDetectCondition();
+		colorPressVerifiedConditionStop = new colorPressVerifiedCondition();
 
 		//** disabled to allow for mechanical repairs 12/31/2016
 
 		setupShot(aOpMode);
 
 	}
+
 
 	/**
 	 * moveWheels method
@@ -114,28 +127,6 @@ public class vv_Lib {
 		robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
 
 
-	}
-
-	public boolean testLauncherTouch(vv_OpMode aOpMode) throws InterruptedException {
-		robot.setMotorMode(aOpMode, ARM_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-		aOpMode.reset_timer();
-		while (!robot.isArmAtLimit(aOpMode)) {
-			robot.setPower(aOpMode, ARM_MOTOR, 0.6f);
-
-			// If the sensor doesn't detect the touch, something is wrong
-			if (aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
-				return false;
-			}
-			aOpMode.idle();
-		}
-
-		// It exited out of the loop because the sensor has been touched
-		return true;
-	}
-
-	public boolean isArmAtLimit(vv_OpMode aOpMode) {
-		return robot.isArmAtLimit(aOpMode);
 	}
 
 	public void dropBall(vv_OpMode aOpMode) throws InterruptedException {
@@ -191,10 +182,10 @@ public class vv_Lib {
 
 		switch (TurnDirection) {
 			case Clockwise:
-				robot.runRobotToPosition(aOpMode, power, power, power, power, turnDistance, -turnDistance, turnDistance, -turnDistance, false);
+				robot.runRobotToPosition(aOpMode, power, power, power, power, turnDistance, -turnDistance, turnDistance, -turnDistance, true);
 				break;
 			case Counterclockwise:
-				robot.runRobotToPosition(aOpMode, power, power, power, power, -turnDistance, turnDistance, -turnDistance, turnDistance, false);
+				robot.runRobotToPosition(aOpMode, power, power, power, power, -turnDistance, turnDistance, -turnDistance, turnDistance, true);
 				break;
 		}
 
@@ -224,38 +215,6 @@ public class vv_Lib {
 
 */
 
-	/**
-	 * Method that moves robot until the color white is detected
-	 * Used to stop at white line when going from first to second beacon
-	 *
-	 * @param aOpMode - object of vv_OpMode class
-	 * @throws InterruptedException
-	 */
-
-	public void moveTillWhiteLineDetect(vv_OpMode aOpMode, float Power, DirectionEnum direction) throws InterruptedException {
-		aOpMode.reset_timer();
-		while ((robot.getFloorLightIntensity(aOpMode) < FLOOR_WHITE_THRESHOLD) &&
-				aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
-			switch (direction) {
-				case SidewaysRight:
-					moveSidewaysRight(aOpMode, Power);
-					break;
-				case SidewaysLeft:
-					moveSidewaysLeft(aOpMode, Power);
-					break;
-				case Forward:
-					moveForward(aOpMode, Power);
-					break;
-				case Backward:
-					moveBackward(aOpMode, Power);
-					break;
-
-			}
-			aOpMode.idle();
-		}
-		//stop motors
-		robot.stopBaseMotors(aOpMode);
-	}
 
 
 	public void showFloorLightSensorIntensityOnTelemetry(vv_OpMode aOpMode,
@@ -269,36 +228,68 @@ public class vv_Lib {
 		}
 	}
 
-	public void showBeaconColorValuesOnTelemetry(vv_OpMode aOpMode,
-	                                             boolean updateTheDisplay)
+	public void showBeaconLeftColorValuesOnTelemetry(vv_OpMode aOpMode,
+	                                                 boolean updateTheDisplay)
 			throws InterruptedException {
 
 		String color = "Unknown";
 
-		if (robot.getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
+		if (robot.getBeaconLeftColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
 			color = "RED";
 		}
 
-		if (robot.getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE) {
+		if (robot.getBeaconLeftColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE) {
 			color = "BLUE";
 		}
-		if (robot.getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.UNKNOWN) {
+		if (robot.getBeaconLeftColor(aOpMode) == vv_Constants.BeaconColorEnum.UNKNOWN) {
 			color = "Dont Know";
 		}
 
-		aOpMode.telemetryAddData("Beacon red Val", "values:",
-				"Red:" + robot.getBeaconColorRedValue(aOpMode));
-		aOpMode.telemetryAddData("Beacon red Val", "values:",
-				"Green:" + robot.getBeaconColorGreenValue(aOpMode));
-		aOpMode.telemetryAddData("Beacon red Val", "values:",
-				"Blue:" + robot.getBeaconColorBlueValue(aOpMode));
+		aOpMode.telemetryAddData("Beacon Left Red Val", "values:",
+				"Red:" + robot.getBeaconLeftColorRedValue(aOpMode));
+		aOpMode.telemetryAddData("Beacon Left Green Val", "values:",
+				"Green:" + robot.getBeaconLeftColorGreenValue(aOpMode));
+		aOpMode.telemetryAddData("Beacon Left Blue Val", "values:",
+				"Blue:" + robot.getBeaconLeftColorBlueValue(aOpMode));
 
-		aOpMode.telemetryAddData("Beacon Color Choice", "Choice", color);
+		aOpMode.telemetryAddData("Beacon LEFT  Color Choice", "Choice", color);
 
 		if (updateTheDisplay) {
 			aOpMode.telemetryUpdate();
 		}
 	}
+
+	public void showBeaconRightColorValuesOnTelemetry(vv_OpMode aOpMode,
+	                                                  boolean updateTheDisplay)
+			throws InterruptedException {
+
+		String color = "Unknown";
+
+		if (robot.getBeaconRightColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
+			color = "RED";
+		}
+
+		if (robot.getBeaconRightColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE) {
+			color = "BLUE";
+		}
+		if (robot.getBeaconRightColor(aOpMode) == vv_Constants.BeaconColorEnum.UNKNOWN) {
+			color = "Dont Know";
+		}
+
+		aOpMode.telemetryAddData("Beacon Right Red Val", "values:",
+				"Red:" + robot.getBeaconRightColorRedValue(aOpMode));
+		aOpMode.telemetryAddData("Beacon Right Green Val", "values:",
+				"Green:" + robot.getBeaconRightColorGreenValue(aOpMode));
+		aOpMode.telemetryAddData("Beacon Right Val", "values:",
+				"Blue:" + robot.getBeaconRightColorBlueValue(aOpMode));
+
+		aOpMode.telemetryAddData("Beacon RIGHT Color Choice", "Choice", color);
+
+		if (updateTheDisplay) {
+			aOpMode.telemetryUpdate();
+		}
+	}
+
 
 
 	public void showBaseGyroSensorHeadingOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
@@ -313,10 +304,6 @@ public class vv_Lib {
 		if (updateTheDisplay) {
 			aOpMode.telemetryUpdate();
 		}
-	}
-
-	public float getMxpGyroSensorHeading(vv_OpMode aOpMode) {
-		return robot.getMxpGyroSensorHeading(aOpMode);
 	}
 
 	public void showMxpFusedGyroSensorHeadingOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
@@ -345,17 +332,23 @@ public class vv_Lib {
 	}
 
 	public void turnBeaconColorSensorLedOn(vv_OpMode aOpMode) throws InterruptedException {
-		robot.enableBeaconColorSensorLed(aOpMode);
+		robot.enableBeaconLeftColorSensorLed(aOpMode);
 	}
 
 	public void turnBeaconColorSensorLedOff(vv_OpMode aOpMode) throws InterruptedException {
-		robot.disableBeaconColorSensorLed(aOpMode);
+		robot.disableBeaconLeftColorSensorLed(aOpMode);
 	}
 
-	public vv_Constants.BeaconColorEnum getBeaconColor(vv_OpMode aOpMode)
+	public vv_Constants.BeaconColorEnum getBeaconLeftColor(vv_OpMode aOpMode)
 			throws InterruptedException {
-		return robot.getBeaconColor(aOpMode);
+		return robot.getBeaconLeftColor(aOpMode);
 	}
+
+	public vv_Constants.BeaconColorEnum getBeaconRightColor(vv_OpMode aOpMode)
+			throws InterruptedException {
+		return robot.getBeaconRightColor(aOpMode);
+	}
+
 
 	//Moves robot forward with a distance supplied in centimeters and power between 0 and 1
 	private void moveForwardToPosition(vv_OpMode aOpMode, float distance,
@@ -366,7 +359,7 @@ public class vv_Lib {
 		//calculate target position from the input distance in cm
 		targetPosition = (int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
 		//runs the robot to position
-		robot.runRobotToPositionFB(aOpMode, targetPosition, Power, isRampedPower);
+		robot.runRobotCentimeters(aOpMode, targetPosition, Power, isRampedPower, DirectionEnum.Forward);
 	}
 
 	//Moves robot backward with a distance supplied in centimeters and power between 0 and 1
@@ -378,7 +371,7 @@ public class vv_Lib {
 		//calculate target position from the input distance in cm
 		targetPosition = -(int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
 		//runs the robot to position with negative power
-		robot.runRobotToPositionFB(aOpMode, targetPosition, Power, isRampedPower);
+		robot.runRobotCentimeters(aOpMode, targetPosition, Power, isRampedPower, DirectionEnum.Forward);
 	}
 
 	private void moveSidewaysLeftToPosition(vv_OpMode aOpMode,
@@ -388,8 +381,11 @@ public class vv_Lib {
 		int targetPosition;
 		//calculate target position from the input distance in cm
 		targetPosition = (int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
+		//scale this up by 1.19 (due to sideways movement
+		targetPosition = (int) Math.round(targetPosition * 1.19);
+
 		//runs the robot to position with negative power
-		robot.runRobotToPositionSideways(aOpMode, targetPosition, Power, isRampedPower);
+		robot.runRobotCentimeters(aOpMode, targetPosition, Power, isRampedPower, DirectionEnum.SidewaysLeft);
 	}
 
 	private void moveSidewaysRightToPosition(vv_OpMode aOpMode,
@@ -399,91 +395,14 @@ public class vv_Lib {
 		int targetPosition;
 		//calculate target position from the input distance in cm
 		targetPosition = -(int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
+		//scale this up by 1.19 (due to sideways movement
+		targetPosition = (int) Math.round(targetPosition * 1.19);
+
 		//runs the robot to position with negative power
-		robot.runRobotToPositionSideways(aOpMode, targetPosition, Power, isRampedPower);
+		robot.runRobotCentimeters(aOpMode, targetPosition, Power, isRampedPower, DirectionEnum.SidewaysRight);
 	}
 
 
-	//DO NOT USE THIS METHOD
-	//IT IS NOT COMPLETED
-	public void moveAtAngle(vv_OpMode aOpMode, double distance, float Power, float Angle)
-			throws InterruptedException {
-		//we need to store the encoder target position
-		int VldtargetPosition;
-		int VrdtargetPosition;
-		double Vld_distance = 0;
-		double Vrd_distance = 0;
-
-		float fl_Power = (float) ((Math.pow(Math.sin(Angle), 2.0) - (Math.pow(Math.cos(Angle), 2.0))));
-
-		float fr_Power = (float) (-(Math.pow(Math.sin(Angle), 2.0) - (Math.pow(Math.cos(Angle), 2.0))));
-
-		float bl_Power = (float) (-(Math.pow(Math.sin(Angle), 2.0) - (Math.pow(Math.cos(Angle), 2.0))));
-
-		float br_Power = (float) ((Math.pow(Math.sin(Angle), 2.0) - (Math.pow(Math.cos(Angle), 2.0))));
-
-		if (Angle > 0 && Angle < 45) {
-			Angle = 45 - (45 % Angle);
-			Vld_distance = 1;
-			Vrd_distance = 1;
-			Vld_distance *= ((Angle * distance) / Math.sin(90));
-			Vrd_distance *= (((90 - Angle) * distance) / Math.sin(90));
-		} else if (Angle > 45 && Angle < 90) {
-			Angle %= 45;
-			Vld_distance = -1;
-			Vrd_distance = 1;
-			Vld_distance *= ((Angle * distance) / Math.sin(90));
-			Vrd_distance *= (((90 - Angle) * distance) / Math.sin(90));
-		} else if (Angle > 90 && Angle < 135) {
-			Angle = 45 - (45 % Angle);
-			Vld_distance = -1;
-			Vrd_distance = 1;
-			Vrd_distance *= ((Angle * distance) / Math.sin(90));
-			Vld_distance *= (((90 - Angle) * distance) / Math.sin(90));
-		} else if (Angle > 135 && Angle < 180) {
-			Angle %= 45;
-			Vld_distance = -1;
-			Vrd_distance = -1;
-			Vrd_distance *= ((Angle * distance) / Math.sin(90));
-			Vld_distance *= (((90 - Angle) * distance) / Math.sin(90));
-		} else if (Angle > 180 && Angle < 225) {
-			Angle = 45 - (45 % Angle);
-			Vld_distance = -1;
-			Vrd_distance = -1;
-			Vld_distance *= ((Angle * distance) / Math.sin(90));
-			Vrd_distance *= (((90 - Angle) * distance) / Math.sin(90));
-		} else if (Angle > 225 && Angle < 270) {
-			Angle %= 45;
-			Vld_distance = 1;
-			Vrd_distance = -1;
-			Vld_distance *= ((Angle * distance) / Math.sin(90));
-			Vrd_distance *= (((90 - Angle) * distance) / Math.sin(90));
-		} else if (Angle > 270 && Angle < 315) {
-			Angle = 45 - (45 % Angle);
-			Vld_distance = 1;
-			Vrd_distance = -1;
-			Vrd_distance *= ((Angle * distance) / Math.sin(90));
-			Vld_distance *= (((90 - Angle) * distance) / Math.sin(90));
-		} else if (Angle > 315 && Angle < 360) {
-			Angle %= 45;
-			Vld_distance = 1;
-			Vrd_distance = 1;
-			Vrd_distance *= ((Angle * distance) / Math.sin(90));
-			Vld_distance *= (((90 - Angle) * distance) / Math.sin(90));
-		}
-
-
-		VldtargetPosition = (int) ((Vld_distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) *
-				ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
-		VrdtargetPosition = (int) ((Vrd_distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) *
-				ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
-
-
-		//runs the robot to position with negative power
-		robot.runRobotToPositionWithAngle(aOpMode, fl_Power * Power, fr_Power * Power, bl_Power * Power,
-				br_Power * Power, VrdtargetPosition, VldtargetPosition, VldtargetPosition,
-				VrdtargetPosition, Angle);
-	}
 
 
 	public void runAllMotors(vv_OpMode aOpMode, float FLPower, float FRPower, float BLPower, float BRPower)
@@ -496,24 +415,37 @@ public class vv_Lib {
 		//TODO: Stop additional motors that are not on the base of the Robot.
 	}
 
-	//Moves robot forward with a distance supplied in centimeters and power between 0 and 1
-	public void moveForward(vv_OpMode aOpMode, float Power) throws InterruptedException {
-		robot.runMotorsFB(aOpMode, Power);
+	public void moveRobotUsingPower(vv_OpMode aOpMode, float Power, DirectionEnum direction) throws InterruptedException {
+		switch (direction) {
+			case Forward:
+				robot.runMotorsUsingPower(aOpMode, Power, direction);
+				break;
+			case Backward:
+				robot.runMotorsUsingPower(aOpMode, -Power, direction);
+				break;
+			case SidewaysLeft:
+				robot.runMotorsUsingPower(aOpMode, Power, direction);
+				break;
+
+
+		}
 	}
 
-	//Moves robot backward with a distance supplied in centimeters and power between 0 and 1
-	public void moveBackward(vv_OpMode aOpMode, float Power) throws InterruptedException {
-		robot.runMotorsFB(aOpMode, -Power);
+	public double scalePowerForUltrasonicTravel(vv_OpMode aOpMode,
+	                                            double distanceToWall,//in inches
+	                                            double proximityDistance)
+			throws InterruptedException { //in inches
+
+		double distanceLeftToTravel = distanceToWall - proximityDistance; //could be negative!
+		double scaledPower = MOTOR_ULTRASONIC_SIDEWAYS_POWER_LOWER_LIMIT + (0.02 * distanceLeftToTravel);
+		if (scaledPower > MOTOR_ULTRASONIC_SIDEWAYS_POWER_UPPER_LIMIT) {
+			scaledPower = MOTOR_ULTRASONIC_SIDEWAYS_POWER_UPPER_LIMIT;
+		}
+
+		return scaledPower;
 	}
 
-	public void moveSidewaysLeft(vv_OpMode aOpMode, float Power) throws InterruptedException {
-		robot.runMotorsSidewaysLeft(aOpMode, Power);
-	}
-
-	public void moveSidewaysRight(vv_OpMode aOpMode, float Power) throws InterruptedException {
-		robot.runMotorsSidewaysRight(aOpMode, Power);
-	}
-
+	//using Modern Robotics Gyro Sensor: Relative Turns
 	public void turnGyroDegrees(vv_OpMode aOpMode, int turnDegrees) throws InterruptedException {
 
 		//this code has some issues due to gyro read lag of approximately 250ms as reported.
@@ -595,6 +527,7 @@ public class vv_Lib {
 
 	}
 
+	//using Modern Robotics Gyro Sensor
 	public void turnAbsoluteGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
 		//clockwise is represented by clockwise numbers.
 		//counterclockwise by negative angle numbers in degrees.
@@ -649,31 +582,35 @@ public class vv_Lib {
 
 		//make the turn using encoders
 
-		aOpMode.telemetryAddData("targetDegrees", "Value",
-				":" + targetDegrees);
-		aOpMode.telemetryAddData("Starting Z", "Value",
-				":" + startingHeading);
-		aOpMode.telemetryAddData("Turn Degrees", "Value",
-				":" + turnDegrees);
+		if (DEBUG) {
+			aOpMode.telemetryAddData("targetDegrees", "Value",
+					":" + targetDegrees);
+			aOpMode.telemetryAddData("Starting Z", "Value",
+					":" + startingHeading);
+			aOpMode.telemetryAddData("Turn Degrees", "Value",
+					":" + turnDegrees);
 
-		aOpMode.telemetryUpdate();
+			aOpMode.telemetryUpdate();
+		}
 
 		turnUsingEncoders(aOpMode, TURN_POWER, Math.abs(turnDegrees),
 				turnDegrees > 0 ? TurnDirectionEnum.Clockwise :
 						TurnDirectionEnum.Counterclockwise);
 
 		float finalDegrees = robot.getMxpGyroSensorHeading(aOpMode);
-		Thread.sleep(100); //cooling off after gyro read to prevent error in next run.
+		Thread.sleep(50); //cooling off after gyro read to prevent error in next run.
 
-
-		aOpMode.telemetryAddData("New Bearing Degrees", "Value:",
-				":" + finalDegrees);
-		aOpMode.telemetryAddData("Turn Error Degrees", "Value:",
-				":" + (targetDegrees - finalDegrees));
-		aOpMode.telemetryUpdate();
+		if (DEBUG) {
+			aOpMode.telemetryAddData("New Bearing Degrees", "Value:",
+					":" + finalDegrees);
+			aOpMode.telemetryAddData("Turn Error Degrees", "Value:",
+					":" + (targetDegrees - finalDegrees));
+			aOpMode.telemetryUpdate();
+		}
 
 	}
 
+	//using compass to fix drift: NOT FINISHED
 	public void turnAbsoluteMxpFusedGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
 		//clockwise is represented by clockwise numbers.
 		//counterclockwise by negative angle numbers in degrees.
@@ -733,60 +670,6 @@ public class vv_Lib {
 
 	}
 
-
-	public void drive1RobotWithPowerFactor(vv_OpMode aOpMode, float powerFactor)
-			throws InterruptedException, vv_Robot.MotorNameNotKnownException {
-
-		//left stick is for forward/backward motion.
-		//right stick for turns.
-
-		//read forward/backward movements from the left stick y axis and apply it to the motors.
-
-		float frontLeftMotorPower = 0;
-		float frontRightMotorPower = 0;
-		float backLeftMotorPower = 0;
-		float backRightMotorPower = 0;
-
-		if (Math.abs(aOpMode.gamepad1.right_stick_x) < ANALOG_STICK_THRESHOLD) {
-			//we think the driver is not using the right stick to turn
-			if (Math.abs(aOpMode.gamepad1.left_stick_y) > ANALOG_STICK_THRESHOLD) {
-				//lets drive the motor forward or back based on the stick values.
-
-				frontLeftMotorPower = aOpMode.gamepad1.left_stick_y * powerFactor;
-				frontRightMotorPower = aOpMode.gamepad1.left_stick_y * powerFactor;
-				backLeftMotorPower = aOpMode.gamepad1.left_stick_y * powerFactor;
-				backRightMotorPower = aOpMode.gamepad1.left_stick_y * powerFactor;
-				//apply the power
-				robot.runMotors(aOpMode, frontLeftMotorPower, frontRightMotorPower,
-						backLeftMotorPower, backRightMotorPower);
-
-			}
-		} else {
-			frontLeftMotorPower = Math.abs(aOpMode.gamepad1.right_stick_x * powerFactor);
-			frontRightMotorPower = Math.abs(aOpMode.gamepad1.right_stick_x * powerFactor);
-			backLeftMotorPower = Math.abs(aOpMode.gamepad1.right_stick_x * powerFactor);
-			backRightMotorPower = Math.abs(aOpMode.gamepad1.right_stick_x * powerFactor);
-
-			if (aOpMode.gamepad1.right_stick_x > 0) {
-				//clockwise turn
-				frontRightMotorPower = -frontRightMotorPower;
-				backRightMotorPower = -backRightMotorPower;
-			} else {
-				//counter clockwise turn
-				frontLeftMotorPower = -frontLeftMotorPower;
-				backLeftMotorPower = -backLeftMotorPower;
-			}
-		}
-
-		//when power is zero as initialized the motors will stop. This should be true if the
-		//joysticks are released.
-		//otherwise this will run the motors in desired direction.
-
-		robot.runMotors(aOpMode, frontLeftMotorPower, frontRightMotorPower,
-				backLeftMotorPower, backRightMotorPower);
-
-
-	}
 
 	public void driveRobotWithPowerFactor(vv_OpMode aOpMode, float powerFactor)
 			throws InterruptedException {
@@ -856,35 +739,60 @@ public class vv_Lib {
 	public void driveRobotFieldOrientedWithPowerFactor(vv_OpMode aOpMode, float powerFactor)
 			throws InterruptedException {
 
+		//process joysticks
+
 		if (Math.abs(aOpMode.gamepad1.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
 				Math.abs(aOpMode.gamepad1.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
 			//we are not in deadzone. Driver is pushing left joystick
+			//lets make the robot move in chosen angle and magnitude.
 
-			universalMoveRobotForTeleOp(aOpMode, aOpMode.gamepad1.left_stick_x * powerFactor,
-					aOpMode.gamepad1.left_stick_y * powerFactor);
+			universalMoveRobotForFieldOrientedTeleOp(aOpMode,
+					robot.getGamePad1LeftJoystickPolarMagnitude(aOpMode) * powerFactor,
+					robot.getGamePad1LeftJoystickPolarAngle(aOpMode)
+							+ 90 - //for rotated orientation of robot at start of game.
+							robot.getMxpGyroSensorHeading(aOpMode)); //for yaw on field.
 
-		} else {
-			if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
-					Math.abs(aOpMode.gamepad1.right_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
-				//we are not in deadzone. Driver is pushing right joystick
 
-				//the angle in degrees of the joystick is
+		}
+		if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
 
-				double joystickDegrees = Math.atan2(aOpMode.gamepad1.right_stick_y, aOpMode.gamepad1.right_stick_x);
-				//this angle is in radians.
-				//we need to convert to degrees.
-				joystickDegrees = Math.toDegrees(joystickDegrees);
-				//we can ignore the magnitude, as we are only interested in turn angles.
+			//we are not in deadzone. Driver is pushing right joystick, sideways
+			float turnVelocity = (float) robot.getGamePad1RightJoystickPolarMagnitude(aOpMode) * powerFactor;
 
-				//now lets turn the robot head to mirror the direction of joystick
-				turnAbsoluteMxpGyroDegrees(aOpMode, (float) joystickDegrees);
-				Thread.sleep(50);
-
+			if (aOpMode.gamepad1.right_stick_x > 0) {
+				//turn clockwise to correct magnitude
+				robot.runMotors(aOpMode, turnVelocity, -turnVelocity, turnVelocity, -turnVelocity);
 			} else {
-				//both joysticks are at rest, stop the robot.
-
-				stopAllMotors(aOpMode);
+				//turn counter-clockwise
+				robot.runMotors(aOpMode, -turnVelocity, turnVelocity, -turnVelocity, turnVelocity);
 			}
+
+
+		}
+
+		if ((Math.abs(aOpMode.gamepad1.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
+				Math.abs(aOpMode.gamepad1.left_stick_y) < vv_Constants.ANALOG_STICK_THRESHOLD) &&
+				Math.abs(aOpMode.gamepad1.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD) {
+			//both joysticks are at rest, stop the robot.
+
+			stopAllMotors(aOpMode);
+		}
+
+		//process dpads
+		if (aOpMode.gamepad1.dpad_down) {
+			turnAbsoluteMxpGyroDegrees(aOpMode, -90);
+		} else if (aOpMode.gamepad1.dpad_up) {
+			turnAbsoluteMxpGyroDegrees(aOpMode, +90);
+		} else if (aOpMode.gamepad1.dpad_left) {
+			turnAbsoluteMxpGyroDegrees(aOpMode, 0);
+		} else if (aOpMode.gamepad1.dpad_right) {
+			turnAbsoluteMxpGyroDegrees(aOpMode, +180);
+		}
+
+		//process yaw reset
+
+		if (aOpMode.gamepad1.y) {
+			robot.setMxpGyroZeroYaw(aOpMode);
 		}
 
 	}
@@ -924,9 +832,13 @@ public class vv_Lib {
 		// else set the ball collector motor power to the intake power
 		if (robot.getIntakeState() == vv_Constants.IntakeStateEnum.In ||
 				robot.getIntakeState() == vv_Constants.IntakeStateEnum.Out) {
+			//first close the rear intake servo
+			robot.closeRearLauncherGate();
 			robot.setPower(anOp, INTAKE_MOTOR, 0.0f);
 			robot.setIntakeState(vv_Constants.IntakeStateEnum.Off);
 		} else {
+			//first raise the rear intake servo
+			robot.openRearLauncherGate();
 			robot.setPower(anOp, INTAKE_MOTOR, -vv_Constants.INTAKE_POWER); //TODO: Check negate
 			robot.setIntakeState(vv_Constants.IntakeStateEnum.In);
 		}
@@ -998,51 +910,36 @@ public class vv_Lib {
          */
 	}
 
-	public void universalMoveRobotForDuration(vv_OpMode aOpMode, double xAxisVelocity,
-	                                          double yAxisVelocity, double rotationalVelocity, long duration)
-			throws InterruptedException {
-		robot.universalMoveRobotForDuration(aOpMode, xAxisVelocity,
-				yAxisVelocity, rotationalVelocity, duration);
-	}
 
-	public void universalMoveRobotByAngleDirection(vv_OpMode aOpMode, double directionAngle,
-	                                               double velocity, double rotationalVelocity,
-	                                               long duration, vv_OpMode.StopCondition condition,
-	                                               boolean isPulsed, long pulseWidthDuration, long pulseRestDuration)
+	public void universalMoveRobot(vv_OpMode aOpMode, double polarAngle,
+	                               double polarVelocity, double rotationalVelocity,
+	                               long duration, vv_OpMode.StopCondition condition,
+	                               boolean isPulsed, long pulseWidthDuration, long pulseRestDuration)
 			throws InterruptedException {
 
-		//should be refined for full scale.
-		//
-		if (velocity > 0.45) {
-			velocity = -0.45;
-		}
-		if (velocity < 0.2) {
-			velocity = 0.2;
-		}
 
-		double xAxisVelocity = velocity * Math.cos(directionAngle);
-		double yAxisVelocity = velocity * Math.sin(directionAngle);
-
-		robot.universalMoveRobot(aOpMode, xAxisVelocity,
-				yAxisVelocity, rotationalVelocity, duration, condition, isPulsed, pulseWidthDuration, pulseRestDuration);
+		robot.universalMoveRobot(aOpMode, polarVelocity * Math.sin(Math.toRadians(polarAngle)),
+				polarVelocity * Math.cos(Math.toRadians(polarAngle)), rotationalVelocity, duration, condition, isPulsed, pulseWidthDuration, pulseRestDuration);
 	}
 
-	public void universalMoveRobotByAxisVelocity(vv_OpMode aOpMode, double xAxisVelocity,
-	                                             double yAxisVelocity, double rotationalVelocity,
-	                                             long duration, vv_OpMode.StopCondition condition,
-	                                             boolean isPulsed, long pulseWidthDuration, long pulseRestDuration)
-			throws InterruptedException {
 
-		robot.universalMoveRobot(aOpMode, xAxisVelocity,
-				yAxisVelocity, rotationalVelocity, duration, condition, isPulsed, pulseWidthDuration, pulseRestDuration);
-	}
 
 	public void universalMoveRobotForTeleOp(vv_OpMode aOpMode, double xAxisVelocity,
 	                                        double yAxisVelocity)
 			throws InterruptedException {
 
-		robot.universalMoveRobotForTelOp(aOpMode, xAxisVelocity, yAxisVelocity);
+		robot.universalMoveRobotForTeleOp(aOpMode, xAxisVelocity, yAxisVelocity);
 	}
+
+	public void universalMoveRobotForFieldOrientedTeleOp(vv_OpMode aOpMode, double polarMagnitude,
+	                                                     double polarAngle)
+			throws InterruptedException {
+
+		robot.universalMoveRobotForTeleOp(aOpMode,
+				polarMagnitude * Math.sin(Math.toRadians(polarAngle)), //trig in radians
+				polarMagnitude * Math.cos(Math.toRadians(polarAngle)));
+	}
+
 
 
 	public void universalGyroStabilizedMoveRobotByAxisVelocity(vv_OpMode aOpMode, double xAxisVelocity,
@@ -1128,103 +1025,94 @@ public class vv_Lib {
 	}
 
 
-	public double getFloorUltrasonicReading(vv_OpMode aOpMode, int ReadingSetSize)
+	public double getUltrasonicDistance(vv_OpMode aOpMode)
 			throws InterruptedException {
-		return readUltrasonicDistance(aOpMode, ReadingSetSize);
+		return robot.getUltrasonicDistance(aOpMode);
 	}
 
-
-	public double getBeaconServoPosition(vv_OpMode aOpMode, int servoName) {
-		return robot.getBeaconServoPosition(aOpMode, servoName);
-	}
-
-	public void setBeaconServoPosition(vv_OpMode aOpMode, int servoName, double position)
+	public double getOpticalDistance(vv_OpMode aOpMode)
 			throws InterruptedException {
-		robot.setBeaconServoPosition(aOpMode, servoName, position);
+		return robot.getOpticalDistance(aOpMode);
 	}
+
+
+	public double getServoPosition(vv_OpMode aOpMode, int servoName) {
+		return robot.getServoPosition(aOpMode, servoName);
+	}
+
+	public void setServoPosition(vv_OpMode aOpMode, int servoName, double position)
+			throws InterruptedException {
+		robot.setServoPosition(aOpMode, servoName, position);
+	}
+
 
 	public void pressLeftBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
-		robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
+		robot.setServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
 		Thread.sleep(200);
-		robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
+		robot.setServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
 	}
 
 	public void pressRightBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
-		robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
+		robot.setServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
 		Thread.sleep(200);
-		robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
+		robot.setServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
 	}
 
 	public void extendLeftBeaconButtonPress(vv_OpMode aOpMode) throws InterruptedException {
-		robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
+		robot.setServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
 	}
 
 	public void extendRightBeaconButtonPress(vv_OpMode aOpMode) throws InterruptedException {
-		robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
+		robot.setServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
 	}
 
 	public void closeLeftBeaconButtonPress(vv_OpMode aOpMode) throws InterruptedException {
-		robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
+		robot.setServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
 	}
 
 	public void closeRightBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
-		robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
+		robot.setServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
+	}
+
+	public void raiseBallFlagServo(vv_OpMode aOpMode) throws InterruptedException {
+		robot.setServoPosition(aOpMode, FLAG_SERVO, BALL_FLAG_SERVO_RAISED);
+	}
+
+	public void lowerBallFlagServo(vv_OpMode aOpMode) throws InterruptedException {
+		robot.setServoPosition(aOpMode, FLAG_SERVO, BALL_FLAG_SERVO_LOWERED);
+	}
+
+	public void alarmBallFlagServo(vv_OpMode aOpMode) throws InterruptedException {
+		robot.setServoPosition(aOpMode,  FLAG_SERVO,BALL_FLAG_SERVO_ALARM);
 	}
 
 
+	public void showRangeSensorDistanceOnTelemetry(vv_OpMode aOpMode) {
+		aOpMode.telemetryAddData("MR Range Ultrasonic Distance",
+				" in inches:", " " + robot.getUltrasonicDistance(aOpMode));
 
-
-	public boolean isBeaconTouchSensorPressed(vv_OpMode aOpMode) {
-		return robot.isBeaconTouchSensorPressed(aOpMode);
-
-	}
-
-	public double readUltrasonicDistance(vv_OpMode aOpMode, int readingSetSize) throws InterruptedException {
-
-		return filterUltrasonicReadings(aOpMode, readingSetSize);
-
-	}
-
-	public double filterUltrasonicReadings(vv_OpMode aOpMode, int readingSetSize)
-			throws InterruptedException {
-
-		double readingsArray[];
-
-		if (readingSetSize < 3) {
-			readingSetSize = 3;
-		}
-
-		if (readingSetSize > 15) {
-			readingSetSize = 15;
-		}
-
-
-		if ((readingSetSize % 2) == 0) {
-			//even number
-			readingSetSize++;
-		}
-
-		readingsArray = new double[readingSetSize];
-
-		//take 9 readings
-		for (int i = 0, j = 0; i < readingSetSize && j < readingSetSize * 2; i++, j++) {
-			//get raw reading
-			readingsArray[i] = robot.getUltrasonicReading(aOpMode);
-			//wait between readings
-			Thread.sleep(30);
-			if (readingsArray[i] == 0) {
-				i--; //bad read, redo. to a maximum of 10 reads
-			}
-		}
-		//Now sort the readings
-		Arrays.sort(readingsArray);
-		//return the middle element to reduce noise
-		return readingsArray[((int) Math.round((double) readingSetSize) / 2) - 1];
+		aOpMode.telemetryAddData("MR Range Optical Distance",
+				" in inches:", " " + robot.getOpticalDistance(aOpMode));
+		aOpMode.telemetryUpdate();
 	}
 
 	public void showEopdValueOnTelemetry(vv_OpMode aOpMode) {
 		aOpMode.telemetryAddData("EOPD raw Value:", "Value", ":" +
 				robot.getEopdRawValue(aOpMode));
+		aOpMode.telemetryUpdate();
+	}
+
+	public void showGamepad1PolarCoordinates(vv_OpMode aOpMode) {
+		aOpMode.telemetryAddData("Rot Left Stick:", "Angle:", ":" +
+				robot.getGamePad1LeftJoystickPolarAngle(aOpMode) + "degrees ");
+		aOpMode.telemetryAddData("Rot Left Stick:", "Magnitude:", ":" +
+				robot.getGamePad1LeftJoystickPolarMagnitude(aOpMode));
+
+		aOpMode.telemetryAddData("Rot Right Stick:", "Angle:", ":" +
+				robot.getGamePad1RightJoystickPolarAngle(aOpMode) + "degrees ");
+		aOpMode.telemetryAddData("Rot Right Stick:", "Magnitude:", ":" +
+				robot.getGamePad1RightJoystickPolarMagnitude(aOpMode));
+
 		aOpMode.telemetryUpdate();
 	}
 
@@ -1241,11 +1129,11 @@ public class vv_Lib {
 
 		if (teamColor == vv_Constants.BeaconColorEnum.BLUE) {
 			//team blue
-			if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE) {
+			if (getBeaconLeftColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE) {
 				//found blue
 				//press left beacon button
 				extendLeftBeaconButtonPress(aOpMode);
-			} else if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
+			} else if (getBeaconLeftColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
 				//found red
 				//press right button
 				extendRightBeaconButtonPress(aOpMode);
@@ -1253,27 +1141,24 @@ public class vv_Lib {
 		}
 		if (teamColor == vv_Constants.BeaconColorEnum.RED) {
 			//team red
-			if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
+			if (getBeaconLeftColor(aOpMode) == vv_Constants.BeaconColorEnum.RED) {
 				//found red
 				//press left beacon button
 				extendLeftBeaconButtonPress(aOpMode);
-			} else if (getBeaconColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE){
+			} else if (getBeaconLeftColor(aOpMode) == vv_Constants.BeaconColorEnum.BLUE) {
 				//found blue
 				//press right button
 				extendRightBeaconButtonPress(aOpMode);
 			}
 		}
 
-		//lets do a pulse move until the proximity is closed
 
+		//move forward to press beacon button.
+		//lets keep pulsing forward until the color changes or time runs out or proximity limits
+		//are reached
 
-		universalMoveRobotByAxisVelocity(aOpMode, 0.2, 0, 0.0, 2000,
-				eopdOrUltrasonicProximityStop, false, 0, 0);
-
-		universalMoveRobotByAxisVelocity(aOpMode, 0.2, 0, 0.0, 210,
-				eopdProximityStop, true, 200, 25);
-
-
+		universalMoveRobot(aOpMode, 90, 0.3, 0.0, 2000,
+				rangeSensorProximityOrColorVerifiedStop, true, 175, 10);
 
 		Thread.sleep(100);
 
@@ -1290,33 +1175,29 @@ public class vv_Lib {
 
 
 		//read distance from ultrasonic sensor, noise filtered, with 7 readings in a set.
-		double distanceToBeaconWall = getFloorUltrasonicReading(aOpMode, 7) / 2.54; //in inches
+		double distanceToBeaconWall = getUltrasonicDistance(aOpMode); //in inches
 		//now try moving that distance, adjusting for inset of ultrasonic sensor
 		//move toward the beacons but stop short (approx 1.5 inches short).
-		moveWheels(aOpMode, (float) (distanceToBeaconWall - 2.25), 0.8f, SidewaysRight, true);
+		moveWheels(aOpMode, (float) (distanceToBeaconWall - 2.75), 0.8f, SidewaysRight, true);
 
 		//now detect the line but at right angles
 		//for first beacon
 
 
-		universalMoveRobotByAxisVelocity(aOpMode, 0.0, 0.25, 0.0, 3000, lineDectectStop, false, 0, 0);
+		universalMoveRobot(aOpMode, 0, 0.25, 0.0, 3000, lineDectectStop, false, 0, 0);
 		//now detect the line but at right angles
 
-		Thread.sleep(50);
+		Thread.sleep(25);
 
-		moveWheels(aOpMode, 4.3f, 0.20f, Backward, false); // adjust face position to match beacons
+		moveWheels(aOpMode, 3.5f, 0.20f, Backward, false); // adjust face position to match beacons
 
-		Thread.sleep(50);
+		Thread.sleep(25);
 
-
-		//turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim, readjust to prep for color read
+		turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim, readjust to prep for color read
 
 		detectColorAndPressBeacon(aOpMode, vv_Constants.BeaconColorEnum.BLUE);
 
-		//now to work on second beacon.
-
-		Thread.sleep(50);
-
+		Thread.sleep(25);
 	}
 
 	public void ScoreBeaconFromTheLeft(vv_OpMode aOpMode) throws InterruptedException {
@@ -1326,18 +1207,18 @@ public class vv_Lib {
 
 
 		//read distance from ultrasonic sensor, noise filtered, with 7 readings in a set.
-		double distanceToBeaconWall = getFloorUltrasonicReading(aOpMode, 7) / 2.54; //in inches
+		double distanceToBeaconWall = getUltrasonicDistance(aOpMode); //in inches
 		//now try moving that distance, adjusting for inset of ultrasonic sensor
 		//move toward the beacons but stop short (approx 1.5 inches short).
-		moveWheels(aOpMode, (float) (distanceToBeaconWall - 3.25), 0.8f, SidewaysRight, true);
+		moveWheels(aOpMode, (float) (distanceToBeaconWall - 2.75), 0.8f, SidewaysRight, true);
 
-		Thread.sleep(50);
+		Thread.sleep(25);
 
 		//now detect the line but at right angles
 		//for first beacon
 
 
-		universalMoveRobotByAxisVelocity(aOpMode, 0.0, -0.25, 0.0, 3000, lineDectectStop, false, 0, 0);
+		universalMoveRobot(aOpMode, 180, 0.25, 0.0, 3000, lineDectectStop, false, 0, 0);
 		//now detect the line but at right angles
 
 		Thread.sleep(25);
@@ -1356,6 +1237,107 @@ public class vv_Lib {
 
 
 	}
+
+	public void blueAutonomousCommonAction(vv_OpMode aOpMode) throws InterruptedException {
+		//rotate to face beacon
+		turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim
+
+		//detect the line and score beacon.
+
+		ScoreBeaconFromTheRight(aOpMode);
+
+		//now to work on second beacon.
+
+
+		//now move to second beacon
+
+		//pull back 4 inches to create clearance
+		moveWheels(aOpMode, 4, 0.8f, SidewaysLeft, true);
+
+		//orient to 90 degrees to field
+
+		turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim
+
+		//lets move over the first beacon line, to prevent stopping at wrong line.
+
+		moveWheels(aOpMode, 48.5f, 0.99f, Forward, true);
+
+		turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim
+
+		ScoreBeaconFromTheRight(aOpMode);
+
+		//knock off the cap ball.
+		moveWheels(aOpMode, 10, .8f, SidewaysLeft, true);
+		turnAbsoluteMxpGyroDegrees(aOpMode, 140);
+
+		moveWheels(aOpMode, 57, 0.99f, Backward, false);
+
+	}
+
+	public void redAutonomousCommonAction(vv_OpMode aOpMode) throws InterruptedException {
+		//rotate to face beacon
+		turnAbsoluteMxpGyroDegrees(aOpMode, -90); //with trim
+
+		//detect the line and score beacon.
+
+		ScoreBeaconFromTheLeft(aOpMode);
+
+		//now to work on second beacon.
+
+
+		//now move to second beacon
+
+		//pull back 6 inches to create clearance
+		moveWheels(aOpMode, 6, 0.8f, SidewaysLeft, true);
+
+		//orient to 90 degrees to field
+
+		Thread.sleep(50);
+
+		turnAbsoluteMxpGyroDegrees(aOpMode, -90); //with trim
+
+
+		//lets move over the first beacon line, to prevent stopping at wrong line.
+
+
+		universalMoveRobot(aOpMode, 250, 8, 0.0, 1700, falseStop, false, 0, 0);
+
+		turnAbsoluteMxpGyroDegrees(aOpMode, -90); //with trim
+
+
+		ScoreBeaconFromTheLeft(aOpMode);
+
+		moveWheels(aOpMode, 10, .8f, SidewaysLeft, true);
+		Thread.sleep(25);
+		turnAbsoluteMxpGyroDegrees(aOpMode, -135);
+		Thread.sleep(25);
+
+		universalMoveRobot(aOpMode, 90, 0.9f, 0.0, 2000, falseStop, false, 0, 0);
+
+	}
+
+	public void shootBallsAutonomousCommonAction(vv_OpMode aOpMode)
+			throws InterruptedException {
+
+
+		// Shoot the first ball
+		shootBall(aOpMode);
+		setupShot(aOpMode);
+
+		//drop ball
+		dropBall(aOpMode);
+
+		//Shoot the second ball.
+		shootBall(aOpMode);
+		shootBall(aOpMode);
+
+
+		//rotate back for reference before proceeding
+		turnAbsoluteMxpGyroDegrees(aOpMode, 0f);
+	}
+
+
+
 	//conditions that can stop the robot.
 
 
@@ -1379,10 +1361,46 @@ public class vv_Lib {
 		}
 	}
 
-	public class eopdOrUltrasonicProximityCondition implements vv_OpMode.StopCondition {
+	public class RangeSensorProximityOrColorVerifiedCondition implements vv_OpMode.StopCondition {
 		public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
-			return ((getEopdRawValue(aOpMode) > EOPD_PROXIMITY_THRESHOLD) ||
-					((getFloorUltrasonicReading(aOpMode, 7) / 2.54) < ULTRASONIC_PROXIMITY_THRESHOLD));
+			return (((getOpticalDistance(aOpMode) < RANGESENSOR_OPTICAL_PROXIMITY_THRESHOLD)
+					&& getOpticalDistance(aOpMode) > 0) ||
+					(getUltrasonicDistance(aOpMode)
+							< RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD) ||
+					(getBeaconLeftColor(aOpMode) == getBeaconRightColor(aOpMode)));
+
+		}
+	}
+
+	public class RangeSensorOpticalProximityCondition implements vv_OpMode.StopCondition {
+		public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+			return (((getOpticalDistance(aOpMode) < RANGESENSOR_OPTICAL_PROXIMITY_THRESHOLD)
+					&& getOpticalDistance(aOpMode) > 0));
+
+		}
+	}
+
+	public class RangeSensorUltraSonicProximityCondition implements vv_OpMode.StopCondition {
+		public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+			return (getUltrasonicDistance(aOpMode)
+					< RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD);
+
+		}
+	}
+
+	public class RangeSensorUltraSonicCornerPositioningCondition implements vv_OpMode.StopCondition {
+		public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+			return (getUltrasonicDistance(aOpMode)
+					< 1.5 * RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD);
+		}
+	}
+
+
+	public class colorPressVerifiedCondition implements vv_OpMode.StopCondition {
+		public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+			//button is pressed because both colors match , not a strong test but a good starting point for
+			//teleop.
+			return (getBeaconLeftColor(aOpMode) == getBeaconRightColor(aOpMode));
 
 		}
 	}
