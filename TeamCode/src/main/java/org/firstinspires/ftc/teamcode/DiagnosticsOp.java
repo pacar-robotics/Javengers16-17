@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.os.Environment;
 import android.util.Log;
 
@@ -117,13 +119,15 @@ public class DiagnosticsOp extends vv_OpMode {
 	private static final String LOG_TAG = "DiagnosticsOp";
 	private static final String INPUT_TELEMETRY_KEY = "Input";
 	private static final String OUTPUT_TELEMETRY_KEY = "Output";
-	private static final int WHEEL_POWER = 50;
+	private static final float WHEEL_POWER = .5f;
 	private static final int WHEEL_DISTANCE = 15; // Centimeters
 	private static final int WHEEL_TIME = 2000; // milliseconds
 	private static final int TOUCH_WAIT_TIME = 5000; // milliseconds
 	private static final int INPUT_WAIT_TIME = 1000; // milliseconds
 	private static final int GYRO_THRESHOLD = 10; // degrees
 	private static final int GYRO_TURN = 90; // degrees
+	private static final int TURN_TIME = 10000; // milliseconds
+	private static final int CHOO_CHOO_TIME = 2000; // milliseconds
 
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -356,56 +360,59 @@ public class DiagnosticsOp extends vv_OpMode {
 	}
 
 	// Sensors
-	private void floorcolor() throws InterruptedException {
+	private boolean floorcolor() throws InterruptedException {
+		robotLibrary.runAllMotors(this, WHEEL_POWER + .3f, -WHEEL_POWER, WHEEL_POWER +.3f, -WHEEL_POWER);
+		reset_timer();
 
-	}
+		int prevRed = robotLibrary.getBeaconLeftColorRedValue(this),
+				prevBlue = robotLibrary.getBeaconLeftColorBlueValue(this),
+				prevGreen = robotLibrary.getBeaconLeftColorGreenValue(this);
 
-	private boolean beacontouch() throws InterruptedException {
-		Calendar cal = new GregorianCalendar();
-		cal.setTimeInMillis(System.currentTimeMillis());
-
-		// Wait until sensor is touched or 5 seconds have passed
-		while (robotLibrary.isBeaconTouchSensorPressed(this) && (System.currentTimeMillis() - cal.getTimeInMillis() < TOUCH_WAIT_TIME));
-
-		return !robotLibrary.isBeaconTouchSensorPressed(this);
+		while (time_elapsed() <= TURN_TIME) {
+			if (robotLibrary.getBeaconLeftColorRedValue(this) != prevRed ||
+					robotLibrary.getBeaconLeftColorBlueValue(this) != prevBlue ||
+					robotLibrary.getBeaconLeftColorGreenValue(this) != prevGreen) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean beaconcolor() throws InterruptedException {
-		Calendar cal = new GregorianCalendar();
-		cal.setTimeInMillis(System.currentTimeMillis());
 
-		while (System.currentTimeMillis() - cal.getTimeInMillis() > 5000) {
-			robotLibrary.showBeaconColorValuesOnTelemetry(this, true);
-		}
-
-		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	private boolean launcherlimittouch() throws InterruptedException {
-		return robotLibrary.testLauncherTouch(this);
+		reset_timer();
+		robotLibrary.setLauncherPower(.9f);
+		reset_timer();
+		while (time_elapsed() <= CHOO_CHOO_TIME) {
+			if (robotLibrary.isArmAtLimit(this)) {
+				// If it was pressed, we know it's working
+				return true;
+			}
+			idle();
+		}
+		return false;
 	}
 
 	private void liftlimittouch() {
 	}
 
 	private boolean ultrasonic() throws InterruptedException {
-		double readings[] = {0};
+		robotLibrary.runAllMotors(this, WHEEL_POWER, -WHEEL_POWER, WHEEL_POWER, -WHEEL_POWER);
+		reset_timer();
 
-		while (gamepad1.a || gamepad1.b) {
-			for (int i = 0, j = 0; i < 3 && j < 10; i++, j++) {
-				readings[i] = robotLibrary.getFloorUltrasonicReading(this, 15);
-				//wait between readings
-				Thread.sleep(20);
-				if (readings[i] == 0) {
-					i--; //bad read, redo. to a maximum of 10 reads
-				}
+		double previousRangeReading = robotLibrary.getUltrasonicDistance(this);
+		while (time_elapsed() <= TURN_TIME) {
+			if (previousRangeReading != robotLibrary.getUltrasonicDistance(this)) {
+				// If the value changed, the ultrasonic sensor must be working
+				return true;
 			}
-
-			Arrays.sort(readings);
-			telemetryAddData("Ultrasonic", "Readings", String.valueOf(readings[1]));
+			idle();
 		}
 
-		return !gamepad1.a;
+		return false;
 	}
 
 	private boolean gyro() throws InterruptedException {

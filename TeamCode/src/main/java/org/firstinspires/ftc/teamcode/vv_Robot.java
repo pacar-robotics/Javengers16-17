@@ -252,6 +252,10 @@ public class vv_Robot {
 		motorArray[motorName].setPower(power);
 	}
 
+	public void setLauncherPower(float power) {
+		motorArray[ARM_MOTOR].setPower(power);
+	}
+
 	public DcMotor.RunMode getMotorMode(vv_OpMode aOpMode, int motorName) throws InterruptedException {
 
 		return motorArray[motorName].getMode();

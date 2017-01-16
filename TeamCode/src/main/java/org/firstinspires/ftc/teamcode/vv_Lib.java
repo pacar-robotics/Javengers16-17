@@ -129,6 +129,14 @@ public class vv_Lib {
 
 	}
 
+	public void setLauncherPower(float power) {
+		robot.setLauncherPower(power);
+	}
+
+	public boolean isArmAtLimit(vv_OpMode aOpMode) throws InterruptedException {
+		return robot.isArmAtLimit(aOpMode);
+	}
+
 	public void dropBall(vv_OpMode aOpMode) throws InterruptedException {
 
 		//close the rear launcher gate
@@ -226,6 +234,18 @@ public class vv_Lib {
 		if (updateTheDisplay) {
 			aOpMode.telemetryUpdate();
 		}
+	}
+
+	public int getBeaconLeftColorRedValue(vv_OpMode aOpMode) {
+		return robot.getBeaconLeftColorRedValue(aOpMode);
+	}
+
+	public int getBeaconLeftColorGreenValue(vv_OpMode aOpMode) {
+		return robot.getBeaconLeftColorGreenValue(aOpMode);
+	}
+
+	public int getBeaconLeftColorBlueValue(vv_OpMode aOpMode) {
+		return robot.getBeaconLeftColorBlueValue(aOpMode);
 	}
 
 	public void showBeaconLeftColorValuesOnTelemetry(vv_OpMode aOpMode,
