@@ -118,6 +118,9 @@ public class vv_Constants
     //index of servos
     final static int LEFT_BEACON_BUTTON_SERVO = 0;
     final static int RIGHT_BEACON_BUTTON_SERVO = 1;
+    final static int FRONT_GATE_SERVO = 2;
+    final static int REAR_GATE_SERVO = 3;
+    final static int FLAG_SERVO = 4;
 
 
 

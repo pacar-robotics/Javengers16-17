@@ -20,6 +20,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
 import static org.firstinspires.ftc.teamcode.vv_Constants.EOPD_PROXIMITY_THRESHOLD;
+import static org.firstinspires.ftc.teamcode.vv_Constants.FLAG_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FLOOR_WHITE_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
@@ -358,7 +359,7 @@ public class vv_Lib {
         //calculate target position from the input distance in cm
         targetPosition = (int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position
-        robot.runRobotToPositionFB(aOpMode, targetPosition, Power, isRampedPower);
+        robot.runRobotCentimeters(aOpMode, targetPosition, Power, isRampedPower, DirectionEnum.Forward);
     }
 
     //Moves robot backward with a distance supplied in centimeters and power between 0 and 1
@@ -370,7 +371,7 @@ public class vv_Lib {
         //calculate target position from the input distance in cm
         targetPosition = -(int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
         //runs the robot to position with negative power
-        robot.runRobotToPositionFB(aOpMode, targetPosition, Power, isRampedPower);
+        robot.runRobotCentimeters(aOpMode, targetPosition, Power, isRampedPower, DirectionEnum.Forward);
     }
 
     private void moveSidewaysLeftToPosition(vv_OpMode aOpMode,
@@ -384,7 +385,7 @@ public class vv_Lib {
         targetPosition = (int) Math.round(targetPosition * 1.19);
 
         //runs the robot to position with negative power
-        robot.runRobotToPositionSideways(aOpMode, targetPosition, Power, isRampedPower);
+        robot.runRobotCentimeters(aOpMode, targetPosition, Power, isRampedPower, DirectionEnum.SidewaysLeft);
     }
 
     private void moveSidewaysRightToPosition(vv_OpMode aOpMode,
@@ -398,7 +399,7 @@ public class vv_Lib {
         targetPosition = (int) Math.round(targetPosition * 1.19);
 
         //runs the robot to position with negative power
-        robot.runRobotToPositionSideways(aOpMode, targetPosition, Power, isRampedPower);
+        robot.runRobotCentimeters(aOpMode, targetPosition, Power, isRampedPower, DirectionEnum.SidewaysRight);
     }
 
 
@@ -414,18 +415,20 @@ public class vv_Lib {
         //TODO: Stop additional motors that are not on the base of the Robot.
     }
 
-    //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
-    public void moveForward(vv_OpMode aOpMode, float Power) throws InterruptedException {
-        robot.runMotorsFB(aOpMode, Power);
-    }
+    public void moveRobotUsingPower(vv_OpMode aOpMode, float Power, DirectionEnum direction) throws InterruptedException {
+        switch (direction) {
+            case Forward:
+                robot.runMotorsUsingPower(aOpMode, Power, direction);
+                break;
+            case Backward:
+                robot.runMotorsUsingPower(aOpMode, -Power, direction);
+                break;
+            case SidewaysLeft:
+                robot.runMotorsUsingPower(aOpMode, Power, direction);
+                break;
 
-    //Moves robot backward with a distance supplied in centimeters and power between 0 and 1
-    public void moveBackward(vv_OpMode aOpMode, float Power) throws InterruptedException {
-        robot.runMotorsFB(aOpMode, -Power);
-    }
 
-    public void moveSidewaysLeft(vv_OpMode aOpMode, float Power) throws InterruptedException {
-        robot.runMotorsSidewaysLeft(aOpMode, Power);
+        }
     }
 
     public double scalePowerForUltrasonicTravel(vv_OpMode aOpMode,
@@ -442,10 +445,7 @@ public class vv_Lib {
         return scaledPower;
     }
 
-    public void moveSidewaysRight(vv_OpMode aOpMode, float Power) throws InterruptedException {
-        robot.runMotorsSidewaysRight(aOpMode, Power);
-    }
-
+    //using Modern Robotics Gyro Sensor: Relative Turns
     public void turnGyroDegrees(vv_OpMode aOpMode, int turnDegrees) throws InterruptedException {
 
         //this code has some issues due to gyro read lag of approximately 250ms as reported.
@@ -527,6 +527,7 @@ public class vv_Lib {
 
     }
 
+    //using Modern Robotics Gyro Sensor
     public void turnAbsoluteGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
         //clockwise is represented by clockwise numbers.
         //counterclockwise by negative angle numbers in degrees.
@@ -609,6 +610,7 @@ public class vv_Lib {
 
     }
 
+    //using compass to fix drift: NOT FINISHED
     public void turnAbsoluteMxpFusedGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
         //clockwise is represented by clockwise numbers.
         //counterclockwise by negative angle numbers in degrees.
@@ -1034,57 +1036,54 @@ public class vv_Lib {
     }
 
 
-    public double getBeaconServoPosition(vv_OpMode aOpMode, int servoName) {
-        return robot.getBeaconServoPosition(aOpMode, servoName);
+    public double getServoPosition(vv_OpMode aOpMode, int servoName) {
+        return robot.getServoPosition(aOpMode, servoName);
     }
 
-    public void setBeaconServoPosition(vv_OpMode aOpMode, int servoName, double position)
+    public void setServoPosition(vv_OpMode aOpMode, int servoName, double position)
             throws InterruptedException {
-        robot.setBeaconServoPosition(aOpMode, servoName, position);
+        robot.setServoPosition(aOpMode, servoName, position);
     }
+
 
     public void pressLeftBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
-        robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
+        robot.setServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
         Thread.sleep(200);
-        robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
+        robot.setServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
     }
 
     public void pressRightBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
-        robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
+        robot.setServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
         Thread.sleep(200);
-        robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
+        robot.setServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
     }
 
     public void extendLeftBeaconButtonPress(vv_OpMode aOpMode) throws InterruptedException {
-        robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
+        robot.setServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_PRESSED);
     }
 
     public void extendRightBeaconButtonPress(vv_OpMode aOpMode) throws InterruptedException {
-        robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
+        robot.setServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_PRESSED);
     }
 
     public void closeLeftBeaconButtonPress(vv_OpMode aOpMode) throws InterruptedException {
-        robot.setBeaconServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
+        robot.setServoPosition(aOpMode, LEFT_BEACON_BUTTON_SERVO, BEACON_SERVO_LEFT_REST);
     }
 
     public void closeRightBeaconButton(vv_OpMode aOpMode) throws InterruptedException {
-        robot.setBeaconServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
+        robot.setServoPosition(aOpMode, RIGHT_BEACON_BUTTON_SERVO, BEACON_SERVO_RIGHT_REST);
     }
 
     public void raiseBallFlagServo(vv_OpMode aOpMode) throws InterruptedException {
-        robot.setBallFlagServoPosition(aOpMode, BALL_FLAG_SERVO_RAISED);
+        robot.setServoPosition(aOpMode, FLAG_SERVO, BALL_FLAG_SERVO_RAISED);
     }
 
     public void lowerBallFlagServo(vv_OpMode aOpMode) throws InterruptedException {
-        robot.setBallFlagServoPosition(aOpMode, BALL_FLAG_SERVO_LOWERED);
+        robot.setServoPosition(aOpMode, FLAG_SERVO, BALL_FLAG_SERVO_LOWERED);
     }
 
     public void alarmBallFlagServo(vv_OpMode aOpMode) throws InterruptedException {
-        robot.setBallFlagServoPosition(aOpMode, BALL_FLAG_SERVO_ALARM);
-    }
-
-    public double getBallFlagServoState(vv_OpMode aOpMode) throws InterruptedException {
-        return robot.getBallFlagServoPosition(aOpMode);
+        robot.setServoPosition(aOpMode,  FLAG_SERVO,BALL_FLAG_SERVO_ALARM);
     }
 
 
