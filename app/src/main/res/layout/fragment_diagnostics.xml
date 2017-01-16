@@ -90,6 +90,11 @@
 					android:id="@+id/left_platform"
 					style="@style/CheckBoxDiag"
 					android:text="@string/sideways_left"/>
+
+				<CheckBox
+					android:id="@+id/diagonal_platform"
+					style="@style/CheckBoxDiag"
+					android:text="@string/diagonal"/>
 			</LinearLayout>
 
 			<CheckBox
@@ -134,19 +139,34 @@
 			android:orientation="vertical">
 
 			<CheckBox
-				android:id="@+id/intake_gate_servo"
+				android:id="@+id/intake_gate_servo_front"
 				style="@style/CheckBoxDiag"
-				android:text="@string/intake_gate_servo"/>
+				android:text="@string/intake_gate_servo_front"/>
 
 			<CheckBox
-				android:id="@+id/beacon_servo"
+				android:id="@+id/intake_gate_servo_rear"
 				style="@style/CheckBoxDiag"
-				android:text="@string/beacon_servo"/>
+				android:text="@string/intake_gate_servo_rear"/>
+
+			<CheckBox
+				android:id="@+id/beacon_servo_left"
+				style="@style/CheckBoxDiag"
+				android:text="@string/beacon_servo_left"/>
+
+			<CheckBox
+				android:id="@+id/beacon_servo_right"
+				style="@style/CheckBoxDiag"
+				android:text="@string/beacon_servo_right"/>
 
 			<CheckBox
 				android:id="@+id/capball_servo"
 				style="@style/CheckBoxDiag"
 				android:text="@string/capball_servo"/>
+
+			<CheckBox
+				android:id="@+id/flag_servo"
+				style="@style/CheckBoxDiag"
+				android:text="Flag"/>
 		</LinearLayout>
 
 
@@ -176,13 +196,13 @@
 
 			<CheckBox
 				style="@style/CheckBoxDiag"
-				android:id="@+id/beacon_color_sensor"
-				android:text="@string/beacon_color_sensor"/>
+				android:id="@+id/beacon_color_sensor_left"
+				android:text="@string/beacon_color_sensor_left"/>
 
 			<CheckBox
-				android:id="@+id/beacon_touch_sensor"
 				style="@style/CheckBoxDiag"
-				android:text="@string/beacon_touch_sensor"/>
+				android:id="@+id/beacon_color_sensor_right"
+				android:text="@string/beacon_color_sensor_right"/>
 
 			<CheckBox
 				android:id="@+id/launcher_limit_touch_sensor"
@@ -197,7 +217,12 @@
 			<CheckBox
 				android:id="@+id/ultrasonic_sensor"
 				style="@style/CheckBoxDiag"
-				android:text="@string/ultrasonic_sensor"/>
+				android:text="@string/range_sensor"/>
+
+			<CheckBox
+				android:id="@+id/eopd_sensor"
+				style="@style/CheckBoxDiag"
+				android:text="@string/eopd_sensor"/>
 
 			<CheckBox
 				android:id="@+id/gyro_sensor"

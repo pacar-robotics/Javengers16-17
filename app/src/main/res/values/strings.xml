@@ -35,23 +35,27 @@
 	<string name="backwards">Backwards</string>
 	<string name="sideways_right">Sideways Right</string>
 	<string name="sideways_left">Sideways Left</string>
+	<string name="diagonal">Diagonal</string>
 	<string name="worm_drive_motor">Worm Drive</string>
 	<string name="launcher_motor">Launcher</string>
 	<string name="intake_motor">Intake</string>
 	<string name="lift_motor">Lift</string>
 
 	<string name="servos_header">Servos</string>
-	<string name="intake_gate_servo">Intake gate</string>
-	<string name="beacon_servo">Beacon</string>
+	<string name="intake_gate_servo_front">Intake gate front</string>
+	<string name="intake_gate_servo_rear">Intake gate rear</string>
+	<string name="beacon_servo_left">Beacon left</string>
+	<string name="beacon_servo_right">Beacon right</string>
 	<string name="capball_servo">Capball</string>
 
 	<string name="sensors_header">Sensors</string>
 	<string name="floor_color_sensor">Floor color</string>
-	<string name="beacon_color_sensor">Beacon color</string>
-	<string name="beacon_touch_sensor">Beacon touch</string>
+	<string name="beacon_color_sensor_left">Beacon color left</string>
+	<string name="beacon_color_sensor_right">Beacon color right</string>
 	<string name="launcher_limit_touch_sensor">Launcher limit touch</string>
 	<string name="lift_limit_touch_sensor">Lift limit touch</string>
-	<string name="ultrasonic_sensor">Ultrasonic</string>
+	<string name="range_sensor">Range</string>
+	<string name="eopd_sensor">EOPD</string>
 	<string name="gyro_sensor">Gyro</string>
 
 
