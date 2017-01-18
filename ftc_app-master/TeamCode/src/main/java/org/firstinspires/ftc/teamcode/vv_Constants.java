@@ -66,6 +66,10 @@ public class vv_Constants
     static final double BALL_FLAG_SERVO_RAISED = 0.8f;
     static final double BALL_FLAG_SERVO_ALARM = 0.1f;
 
+    static final double CAP_BALL_SERVO_SECURED = 0.0f;
+    static final double CAP_BALL_SERVO_RELEASED = 0.8f;
+
+
 
     //distance between wheels left to right of the Robot in inches.
     final static float ROBOT_TRACK_DISTANCE = 13.7f; //adjusted from observation.
@@ -98,7 +102,7 @@ public class vv_Constants
     final static int ENCODED_MOTOR_STALL_CLICKS_TETRIX = 10;
 
     //power used to rotate intake
-    final static float INTAKE_POWER = 06f;
+    final static float INTAKE_POWER = 0.8f;
     //define the motors as constants instead of enumerations for speed.
 
 

@@ -47,6 +47,8 @@ public class YorkFOTeleOp extends vv_OpMode {
 
             processBallFlag();
 
+            processCapBall();
+
             idle();
 
         }
@@ -74,9 +76,9 @@ public class YorkFOTeleOp extends vv_OpMode {
             //launch where we are.
             //used to calibrate the location.
 
-            vvLib.dropBall(this);
-            vvLib.shootBall(this);
-            vvLib.setupShot(this);
+            vvLib.shootBallAndSpinIntake(this);
+            //absorb any extra button presses
+            Thread.sleep(150);
         }
         if (gamepad1.b) {
             //drop the ball but do not shoot.
@@ -147,5 +149,9 @@ public class YorkFOTeleOp extends vv_OpMode {
             telemetryUpdate();
             Thread.sleep(500);
         }
+    }
+
+    private void processCapBall() throws InterruptedException {
+        vvLib.driveRobotFieldOrientedWithCapBallAndPowerFactor(this, 0.2f);
     }
 }

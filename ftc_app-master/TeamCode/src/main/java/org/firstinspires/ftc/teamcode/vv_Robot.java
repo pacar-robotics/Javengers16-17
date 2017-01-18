@@ -29,6 +29,8 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_BLUE_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_RED_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT_REST;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_RIGHT_REST;
+import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_SERVO_RELEASED;
+import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_SERVO_SECURED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DEBUG;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_CLICKS_TETRIX;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_TIME_DELTA;
@@ -86,6 +88,7 @@ public class vv_Robot {
     private Servo launcherFrontGateServo = null;
     private Servo launcherRearGateServo = null;
     private Servo ballFlagServo = null;
+    private Servo capBallServo = null;
 
 
     private TouchSensor beaconTouchSensor;
@@ -218,6 +221,10 @@ public class vv_Robot {
 
         ballFlagServo = hwMap.servo.get("servo_ball_flag");
         ballFlagServo.setPosition(BALL_FLAG_SERVO_LOWERED);
+
+        capBallServo = hwMap.servo.get("cap_ball_servo");
+        capBallServo.setPosition(CAP_BALL_SERVO_SECURED);
+
 
         //wait for these servos to reach desired state
         Thread.sleep(100);
@@ -694,6 +701,11 @@ public class vv_Robot {
         }
 
         return vv_Constants.BeaconColorEnum.UNKNOWN;
+    }
+
+    public void releaseCapbBallHolder(vv_OpMode aOpMode) {
+        capBallServo.setPosition(CAP_BALL_SERVO_RELEASED);
+
     }
 
 

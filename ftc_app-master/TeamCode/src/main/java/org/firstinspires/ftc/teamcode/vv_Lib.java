@@ -117,12 +117,18 @@ public class vv_Lib {
 
         robot.setMotorMode(aOpMode, ARM_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        aOpMode.reset_timer();
-        while (!robot.isArmAtLimit(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
 
-            robot.setPower(aOpMode, ARM_MOTOR, 0.6f);
-            aOpMode.idle();
+        if (!robot.isArmAtLimit(aOpMode)) {
+            //only spin up motor if the touch sensor is not already pressed.
+
+            robot.setPower(aOpMode, ARM_MOTOR, 0.5f);
+            aOpMode.reset_timer();
+            while (!robot.isArmAtLimit(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
+                //wait till arm pushes touch sensor.
+
+            }
         }
+
         robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
 
 
@@ -153,7 +159,7 @@ public class vv_Lib {
 
         robot.setPower(aOpMode, ARM_MOTOR, 0.9f);
 
-        Thread.sleep(300);
+        Thread.sleep(200);
 
         robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
     }
@@ -795,6 +801,72 @@ public class vv_Lib {
 
     }
 
+    public void driveRobotFieldOrientedWithCapBallAndPowerFactor(vv_OpMode aOpMode, float powerFactor)
+            throws InterruptedException {
+
+        //process joysticks
+
+        if (Math.abs(aOpMode.gamepad2.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
+                Math.abs(aOpMode.gamepad2.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
+            //we are not in deadzone. Driver is pushing left joystick
+            //lets make the robot move in chosen angle and magnitude.
+
+            universalMoveRobotForFieldOrientedTeleOp(aOpMode,
+                    robot.getGamePad1LeftJoystickPolarMagnitude(aOpMode) * powerFactor,
+                    robot.getGamePad1LeftJoystickPolarAngle(aOpMode)
+                            + 90 - //for rotated orientation of robot at start of game.
+                            robot.getMxpGyroSensorHeading(aOpMode)); //for yaw on field.
+
+
+        }
+        if (Math.abs(aOpMode.gamepad2.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
+
+            //we are not in deadzone. Driver is pushing right joystick, sideways
+            float turnVelocity = (float) robot.getGamePad1RightJoystickPolarMagnitude(aOpMode) * powerFactor;
+
+            if (aOpMode.gamepad2.right_stick_x > 0) {
+                //turn clockwise to correct magnitude
+                robot.runMotors(aOpMode, turnVelocity, -turnVelocity, turnVelocity, -turnVelocity);
+            } else {
+                //turn counter-clockwise
+                robot.runMotors(aOpMode, -turnVelocity, turnVelocity, -turnVelocity, turnVelocity);
+            }
+
+
+        }
+
+        if ((Math.abs(aOpMode.gamepad2.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
+                Math.abs(aOpMode.gamepad2.left_stick_y) < vv_Constants.ANALOG_STICK_THRESHOLD) &&
+                Math.abs(aOpMode.gamepad2.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD) {
+            //both joysticks are at rest, stop the robot.
+
+            stopAllMotors(aOpMode);
+        }
+
+        //process dpads
+        if (aOpMode.gamepad2.dpad_down) {
+            turnAbsoluteMxpGyroDegrees(aOpMode, -90);
+        } else if (aOpMode.gamepad2.dpad_up) {
+            turnAbsoluteMxpGyroDegrees(aOpMode, +90);
+        } else if (aOpMode.gamepad2.dpad_left) {
+            turnAbsoluteMxpGyroDegrees(aOpMode, 0);
+        } else if (aOpMode.gamepad2.dpad_right) {
+            turnAbsoluteMxpGyroDegrees(aOpMode, +180);
+        }
+
+        //process yaw reset
+
+        if (aOpMode.gamepad1.y) {
+            robot.setMxpGyroZeroYaw(aOpMode);
+        }
+
+        if (aOpMode.gamepad2.a) {
+            robot.releaseCapbBallHolder(aOpMode);
+        }
+
+    }
+
+
 
 
 
@@ -1338,6 +1410,72 @@ public class vv_Lib {
     }
 
 
+    public void shootBallAndSpinIntake(vv_OpMode aOpMode) throws InterruptedException {
+        dropBall(aOpMode);
+        shootBall(aOpMode);
+        //spin intake
+        robot.openRearLauncherGate();
+        aOpMode.reset_timer();
+
+        robot.setPower(aOpMode, INTAKE_MOTOR,
+                -vv_Constants.INTAKE_POWER);
+        setupShot(aOpMode);
+        //stop intake
+        while (aOpMode.time_elapsed() < 2500 && getEopdRawValue(aOpMode) < EOPD_PROXIMITY_THRESHOLD) {
+            //spin till we are 2000 ms in or ball is detected in launch tube.
+        }
+
+        robot.closeRearLauncherGate();
+
+        robot.setPower(aOpMode, INTAKE_MOTOR, 0);
+
+
+    }
+
+    public void preGameInit(vv_OpMode aOpMode) throws InterruptedException {
+
+        //sets the arm in a init position, the arm does not launch during init.
+
+        aOpMode.reset_timer();
+        while (!robot.isArmAtLimit(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
+            robot.setPower(aOpMode, ARM_MOTOR, 0.5f);
+            Thread.sleep(100);
+            if (robot.isArmAtLimit(aOpMode)) {
+                break;
+            }
+            //pause to catch up
+            robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
+            Thread.sleep(100);
+
+        }
+
+        //stop the motor
+
+        robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
+
+        //now run the motor backward to detect sensor.
+        aOpMode.reset_timer();
+        while (!robot.isArmAtLimit(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
+            robot.setPower(aOpMode, ARM_MOTOR, -0.5f);
+            Thread.sleep(40);
+            if (robot.isArmAtLimit(aOpMode)) {
+                break;
+            }
+            //pause to catch up
+            robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
+            Thread.sleep(75);
+
+        }
+
+
+        //stop the motor again.
+
+        robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
+
+
+    }
+
+
 
     //conditions that can stop the robot.
 
@@ -1405,5 +1543,6 @@ public class vv_Lib {
 
         }
     }
+
 
 }
