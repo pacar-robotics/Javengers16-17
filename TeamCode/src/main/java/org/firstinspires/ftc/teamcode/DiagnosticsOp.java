@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.media.Ringtone;
-import android.media.RingtoneManager;
 import android.os.Environment;
 import android.util.Log;
 
@@ -14,9 +12,6 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -112,22 +107,12 @@ public class DiagnosticsOp extends vv_OpMode {
 			return choicesMap;
 		}
 	}
-
-	private vv_Lib robotLibrary;
 	private LinkedHashMap<String, ChoiceRecord> choices;
 
 	private static final String LOG_TAG = "DiagnosticsOp";
 	private static final String INPUT_TELEMETRY_KEY = "Input";
 	private static final String OUTPUT_TELEMETRY_KEY = "Output";
-	private static final float WHEEL_POWER = .5f;
-	private static final int WHEEL_DISTANCE = 15; // Centimeters
-	private static final int WHEEL_TIME = 2000; // milliseconds
-	private static final int TOUCH_WAIT_TIME = 5000; // milliseconds
 	private static final int INPUT_WAIT_TIME = 1000; // milliseconds
-	private static final int GYRO_THRESHOLD = 10; // degrees
-	private static final int GYRO_TURN = 90; // degrees
-	private static final int TURN_TIME = 10000; // milliseconds
-	private static final int CHOO_CHOO_TIME = 2000; // milliseconds
 
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -142,11 +127,7 @@ public class DiagnosticsOp extends vv_OpMode {
 		// Go through all choices
 		for (Map.Entry<String, ChoiceRecord> choicesEntry : choices.entrySet()) {
 			if (choicesEntry.getValue().getTestMotor()) {   // Check if we need to do the test through XML file
-				if (getUserConfirmation(String.format("Test the %s? A for yes; B for no",
-						choicesEntry.getKey()))) {   // Check if user wants to do test
-					callTestElementMethod(choicesEntry);
-				}
-				gamepadInputWait();
+				callTestElementMethod(choicesEntry);
 			}
 		}
 
@@ -162,7 +143,6 @@ public class DiagnosticsOp extends vv_OpMode {
 	}
 
 	private void initialize() throws InterruptedException {
-		robotLibrary = new vv_Lib(this);
 		choices = getTests();
 	}
 
@@ -240,189 +220,9 @@ public class DiagnosticsOp extends vv_OpMode {
 		return gamepad1.a;
 	}
 
-	private boolean didItRun(String testName) {
-		telemetryAddData(LOG_TAG, INPUT_TELEMETRY_KEY,
-				String.format("Did %s work? A for yes; B for no", testName));
-		telemetryUpdate();
-		// Wait until A or B is pressed
-		while (!gamepad1.a && !gamepad1.b) ;
-
-		// If A is pressed, return yes. Otherwise, return no
-		return gamepad1.a;
-	}
-
 	private void gamepadInputWait() throws InterruptedException {
 		telemetryAddData(LOG_TAG, OUTPUT_TELEMETRY_KEY, "Waiting...");
 		telemetryUpdate();
 		Thread.sleep(INPUT_WAIT_TIME);
-	}
-
-
-	/*
-	 * Robot element testing methods
-	 * The names are made to be the same as the tag in the XML file, so they do not follow camel-casing
-	 */
-
-	// Motors
-	private boolean frontrightwheel() throws InterruptedException {
-		robotLibrary.runAllMotors(this, 0, WHEEL_POWER, 0, 0);
-		Thread.sleep(WHEEL_TIME);
-		robotLibrary.stopAllMotors(this);
-
-		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
-	}
-
-	private boolean frontleftwheel() throws InterruptedException {
-		robotLibrary.runAllMotors(this, WHEEL_POWER, 0, 0, 0);
-		Thread.sleep(WHEEL_TIME);
-		robotLibrary.stopAllMotors(this);
-
-		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
-	}
-
-	private boolean backrightwheel() throws InterruptedException {
-		robotLibrary.runAllMotors(this, 0, 0, 0, WHEEL_POWER);
-		Thread.sleep(WHEEL_TIME);
-		robotLibrary.stopAllMotors(this);
-
-		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
-	}
-
-	private boolean backleftwheel() throws InterruptedException {
-		robotLibrary.runAllMotors(this, 0, 0, WHEEL_POWER, 0);
-		Thread.sleep(WHEEL_TIME);
-		robotLibrary.stopAllMotors(this);
-
-		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
-	}
-
-	private boolean forwards() throws InterruptedException {
-		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.Forward, false);
-		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
-	}
-
-	private boolean backwards() throws InterruptedException {
-		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.Backward, false);
-		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
-	}
-
-	private boolean sidewaysright() throws InterruptedException {
-		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.SidewaysRight, false);
-		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
-	}
-
-	private boolean sidewaysleft() throws InterruptedException {
-		robotLibrary.moveWheels(this, WHEEL_DISTANCE, WHEEL_POWER, vv_Constants.DirectionEnum.SidewaysLeft, false);
-		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
-	}
-
-	private boolean wormdrive() throws InterruptedException, vv_Robot.MotorStalledException {
-		Calendar cal = new GregorianCalendar();
-		cal.setTimeInMillis(System.currentTimeMillis());
-		while(System.currentTimeMillis() - cal.getTimeInMillis() > 1000) {
-			robotLibrary.increaseLauncherPower(this);
-		}
-
-		Thread.sleep(2000);
-
-		cal.setTimeInMillis(System.currentTimeMillis());
-		while (System.currentTimeMillis() - cal.getTimeInMillis() > 1000) {
-			robotLibrary.decreaseLauncherPower(this);
-		}
-
-		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
-	}
-
-	private boolean launcher() throws InterruptedException, vv_Robot.MotorStalledException {
-		robotLibrary.shootBall(this);
-		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
-	}
-
-	private boolean intake() throws InterruptedException {
-		robotLibrary.toggleIntake(this);
-		Thread.sleep(2000);
-		robotLibrary.toggleIntake(this);
-
-		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
-	}
-
-	private void lift() {
-	}
-
-	// Servos
-	private void intakegate() {
-	}
-
-	private void beacon() {
-	}
-
-	private void capball() {
-	}
-
-	// Sensors
-	private boolean floorcolor() throws InterruptedException {
-		robotLibrary.runAllMotors(this, WHEEL_POWER + .3f, -WHEEL_POWER, WHEEL_POWER +.3f, -WHEEL_POWER);
-		reset_timer();
-
-		int prevRed = robotLibrary.getBeaconLeftColorRedValue(this),
-				prevBlue = robotLibrary.getBeaconLeftColorBlueValue(this),
-				prevGreen = robotLibrary.getBeaconLeftColorGreenValue(this);
-
-		while (time_elapsed() <= TURN_TIME) {
-			if (robotLibrary.getBeaconLeftColorRedValue(this) != prevRed ||
-					robotLibrary.getBeaconLeftColorBlueValue(this) != prevBlue ||
-					robotLibrary.getBeaconLeftColorGreenValue(this) != prevGreen) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean beaconcolor() throws InterruptedException {
-
-	}
-
-	private boolean launcherlimittouch() throws InterruptedException {
-		reset_timer();
-		robotLibrary.setLauncherPower(.9f);
-		reset_timer();
-		while (time_elapsed() <= CHOO_CHOO_TIME) {
-			if (robotLibrary.isArmAtLimit(this)) {
-				// If it was pressed, we know it's working
-				return true;
-			}
-			idle();
-		}
-		return false;
-	}
-
-	private void liftlimittouch() {
-	}
-
-	private boolean ultrasonic() throws InterruptedException {
-		robotLibrary.runAllMotors(this, WHEEL_POWER, -WHEEL_POWER, WHEEL_POWER, -WHEEL_POWER);
-		reset_timer();
-
-		double previousRangeReading = robotLibrary.getUltrasonicDistance(this);
-		while (time_elapsed() <= TURN_TIME) {
-			if (previousRangeReading != robotLibrary.getUltrasonicDistance(this)) {
-				// If the value changed, the ultrasonic sensor must be working
-				return true;
-			}
-			idle();
-		}
-
-		return false;
-	}
-
-	private boolean gyro() throws InterruptedException {
-		robotLibrary.turnAbsoluteGyroDegrees(this, GYRO_TURN);
-
-		// If the two gyros don't match up, then something is wrong
-		if (Math.abs(GYRO_TURN - robotLibrary.getMxpGyroSensorHeading(this)) > GYRO_THRESHOLD) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 }
