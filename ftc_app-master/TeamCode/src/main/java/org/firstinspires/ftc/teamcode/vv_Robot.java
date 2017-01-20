@@ -29,6 +29,10 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_BLUE_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_RED_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT_REST;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_RIGHT_REST;
+import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_DURATION_MAX;
+import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_ENCODER_MARGIN;
+import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_POWER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_SERVO_RELEASED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_SERVO_SECURED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DEBUG;
@@ -88,7 +92,7 @@ public class vv_Robot {
     private Servo launcherFrontGateServo = null;
     private Servo launcherRearGateServo = null;
     private Servo ballFlagServo = null;
-    private Servo capBallServo = null;
+    private Servo capBallReleaseServo = null;
 
 
     private TouchSensor beaconTouchSensor;
@@ -132,6 +136,7 @@ public class vv_Robot {
         motorArray[ARM_MOTOR] = hwMap.dcMotor.get("motor_arm");
         motorArray[WORM_DRIVE_MOTOR] = hwMap.dcMotor.get("motor_worm");
         motorArray[INTAKE_MOTOR] = hwMap.dcMotor.get("motor_intake");
+        motorArray[CAP_BALL_MOTOR] = hwMap.dcMotor.get("motor_cap_ball");
 
         beaconServoArray = new Servo[2];
 
@@ -222,8 +227,8 @@ public class vv_Robot {
         ballFlagServo = hwMap.servo.get("servo_ball_flag");
         ballFlagServo.setPosition(BALL_FLAG_SERVO_LOWERED);
 
-        capBallServo = hwMap.servo.get("cap_ball_servo");
-        capBallServo.setPosition(CAP_BALL_SERVO_SECURED);
+        capBallReleaseServo = hwMap.servo.get("cap_ball_servo");
+        capBallReleaseServo.setPosition(CAP_BALL_SERVO_SECURED);
 
 
         //wait for these servos to reach desired state
@@ -247,7 +252,7 @@ public class vv_Robot {
 
         //reset encoders for motors always used in encoded mode
         motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
         while (motorArray[WORM_DRIVE_MOTOR].getCurrentPosition() != 0) {
@@ -259,6 +264,10 @@ public class vv_Robot {
         //since we will not be using it in any other mode.
 
         motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+
 
 
         // Set all base motors to zero power
@@ -704,7 +713,7 @@ public class vv_Robot {
     }
 
     public void releaseCapbBallHolder(vv_OpMode aOpMode) {
-        capBallServo.setPosition(CAP_BALL_SERVO_RELEASED);
+        capBallReleaseServo.setPosition(CAP_BALL_SERVO_RELEASED);
 
     }
 
@@ -956,6 +965,129 @@ public class vv_Robot {
         motorArray[WORM_DRIVE_MOTOR].setPower(0.0f);
 
     }
+
+    public void setCapBallPosition(vv_OpMode aOpMode, int capBallPosition)
+            throws InterruptedException, MotorStalledException {
+        //set the mode to be RUN_TO_POSITION
+        //we dont have to save previous state because we will never run the WORM DRIVE motor
+        //in any other mode.
+
+        motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //allow for a bit of time for set to complete.
+        Thread.sleep(50);
+
+        //Now set the target
+        motorArray[CAP_BALL_MOTOR].setTargetPosition(capBallPosition);
+
+        //now set the power
+        motorArray[CAP_BALL_MOTOR].setPower(CAP_BALL_POWER);
+
+        float stallVelocityThreshold = (ENCODED_MOTOR_STALL_CLICKS_TETRIX * 1.0f /
+                ENCODED_MOTOR_STALL_TIME_DELTA);
+
+        //reset clock;
+        aOpMode.reset_timer();
+
+        //initialize the variables we need.
+        int newStallPosition = 0;
+        int oldStallPosition = 0;
+        long newStallTime = 0;
+        long oldStallTime = 0;
+        int stallPositionDelta = 0;
+        long stallTimeDelta = 0;
+        float stallVelocity = 0;
+
+        while (motorArray[CAP_BALL_MOTOR].isBusy() &&
+                (aOpMode.time_elapsed() < CAP_BALL_DURATION_MAX)) {
+
+            //save old stall time and position.
+            oldStallPosition = newStallPosition;
+            oldStallTime = newStallTime;
+
+            //read the current position only once.
+            newStallPosition = motorArray[CAP_BALL_MOTOR].getCurrentPosition();
+            newStallTime = aOpMode.time_elapsed();
+
+            stallPositionDelta = Math.abs(Math.abs(newStallPosition) - Math.abs(oldStallPosition));
+            stallTimeDelta = newStallTime - oldStallTime;
+
+            stallVelocity = ((stallPositionDelta * 1.0f) / stallTimeDelta);
+
+            //TODO: Stall code must be tested!!
+            if ((oldStallTime > 0) && (stallVelocity < stallVelocityThreshold)) {
+                //motor stalling ?
+                //stop motor first
+
+                motorArray[CAP_BALL_MOTOR].setPower(0.0f);
+                //throw exception indicating the problem.
+                String stallMessage = "stallV:[" + stallVelocity + "]"
+                        + "stallT:[" + stallVelocityThreshold + "]"
+                        + "stallTDelta:[" + stallTimeDelta + "]"
+                        + "stallPDelta:[" + stallPositionDelta + "]";
+
+                if (DEBUG) {
+                    aOpMode.DBG("in stall code throw testEncodedMotor");
+                    aOpMode.telemetryAddData("Stall Data", "", stallMessage);
+                    aOpMode.telemetryUpdate();
+                }
+                throw new MotorStalledException("MotorName" + ":CapBallMotor" + stallMessage);
+            }
+
+
+            if ((Math.abs(capBallPosition -
+                    newStallPosition)) <= CAP_BALL_ENCODER_MARGIN) {
+                //stop the motor
+                motorArray[CAP_BALL_MOTOR].setPower(0.0f);
+                //break out of loop, as we have reached target within margin.
+                aOpMode.telemetryAddData("Break out of loop, margin", "", "margin");
+                aOpMode.telemetryUpdate();
+                Thread.sleep(20);
+
+                break;
+            }
+
+            //wait for a bit of time to test for stall
+            Thread.sleep(ENCODED_MOTOR_STALL_TIME_DELTA);
+
+
+            aOpMode.idle();
+        }
+        //stop the motor
+        motorArray[CAP_BALL_MOTOR].setPower(0.0f);
+
+    }
+
+    public void setCapBallPositionNoStall(vv_OpMode aOpMode, int capBallPosition)
+            throws InterruptedException {
+        //set the mode to be RUN_TO_POSITION
+        //we dont have to save previous state because we will never run the WORM DRIVE motor
+        //in any other mode.
+
+        motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //allow for a bit of time for set to complete.
+        Thread.sleep(50);
+
+        //Now set the target
+        motorArray[CAP_BALL_MOTOR].setTargetPosition(capBallPosition);
+
+        //now set the power
+        motorArray[CAP_BALL_MOTOR].setPower(CAP_BALL_POWER);
+
+
+        //reset clock;
+        aOpMode.reset_timer();
+
+
+        while (motorArray[CAP_BALL_MOTOR].isBusy() &&
+                (aOpMode.time_elapsed() < CAP_BALL_DURATION_MAX)) {
+            aOpMode.idle();
+        }
+        //stop the motor
+        motorArray[CAP_BALL_MOTOR].setPower(0.0f);
+
+    }
+
+
 
     public double getFloorLightIntensity(vv_OpMode aOpMode) {
         return floorLightSensor.getLightDetected();
@@ -1572,6 +1704,65 @@ public class vv_Robot {
     }
 
 
+    public double getGamePad2RightJoystickPolarMagnitude(vv_OpMode aOpMode) {
+        //returns the magnitude of the polar vector for the rotation calculations
+        //for field oriented drive
+        //inverted y
+        if ((Math.abs(aOpMode.gamepad2.right_stick_x) > ANALOG_STICK_THRESHOLD) ||
+                (Math.abs(aOpMode.gamepad2.right_stick_y) > ANALOG_STICK_THRESHOLD)) {
+            return (Math.sqrt(Math.pow(aOpMode.gamepad2.right_stick_x, 2.0) +
+                    Math.pow(-aOpMode.gamepad2.right_stick_y, 2.0)));
+        } else {
+            return 0;
+        }
+
+    }
+
+    public double getGamePad2RightJoystickPolarAngle(vv_OpMode aOpMode) {
+        //returns polar angle in degrees of vector for the rotation calculations
+        //for field oriented drive.
+        //inverted y
+        if ((Math.abs(aOpMode.gamepad2.right_stick_x) > ANALOG_STICK_THRESHOLD) ||
+                (Math.abs(aOpMode.gamepad2.right_stick_y) > ANALOG_STICK_THRESHOLD)) {
+            return (Math.toDegrees(Math.atan2(aOpMode.gamepad2.right_stick_x,
+                    -aOpMode.gamepad2.right_stick_y)));
+        } else {
+            return 0;
+        }
+    }
+
+    public double getGamePad2LeftJoystickPolarMagnitude(vv_OpMode aOpMode) {
+        //returns the magnitude of the polar vector for the rotation calculations
+        //for field oriented drive
+        //inverted y
+        if ((Math.abs(aOpMode.gamepad2.left_stick_x) > ANALOG_STICK_THRESHOLD) ||
+                (Math.abs(aOpMode.gamepad2.left_stick_y) > ANALOG_STICK_THRESHOLD)) {
+            return (Math.sqrt(Math.pow(aOpMode.gamepad2.left_stick_x, 2.0) +
+                    Math.pow(-aOpMode.gamepad2.left_stick_y, 2.0)));
+        } else {
+            return 0;
+        }
+    }
+
+    public double getGamePad2LeftJoystickPolarAngle(vv_OpMode aOpMode) {
+        //returns polar angle in degrees of vector for the rotation calculations
+        //for field oriented drive.
+        //inverted y
+        if ((Math.abs(aOpMode.gamepad2.left_stick_x) > ANALOG_STICK_THRESHOLD) ||
+                (Math.abs(aOpMode.gamepad2.left_stick_y) > ANALOG_STICK_THRESHOLD)) {
+            return (Math.toDegrees(Math.atan2(aOpMode.gamepad2.left_stick_x,
+                    -aOpMode.gamepad2.left_stick_y)));
+        } else {
+            return 0;
+        }
+    }
+
+
+    public int getCapBallMotorEncoderPosition(vv_OpMode aOpMode) {
+        return motorArray[CAP_BALL_MOTOR].getCurrentPosition();
+    }
+
+
     public double getEopdRawValue(vv_OpMode aOpMode) {
         return baseEopdSensor.getRawLightDetected();
     }
@@ -1579,6 +1770,16 @@ public class vv_Robot {
     protected void setMxpGyroZeroYaw(vv_OpMode aOpMode) {
         baseMxpGyroSensor.zeroYaw();
     }
+
+
+    public void setCapBallReleaseServoPosition(vv_OpMode aOpMode, double servoPosition) {
+        capBallReleaseServo.setPosition(servoPosition);
+    }
+
+    public double getCapBallReleaseServoPosition(vv_OpMode aOpMode) {
+        return capBallReleaseServo.getPosition();
+    }
+
 
 
     class MotorNameNotKnownException extends Exception {

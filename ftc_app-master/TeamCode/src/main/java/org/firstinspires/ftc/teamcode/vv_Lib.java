@@ -13,6 +13,8 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT_PRES
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT_REST;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_RIGHT_PRESSED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_RIGHT_REST;
+import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_ENCODER_UPPER_LIMIT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_POSITION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DEBUG;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
@@ -39,6 +41,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.RANGESENSOR_OPTICAL_PR
 import static org.firstinspires.ftc.teamcode.vv_Constants.RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.RIGHT_BEACON_BUTTON_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ROBOT_TRACK_DISTANCE;
+import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TURN_POWER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TurnDirectionEnum;
 
@@ -776,8 +779,11 @@ public class vv_Lib {
 
         if ((Math.abs(aOpMode.gamepad1.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
                 Math.abs(aOpMode.gamepad1.left_stick_y) < vv_Constants.ANALOG_STICK_THRESHOLD) &&
-                Math.abs(aOpMode.gamepad1.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD) {
-            //both joysticks are at rest, stop the robot.
+                Math.abs(aOpMode.gamepad1.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
+                (Math.abs(aOpMode.gamepad2.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
+                        Math.abs(aOpMode.gamepad2.left_stick_y) < vv_Constants.ANALOG_STICK_THRESHOLD) &&
+                Math.abs(aOpMode.gamepad2.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD) {
+            //both joysticks on both gamepads are at rest, stop the robot.
 
             stopAllMotors(aOpMode);
         }
@@ -802,7 +808,7 @@ public class vv_Lib {
     }
 
     public void driveRobotFieldOrientedWithCapBallAndPowerFactor(vv_OpMode aOpMode, float powerFactor)
-            throws InterruptedException {
+            throws InterruptedException, vv_Robot.MotorStalledException {
 
         //process joysticks
 
@@ -812,8 +818,8 @@ public class vv_Lib {
             //lets make the robot move in chosen angle and magnitude.
 
             universalMoveRobotForFieldOrientedTeleOp(aOpMode,
-                    robot.getGamePad1LeftJoystickPolarMagnitude(aOpMode) * powerFactor,
-                    robot.getGamePad1LeftJoystickPolarAngle(aOpMode)
+                    robot.getGamePad2LeftJoystickPolarMagnitude(aOpMode) * powerFactor,
+                    robot.getGamePad2LeftJoystickPolarAngle(aOpMode)
                             + 90 - //for rotated orientation of robot at start of game.
                             robot.getMxpGyroSensorHeading(aOpMode)); //for yaw on field.
 
@@ -822,7 +828,7 @@ public class vv_Lib {
         if (Math.abs(aOpMode.gamepad2.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
 
             //we are not in deadzone. Driver is pushing right joystick, sideways
-            float turnVelocity = (float) robot.getGamePad1RightJoystickPolarMagnitude(aOpMode) * powerFactor;
+            float turnVelocity = (float) robot.getGamePad2RightJoystickPolarMagnitude(aOpMode) * powerFactor;
 
             if (aOpMode.gamepad2.right_stick_x > 0) {
                 //turn clockwise to correct magnitude
@@ -835,37 +841,135 @@ public class vv_Lib {
 
         }
 
-        if ((Math.abs(aOpMode.gamepad2.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
+        if ((Math.abs(aOpMode.gamepad1.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
+                Math.abs(aOpMode.gamepad1.left_stick_y) < vv_Constants.ANALOG_STICK_THRESHOLD) &&
+                Math.abs(aOpMode.gamepad1.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
+                (Math.abs(aOpMode.gamepad2.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
                 Math.abs(aOpMode.gamepad2.left_stick_y) < vv_Constants.ANALOG_STICK_THRESHOLD) &&
                 Math.abs(aOpMode.gamepad2.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD) {
-            //both joysticks are at rest, stop the robot.
+            //both joysticks on both gamepads are at rest, stop the robot.
 
             stopAllMotors(aOpMode);
         }
 
-        //process dpads
-        if (aOpMode.gamepad2.dpad_down) {
-            turnAbsoluteMxpGyroDegrees(aOpMode, -90);
-        } else if (aOpMode.gamepad2.dpad_up) {
-            turnAbsoluteMxpGyroDegrees(aOpMode, +90);
-        } else if (aOpMode.gamepad2.dpad_left) {
-            turnAbsoluteMxpGyroDegrees(aOpMode, 0);
-        } else if (aOpMode.gamepad2.dpad_right) {
-            turnAbsoluteMxpGyroDegrees(aOpMode, +180);
+
+        if (aOpMode.gamepad2.right_bumper) {
+            robot.releaseCapbBallHolder(aOpMode);
         }
 
-        //process yaw reset
+        controlCapBall(aOpMode);
 
-        if (aOpMode.gamepad1.y) {
-            robot.setMxpGyroZeroYaw(aOpMode);
+    }
+
+    public void controlCapBall(vv_OpMode aOpMode) throws InterruptedException,
+            vv_Robot.MotorStalledException {
+
+        if (aOpMode.gamepad2.left_trigger > TRIGGER_THRESHOLD) {
+            //we want to move cap ball to go down
+            if (robot.getCapBallMotorEncoderPosition(aOpMode) <= 0) {
+                //at limit
+                //warn and set the robot to min
+                aOpMode.telemetryAddData("WARNING", "CAP BALL LIMIT:", "at " +
+                        robot.getCapBallMotorEncoderPosition(aOpMode));
+                lowerCapBallToMinHeight(aOpMode);
+            } else {
+                if (robot.getCapBallMotorEncoderPosition(aOpMode) <= CAP_BALL_POSITION_INCREMENT) {
+                    //not enough space left to go a full increment.
+                    lowerCapBallToMinHeight(aOpMode);
+                } else {
+                    decreaseCapBallHeight(aOpMode,
+                            (int) aOpMode.gamepad2.left_trigger * CAP_BALL_POSITION_INCREMENT);
+                }
+            }
+        }
+
+        if (aOpMode.gamepad2.right_trigger > TRIGGER_THRESHOLD) {
+            //we want to move cap ball to go up
+            if (robot.getCapBallMotorEncoderPosition(aOpMode) >= CAP_BALL_ENCODER_UPPER_LIMIT) {
+                //at limit
+                //do nothing but warn on screen.
+                aOpMode.telemetryAddData("WARNING", "CAP BALL LIMIT:", "at " +
+                        robot.getCapBallMotorEncoderPosition(aOpMode));
+                raiseCapBallToMaxHeight(aOpMode);
+            } else {
+                if (robot.getCapBallMotorEncoderPosition(aOpMode) >=
+                        (CAP_BALL_ENCODER_UPPER_LIMIT - CAP_BALL_POSITION_INCREMENT)) {
+                    //not enough space left to go a full increment.
+                    raiseCapBallToMaxHeight(aOpMode);
+                } else {
+
+                    increaseCapBallHeight(aOpMode, (int) aOpMode.gamepad2.right_trigger * CAP_BALL_POSITION_INCREMENT);
+                }
+            }
         }
 
         if (aOpMode.gamepad2.a) {
-            robot.releaseCapbBallHolder(aOpMode);
+            lowerCapBallToMinHeight(aOpMode);
+        }
+
+        if (aOpMode.gamepad2.y) {
+            raiseCapBallToMaxHeight(aOpMode);
         }
 
     }
 
+    public void controlCapBallWithoutLimits(vv_OpMode aOpMode) throws InterruptedException,
+            vv_Robot.MotorStalledException {
+
+        //be very careful, the cable may break.
+
+        if (aOpMode.gamepad2.left_trigger > TRIGGER_THRESHOLD) {
+            decreaseCapBallHeight(aOpMode,
+                    (int) aOpMode.gamepad2.left_trigger * CAP_BALL_POSITION_INCREMENT);
+        }
+
+        if (aOpMode.gamepad2.right_trigger > TRIGGER_THRESHOLD) {
+            increaseCapBallHeight(aOpMode,
+                    (int) aOpMode.gamepad2.right_trigger * CAP_BALL_POSITION_INCREMENT);
+        }
+        aOpMode.telemetryAddData("Cap Ball Height:", "Encoder:", "Value:" +
+                robot.getCapBallMotorEncoderPosition(aOpMode));
+        aOpMode.telemetryUpdate();
+
+    }
+
+    public void controlCapBallWithoutStall(vv_OpMode aOpMode) throws InterruptedException,
+            vv_Robot.MotorStalledException {
+
+        //be very careful, the cable may break.
+
+        if (aOpMode.gamepad2.left_trigger > TRIGGER_THRESHOLD) {
+            decreaseCapBallHeightNoStall(aOpMode,
+                    (int) aOpMode.gamepad2.left_trigger * CAP_BALL_POSITION_INCREMENT);
+        }
+
+        if (aOpMode.gamepad2.right_trigger > TRIGGER_THRESHOLD) {
+            increaseCapBallHeightNoStall(aOpMode,
+                    (int) aOpMode.gamepad2.right_trigger * CAP_BALL_POSITION_INCREMENT);
+        }
+        aOpMode.telemetryAddData("Cap Ball Height:", "Encoder:", "Value:" +
+                robot.getCapBallMotorEncoderPosition(aOpMode));
+        aOpMode.telemetryUpdate();
+
+    }
+
+    public void raiseCapBallToMaxHeight(vv_OpMode aOpMode) throws InterruptedException,
+            vv_Robot.MotorStalledException {
+        robot.setCapBallPosition(aOpMode, CAP_BALL_ENCODER_UPPER_LIMIT);
+    }
+
+    public void lowerCapBallToMinHeight(vv_OpMode aOpMode) throws InterruptedException,
+            vv_Robot.MotorStalledException {
+        robot.setCapBallPosition(aOpMode, 0);
+    }
+
+    public void setCapBallReleaseServoPosition(vv_OpMode aOpMode, double servoPosition) {
+        robot.setCapBallReleaseServoPosition(aOpMode, servoPosition);
+    }
+
+    public double getCapBallReleaseServoPosition(vv_OpMode aOpMode) {
+        return robot.getCapBallReleaseServoPosition(aOpMode);
+    }
 
 
 
@@ -1474,6 +1578,32 @@ public class vv_Lib {
 
 
     }
+
+    public void decreaseCapBallHeight(vv_OpMode aOpMode, int increment) throws InterruptedException,
+            vv_Robot.MotorStalledException {
+        robot.setCapBallPosition(aOpMode, robot.getCapBallMotorEncoderPosition(aOpMode) - increment);
+    }
+
+    public void increaseCapBallHeightNoStall(vv_OpMode aOpMode, int increment) throws InterruptedException,
+            vv_Robot.MotorStalledException {
+        robot.setCapBallPosition(aOpMode, robot.getCapBallMotorEncoderPosition(aOpMode) + increment);
+    }
+
+    public void decreaseCapBallHeightNoStall(vv_OpMode aOpMode, int increment) throws InterruptedException,
+            vv_Robot.MotorStalledException {
+        robot.setCapBallPositionNoStall(aOpMode, robot.getCapBallMotorEncoderPosition(aOpMode) - increment);
+    }
+
+    public void increaseCapBallHeight(vv_OpMode aOpMode, int increment) throws InterruptedException,
+            vv_Robot.MotorStalledException {
+        robot.setCapBallPositionNoStall(aOpMode, robot.getCapBallMotorEncoderPosition(aOpMode) + increment);
+    }
+
+
+    public int getCapBallPosition(vv_OpMode aOpMode) {
+        return robot.getCapBallMotorEncoderPosition(aOpMode);
+    }
+
 
 
 

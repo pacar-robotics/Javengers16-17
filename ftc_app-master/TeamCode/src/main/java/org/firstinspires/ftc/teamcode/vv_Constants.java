@@ -47,7 +47,7 @@ public class vv_Constants
     final static float MECCANUM_WHEEL_FRONT_TRACK_DISTANCE = 14.5f;
 
 	final static float ANALOG_STICK_THRESHOLD = .25f;
-    final static float TRIGGER_THRESHOLD = .25f;
+    final static float TRIGGER_THRESHOLD = .10f;
 
     // Extremes for servo that pushes beacon buttons
     static final double BEACON_SERVO_LEFT_REST = 0.65f;     // Maximum rotational position
@@ -66,8 +66,8 @@ public class vv_Constants
     static final double BALL_FLAG_SERVO_RAISED = 0.8f;
     static final double BALL_FLAG_SERVO_ALARM = 0.1f;
 
-    static final double CAP_BALL_SERVO_SECURED = 0.0f;
-    static final double CAP_BALL_SERVO_RELEASED = 0.8f;
+    static final double CAP_BALL_SERVO_SECURED = 0.85f;
+    static final double CAP_BALL_SERVO_RELEASED = 0.2f;
 
 
 
@@ -105,6 +105,13 @@ public class vv_Constants
     final static float INTAKE_POWER = 0.8f;
     //define the motors as constants instead of enumerations for speed.
 
+    //power used to power cap ball movements
+    final static float CAP_BALL_POWER = 0.8f;
+    //define the motors as constants instead of enumerations for speed.
+
+    final static int CAP_BALL_DURATION_MAX = 17000;
+
+    final static int CAP_BALL_ENCODER_MARGIN = 50;
 
     //index of motors
     final static int FRONT_LEFT_MOTOR = 0;
@@ -126,6 +133,8 @@ public class vv_Constants
 
 
     final static int LAUNCH_POWER_INCREMENT = 150;
+
+    final static int CAP_BALL_POSITION_INCREMENT = 5000;
 
     // Autonomous position = 425
     // Max position = 575
@@ -149,6 +158,8 @@ public class vv_Constants
     final static double EOPD_PROXIMITY_THRESHOLD = 0.00d;
     final static double RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD = 1.2d;
     final static double RANGESENSOR_OPTICAL_PROXIMITY_THRESHOLD = 1.0d;
+
+    final static int CAP_BALL_ENCODER_UPPER_LIMIT = 45000;
 
 
     BeaconColorEnum BeaconColor;

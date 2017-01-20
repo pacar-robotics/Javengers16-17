@@ -147,11 +147,17 @@ public class YorkFOTeleOp extends vv_OpMode {
         } catch (vv_Robot.MotorStalledException MSE) {
             telemetryAddData("Motor Stalled!", "Name", MSE.getMessage());
             telemetryUpdate();
-            Thread.sleep(500);
+            Thread.sleep(50);
         }
     }
 
     private void processCapBall() throws InterruptedException {
-        vvLib.driveRobotFieldOrientedWithCapBallAndPowerFactor(this, 0.2f);
+        try {
+            vvLib.driveRobotFieldOrientedWithCapBallAndPowerFactor(this, 0.2f);
+        } catch (vv_Robot.MotorStalledException MSE) {
+            telemetryAddData("Motor Stalled!", "Name", MSE.getMessage());
+            telemetryUpdate();
+            Thread.sleep(50);
+        }
     }
 }
