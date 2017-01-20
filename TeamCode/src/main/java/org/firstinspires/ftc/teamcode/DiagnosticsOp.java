@@ -166,7 +166,7 @@ public class DiagnosticsOp extends vv_OpMode {
 
 	private void callTestElementMethod(Map.Entry<String, ChoiceRecord> choicesEntry) {
 		try {
-			Method method = DiagnosticsOp.class.getDeclaredMethod(choicesEntry.getKey());
+			Method method = vv_DiagLib.class.getDeclaredMethod(choicesEntry.getKey());
 			telemetryAddData(LOG_TAG, OUTPUT_TELEMETRY_KEY, "Running " + choicesEntry.getKey());
 			telemetryUpdate();
 			choicesEntry.getValue().setErrorStatus((Boolean) method.invoke(this));
