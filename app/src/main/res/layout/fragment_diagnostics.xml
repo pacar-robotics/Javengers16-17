@@ -98,11 +98,6 @@
 			</LinearLayout>
 
 			<CheckBox
-				android:id="@+id/worm_drive_motor"
-				style="@style/CheckBoxDiag"
-				android:text="@string/worm_drive_motor"/>
-
-			<CheckBox
 				android:id="@+id/launcher_motor"
 				style="@style/CheckBoxDiag"
 				android:text="@string/launcher_motor"/>
@@ -166,7 +161,7 @@
 			<CheckBox
 				android:id="@+id/flag_servo"
 				style="@style/CheckBoxDiag"
-				android:text="Flag"/>
+				android:text="@string/flag_servo"/>
 		</LinearLayout>
 
 

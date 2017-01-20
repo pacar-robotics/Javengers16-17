@@ -47,6 +47,7 @@
 	<string name="beacon_servo_left">Beacon left</string>
 	<string name="beacon_servo_right">Beacon right</string>
 	<string name="capball_servo">Capball</string>
+	<string name="flag_servo">Flag</string>
 
 	<string name="sensors_header">Sensors</string>
 	<string name="floor_color_sensor">Floor color</string>

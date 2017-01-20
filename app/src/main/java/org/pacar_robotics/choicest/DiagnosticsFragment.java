@@ -42,7 +42,7 @@ public class DiagnosticsFragment extends Fragment {
 
 	@BindViews({R.id.front_right_wheel, R.id.front_left_wheel, R.id.back_right_wheel, R.id.back_left_wheel,
 			R.id.forwards_platform, R.id.backwards_platform, R.id.right_platform, R.id.left_platform, R.id.diagonal_platform,
-			R.id.worm_drive_motor, R.id.launcher_motor, R.id.intake_motor, R.id.lift_motor})
+			R.id.launcher_motor, R.id.intake_motor, R.id.lift_motor})
 	List<CheckBox> motorsList;
 	@BindViews({R.id.front_right_wheel, R.id.front_left_wheel, R.id.back_right_wheel, R.id.back_left_wheel})
 	List<CheckBox> baseMotors;
@@ -54,7 +54,7 @@ public class DiagnosticsFragment extends Fragment {
 	List<CheckBox> sensorsList;
 	@BindViews({R.id.front_right_wheel, R.id.front_left_wheel, R.id.back_right_wheel, R.id.back_left_wheel,
 			R.id.forwards_platform, R.id.backwards_platform, R.id.right_platform, R.id.left_platform, R.id.diagonal_platform,
-			R.id.worm_drive_motor, R.id.launcher_motor, R.id.intake_motor, R.id.lift_motor,
+			R.id.launcher_motor, R.id.intake_motor, R.id.lift_motor,
 			R.id.intake_gate_servo_front, R.id.intake_gate_servo_rear, R.id.beacon_servo_left, R.id.beacon_servo_right, R.id.capball_servo,
 			R.id.floor_color_sensor, R.id.beacon_color_sensor_left, R.id.beacon_color_sensor_right, R.id.launcher_limit_touch_sensor, R.id.lift_limit_touch_sensor, R.id.ultrasonic_sensor, R.id.eopd_sensor, R.id.gyro_sensor})
 	List<CheckBox> everythingList;
