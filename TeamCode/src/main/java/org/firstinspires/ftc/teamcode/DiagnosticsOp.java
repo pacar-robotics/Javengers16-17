@@ -116,11 +116,7 @@ public class DiagnosticsOp extends vv_OpMode {
 
 	@Override
 	public void runOpMode() throws InterruptedException {
-		telemetryAddData(LOG_TAG, OUTPUT_TELEMETRY_KEY, "Initializing...");
-		telemetryUpdate();
 		initialize();
-		telemetryAddData(LOG_TAG, OUTPUT_TELEMETRY_KEY, "Done with initialization");
-		telemetryUpdate();
 		waitForStart();
 
 
@@ -143,7 +139,13 @@ public class DiagnosticsOp extends vv_OpMode {
 	}
 
 	private void initialize() throws InterruptedException {
+		telemetryAddData(LOG_TAG, OUTPUT_TELEMETRY_KEY, "Initializing...");
+		telemetryUpdate();
+
 		choices = getTests();
+
+		telemetryAddData(LOG_TAG, OUTPUT_TELEMETRY_KEY, "Done with initialization");
+		telemetryUpdate();
 	}
 
 	private LinkedHashMap<String, ChoiceRecord> getTests() {
