@@ -37,10 +37,9 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
 
     public void basic_auto_strategy() throws InterruptedException {
 
-        //There is no need to rotate the robot to shoot the balls, as the positions already line up.
-
         //first shoot two balls.
         vvLib.shootBallsAutonomousCommonAction(this);
+
 
         //move robot diagonally to corner in prep for scoring beacon
         vvLib.universalMoveRobot(this, 138, 0.99f, 0.0, 3700,

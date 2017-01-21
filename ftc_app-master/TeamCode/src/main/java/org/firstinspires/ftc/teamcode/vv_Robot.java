@@ -718,6 +718,12 @@ public class vv_Robot {
     }
 
 
+    public void secureCapbBallHolder(vv_OpMode aOpMode) {
+        capBallReleaseServo.setPosition(CAP_BALL_SERVO_SECURED);
+
+    }
+
+
     //get the alpha (luminosity being read in reflected light from LED)
     //high luminosity will be found with a white surface.
 

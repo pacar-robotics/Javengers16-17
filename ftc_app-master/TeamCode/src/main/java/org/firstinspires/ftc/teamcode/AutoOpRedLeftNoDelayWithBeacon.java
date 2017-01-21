@@ -42,7 +42,7 @@ public class AutoOpRedLeftNoDelayWithBeacon extends vv_OpMode {
         //first orient to shoot the balls
 
         vvLib.moveWheels(this, 4, .4f, SidewaysRight, true);
-        vvLib.turnAbsoluteGyroDegrees(this, -20.0f);
+        vvLib.turnAbsoluteGyroDegrees(this, -5.0f);
 
         //shoot the 2 balls.
         vvLib.shootBallsAutonomousCommonAction(this);
@@ -50,7 +50,7 @@ public class AutoOpRedLeftNoDelayWithBeacon extends vv_OpMode {
 
         //move robot diagonally in prep for first beacon
 
-        vvLib.universalMoveRobot(this, 45, 0.45, 0.0, 2900,
+        vvLib.universalMoveRobot(this, 50, 0.45, 0.0, 2900,
                 vvLib.rangeSensorUltraSonicCornerPositioningStop, false, 0, 0);
 
         //perform actions common to both red positions

@@ -124,17 +124,23 @@ public class vv_Lib {
         if (!robot.isArmAtLimit(aOpMode)) {
             //only spin up motor if the touch sensor is not already pressed.
 
-            robot.setPower(aOpMode, ARM_MOTOR, 0.5f);
+            robot.setPower(aOpMode, ARM_MOTOR, 0.45f);
             aOpMode.reset_timer();
             while (!robot.isArmAtLimit(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
                 //wait till arm pushes touch sensor.
-
+                Thread.sleep(50);
+                if (robot.isArmAtLimit(aOpMode)) {
+                    break;
+                }
+                Thread.sleep(50);
             }
+            robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
+            //move arm back by just a bit
+            robot.setPower(aOpMode, ARM_MOTOR, -0.6f);
+            Thread.sleep(100);
+            //stop again.
+            robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
         }
-
-        robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
-
-
     }
 
     public void dropBall(vv_OpMode aOpMode) throws InterruptedException {
@@ -160,9 +166,9 @@ public class vv_Lib {
     public void shootBall(vv_OpMode aOpMode) throws InterruptedException {
         robot.setMotorMode(aOpMode, ARM_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        robot.setPower(aOpMode, ARM_MOTOR, 0.9f);
+        robot.setPower(aOpMode, ARM_MOTOR, 0.6f);
 
-        Thread.sleep(200);
+        Thread.sleep(250);
 
         robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
     }
@@ -857,6 +863,10 @@ public class vv_Lib {
             robot.releaseCapbBallHolder(aOpMode);
         }
 
+        if (aOpMode.gamepad2.left_bumper) {
+            robot.secureCapbBallHolder(aOpMode);
+        }
+
         controlCapBall(aOpMode);
 
     }
@@ -1335,9 +1345,7 @@ public class vv_Lib {
         //are reached
 
         universalMoveRobot(aOpMode, 90, 0.3, 0.0, 2000,
-                rangeSensorProximityOrColorVerifiedStop, true, 175, 10);
-
-        Thread.sleep(100);
+                rangeSensorProximityOrColorVerifiedStop, true, 200, 10);
 
 
         //now retract both beacon presses
@@ -1355,7 +1363,7 @@ public class vv_Lib {
         double distanceToBeaconWall = getUltrasonicDistance(aOpMode); //in inches
         //now try moving that distance, adjusting for inset of ultrasonic sensor
         //move toward the beacons but stop short (approx 1.5 inches short).
-        moveWheels(aOpMode, (float) (distanceToBeaconWall - 2.75), 0.8f, SidewaysRight, true);
+        moveWheels(aOpMode, (float) (distanceToBeaconWall - 3.25), 0.7f, SidewaysRight, true);
 
         //now detect the line but at right angles
         //for first beacon
@@ -1387,7 +1395,7 @@ public class vv_Lib {
         double distanceToBeaconWall = getUltrasonicDistance(aOpMode); //in inches
         //now try moving that distance, adjusting for inset of ultrasonic sensor
         //move toward the beacons but stop short (approx 1.5 inches short).
-        moveWheels(aOpMode, (float) (distanceToBeaconWall - 2.75), 0.8f, SidewaysRight, true);
+        moveWheels(aOpMode, (float) (distanceToBeaconWall - 3.5), 0.7f, SidewaysRight, true);
 
         Thread.sleep(25);
 
@@ -1417,12 +1425,13 @@ public class vv_Lib {
 
     public void blueAutonomousCommonAction(vv_OpMode aOpMode) throws InterruptedException {
         //rotate to face beacon
+        Thread.sleep(25);
         turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim
-
+        Thread.sleep(25);
         //detect the line and score beacon.
 
         ScoreBeaconFromTheRight(aOpMode);
-
+        Thread.sleep(25);
         //now to work on second beacon.
 
 
@@ -1430,29 +1439,31 @@ public class vv_Lib {
 
         //pull back 4 inches to create clearance
         moveWheels(aOpMode, 4, 0.8f, SidewaysLeft, true);
-
+        Thread.sleep(25);
         //orient to 90 degrees to field
 
         turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim
-
+        Thread.sleep(25);
         //lets move over the first beacon line, to prevent stopping at wrong line.
 
-        moveWheels(aOpMode, 48.5f, 0.99f, Forward, true);
-
+        moveWheels(aOpMode, 40f, 0.99f, Forward, true);
+        Thread.sleep(25);
         turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim
-
+        Thread.sleep(25);
         ScoreBeaconFromTheRight(aOpMode);
-
+        Thread.sleep(25);
         //knock off the cap ball.
         moveWheels(aOpMode, 10, .8f, SidewaysLeft, true);
+        Thread.sleep(25);
         turnAbsoluteMxpGyroDegrees(aOpMode, 140);
-
+        Thread.sleep(25);
         moveWheels(aOpMode, 57, 0.99f, Backward, false);
 
     }
 
     public void redAutonomousCommonAction(vv_OpMode aOpMode) throws InterruptedException {
         //rotate to face beacon
+        Thread.sleep(50);
         turnAbsoluteMxpGyroDegrees(aOpMode, -90); //with trim
 
         //detect the line and score beacon.
@@ -1469,18 +1480,17 @@ public class vv_Lib {
 
         //orient to 90 degrees to field
 
-        Thread.sleep(50);
+        Thread.sleep(25);
 
         turnAbsoluteMxpGyroDegrees(aOpMode, -90); //with trim
-
+        Thread.sleep(25);
 
         //lets move over the first beacon line, to prevent stopping at wrong line.
 
-
-        universalMoveRobot(aOpMode, 250, 8, 0.0, 1700, falseStop, false, 0, 0);
+        moveWheels(aOpMode, 40.0f, 0.99f, Backward, true);
 
         turnAbsoluteMxpGyroDegrees(aOpMode, -90); //with trim
-
+        Thread.sleep(25);
 
         ScoreBeaconFromTheLeft(aOpMode);
 
@@ -1488,8 +1498,8 @@ public class vv_Lib {
         Thread.sleep(25);
         turnAbsoluteMxpGyroDegrees(aOpMode, -135);
         Thread.sleep(25);
+        moveWheels(aOpMode, 55.0f, .99f, Forward, true);
 
-        universalMoveRobot(aOpMode, 90, 0.9f, 0.0, 2000, falseStop, false, 0, 0);
 
     }
 
@@ -1660,7 +1670,7 @@ public class vv_Lib {
     public class RangeSensorUltraSonicCornerPositioningCondition implements vv_OpMode.StopCondition {
         public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
             return (getUltrasonicDistance(aOpMode)
-                    < 1.5 * RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD);
+                    < 2 * RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD);
         }
     }
 
