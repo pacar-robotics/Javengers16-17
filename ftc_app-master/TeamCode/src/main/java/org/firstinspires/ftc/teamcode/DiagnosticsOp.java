@@ -322,7 +322,7 @@ public class DiagnosticsOp extends vv_OpMode {
 	}
 
 	private boolean gyro() throws InterruptedException {
-		robotLibrary.turnAbsoluteGyroDegrees(this, 180);
+		robotLibrary.turnAbsoluteMxpGyroDegrees(this, 180);
 
 		return !didItRun(new Object(){}.getClass().getEnclosingMethod().getName());
 	}

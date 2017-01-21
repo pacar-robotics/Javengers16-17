@@ -42,7 +42,7 @@ public class AutoOpRedLeftNoDelayWithBeacon extends vv_OpMode {
         //first orient to shoot the balls
 
         vvLib.moveWheels(this, 4, .4f, SidewaysRight, true);
-        vvLib.turnAbsoluteGyroDegrees(this, -5.0f);
+        vvLib.turnAbsoluteMxpGyroDegrees(this, -5.0f);
 
         //shoot the 2 balls.
         vvLib.shootBallsAutonomousCommonAction(this);

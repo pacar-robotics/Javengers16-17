@@ -34,28 +34,28 @@ public class GyroCalibration extends vv_OpMode {
         telemetryAddData("Test", "Turn", "Turning Clockwise 90");
         telemetryUpdate();
 
-        vvLib.turnAbsoluteGyroDegrees(this, 90);
+        vvLib.turnAbsoluteMxpGyroDegrees(this, 90);
 
         Thread.sleep(3000);
 
         telemetryAddData("Test", "Turn", "Turning Anti-Clockwise 90");
         telemetryUpdate();
 
-        vvLib.turnAbsoluteGyroDegrees(this, -90);
+        vvLib.turnAbsoluteMxpGyroDegrees(this, -90);
 
         Thread.sleep(3000);
 
         telemetryAddData("Test", "Turn", "Turning Clockwise 180");
         telemetryUpdate();
 
-        vvLib.turnAbsoluteGyroDegrees(this, 180);
+        vvLib.turnAbsoluteMxpGyroDegrees(this, 180);
 
         Thread.sleep(3000);
 
         telemetryAddData("Test", "Turn", "Turning Anti-Clockwise 180");
         telemetryUpdate();
 
-        vvLib.turnAbsoluteGyroDegrees(this, 1800);
+        vvLib.turnAbsoluteMxpGyroDegrees(this, 1800);
 
         Thread.sleep(3000);
 

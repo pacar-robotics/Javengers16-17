@@ -541,7 +541,7 @@ public class vv_Lib {
 
 
     }
-
+/*
     public void turnAbsoluteGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
         //clockwise is represented by clockwise numbers.
         //counterclockwise by negative angle numbers in degrees.
@@ -574,6 +574,8 @@ public class vv_Lib {
 
 
     }
+    */
+
 
 
     public void turnAbsoluteMxpGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
