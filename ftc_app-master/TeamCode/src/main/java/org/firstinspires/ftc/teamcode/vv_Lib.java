@@ -1623,27 +1623,27 @@ public class vv_Lib {
 
 
     public class lineDetectCondition implements vv_OpMode.StopCondition {
-        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+        public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
             return ((getFloorLightIntensity(aOpMode) >= FLOOR_WHITE_THRESHOLD));
         }
     }
 
     public class falseCondition implements vv_OpMode.StopCondition {
         //can be used as an empty condition, so the robot keeps running in universal movement
-        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+        public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
             return (false);
         }
     }
 
 
     public class eopdProximityCondition implements vv_OpMode.StopCondition {
-        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+        public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
             return (getEopdRawValue(aOpMode) > EOPD_PROXIMITY_THRESHOLD);
         }
     }
 
     public class RangeSensorProximityOrColorVerifiedCondition implements vv_OpMode.StopCondition {
-        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+        public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
             return (((getOpticalDistance(aOpMode) < RANGESENSOR_OPTICAL_PROXIMITY_THRESHOLD)
                     && getOpticalDistance(aOpMode) > 0) ||
                     (getUltrasonicDistance(aOpMode)
@@ -1654,7 +1654,7 @@ public class vv_Lib {
     }
 
     public class RangeSensorOpticalProximityCondition implements vv_OpMode.StopCondition {
-        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+        public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
             return (((getOpticalDistance(aOpMode) < RANGESENSOR_OPTICAL_PROXIMITY_THRESHOLD)
                     && getOpticalDistance(aOpMode) > 0));
 
@@ -1662,7 +1662,7 @@ public class vv_Lib {
     }
 
     public class RangeSensorUltraSonicProximityCondition implements vv_OpMode.StopCondition {
-        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+        public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
             return (getUltrasonicDistance(aOpMode)
                     < RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD);
 
@@ -1670,7 +1670,7 @@ public class vv_Lib {
     }
 
     public class RangeSensorUltraSonicCornerPositioningCondition implements vv_OpMode.StopCondition {
-        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+        public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
             return (getUltrasonicDistance(aOpMode)
                     < 2 * RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD);
         }
@@ -1678,7 +1678,7 @@ public class vv_Lib {
 
 
     public class colorPressVerifiedCondition implements vv_OpMode.StopCondition {
-        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+        public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
             //button is pressed because both colors match , not a strong test but a good starting point for
             //teleop.
             return (getBeaconLeftColor(aOpMode) == getBeaconRightColor(aOpMode));

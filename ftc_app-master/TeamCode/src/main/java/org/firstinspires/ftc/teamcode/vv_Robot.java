@@ -1378,7 +1378,7 @@ public class vv_Robot {
 
         aOpMode.reset_timer();
         while ((aOpMode.time_elapsed() < duration) &&
-                (!condition.StopCondition(aOpMode))) {
+                (!condition.stopCondition(aOpMode))) {
             if (mxpPidController.waitForNewUpdate(mxpPIDResult, DEVICE_TIMEOUT_MS)) {
                 if (mxpPIDResult.isOnTarget()) {
 
@@ -1488,7 +1488,7 @@ public class vv_Robot {
         aOpMode.reset_timer();
         //stop 100 ms before end
         while ((aOpMode.time_elapsed() < (duration - 100)) &&
-                (!condition.StopCondition(aOpMode))) {
+                (!condition.stopCondition(aOpMode))) {
 
             //condition will return true when it reaches state meant to stop movement
 
@@ -1586,6 +1586,10 @@ public class vv_Robot {
             return ((power < MIN_ROBOT_TURN_MOTOR_VELOCITY ? MIN_ROBOT_TURN_MOTOR_VELOCITY :
                     (power > MAX_ROBOT_TURN_MOTOR_VELOCITY ? MAX_ROBOT_TURN_MOTOR_VELOCITY : power)));
         }
+    }
+
+    public int getMotorPosition(vv_OpMode aOpMode, int MotorNumber) {
+        return motorArray[MotorNumber].getCurrentPosition();
     }
 
     public void turnPidMxpAbsoluteDegrees(vv_OpMode aOpMode, float turndegrees, float toleranceDegrees)

@@ -42,7 +42,7 @@ public class WheelsForwardGyroStabilizedCalibration extends vv_OpMode {
 
     public class falseCondition implements vv_OpMode.StopCondition {
         //can be used as an empty condition, so the robot keeps running in universal movement
-        public boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException {
+        public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
             return (false);
         }
     }
