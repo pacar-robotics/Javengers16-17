@@ -116,31 +116,7 @@ public class vv_Lib {
     }
 
     public void setupShot(vv_OpMode aOpMode) throws InterruptedException {
-
-
-        robot.setMotorMode(aOpMode, ARM_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-
-        if (!robot.isArmAtLimit(aOpMode)) {
-            //only spin up motor if the touch sensor is not already pressed.
-
-            robot.setPower(aOpMode, ARM_MOTOR, 0.45f);
-            aOpMode.reset_timer();
-            while (!robot.isArmAtLimit(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
-                //wait till arm pushes touch sensor.
-                Thread.sleep(50);
-                if (robot.isArmAtLimit(aOpMode)) {
-                    break;
-                }
-                Thread.sleep(50);
-            }
-            robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
-            //move arm back by just a bit
-            robot.setPower(aOpMode, ARM_MOTOR, -0.6f);
-            Thread.sleep(100);
-            //stop again.
-            robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
-        }
+        robot.setupChooChoo(aOpMode);
     }
 
     public void dropBall(vv_OpMode aOpMode) throws InterruptedException {
@@ -164,13 +140,7 @@ public class vv_Lib {
 
 
     public void shootBall(vv_OpMode aOpMode) throws InterruptedException {
-        robot.setMotorMode(aOpMode, ARM_MOTOR, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        robot.setPower(aOpMode, ARM_MOTOR, 0.6f);
-
-        Thread.sleep(250);
-
-        robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
+        robot.shootChooChoo(aOpMode);
     }
 
     /**
@@ -331,6 +301,14 @@ public class vv_Lib {
     public void showBaseGyroSensorIntegratedZValueOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
 
         aOpMode.telemetryAddData("Gyro Sensor", "Integrated Z", ":" + robot.getBaseGyroSensorIntegratedZValue(aOpMode));
+        if (updateTheDisplay) {
+            aOpMode.telemetryUpdate();
+        }
+    }
+
+    public void showChooChooPositionOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
+
+        aOpMode.telemetryAddData("Choo Choo", "Position", ":" + robot.getMotorPosition(aOpMode, ARM_MOTOR));
         if (updateTheDisplay) {
             aOpMode.telemetryUpdate();
         }

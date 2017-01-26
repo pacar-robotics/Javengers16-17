@@ -18,6 +18,9 @@ public class vv_Constants
 	final static int TETRIX_MOTOR_ENCODER_COUNTS_PER_REVOLUTION = 1440;
 	final static int ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION = 1120;
 
+    final static int ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION =
+            ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION * 3 / 2;  //Gear ratio for Choo-Choo
+
     final static float MOTOR_LOWER_POWER_THRESHOLD = 0.20f;
 
     //forward/backward power limits
@@ -112,6 +115,8 @@ public class vv_Constants
     final static int CAP_BALL_DURATION_MAX = 17000;
 
     final static int CAP_BALL_ENCODER_MARGIN = 50;
+
+    final static int ARM_MOTOR_ENCODER_MARGIN = 50;
 
     //index of motors
     final static int FRONT_LEFT_MOTOR = 0;

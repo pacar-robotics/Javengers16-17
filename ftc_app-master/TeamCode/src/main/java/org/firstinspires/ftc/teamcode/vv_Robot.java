@@ -22,6 +22,8 @@ import java.text.DecimalFormat;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANALOG_STICK_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION;
+import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR_ENCODER_MARGIN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BALL_FLAG_SERVO_LOWERED;
@@ -249,17 +251,20 @@ public class vv_Robot {
 
         motorArray[WORM_DRIVE_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
 
+        motorArray[ARM_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         //reset encoders for motors always used in encoded mode
         motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[ARM_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //set the run mode to run_to_position for the worm drive
         //since we will not be using it in any other mode.
 
         motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
+        motorArray[ARM_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
 
@@ -1738,6 +1743,49 @@ public class vv_Robot {
         return capBallReleaseServo.getPosition();
     }
 
+
+    public void setupChooChoo(vv_OpMode aOpMode) {
+        if (!isArmAtLimit(aOpMode)) {
+            //we are always running to position, so wont change.
+            int currentChooChooPosition = motorArray[ARM_MOTOR].getCurrentPosition();
+            //we have to move the arm to nearest multiple of revs needed
+            int partialRev = currentChooChooPosition % (ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
+            int targetPosition = currentChooChooPosition +
+                    (ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION - partialRev);
+            motorArray[ARM_MOTOR].setTargetPosition(targetPosition);
+            motorArray[ARM_MOTOR].setPower(0.9f);
+            aOpMode.reset_timer();
+            while (motorArray[ARM_MOTOR].isBusy() && !isArmAtLimit(aOpMode) &&
+                    (Math.abs(targetPosition - motorArray[ARM_MOTOR].getCurrentPosition())
+                            >= ARM_MOTOR_ENCODER_MARGIN) &&
+                    (aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME)) {
+                //keep rotating till either motor reached target, the touch sensor is pressed or
+                //motor loop time is exceeded
+            }
+            motorArray[ARM_MOTOR].setPower(0.0f);
+        }
+        //otherwise do nothing, we are already at the right position
+    }
+
+    public void shootChooChoo(vv_OpMode aOpMode) {
+        int currentPosition = motorArray[ARM_MOTOR].getCurrentPosition();
+        //move the arm motor forward by 1/3rd of a revolution.
+        //to shoot the ball.
+        int targetPosition = currentPosition +
+                (ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION / 3);
+
+        motorArray[ARM_MOTOR].setTargetPosition(targetPosition);
+        
+        motorArray[ARM_MOTOR].setPower(0.9f);
+        while (motorArray[ARM_MOTOR].isBusy() &&
+                (Math.abs(targetPosition - motorArray[ARM_MOTOR].getCurrentPosition())
+                        >= ARM_MOTOR_ENCODER_MARGIN) &&
+                aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
+            //keep rotating till either motor reached target or
+            //motor loop time is exceeded
+        }
+        motorArray[ARM_MOTOR].setPower(0.0f);
+    }
 
 
     class MotorNameNotKnownException extends Exception {
