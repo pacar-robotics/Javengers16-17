@@ -254,12 +254,6 @@ public class vv_Robot {
         motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-
-        while (motorArray[WORM_DRIVE_MOTOR].getCurrentPosition() != 0) {
-            //wait for the Front Left Motor to settle. as a proxy for all of the motors.
-            aOpMode.idle();
-        }
-
         //set the run mode to run_to_position for the worm drive
         //since we will not be using it in any other mode.
 
@@ -366,16 +360,6 @@ public class vv_Robot {
         motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        aOpMode.reset_timer();
-        while ((motorArray[FRONT_LEFT_MOTOR].getCurrentPosition() != 0) &&
-                (motorArray[FRONT_RIGHT_MOTOR].getCurrentPosition() != 0) &&
-                (motorArray[BACK_LEFT_MOTOR].getCurrentPosition() != 0) &&
-                (motorArray[BACK_RIGHT_MOTOR].getCurrentPosition() != 0) &&
-                (aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME)
-                ) {
-            //wait until motors are reset
-            aOpMode.idle();
-        }
 
         //sets all motors to run to a position
         motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -500,11 +484,6 @@ public class vv_Robot {
         motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        while (motorArray[FRONT_LEFT_MOTOR].getCurrentPosition() != 0) {
-            //wait until motors are reset
-            Thread.sleep(20);
-        }
 
         //sets all motors to run to a position
 
@@ -767,8 +746,7 @@ public class vv_Robot {
         //change mode to run without encoders
 
         motorArray[motorName].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //delay for mode change completion
-        Thread.sleep(1000);
+
 
         aOpMode.DBG("after runmode set in vv_robot");
 
@@ -790,8 +768,7 @@ public class vv_Robot {
 
         //restore old motor mode
         motorArray[motorName].setMode(oldRunMode);
-        //delay to complete switch to old run mode
-        Thread.sleep(1000);
+
 
     }
 
@@ -811,9 +788,6 @@ public class vv_Robot {
 
         motorArray[motorName].setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        //delay for mode change comopletion
-
-        Thread.sleep(100);
 
         //set the motor target
 
@@ -871,8 +845,6 @@ public class vv_Robot {
 
         //restore old motor mode
         motorArray[motorName].setMode(oldRunMode);
-        //delay to complete switch to old run mode
-        Thread.sleep(100);
 
     }
 
@@ -887,8 +859,6 @@ public class vv_Robot {
         //in any other mode.
 
         motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //allow for a bit of time for set to complete.
-        Thread.sleep(50);
 
         //Now set the target
         motorArray[WORM_DRIVE_MOTOR].setTargetPosition(launcherPowerPosition);
@@ -979,8 +949,6 @@ public class vv_Robot {
         //in any other mode.
 
         motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //allow for a bit of time for set to complete.
-        Thread.sleep(50);
 
         //Now set the target
         motorArray[CAP_BALL_MOTOR].setTargetPosition(capBallPosition);
@@ -1070,8 +1038,6 @@ public class vv_Robot {
         //in any other mode.
 
         motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //allow for a bit of time for set to complete.
-        Thread.sleep(50);
 
         //Now set the target
         motorArray[CAP_BALL_MOTOR].setTargetPosition(capBallPosition);
@@ -1231,10 +1197,6 @@ public class vv_Robot {
         motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        while (motorArray[FRONT_LEFT_MOTOR].getCurrentPosition() != 0) {
-            //wait for switch to happen.
-            aOpMode.idle();
-        }
         //switch to RUN_WITH_ENCODERS to normalize for speed.
 
         motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -1242,8 +1204,6 @@ public class vv_Robot {
         motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        //wait for switch to happen
-        Thread.sleep(100);
 
         //start slow to prevent skid.
         //may replace with ramp to improve performance.
@@ -1353,9 +1313,6 @@ public class vv_Robot {
         motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        //wait for switch to happen
-        Thread.sleep(100);
-
 
         //we want to go straight, from this point
 
@@ -1457,10 +1414,6 @@ public class vv_Robot {
         motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        while (motorArray[FRONT_LEFT_MOTOR].getCurrentPosition() != 0) {
-            //wait for switch to happen.
-            aOpMode.idle();
-        }
         //switch to RUN_WITH_ENCODERS to normalize for speed.
 
         motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -1468,8 +1421,6 @@ public class vv_Robot {
         motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        //wait for switch to happen
-        Thread.sleep(100);
 
         //start slow to prevent skid.
         //may replace with ramp to improve performance.
@@ -1562,9 +1513,6 @@ public class vv_Robot {
         motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        //wait for switch to happen
-        Thread.sleep(50);
 
         //apply specific powers to motors to get desired movement
         //wait till duration is complete.
