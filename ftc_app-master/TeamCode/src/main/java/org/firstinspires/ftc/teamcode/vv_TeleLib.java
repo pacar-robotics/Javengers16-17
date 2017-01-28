@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_ENCODER_UPPER_LIMIT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_POSITION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.EOPD_PROXIMITY_THRESHOLD;
+import static org.firstinspires.ftc.teamcode.vv_Constants.PRE_INIT_LAUNCH_POSITION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 
 /**
@@ -397,6 +398,20 @@ public class vv_TeleLib {
     public int getCapBallPosition(vv_OpMode aOpMode, vv_Lib vvLib) {
         return vvLib.robot.getCapBallMotorEncoderPosition(aOpMode);
     }
+
+    protected void processChooChooPosition(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
+
+        if (aOpMode.gamepad1.left_stick_button) {
+            vvLib.robot.rotateChooChoo(aOpMode, PRE_INIT_LAUNCH_POSITION_INCREMENT);
+            Thread.sleep(100); // to absorb extra button presses
+        }
+        if (aOpMode.gamepad1.right_stick_button) {
+            vvLib.robot.rotateChooChoo(aOpMode, -PRE_INIT_LAUNCH_POSITION_INCREMENT);
+            Thread.sleep(100); // to absorb extra button presses
+        }
+
+    }
+
 
 }
 

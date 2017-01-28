@@ -3,11 +3,12 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name = "YorkPreInitOp", group = "TeleOp")
+@TeleOp(name = "PreInitOp", group = "TeleOp")
 
-public class YorkPreInit extends vv_OpMode {
+public class PreInit extends vv_OpMode {
 
     vv_Lib vvLib;
+    vv_TeleLib vvTeleLib;
 
 
     @Override
@@ -21,6 +22,7 @@ public class YorkPreInit extends vv_OpMode {
 
 
         vvLib = new vv_Lib(this);
+        vvTeleLib = new vv_TeleLib();
 
 
         // Send telemetry message to signify robot waiting;
@@ -29,10 +31,10 @@ public class YorkPreInit extends vv_OpMode {
         // Wait for the game to start (driver presses PLAY)
 
         waitForStart();
+        while (opModeIsActive()) {
+            //process the gameopad control till we have the arm below target.
 
-        //move in pulses till we detect the touch sensor pressed.
-
-        vvLib.preGameInit(this);
+        }
 
     }
 

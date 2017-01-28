@@ -55,6 +55,8 @@ public class YorkFOTeleOp extends vv_OpMode {
 
                 vvTeleLib.processBeaconOrientationControls(this, vvLib);
 
+                vvTeleLib.processChooChooPosition(this, vvLib);
+
             } catch (vv_Robot.MotorStalledException MSE) {
                 telemetryAddData("Motor Stalled!", "Name", MSE.getMessage());
                 telemetryUpdate();

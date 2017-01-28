@@ -77,9 +77,6 @@ public class vv_Lib {
         lineDectectStop = new lineDetectCondition();
         colorPressVerifiedConditionStop = new colorPressVerifiedCondition();
 
-        //** disabled to allow for mechanical repairs 12/31/2016
-
-        setupShot(aOpMode);
 
     }
 

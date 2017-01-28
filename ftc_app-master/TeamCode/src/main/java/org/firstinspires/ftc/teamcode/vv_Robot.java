@@ -1767,6 +1767,27 @@ public class vv_Robot {
         //otherwise do nothing, we are already at the right position
     }
 
+    public void rotateChooChoo(vv_OpMode aOpMode, int increment) {
+
+        int currentChooChooPosition = motorArray[ARM_MOTOR].getCurrentPosition();
+        //we have to move the arm by increment
+
+        int targetPosition = currentChooChooPosition +
+                (increment);
+        motorArray[ARM_MOTOR].setTargetPosition(targetPosition);
+        motorArray[ARM_MOTOR].setPower(0.9f);
+        aOpMode.reset_timer();
+        while (motorArray[ARM_MOTOR].isBusy() && !isArmAtLimit(aOpMode) &&
+                (Math.abs(targetPosition - motorArray[ARM_MOTOR].getCurrentPosition())
+                        >= ARM_MOTOR_ENCODER_MARGIN) &&
+                (aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME)) {
+            //keep rotating till either motor reached target, the touch sensor is pressed or
+            //motor loop time is exceeded
+        }
+        motorArray[ARM_MOTOR].setPower(0.0f);
+    }
+
+
     public void shootChooChoo(vv_OpMode aOpMode) {
         int currentPosition = motorArray[ARM_MOTOR].getCurrentPosition();
         //move the arm motor forward by 1/3rd of a revolution.

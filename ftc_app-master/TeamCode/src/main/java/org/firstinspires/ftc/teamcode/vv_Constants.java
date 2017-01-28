@@ -150,6 +150,9 @@ public class vv_Constants
     final static int LAUNCH_POWER_POSITION_MAX = 575;
     final static int LAUNCH_POWER_POSITION_MIN = -135;
 
+    final static int PRE_INIT_LAUNCH_POSITION_INCREMENT = 200;
+    final static float PRE_INIT_LAUNCH_POWER = 0.5f;
+
     final static float WORM_DRIVE_POWER = 0.8f;
     final static float WORM_DRIVE_DURATION_MAX = 3000;
     final static float WORM_DRIVE_ENCODER_MARGIN = 20;
