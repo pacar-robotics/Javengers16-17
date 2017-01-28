@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class CapBallReleaseServoPositionCalibration extends vv_OpMode {
 
     vv_Lib vvLib;
+    vv_TeleLib vvTeleLib;
 
 
     @Override
@@ -19,6 +20,7 @@ public class CapBallReleaseServoPositionCalibration extends vv_OpMode {
 
 
         vvLib = new vv_Lib(this);
+        vvTeleLib = new vv_TeleLib();
 
 
         // Send telemetry message to signify robot waiting;
@@ -30,9 +32,9 @@ public class CapBallReleaseServoPositionCalibration extends vv_OpMode {
 
         telemetry.setAutoClear(true);
         for (double i = 0.0f; i < 1.0f; i += 0.1f) {
-            vvLib.setCapBallReleaseServoPosition(this, i);
+            vvTeleLib.setCapBallReleaseServoPosition(this, vvLib, i);
             telemetryAddData("Cap Ball Servo Position", "Value;", "" +
-                    vvLib.getCapBallReleaseServoPosition(this));
+                    vvTeleLib.getCapBallReleaseServoPosition(this, vvLib));
             telemetryUpdate();
             Thread.sleep(2000);
             idle();

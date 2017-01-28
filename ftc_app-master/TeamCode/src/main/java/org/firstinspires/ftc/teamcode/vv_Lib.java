@@ -13,8 +13,6 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT_PRES
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT_REST;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_RIGHT_PRESSED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_RIGHT_REST;
-import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_ENCODER_UPPER_LIMIT;
-import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_POSITION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DEBUG;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Backward;
@@ -41,7 +39,6 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.RANGESENSOR_OPTICAL_PR
 import static org.firstinspires.ftc.teamcode.vv_Constants.RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.RIGHT_BEACON_BUTTON_SERVO;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ROBOT_TRACK_DISTANCE;
-import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TURN_POWER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TurnDirectionEnum;
 
@@ -61,7 +58,7 @@ public class vv_Lib {
     protected RangeSensorUltraSonicCornerPositioningCondition rangeSensorUltraSonicCornerPositioningStop;
 
     protected lineDetectCondition lineDectectStop;
-    private vv_Robot robot;
+    protected vv_Robot robot;
 
 
     public vv_Lib(vv_OpMode aOpMode)
@@ -662,305 +659,6 @@ public class vv_Lib {
         robot.turnPidMxpAbsoluteDegrees(aOpMode, turndegrees, toleranceDegrees);
 
     }
-
-
-    public void driveRobotWithPowerFactor(vv_OpMode aOpMode, float powerFactor)
-            throws InterruptedException {
-
-        //Old Code
-        /*
-        // takes the x and y cooridinates of the joystick and calculates the power for each motor that allows the robot to turn in that direction
-        float forwardLeftPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
-        float forwardRightPower = -(aOpMode.gamepad1.left_stick_x * Math.abs(aOpMode.gamepad1.left_stick_x)) - ((Math.abs(aOpMode.gamepad1.left_stick_y) * aOpMode.gamepad1.left_stick_y));
-        float backLeftPower = -(aOpMode.gamepad1.left_stick_x * Math.abs(aOpMode.gamepad1.left_stick_x)) - ((Math.abs(aOpMode.gamepad1.left_stick_y) * aOpMode.gamepad1.left_stick_y));
-        float backRightPower = (Math.abs(aOpMode.gamepad1.left_stick_x) * aOpMode.gamepad1.left_stick_x) - ((Math.abs(aOpMode.gamepad1.left_stick_y)) * aOpMode.gamepad1.left_stick_y);
-        //Code to round powers when the driver wants to move diagonally
-        if ((forwardLeftPower < .5f && forwardLeftPower > -.5f) && (forwardRightPower > .5f || forwardRightPower < .5f)) {
-            forwardLeftPower = 0;
-            backRightPower = 0;
-        }
-        if ((forwardRightPower < .5f && forwardRightPower > -.5f) && (forwardLeftPower > .5f || forwardLeftPower < .5f)) {
-            forwardRightPower = 0;
-            backLeftPower = 0;
-        }
-        float forwardLeftPower = aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x + aOpMode.gamepad1.left_stick_x;
-        float backLeftPower = aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x - aOpMode.gamepad1.left_stick_x;
-        float forwardRightPower =  aOpMode.gamepad1.left_stick_y - aOpMode.gamepad1.right_stick_x - aOpMode.gamepad1.left_stick_x;
-        float backRightPower =  aOpMode.gamepad1.left_stick_y + aOpMode.gamepad1.right_stick_x + aOpMode.gamepad1.left_stick_x;
-        */
-
-        float forwardLeftPower = 0;
-        float backLeftPower = 0;
-        float backRightPower = 0;
-        float forwardRightPower = 0;
-
-        if (aOpMode.gamepad1.left_stick_y > vv_Constants.ANALOG_STICK_THRESHOLD &&
-                Math.abs(aOpMode.gamepad1.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD) {
-            forwardLeftPower = aOpMode.gamepad1.left_stick_y;
-            backLeftPower = -aOpMode.gamepad1.left_stick_y;
-            backRightPower = aOpMode.gamepad1.left_stick_y;
-            forwardRightPower = -aOpMode.gamepad1.left_stick_y;
-        } else if (aOpMode.gamepad1.left_stick_y < -vv_Constants.ANALOG_STICK_THRESHOLD &&
-                Math.abs(aOpMode.gamepad1.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD) {
-            forwardLeftPower = aOpMode.gamepad1.left_stick_y;
-            backLeftPower = -aOpMode.gamepad1.left_stick_y;
-            backRightPower = aOpMode.gamepad1.left_stick_y;
-            forwardRightPower = -aOpMode.gamepad1.left_stick_y;
-        } else {
-            forwardLeftPower = aOpMode.gamepad1.left_stick_x;
-            backLeftPower = aOpMode.gamepad1.left_stick_x;
-            backRightPower = aOpMode.gamepad1.left_stick_x;
-            forwardRightPower = aOpMode.gamepad1.left_stick_x;
-        }
-
-
-        //rotates or turns the robot
-        if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
-            runAllMotors(aOpMode, (aOpMode.gamepad1.right_stick_x * powerFactor), (-aOpMode.gamepad1.right_stick_x * powerFactor),
-                    (aOpMode.gamepad1.right_stick_x * powerFactor), (-aOpMode.gamepad1.right_stick_x * powerFactor));
-        }
-        //translates the robot using the Mecanum wheels
-        else if (Math.abs(aOpMode.gamepad1.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
-                Math.abs(aOpMode.gamepad1.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
-            runAllMotors(aOpMode, (forwardLeftPower * powerFactor), (forwardRightPower * powerFactor), (backLeftPower * powerFactor), (backRightPower * powerFactor));
-        } else {
-            stopAllMotors(aOpMode);
-        }
-    }
-
-
-    public void driveRobotFieldOrientedWithPowerFactor(vv_OpMode aOpMode, float powerFactor)
-            throws InterruptedException {
-
-        //process joysticks
-
-        if (Math.abs(aOpMode.gamepad1.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
-                Math.abs(aOpMode.gamepad1.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
-            //we are not in deadzone. Driver is pushing left joystick
-            //lets make the robot move in chosen angle and magnitude.
-
-            universalMoveRobotForFieldOrientedTeleOp(aOpMode,
-                    robot.getGamePad1LeftJoystickPolarMagnitude(aOpMode) * powerFactor,
-                    robot.getGamePad1LeftJoystickPolarAngle(aOpMode)
-                            + 90 - //for rotated orientation of robot at start of game.
-                            robot.getMxpGyroSensorHeading(aOpMode)); //for yaw on field.
-
-
-        }
-        if (Math.abs(aOpMode.gamepad1.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
-
-            //we are not in deadzone. Driver is pushing right joystick, sideways
-            float turnVelocity = (float) robot.getGamePad1RightJoystickPolarMagnitude(aOpMode) * powerFactor;
-
-            if (aOpMode.gamepad1.right_stick_x > 0) {
-                //turn clockwise to correct magnitude
-                robot.runMotors(aOpMode, turnVelocity, -turnVelocity, turnVelocity, -turnVelocity);
-            } else {
-                //turn counter-clockwise
-                robot.runMotors(aOpMode, -turnVelocity, turnVelocity, -turnVelocity, turnVelocity);
-            }
-
-
-        }
-
-        if ((Math.abs(aOpMode.gamepad1.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
-                Math.abs(aOpMode.gamepad1.left_stick_y) < vv_Constants.ANALOG_STICK_THRESHOLD) &&
-                Math.abs(aOpMode.gamepad1.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
-                (Math.abs(aOpMode.gamepad2.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
-                        Math.abs(aOpMode.gamepad2.left_stick_y) < vv_Constants.ANALOG_STICK_THRESHOLD) &&
-                Math.abs(aOpMode.gamepad2.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD) {
-            //both joysticks on both gamepads are at rest, stop the robot.
-
-            stopAllMotors(aOpMode);
-        }
-
-        //process dpads
-        if (aOpMode.gamepad1.dpad_down) {
-            turnAbsoluteMxpGyroDegrees(aOpMode, -90);
-        } else if (aOpMode.gamepad1.dpad_up) {
-            turnAbsoluteMxpGyroDegrees(aOpMode, +90);
-        } else if (aOpMode.gamepad1.dpad_left) {
-            turnAbsoluteMxpGyroDegrees(aOpMode, 0);
-        } else if (aOpMode.gamepad1.dpad_right) {
-            turnAbsoluteMxpGyroDegrees(aOpMode, +180);
-        }
-
-        //process yaw reset
-
-        if (aOpMode.gamepad1.y) {
-            robot.setMxpGyroZeroYaw(aOpMode);
-        }
-
-    }
-
-    public void driveRobotFieldOrientedWithCapBallAndPowerFactor(vv_OpMode aOpMode, float powerFactor)
-            throws InterruptedException, vv_Robot.MotorStalledException {
-
-        //process joysticks
-
-        if (Math.abs(aOpMode.gamepad2.left_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD ||
-                Math.abs(aOpMode.gamepad2.left_stick_y) > vv_Constants.ANALOG_STICK_THRESHOLD) {
-            //we are not in deadzone. Driver is pushing left joystick
-            //lets make the robot move in chosen angle and magnitude.
-
-            universalMoveRobotForFieldOrientedTeleOp(aOpMode,
-                    robot.getGamePad2LeftJoystickPolarMagnitude(aOpMode) * powerFactor,
-                    robot.getGamePad2LeftJoystickPolarAngle(aOpMode)
-                            + 90 - //for rotated orientation of robot at start of game.
-                            robot.getMxpGyroSensorHeading(aOpMode)); //for yaw on field.
-
-
-        }
-        if (Math.abs(aOpMode.gamepad2.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
-
-            //we are not in deadzone. Driver is pushing right joystick, sideways
-            float turnVelocity = (float) robot.getGamePad2RightJoystickPolarMagnitude(aOpMode) * powerFactor;
-
-            if (aOpMode.gamepad2.right_stick_x > 0) {
-                //turn clockwise to correct magnitude
-                robot.runMotors(aOpMode, turnVelocity, -turnVelocity, turnVelocity, -turnVelocity);
-            } else {
-                //turn counter-clockwise
-                robot.runMotors(aOpMode, -turnVelocity, turnVelocity, -turnVelocity, turnVelocity);
-            }
-
-
-        }
-
-        if ((Math.abs(aOpMode.gamepad1.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
-                Math.abs(aOpMode.gamepad1.left_stick_y) < vv_Constants.ANALOG_STICK_THRESHOLD) &&
-                Math.abs(aOpMode.gamepad1.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
-                (Math.abs(aOpMode.gamepad2.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
-                Math.abs(aOpMode.gamepad2.left_stick_y) < vv_Constants.ANALOG_STICK_THRESHOLD) &&
-                Math.abs(aOpMode.gamepad2.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD) {
-            //both joysticks on both gamepads are at rest, stop the robot.
-
-            stopAllMotors(aOpMode);
-        }
-
-
-        if (aOpMode.gamepad2.right_bumper) {
-            robot.releaseCapbBallHolder(aOpMode);
-        }
-
-        if (aOpMode.gamepad2.left_bumper) {
-            robot.secureCapbBallHolder(aOpMode);
-        }
-
-        controlCapBall(aOpMode);
-
-    }
-
-    public void controlCapBall(vv_OpMode aOpMode) throws InterruptedException,
-            vv_Robot.MotorStalledException {
-
-        if (aOpMode.gamepad2.left_trigger > TRIGGER_THRESHOLD) {
-            //we want to move cap ball to go down
-            if (robot.getCapBallMotorEncoderPosition(aOpMode) <= 0) {
-                //at limit
-                //warn and set the robot to min
-                aOpMode.telemetryAddData("WARNING", "CAP BALL LIMIT:", "at " +
-                        robot.getCapBallMotorEncoderPosition(aOpMode));
-                lowerCapBallToMinHeight(aOpMode);
-            } else {
-                if (robot.getCapBallMotorEncoderPosition(aOpMode) <= CAP_BALL_POSITION_INCREMENT) {
-                    //not enough space left to go a full increment.
-                    lowerCapBallToMinHeight(aOpMode);
-                } else {
-                    decreaseCapBallHeight(aOpMode,
-                            (int) aOpMode.gamepad2.left_trigger * CAP_BALL_POSITION_INCREMENT);
-                }
-            }
-        }
-
-        if (aOpMode.gamepad2.right_trigger > TRIGGER_THRESHOLD) {
-            //we want to move cap ball to go up
-            if (robot.getCapBallMotorEncoderPosition(aOpMode) >= CAP_BALL_ENCODER_UPPER_LIMIT) {
-                //at limit
-                //do nothing but warn on screen.
-                aOpMode.telemetryAddData("WARNING", "CAP BALL LIMIT:", "at " +
-                        robot.getCapBallMotorEncoderPosition(aOpMode));
-                raiseCapBallToMaxHeight(aOpMode);
-            } else {
-                if (robot.getCapBallMotorEncoderPosition(aOpMode) >=
-                        (CAP_BALL_ENCODER_UPPER_LIMIT - CAP_BALL_POSITION_INCREMENT)) {
-                    //not enough space left to go a full increment.
-                    raiseCapBallToMaxHeight(aOpMode);
-                } else {
-
-                    increaseCapBallHeight(aOpMode, (int) aOpMode.gamepad2.right_trigger * CAP_BALL_POSITION_INCREMENT);
-                }
-            }
-        }
-
-        if (aOpMode.gamepad2.a) {
-            lowerCapBallToMinHeight(aOpMode);
-        }
-
-        if (aOpMode.gamepad2.y) {
-            raiseCapBallToMaxHeight(aOpMode);
-        }
-
-    }
-
-    public void controlCapBallWithoutLimits(vv_OpMode aOpMode) throws InterruptedException,
-            vv_Robot.MotorStalledException {
-
-        //be very careful, the cable may break.
-
-        if (aOpMode.gamepad2.left_trigger > TRIGGER_THRESHOLD) {
-            decreaseCapBallHeight(aOpMode,
-                    (int) aOpMode.gamepad2.left_trigger * CAP_BALL_POSITION_INCREMENT);
-        }
-
-        if (aOpMode.gamepad2.right_trigger > TRIGGER_THRESHOLD) {
-            increaseCapBallHeight(aOpMode,
-                    (int) aOpMode.gamepad2.right_trigger * CAP_BALL_POSITION_INCREMENT);
-        }
-        aOpMode.telemetryAddData("Cap Ball Height:", "Encoder:", "Value:" +
-                robot.getCapBallMotorEncoderPosition(aOpMode));
-        aOpMode.telemetryUpdate();
-
-    }
-
-    public void controlCapBallWithoutStall(vv_OpMode aOpMode) throws InterruptedException,
-            vv_Robot.MotorStalledException {
-
-        //be very careful, the cable may break.
-
-        if (aOpMode.gamepad2.left_trigger > TRIGGER_THRESHOLD) {
-            decreaseCapBallHeightNoStall(aOpMode,
-                    (int) aOpMode.gamepad2.left_trigger * CAP_BALL_POSITION_INCREMENT);
-        }
-
-        if (aOpMode.gamepad2.right_trigger > TRIGGER_THRESHOLD) {
-            increaseCapBallHeightNoStall(aOpMode,
-                    (int) aOpMode.gamepad2.right_trigger * CAP_BALL_POSITION_INCREMENT);
-        }
-        aOpMode.telemetryAddData("Cap Ball Height:", "Encoder:", "Value:" +
-                robot.getCapBallMotorEncoderPosition(aOpMode));
-        aOpMode.telemetryUpdate();
-
-    }
-
-    public void raiseCapBallToMaxHeight(vv_OpMode aOpMode) throws InterruptedException,
-            vv_Robot.MotorStalledException {
-        robot.setCapBallPosition(aOpMode, CAP_BALL_ENCODER_UPPER_LIMIT);
-    }
-
-    public void lowerCapBallToMinHeight(vv_OpMode aOpMode) throws InterruptedException,
-            vv_Robot.MotorStalledException {
-        robot.setCapBallPosition(aOpMode, 0);
-    }
-
-    public void setCapBallReleaseServoPosition(vv_OpMode aOpMode, double servoPosition) {
-        robot.setCapBallReleaseServoPosition(aOpMode, servoPosition);
-    }
-
-    public double getCapBallReleaseServoPosition(vv_OpMode aOpMode) {
-        return robot.getCapBallReleaseServoPosition(aOpMode);
-    }
-
 
 
 
@@ -1569,30 +1267,7 @@ public class vv_Lib {
 
     }
 
-    public void decreaseCapBallHeight(vv_OpMode aOpMode, int increment) throws InterruptedException,
-            vv_Robot.MotorStalledException {
-        robot.setCapBallPosition(aOpMode, robot.getCapBallMotorEncoderPosition(aOpMode) - increment);
-    }
 
-    public void increaseCapBallHeightNoStall(vv_OpMode aOpMode, int increment) throws InterruptedException,
-            vv_Robot.MotorStalledException {
-        robot.setCapBallPosition(aOpMode, robot.getCapBallMotorEncoderPosition(aOpMode) + increment);
-    }
-
-    public void decreaseCapBallHeightNoStall(vv_OpMode aOpMode, int increment) throws InterruptedException,
-            vv_Robot.MotorStalledException {
-        robot.setCapBallPositionNoStall(aOpMode, robot.getCapBallMotorEncoderPosition(aOpMode) - increment);
-    }
-
-    public void increaseCapBallHeight(vv_OpMode aOpMode, int increment) throws InterruptedException,
-            vv_Robot.MotorStalledException {
-        robot.setCapBallPositionNoStall(aOpMode, robot.getCapBallMotorEncoderPosition(aOpMode) + increment);
-    }
-
-
-    public int getCapBallPosition(vv_OpMode aOpMode) {
-        return robot.getCapBallMotorEncoderPosition(aOpMode);
-    }
 
 
 

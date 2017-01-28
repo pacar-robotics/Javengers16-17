@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class CapBallCalibration extends vv_OpMode {
 
     vv_Lib vvLib;
+    vv_TeleLib vvTeleLib;
 
 
     @Override
@@ -21,6 +22,7 @@ public class CapBallCalibration extends vv_OpMode {
 
 
         vvLib = new vv_Lib(this);
+        vvTeleLib = new vv_TeleLib();
 
 
         // Send telemetry message to signify robot waiting;
@@ -32,9 +34,9 @@ public class CapBallCalibration extends vv_OpMode {
 
         while (opModeIsActive()) {
             try {
-                vvLib.controlCapBallWithoutLimits(this);
+                vvTeleLib.processCapBallControlsWithoutLimits(this, vvLib);
                 telemetry.addData("Cap Ball Encoder:", "Value:",
-                        "Is:" + vvLib.getCapBallPosition(this));
+                        "Is:" + vvTeleLib.getCapBallPosition(this, vvLib));
             } catch (vv_Robot.MotorStalledException MSE) {
                 telemetryAddData("Motor Stalled!", "Name", MSE.getMessage());
                 telemetryUpdate();

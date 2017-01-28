@@ -2,15 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import static org.firstinspires.ftc.teamcode.vv_Constants.EOPD_PROXIMITY_THRESHOLD;
-import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
-
 
 @TeleOp(name = "YorkFieldOrientedTeleOp", group = "TeleOp")
 
 public class YorkFOTeleOp extends vv_OpMode {
 
     vv_Lib vvLib;
+    vv_TeleLib vvTeleLib;
 
 
     @Override
@@ -23,7 +21,8 @@ public class YorkFOTeleOp extends vv_OpMode {
         telemetry.setAutoClear(true);
 
 
-        vvLib = new vv_Lib(this); //field oriented init, to not disturb the gyro readings
+        vvLib = new vv_Lib(this);
+        vvTeleLib = new vv_TeleLib();
 
 
         // Send telemetry message to signify robot waiting;
@@ -37,127 +36,35 @@ public class YorkFOTeleOp extends vv_OpMode {
         while (opModeIsActive()) {
 
 
-            processLaunch();
+            try {
+                vvTeleLib.processParticleBallLaunch(this, vvLib);
 
-            vvLib.driveRobotFieldOrientedWithPowerFactor(this, 0.6f);
+                vvTeleLib.processFieldOrientedDrive(this, vvLib, 0.6f);
 
-            processIntake();
+                vvTeleLib.processIntake(this, vvLib);
 
-            processLaunchPowerCalibration();
+                vvTeleLib.processLaunchPowerCalibration(this, vvLib);
 
-            processBallFlag();
+                vvTeleLib.processBallFlag(this, vvLib);
 
-            processCapBall();
+                vvTeleLib.processCapBallControls(this, vvLib);
+
+                vvTeleLib.processFieldOrientedCapBallDrive(this, vvLib, 0.2f);
+
+                vvTeleLib.processYawReset(this, vvLib);
+
+                vvTeleLib.processBeaconOrientationControls(this, vvLib);
+
+            } catch (vv_Robot.MotorStalledException MSE) {
+                telemetryAddData("Motor Stalled!", "Name", MSE.getMessage());
+                telemetryUpdate();
+                Thread.sleep(500);
+            }
 
             idle();
 
         }
     }
-
-
-    private void processIntake()
-            throws InterruptedException {
-        //Changes state of Ball Collection mechanism to Outtake [Toggles On or Off]
-        if (gamepad1.right_bumper) {
-            vvLib.toggleIntake(this);
-            Thread.sleep(250);
-        }
-        //Changes state of Ball Collection mechanism to Outtake [Toggles On or Off]
-        if (gamepad1.left_bumper) {
-            vvLib.toggleOuttake(this);
-            Thread.sleep(250);
-        }
-    }
-
-    private void processLaunch() throws InterruptedException {
-        if (gamepad1.a) {
-            //shoot a ball
-            //then setup for next shot.
-            //launch where we are.
-            //used to calibrate the location.
-
-            vvLib.shootBallAndSpinIntake(this);
-            //absorb any extra button presses
-            Thread.sleep(150);
-        }
-        if (gamepad1.b) {
-            //drop the ball but do not shoot.
-            vvLib.dropBall(this);
-            Thread.sleep(150);
-        }
-        if (gamepad1.x) {
-            //dont drop the ball but shoot whats there
-            vvLib.shootBall(this);
-            vvLib.setupShot(this);
-            Thread.sleep(150);
-        }
-    }
-
-    private void processBeacon() throws InterruptedException {
-        // Changes Beacon Mechanism to left position in order to score the beacon
-        if (gamepad1.dpad_left) {
-            vvLib.pressLeftBeaconButton(this);
-        }
-        // Changes Beacon Mechanism to right position in order to score the beacon
-        if (gamepad1.dpad_right) {
-            vvLib.pressRightBeaconButton(this);
-        }
-
-    }
-
-    private void processBallFlag() throws InterruptedException {
-        //detect if there is a ball in the intake ready to be dropped into
-        //launcher.
-        if (vvLib.getEopdRawValue(this) > EOPD_PROXIMITY_THRESHOLD) {
-            vvLib.raiseBallFlagServo(this);
-        } else {
-            vvLib.lowerBallFlagServo(this);
-        }
-
-    }
-
-
-    /**
-     * Changes the power of the Shooting Mechanism
-     * <p>
-     * gamepad2.a = changes the mechanism to position 1 (___ Tiles away) gamepad2.x = changes the
-     * mechanism to position 2 (___ Tiles away) gamepad2.y = changes the mechanism to position 3
-     * (___ Tiles away) gamepad2.b = changes the mechanism to position 4 (___ Tiles away)
-     */
-
-
-    private void processLaunchPowerCalibration() throws InterruptedException {
-
-        try {
-            telemetry.setAutoClear(true);
-            telemetryAddData("Power Position Before:", "Value", ":" +
-                    vvLib.getLauncherPowerPosition(this));
-            telemetryUpdate();
-
-            //read the triggers from game pad.
-            if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
-                vvLib.decreaseLauncherPower(this);
-            }
-            if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
-                vvLib.increaseLauncherPower(this);
-            }
-            telemetryAddData("Power Position After:", "Value", ":" +
-                    vvLib.getLauncherPowerPosition(this));
-            telemetryUpdate();
-        } catch (vv_Robot.MotorStalledException MSE) {
-            telemetryAddData("Motor Stalled!", "Name", MSE.getMessage());
-            telemetryUpdate();
-            Thread.sleep(50);
-        }
-    }
-
-    private void processCapBall() throws InterruptedException {
-        try {
-            vvLib.driveRobotFieldOrientedWithCapBallAndPowerFactor(this, 0.2f);
-        } catch (vv_Robot.MotorStalledException MSE) {
-            telemetryAddData("Motor Stalled!", "Name", MSE.getMessage());
-            telemetryUpdate();
-            Thread.sleep(50);
-        }
-    }
 }
+
+

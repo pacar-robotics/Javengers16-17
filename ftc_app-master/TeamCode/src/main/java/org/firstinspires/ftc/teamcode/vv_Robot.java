@@ -1746,7 +1746,7 @@ public class vv_Robot {
 
     public void setupChooChoo(vv_OpMode aOpMode) {
         if (!isArmAtLimit(aOpMode)) {
-            //we are always running to position, so wont change.
+            //we are always running to position, so wont change mode
             int currentChooChooPosition = motorArray[ARM_MOTOR].getCurrentPosition();
             //we have to move the arm to nearest multiple of revs needed
             int partialRev = currentChooChooPosition % (ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
@@ -1775,7 +1775,7 @@ public class vv_Robot {
                 (ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION / 3);
 
         motorArray[ARM_MOTOR].setTargetPosition(targetPosition);
-        
+
         motorArray[ARM_MOTOR].setPower(0.9f);
         while (motorArray[ARM_MOTOR].isBusy() &&
                 (Math.abs(targetPosition - motorArray[ARM_MOTOR].getCurrentPosition())

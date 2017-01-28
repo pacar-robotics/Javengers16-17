@@ -10,6 +10,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 public class FloorLightSensorCalibration extends vv_OpMode {
 
     vv_Lib vvLib;
+    vv_TeleLib vvTeleLib;
 
 
     @Override
@@ -21,6 +22,7 @@ public class FloorLightSensorCalibration extends vv_OpMode {
 
 
         vvLib = new vv_Lib(this);
+        vvTeleLib = new vv_TeleLib();
 
 
         // Send telemetry message to signify robot waiting;
@@ -45,7 +47,7 @@ public class FloorLightSensorCalibration extends vv_OpMode {
 
     public void processDrive()
             throws InterruptedException, vv_Robot.MotorNameNotKnownException {
-        vvLib.driveRobotWithPowerFactor(this, 0.4f);
+        vvTeleLib.processFieldOrientedDrive(this, vvLib, 0.4f);
     }
 
 
