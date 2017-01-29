@@ -1193,6 +1193,7 @@ public class vv_Lib {
         shootBall(aOpMode);
         shootBall(aOpMode);
 
+        setupShot(aOpMode);
 
         //rotate back for reference before proceeding
         turnAbsoluteMxpGyroDegrees(aOpMode, 0f);
