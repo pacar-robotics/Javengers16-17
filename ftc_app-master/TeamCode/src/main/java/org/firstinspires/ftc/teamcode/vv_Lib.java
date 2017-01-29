@@ -581,6 +581,12 @@ public class vv_Lib {
             aOpMode.telemetryUpdate();
         }
 
+        //optimize the turn, so that direction of turn results in smallest turn needed.
+
+        if (Math.abs(turnDegrees) > 180) {
+            turnDegrees = Math.signum(turnDegrees) * -1 * (360 - Math.abs(turnDegrees));
+        }
+
         turnUsingEncoders(aOpMode, TURN_POWER, Math.abs(turnDegrees),
                 turnDegrees > 0 ? TurnDirectionEnum.Clockwise :
                         TurnDirectionEnum.Counterclockwise);
@@ -1211,7 +1217,7 @@ public class vv_Lib {
                 -vv_Constants.INTAKE_POWER);
         setupShot(aOpMode);
         //stop intake
-        while (aOpMode.time_elapsed() < 2500 && getEopdRawValue(aOpMode) < EOPD_PROXIMITY_THRESHOLD) {
+        while (aOpMode.time_elapsed() < 2750 && getEopdRawValue(aOpMode) < EOPD_PROXIMITY_THRESHOLD) {
             //spin till we are past time limit or ball is detected in launch tube.
         }
 
@@ -1221,50 +1227,6 @@ public class vv_Lib {
 
 
     }
-
-    public void preGameInit(vv_OpMode aOpMode) throws InterruptedException {
-
-        //sets the arm in a init position, the arm does not launch during init.
-
-        aOpMode.reset_timer();
-        while (!robot.isArmAtLimit(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
-            robot.setPower(aOpMode, ARM_MOTOR, 0.5f);
-            Thread.sleep(100);
-            if (robot.isArmAtLimit(aOpMode)) {
-                break;
-            }
-            //pause to catch up
-            robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
-            Thread.sleep(100);
-
-        }
-
-        //stop the motor
-
-        robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
-
-        //now run the motor backward to detect sensor.
-        aOpMode.reset_timer();
-        while (!robot.isArmAtLimit(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
-            robot.setPower(aOpMode, ARM_MOTOR, -0.5f);
-            Thread.sleep(40);
-            if (robot.isArmAtLimit(aOpMode)) {
-                break;
-            }
-            //pause to catch up
-            robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
-            Thread.sleep(75);
-
-        }
-
-
-        //stop the motor again.
-
-        robot.setPower(aOpMode, ARM_MOTOR, 0.0f);
-
-
-    }
-
 
 
 
