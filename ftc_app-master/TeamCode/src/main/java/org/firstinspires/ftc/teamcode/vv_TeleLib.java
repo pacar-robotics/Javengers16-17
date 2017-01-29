@@ -232,13 +232,13 @@ public class vv_TeleLib {
     protected void processBeaconOrientationControls(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
         //process dpads
         if (aOpMode.gamepad1.dpad_down) {
-            vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, -90);
-        } else if (aOpMode.gamepad1.dpad_up) {
-            vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, +90);
-        } else if (aOpMode.gamepad1.dpad_left) {
             vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, 0);
-        } else if (aOpMode.gamepad1.dpad_right) {
+        } else if (aOpMode.gamepad1.dpad_up) {
             vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, +180);
+        } else if (aOpMode.gamepad1.dpad_left) {
+            vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, +90);
+        } else if (aOpMode.gamepad1.dpad_right) {
+            vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, -90);
         }
 
     }
@@ -248,6 +248,9 @@ public class vv_TeleLib {
         //process yaw reset
 
         if (aOpMode.gamepad1.y) {
+            //reset yaw, if the right trigger is not also pressed.
+            //if the right trigger is also pressed, this is a command to reset the
+            // choo choo encoder
             vvLib.robot.setMxpGyroZeroYaw(aOpMode);
         }
 
@@ -408,6 +411,12 @@ public class vv_TeleLib {
         if (aOpMode.gamepad1.right_stick_button) {
             vvLib.robot.rotateChooChoo(aOpMode, -PRE_INIT_LAUNCH_POSITION_INCREMENT);
             Thread.sleep(100); // to absorb extra button presses
+        }
+        if (aOpMode.gamepad1.start) {
+            //reset our encoder for the choo choo arm at this position.
+            //so launch will restart from here.
+
+            vvLib.robot.resetChooChooEncoder(aOpMode);
         }
 
     }

@@ -39,7 +39,7 @@ public class YorkFOTeleOp extends vv_OpMode {
             try {
                 vvTeleLib.processParticleBallLaunch(this, vvLib);
 
-                vvTeleLib.processFieldOrientedDrive(this, vvLib, 0.6f);
+                vvTeleLib.processFieldOrientedDrive(this, vvLib, 0.95f);
 
                 vvTeleLib.processIntake(this, vvLib);
 

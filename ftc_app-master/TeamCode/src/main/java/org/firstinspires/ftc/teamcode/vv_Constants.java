@@ -136,8 +136,7 @@ public class vv_Constants
     final static int RIGHT_BEACON_BUTTON_SERVO = 1;
 
 
-
-    final static int LAUNCH_POWER_INCREMENT = 150;
+    final static int LAUNCH_POWER_INCREMENT = 75;
 
     final static int CAP_BALL_POSITION_INCREMENT = 5000;
 

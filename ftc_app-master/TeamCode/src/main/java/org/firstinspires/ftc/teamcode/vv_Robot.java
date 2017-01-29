@@ -89,6 +89,10 @@ public class vv_Robot {
     private final int DEVICE_TIMEOUT_MS = 500;
     protected navXPIDController yawPIDController;
     HardwareMap hwMap = null;
+    private double prevFLVelocity = 0.0f;
+    private double prevFRVelocity = 0.0f;
+    private double prevBLVelocity = 0.0f;
+    private double prevBRVelocity = 0.0f;
     private DcMotor motorArray[];
     private Servo beaconServoArray[];
     private Servo launcherFrontGateServo = null;
@@ -1505,13 +1509,22 @@ public class vv_Robot {
 
         //calculate velocities at each wheel.
 
-        fl_velocity = yAxisVelocity + xAxisVelocity;
+        //blend with prev velocities to smooth out start
 
-        fr_velocity = yAxisVelocity - xAxisVelocity;
+        fl_velocity = ((yAxisVelocity + xAxisVelocity) + prevFLVelocity) / 2;
 
-        bl_velocity = yAxisVelocity - xAxisVelocity;
+        fr_velocity = ((yAxisVelocity - xAxisVelocity) + prevFRVelocity) / 2;
 
-        br_velocity = yAxisVelocity + xAxisVelocity;
+        bl_velocity = ((yAxisVelocity - xAxisVelocity) + prevBLVelocity) / 2;
+
+        br_velocity = ((yAxisVelocity + xAxisVelocity) + prevBRVelocity) / 2;
+
+        //save these in variables that are part of vvRobot to be used in next cycle.
+
+        prevFLVelocity = fl_velocity;
+        prevFRVelocity = fr_velocity;
+        prevBLVelocity = bl_velocity;
+        prevBRVelocity = br_velocity;
 
 
         motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -1521,6 +1534,8 @@ public class vv_Robot {
 
         //apply specific powers to motors to get desired movement
         //wait till duration is complete.
+
+
         motorArray[FRONT_LEFT_MOTOR].setPower(fl_velocity * LEFT_MOTOR_TRIM_FACTOR);
         motorArray[FRONT_RIGHT_MOTOR].setPower(fr_velocity * RIGHT_MOTOR_TRIM_FACTOR);
         motorArray[BACK_LEFT_MOTOR].setPower(bl_velocity * LEFT_MOTOR_TRIM_FACTOR);
@@ -1745,26 +1760,37 @@ public class vv_Robot {
 
 
     public void setupChooChoo(vv_OpMode aOpMode) {
-        if (!isArmAtLimit(aOpMode)) {
-            //we are always running to position, so wont change mode
-            int currentChooChooPosition = motorArray[ARM_MOTOR].getCurrentPosition();
-            //we have to move the arm to nearest multiple of revs needed
-            int partialRev = currentChooChooPosition % (ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
+
+        //we are always running to position, so wont change mode
+        int currentChooChooPosition = motorArray[ARM_MOTOR].getCurrentPosition();
+        //we have to move the arm to nearest multiple of revs needed
+        if ((Math.abs(currentChooChooPosition) % ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION) != 0) {
+            //this means that we have moved beyond a reset or we are past the setpoint in
+            //cycle
+            //we have to watch for negative position.
+            //java mod operations do not work for negative numbers
+
+            int partialRev = (int) Math.signum(currentChooChooPosition)
+                    * (Math.abs(currentChooChooPosition) % (ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION));
+
+
             int targetPosition = currentChooChooPosition +
                     (ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION - partialRev);
             motorArray[ARM_MOTOR].setTargetPosition(targetPosition);
             motorArray[ARM_MOTOR].setPower(0.9f);
             aOpMode.reset_timer();
-            while (motorArray[ARM_MOTOR].isBusy() && !isArmAtLimit(aOpMode) &&
+            while (motorArray[ARM_MOTOR].isBusy() &&
                     (Math.abs(targetPosition - motorArray[ARM_MOTOR].getCurrentPosition())
                             >= ARM_MOTOR_ENCODER_MARGIN) &&
                     (aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME)) {
-                //keep rotating till either motor reached target, the touch sensor is pressed or
+                //keep rotating till either motor reached target or
                 //motor loop time is exceeded
             }
             motorArray[ARM_MOTOR].setPower(0.0f);
+        } else {
+            //do nothing because we are already where we need to be
         }
-        //otherwise do nothing, we are already at the right position
+
     }
 
     public void rotateChooChoo(vv_OpMode aOpMode, int increment) {
@@ -1777,7 +1803,7 @@ public class vv_Robot {
         motorArray[ARM_MOTOR].setTargetPosition(targetPosition);
         motorArray[ARM_MOTOR].setPower(0.9f);
         aOpMode.reset_timer();
-        while (motorArray[ARM_MOTOR].isBusy() && !isArmAtLimit(aOpMode) &&
+        while (motorArray[ARM_MOTOR].isBusy() &&
                 (Math.abs(targetPosition - motorArray[ARM_MOTOR].getCurrentPosition())
                         >= ARM_MOTOR_ENCODER_MARGIN) &&
                 (aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME)) {
@@ -1792,12 +1818,14 @@ public class vv_Robot {
         int currentPosition = motorArray[ARM_MOTOR].getCurrentPosition();
         //move the arm motor forward by 1/3rd of a revolution.
         //to shoot the ball.
+
         int targetPosition = currentPosition +
                 (ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION / 3);
 
         motorArray[ARM_MOTOR].setTargetPosition(targetPosition);
 
         motorArray[ARM_MOTOR].setPower(0.9f);
+        aOpMode.reset_timer();
         while (motorArray[ARM_MOTOR].isBusy() &&
                 (Math.abs(targetPosition - motorArray[ARM_MOTOR].getCurrentPosition())
                         >= ARM_MOTOR_ENCODER_MARGIN) &&
@@ -1806,6 +1834,12 @@ public class vv_Robot {
             //motor loop time is exceeded
         }
         motorArray[ARM_MOTOR].setPower(0.0f);
+    }
+
+    public void resetChooChooEncoder(vv_OpMode aOpMode) {
+        //reset the encoder on the choo choo arm
+        motorArray[ARM_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[ARM_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
 

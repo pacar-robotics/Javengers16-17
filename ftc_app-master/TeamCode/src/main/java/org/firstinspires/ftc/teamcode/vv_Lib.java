@@ -1211,7 +1211,7 @@ public class vv_Lib {
         setupShot(aOpMode);
         //stop intake
         while (aOpMode.time_elapsed() < 2500 && getEopdRawValue(aOpMode) < EOPD_PROXIMITY_THRESHOLD) {
-            //spin till we are 2000 ms in or ball is detected in launch tube.
+            //spin till we are past time limit or ball is detected in launch tube.
         }
 
         robot.closeRearLauncherGate();
