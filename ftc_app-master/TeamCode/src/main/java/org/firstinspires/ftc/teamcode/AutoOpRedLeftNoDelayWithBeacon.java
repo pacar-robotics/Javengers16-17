@@ -55,7 +55,7 @@ public class AutoOpRedLeftNoDelayWithBeacon extends vv_OpMode {
 
         //perform actions common to both red positions
 
-        vvLib.redAutonomousCommonAction(this);
+        vvLib.redBeaconAutonomousCommonAction(this);
 
 
     }

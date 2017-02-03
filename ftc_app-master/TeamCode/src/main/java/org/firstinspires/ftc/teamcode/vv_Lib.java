@@ -1104,7 +1104,7 @@ public class vv_Lib {
 
     }
 
-    public void blueAutonomousCommonAction(vv_OpMode aOpMode) throws InterruptedException {
+    public void blueBeaconAutonomousCommonAction(vv_OpMode aOpMode) throws InterruptedException {
         //rotate to face beacon
         Thread.sleep(25);
         turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim
@@ -1142,7 +1142,7 @@ public class vv_Lib {
 
     }
 
-    public void redAutonomousCommonAction(vv_OpMode aOpMode) throws InterruptedException {
+    public void redBeaconAutonomousCommonAction(vv_OpMode aOpMode) throws InterruptedException {
         //rotate to face beacon
         Thread.sleep(50);
         turnAbsoluteMxpGyroDegrees(aOpMode, -90); //with trim
@@ -1203,6 +1203,55 @@ public class vv_Lib {
 
         //rotate back for reference before proceeding
         turnAbsoluteMxpGyroDegrees(aOpMode, 0f);
+    }
+
+    public void blueAlternateAutonomous(vv_OpMode aOpMode) throws InterruptedException {
+
+        //delay
+        Thread.sleep(10000);
+
+        moveWheels(aOpMode, 20, .99f, DirectionEnum.SidewaysRight, false);
+        turnAbsoluteMxpFusedGyroDegrees(aOpMode, -15);
+
+        // Shoot the first ball
+        shootBall(aOpMode);
+        setupShot(aOpMode);
+
+        //drop ball
+        dropBall(aOpMode);
+
+        //Shoot the second ball.
+        shootBall(aOpMode);
+        shootBall(aOpMode);
+
+        setupShot(aOpMode);
+
+        turnAbsoluteMxpFusedGyroDegrees(aOpMode, -90);
+        moveWheels(aOpMode, 43, .99f, DirectionEnum.Backward, true);
+    }
+
+    public void redAlternateAutonomous (vv_OpMode aOpMode) throws InterruptedException {
+
+        //delay
+        Thread.sleep(10000);
+        moveWheels(aOpMode, 14, .99f, DirectionEnum.SidewaysRight, false);
+        turnAbsoluteMxpFusedGyroDegrees(aOpMode, -15);
+
+        // Shoot the first ball
+        shootBall(aOpMode);
+        setupShot(aOpMode);
+
+        //drop ball
+        dropBall(aOpMode);
+
+        //Shoot the second ball.
+        shootBall(aOpMode);
+        shootBall(aOpMode);
+
+        setupShot(aOpMode);
+
+        turnAbsoluteMxpFusedGyroDegrees(aOpMode, -86);
+        moveWheels(aOpMode, 53, .99f, DirectionEnum.Backward, true);
     }
 
 

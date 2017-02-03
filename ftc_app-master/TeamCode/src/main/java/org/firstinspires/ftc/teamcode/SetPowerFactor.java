@@ -16,6 +16,7 @@ public class SetPowerFactor extends vv_OpMode {
     vv_Lib vvLib;
 
     float powerFactor = 0.5f;
+    boolean powerFactorConfirmed = false;
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -24,29 +25,38 @@ public class SetPowerFactor extends vv_OpMode {
         //run init
 
         //tell driver the robot is ready
-        telemetryAddData("Hello Driver:", "I am ready", "");
+        telemetryAddData("Hello Driver: ", "I am ready", "");
         telemetryUpdate();
 
         //waits until driver presses start
         waitForStart();
 
+        telemetryAddData("Passed WaitforStart: ", "Something Wrong with Update", "");
+
         while (opModeIsActive()) {
 
-            telemetryAddData("Change the Power Factor", " using up and down", "on DPAD");
-            telemetryAddData(String.valueOf(powerFactor), "Press A to Confirm", "");
+
+            if(!powerFactorConfirmed) {
+            telemetryAddData("Change the Power Factor", " using up and down on DPAD", "");
+            telemetryAddData(String.valueOf(powerFactor), " Press A to Confirm", "");
+            telemetryUpdate();
+            }
+
 
             if(gamepad1.dpad_down && powerFactor >= .2f) {
-                powerFactor = powerFactor - .5f;
-                Thread.sleep(150);
+                powerFactor = powerFactor - .05f;
+                Thread.sleep(250);
             }
 
             if(gamepad1.dpad_up && powerFactor <= 1.0) {
-                powerFactor = powerFactor - .5f;
-                Thread.sleep(150);
+                powerFactor = powerFactor + .05f;
+                Thread.sleep(250);
             }
 
             if (gamepad1.a) {
                 telemetryAddData("Power Factor set to ", String.valueOf(powerFactor), "");
+                telemetryUpdate();
+                powerFactorConfirmed = true;
             }
 
         }

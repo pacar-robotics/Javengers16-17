@@ -53,7 +53,7 @@ public class AutoOpRedRightNoDelayWithBeacon extends vv_OpMode {
         vvLib.universalMoveRobot(this, 45, 0.55f, 0.0, 3500,
                 vvLib.rangeSensorUltraSonicCornerPositioningStop, false, 0, 0);
 
-        vvLib.redAutonomousCommonAction(this);
+        vvLib.redBeaconAutonomousCommonAction(this);
 
     }
 

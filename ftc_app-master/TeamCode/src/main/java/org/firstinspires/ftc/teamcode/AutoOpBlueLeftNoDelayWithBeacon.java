@@ -45,7 +45,7 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
         vvLib.universalMoveRobot(this, 138, 0.99f, 0.0, 3700,
                 vvLib.rangeSensorUltraSonicCornerPositioningStop, false, 0, 0);
 
-        vvLib.blueAutonomousCommonAction(this);
+        vvLib.blueBeaconAutonomousCommonAction(this);
 
     }
 
