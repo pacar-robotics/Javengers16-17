@@ -1284,6 +1284,8 @@ public class vv_Lib {
 
     public class RangeSensorUltraSonicCornerPositioningCondition implements vv_OpMode.StopCondition {
         public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
+
+            //TODO: This code is not functioning because we are not facing the right wall to do this.
             return (getUltrasonicDistance(aOpMode)
                     < 2 * RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD);
         }

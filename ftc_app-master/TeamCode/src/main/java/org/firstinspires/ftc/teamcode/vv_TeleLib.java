@@ -361,7 +361,7 @@ public class vv_TeleLib {
 
     public void raiseCapBallToMaxHeight(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException,
             vv_Robot.MotorStalledException {
-        vvLib.robot.setCapBallPosition(aOpMode, CAP_BALL_ENCODER_UPPER_LIMIT);
+        vvLib.robot.setCapBallPosition(aOpMode, Math.round(CAP_BALL_ENCODER_UPPER_LIMIT));
     }
 
     public void lowerCapBallToMinHeight(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException,

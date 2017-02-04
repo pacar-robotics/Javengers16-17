@@ -17,6 +17,7 @@ public class vv_Constants
     // Encoder constants
 	final static int TETRIX_MOTOR_ENCODER_COUNTS_PER_REVOLUTION = 1440;
 	final static int ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION = 1120;
+    final static float MATRIX_MOTOR_ENCODER_COUNTS_PER_REVOLUTION = 1478.4f;
 
     final static int ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION =
             ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION * 3 / 2;  //Gear ratio for Choo-Choo
@@ -166,7 +167,10 @@ public class vv_Constants
     final static double RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD = 1.2d;
     final static double RANGESENSOR_OPTICAL_PROXIMITY_THRESHOLD = 1.0d;
 
-    final static int CAP_BALL_ENCODER_UPPER_LIMIT = 45000;
+    final static int CAP_BALL_ENCODER_UPPER_LIMIT = Math.round((45000 /
+            TETRIX_MOTOR_ENCODER_COUNTS_PER_REVOLUTION) *
+            MATRIX_MOTOR_ENCODER_COUNTS_PER_REVOLUTION); //for matrix
+    //motor adjustments.
 
 
     BeaconColorEnum BeaconColor;
