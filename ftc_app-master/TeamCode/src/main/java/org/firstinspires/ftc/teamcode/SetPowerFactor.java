@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * Using gamepad controls, the user can set the power factor for Teleop.
@@ -14,15 +13,18 @@ import java.io.PrintWriter;
 public class SetPowerFactor extends vv_OpMode {
 
     vv_Lib vvLib;
+    LightCalibFileIO powerFactorFileIO;
 
-    float powerFactor = 0.5f;
+    float drivePowerFactor = 0.5f;
     boolean powerFactorConfirmed = false;
+    boolean didWrite = false;
 
     @Override
     public void runOpMode() throws InterruptedException{
 
         vvLib = new vv_Lib(this);
         //run init
+        powerFactorFileIO = new LightCalibFileIO();
 
         //tell driver the robot is ready
         telemetryAddData("Hello Driver: ", "I am ready", "");
@@ -36,31 +38,59 @@ public class SetPowerFactor extends vv_OpMode {
         while (opModeIsActive()) {
 
 
-            if(!powerFactorConfirmed) {
-            telemetryAddData("Change the Power Factor", " using up and down on DPAD", "");
-            telemetryAddData(String.valueOf(powerFactor), " Press A to Confirm", "");
-            telemetryUpdate();
-            }
-
-
-            if(gamepad1.dpad_down && powerFactor >= .2f) {
-                powerFactor = powerFactor - .05f;
-                Thread.sleep(250);
-            }
-
-            if(gamepad1.dpad_up && powerFactor <= 1.0) {
-                powerFactor = powerFactor + .05f;
-                Thread.sleep(250);
-            }
-
-            if (gamepad1.a) {
-                telemetryAddData("Power Factor set to ", String.valueOf(powerFactor), "");
+            while (!powerFactorConfirmed) {
+                telemetryAddData("Change the Power Factor", " using up and down on DPAD", "");
+                telemetryAddData(String.valueOf(drivePowerFactor), " Press A to Confirm", "");
                 telemetryUpdate();
-                powerFactorConfirmed = true;
+
+
+                if (gamepad1.dpad_down && drivePowerFactor >= .2f) {
+                    drivePowerFactor = drivePowerFactor - .05f;
+                    Thread.sleep(250);
+                }
+
+                if (gamepad1.dpad_up && drivePowerFactor <= 1.0) {
+                    drivePowerFactor = drivePowerFactor + .05f;
+                    Thread.sleep(250);
+                }
+
+                if (gamepad1.a) {
+                    powerFactorConfirmed = true;
+                }
             }
+
+//            if(vvLib.createFile(this, "PowerFactor"))
+//            {
+//                telemetryAddData("Wrote File Successfully: ", "PowerFactor", "");
+//                telemetryUpdate();
+//                Thread.sleep(1000);
+//            } else {
+//                telemetryAddData("Something went wrong in creating File", "", "");
+//                Thread.sleep(1000);
+//            }
+                try {
+                    powerFactorFileIO.writeTextFile(drivePowerFactor);
+                    telemetryAddData("Wrote File Successfully ", "Power Factor: ", String.valueOf(drivePowerFactor));
+                    telemetryUpdate();
+                    didWrite = true;
+                } catch (IOException e) {
+                    telemetryAddData("Problem: ", e.getMessage(), "");
+                    telemetryUpdate();
+                }
+
+//            Thread.sleep(2000);
+//
+//            try {
+//                drivePowerFactor = powerFactorFileIO.getCalibrationValue();
+//                telemetryAddData("Power Factor: ", String.valueOf(drivePowerFactor), "");
+//                telemetryUpdate();
+//            } catch (IOException e) {
+//                telemetryAddData("Problem: ", e.getMessage(), "");
+//                drivePowerFactor = vv_Constants.STANDARD_DRIVE_POWER_FACTOR;
+//                telemetryAddData("Power Factor: ", String.valueOf(drivePowerFactor), "");
+//                telemetryUpdate();
+//            }
 
         }
     }
-
-
 }
