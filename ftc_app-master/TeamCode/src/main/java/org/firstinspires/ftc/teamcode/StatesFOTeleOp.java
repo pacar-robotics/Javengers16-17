@@ -2,13 +2,18 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import java.io.IOException;
 
-@TeleOp(name = "YorkFieldOrientedTeleOp", group = "TeleOp")
 
-public class YorkFOTeleOp extends vv_OpMode {
+@TeleOp(name = "FieldOrientedTeleOp", group = "TeleOp")
+
+public class StatesFOTeleOp extends vv_OpMode {
 
     vv_Lib vvLib;
     vv_TeleLib vvTeleLib;
+    LightCalibFileIO powerFactorFileIO;
+
+    float drivePowerFactor;
 
 
     @Override
@@ -23,6 +28,20 @@ public class YorkFOTeleOp extends vv_OpMode {
 
         vvLib = new vv_Lib(this);
         vvTeleLib = new vv_TeleLib();
+        powerFactorFileIO = new LightCalibFileIO();
+
+        try {
+            drivePowerFactor = powerFactorFileIO.getCalibrationValue();
+            telemetryAddData("Power Factor: ", String.valueOf(drivePowerFactor), "");
+        } catch (IOException e) {
+            telemetryAddData("Problem: ", e.getMessage(), "");
+            drivePowerFactor = vv_Constants.STANDARD_DRIVE_POWER_FACTOR;
+            telemetryAddData("Power Factor: ", String.valueOf(drivePowerFactor), "");
+        } catch (NumberFormatException e) {
+            telemetryAddData("Problem: ", e.getMessage(), "");
+            drivePowerFactor = vv_Constants.STANDARD_DRIVE_POWER_FACTOR;
+            telemetryAddData("Power Factor: ", String.valueOf(drivePowerFactor), "");
+        }
 
 
         // Send telemetry message to signify robot waiting;
@@ -39,7 +58,7 @@ public class YorkFOTeleOp extends vv_OpMode {
             try {
                 vvTeleLib.processParticleBallLaunch(this, vvLib);
 
-                vvTeleLib.processFieldOrientedDrive(this, vvLib, 0.95f);
+                vvTeleLib.processFieldOrientedDrive(this, vvLib, drivePowerFactor);
 
                 vvTeleLib.processIntake(this, vvLib);
 

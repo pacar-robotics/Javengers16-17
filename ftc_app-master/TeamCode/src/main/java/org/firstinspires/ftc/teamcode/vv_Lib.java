@@ -1,6 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.os.Environment;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
@@ -60,7 +67,6 @@ public class vv_Lib {
     protected lineDetectCondition lineDectectStop;
     protected vv_Robot robot;
 
-
     public vv_Lib(vv_OpMode aOpMode)
             throws InterruptedException {
         robot = new vv_Robot();
@@ -68,6 +74,7 @@ public class vv_Lib {
 
         //initialize stop conditions.
 
+        float drivePowerFactor;
         falseStop = new falseCondition();
         eopdProximityStop = new eopdProximityCondition();
         rangeSensorProximityOrColorVerifiedStop = new RangeSensorProximityOrColorVerifiedCondition();
@@ -76,8 +83,6 @@ public class vv_Lib {
         rangeSensorUltraSonicCornerPositioningStop = new RangeSensorUltraSonicCornerPositioningCondition();
         lineDectectStop = new lineDetectCondition();
         colorPressVerifiedConditionStop = new colorPressVerifiedCondition();
-
-
     }
 
 
@@ -1104,7 +1109,7 @@ public class vv_Lib {
 
     }
 
-    public void blueAutonomousCommonAction(vv_OpMode aOpMode) throws InterruptedException {
+    public void blueBeaconAutonomousCommonAction(vv_OpMode aOpMode) throws InterruptedException {
         //rotate to face beacon
         Thread.sleep(25);
         turnAbsoluteMxpGyroDegrees(aOpMode, 90); //with trim
@@ -1142,7 +1147,7 @@ public class vv_Lib {
 
     }
 
-    public void redAutonomousCommonAction(vv_OpMode aOpMode) throws InterruptedException {
+    public void redBeaconAutonomousCommonAction(vv_OpMode aOpMode) throws InterruptedException {
         //rotate to face beacon
         Thread.sleep(50);
         turnAbsoluteMxpGyroDegrees(aOpMode, -90); //with trim
@@ -1205,6 +1210,55 @@ public class vv_Lib {
         turnAbsoluteMxpGyroDegrees(aOpMode, 0f);
     }
 
+    public void blueAlternateAutonomous(vv_OpMode aOpMode) throws InterruptedException {
+
+        //delay
+        Thread.sleep(10000);
+
+        moveWheels(aOpMode, 20, .99f, DirectionEnum.SidewaysRight, false);
+        turnAbsoluteMxpFusedGyroDegrees(aOpMode, -15);
+
+        // Shoot the first ball
+        shootBall(aOpMode);
+        setupShot(aOpMode);
+
+        //drop ball
+        dropBall(aOpMode);
+
+        //Shoot the second ball.
+        shootBall(aOpMode);
+        shootBall(aOpMode);
+
+        setupShot(aOpMode);
+
+        turnAbsoluteMxpFusedGyroDegrees(aOpMode, -90);
+        moveWheels(aOpMode, 43, .99f, DirectionEnum.Backward, true);
+    }
+
+    public void redAlternateAutonomous (vv_OpMode aOpMode) throws InterruptedException {
+
+        //delay
+        Thread.sleep(10000);
+        moveWheels(aOpMode, 14, .99f, DirectionEnum.SidewaysRight, false);
+        turnAbsoluteMxpFusedGyroDegrees(aOpMode, -15);
+
+        // Shoot the first ball
+        shootBall(aOpMode);
+        setupShot(aOpMode);
+
+        //drop ball
+        dropBall(aOpMode);
+
+        //Shoot the second ball.
+        shootBall(aOpMode);
+        shootBall(aOpMode);
+
+        setupShot(aOpMode);
+
+        turnAbsoluteMxpFusedGyroDegrees(aOpMode, -86);
+        moveWheels(aOpMode, 53, .99f, DirectionEnum.Backward, true);
+    }
+
 
     public void shootBallAndSpinIntake(vv_OpMode aOpMode) throws InterruptedException {
         dropBall(aOpMode);
@@ -1228,6 +1282,39 @@ public class vv_Lib {
 
     }
 
+    /*public boolean createFile (vv_OpMode aOpMode, String fileName) {
+        try {
+            File file = new File(Environment.getExternalStorageDirectory().getPath() + fileName + ".txt" );
+
+            if (file.exists()) {
+                file.delete();
+                file.createNewFile();
+                return true;
+            } else {
+                file.createNewFile();
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean writeOneStringOntoFile (vv_OpMode aOpMode, String fileName, float value) {
+
+        fileName = fileName + ".txt";
+
+        try {
+            FileWriter fileWriter = new FileWriter(fileName);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(String.valueOf(value));
+            bufferedWriter.close();
+            return true;
+        } catch(IOException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }*/
 
 
 

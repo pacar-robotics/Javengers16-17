@@ -50,6 +50,8 @@ public class vv_Constants
     final static float MECCANUM_WHEEL_SIDE_TRACK_DISTANCE = 13.0f;
     final static float MECCANUM_WHEEL_FRONT_TRACK_DISTANCE = 14.5f;
 
+    final static float STANDARD_DRIVE_POWER_FACTOR = 0.7f;
+
 	final static float ANALOG_STICK_THRESHOLD = .25f;
     final static float TRIGGER_THRESHOLD = .10f;
 

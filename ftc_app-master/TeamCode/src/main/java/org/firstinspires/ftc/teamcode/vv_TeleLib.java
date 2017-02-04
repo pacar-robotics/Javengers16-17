@@ -11,8 +11,8 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
  */
 
 public class vv_TeleLib {
-    protected void processIntake(vv_OpMode aOpMode, vv_Lib vvLib)
-            throws InterruptedException {
+
+    protected void processIntake(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
         //Changes state of Ball Collection mechanism to Outtake [Toggles On or Off]
         if (aOpMode.gamepad1.right_bumper) {
             vvLib.toggleIntake(aOpMode);
