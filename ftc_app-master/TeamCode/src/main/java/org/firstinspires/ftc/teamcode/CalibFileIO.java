@@ -29,18 +29,22 @@ import javax.xml.xpath.XPathFactory;
  * Created by Rahul on 1/27/2017.
  */
 
-public class LightCalibFileIO {
-	private static final String FILE_PATH = Environment.getExternalStorageDirectory().getPath() +
-			"/PACAR/LightCalib.xml";
+public class CalibFileIO {
+	private String filePath = Environment.getExternalStorageDirectory().getPath() +
+			"/PACAR/Calib.xml";
 	private static final String LOG_TAG = "CalibFileIO";
 
+	public CalibFileIO(String fileName) {
+		filePath = filePath.replace("Calib", fileName);
+	}
+
 	public void writeTextFile(float automaticFloorLightCalibrationValue) throws IOException {
-		File file = new File(FILE_PATH);
+		File file = new File(filePath);
 
 		if (file.delete()) {
-			Log.v(LOG_TAG, " File deleted:" + FILE_PATH);
+			Log.v(LOG_TAG, " File deleted:" + filePath);
 		} else {
-			Log.v(LOG_TAG, " File NOT deleted:" + FILE_PATH);
+			Log.v(LOG_TAG, " File NOT deleted:" + filePath);
 		}
 
 		try {
@@ -80,7 +84,7 @@ public class LightCalibFileIO {
 		String result = "null";
 
 		try {
-			File xmlFile = new File(FILE_PATH);
+			File xmlFile = new File(filePath);
 			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 

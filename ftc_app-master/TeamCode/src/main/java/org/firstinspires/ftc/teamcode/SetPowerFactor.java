@@ -13,7 +13,7 @@ import java.io.IOException;
 public class SetPowerFactor extends vv_OpMode {
 
     vv_Lib vvLib;
-    LightCalibFileIO powerFactorFileIO;
+    CalibFileIO powerFactorFileIO;
 
     float drivePowerFactor = 0.5f;
     boolean powerFactorConfirmed = false;
@@ -24,7 +24,7 @@ public class SetPowerFactor extends vv_OpMode {
 
         vvLib = new vv_Lib(this);
         //run init
-        powerFactorFileIO = new LightCalibFileIO();
+        powerFactorFileIO = new CalibFileIO("PowerFactor");
 
         //tell driver the robot is ready
         telemetryAddData("Hello Driver: ", "I am ready", "");
