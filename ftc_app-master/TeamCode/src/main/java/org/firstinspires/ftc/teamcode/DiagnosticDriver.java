@@ -31,62 +31,31 @@ public class DiagnosticDriver extends vv_OpMode {
 
         //process diagnostic commands here
 
-        //run all the tests we can.
+        //run all the automatic tests we can.
 
-        vvDiagLib.runAllTests(this);
+        vvDiagLib.runAllAutomaticTests(this);
         //now walk through the tests and process them.
+        vvDiagLib.analyzeTestResults(this);
 
-        for (int i = 0; i <= vvDiagLib.robotTestArray.length; i++) {
-            //list all tests and results.
-            if (vvDiagLib.robotTestArray[i].getTestValidity(this)) {
-                //its a valid test
-                if (vvDiagLib.robotTestArray[i].getTestResult(this)) {
-                    //this test passed.
-                    //lets print this message out.
-                    telemetryAddData("Test Result:",
-                            vvDiagLib.robotTestArray[i].getTestName(this),
-                            ":" + "Test Passed");
-                    telemetryUpdate();
+        vv_DiagLib.RobotTest robotTest;
 
-                } else {
-                    //this test failed.
-                    //lets print out the message.
-                    telemetryAddData("Test Result:",
-                            vvDiagLib.robotTestArray[i].getTestName(this),
-                            ":" + "Test Failed");
-                    switch (vvDiagLib.robotTestArray[i].getTestSeverity(this)) {
-                        case CRITICAL:
-                            telemetryAddData("Test Result:",
-                                    "This is a CRITICAL SEVERITY ERROR",
-                                    "Error");
-                            break;
-
-                        case HIGH:
-                            telemetryAddData("Test Result:",
-                                    "This is a HIGH SEVERITY",
-                                    "Error");
-                            break;
-                        case MEDIUM:
-                            telemetryAddData("Test Result:",
-                                    "This is a MEDIUM SEVERITY ERROR",
-                                    "Error");
-                            break;
-                        case LOW:
-                            break;
-                        case INFO:
-                            break;
-                    }
-
-                    telemetryAddData("Recommendation:", "try this:", vvDiagLib.robotTestArray[i].getTestRecommendation(this));
-                    telemetryUpdate();
-
-                }
-
-            }
-            //wait and display our errors if any
-            Thread.sleep(2000);
+        if ((robotTest = vvDiagLib.findTestByName(this, "testBackLeftMotor")) == null) {
+            //could not find the test
+            telemetryAddData("Error", "Could not find test!:", "testBackLeftMotor");
+            telemetryUpdate();
+        } else {
+            robotTest.getTestRunnableTest(this).runTest(this, robotTest);
         }
 
+        if ((robotTest = vvDiagLib.findTestByName(this, "thisIsNoTest")) == null) {
+            //could not find the test
+            telemetryAddData("Error", "Could not find test!:", "thisIsNoTest");
+            telemetryUpdate();
+        } else {
+            robotTest.getTestRunnableTest(this).runTest(this, robotTest);
+            
+        }
+        Thread.sleep(5000);
 
     }
 

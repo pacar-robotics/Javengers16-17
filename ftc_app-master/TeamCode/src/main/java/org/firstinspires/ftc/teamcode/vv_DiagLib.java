@@ -13,13 +13,8 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
 
 public class vv_DiagLib {
 
-
+    protected vv_Robot robot;
     RobotTest robotTestArray[];
-    TestFrontLeftWheel testFrontLeftWheel = new TestFrontLeftWheel();
-    TestFrontRightWheel testFrontRightWheel = new TestFrontRightWheel();
-    TestBackLeftWheel testBackLeftWheel = new TestBackLeftWheel();
-    TestBackRightWheel testBackRightWheel = new TestBackRightWheel();
-    private vv_Robot robot;
 
     public vv_DiagLib(vv_OpMode aOpMode)
             throws InterruptedException {
@@ -28,24 +23,23 @@ public class vv_DiagLib {
 
         //initialize the array of tests
 
+        //first lets create the space for the tests
         robotTestArray = new RobotTest[20];
+
+        //now lets actually initialize the array with class instances.
+
+        for (int i = 0; i < robotTestArray.length; i++) {
+            robotTestArray[i] = new RobotTest();
+        }
         //lets push the tests we have into the array.
 
 
         invalidateAllTests(aOpMode);
 
-        robotTestArray[0].createTest(aOpMode, "testFrontLeftMotor", 0, "Test Front Left Motor",
-                "Tests the front left motor by running it for a small duration", TestType.AUTOMATIC, testFrontLeftWheel);
+        createTestEntries(aOpMode);
 
-        robotTestArray[1].createTest(aOpMode, "testFrontRightMotor", 1, "Test Front Right Motor",
-                "Tests the front right motor by running it for a small duration", TestType.AUTOMATIC, testFrontRightWheel);
 
-        robotTestArray[2].createTest(aOpMode, "testBackLeftMotor", 2, "Test Back Left Motor",
-                "Tests the back left motor by running it for a small duration", TestType.AUTOMATIC, testBackLeftWheel);
-
-        robotTestArray[3].createTest(aOpMode, "testBackRightMotor", 3, "Test Back Right Motor",
-                "Tests the back right motor by running it for a small duration", TestType.AUTOMATIC, testBackRightWheel);
-
+        aOpMode.DBG("Before Invalidate all Results");
 
         invalidateAllTestResults(aOpMode);
     }
@@ -55,8 +49,14 @@ public class vv_DiagLib {
         // the cost of a string compare is ok for our small number of records.
 
         for (int i = 0; i < robotTestArray.length; i++) {
-            if (robotTestArray[i].getTestName(aOpMode).equals(name)) //found test
-                return (robotTestArray[i]);
+            if (robotTestArray[i].getTestValidity(aOpMode)) {
+                //the test is valid
+                if (robotTestArray[i].getTestName(aOpMode).equals(name)) {
+                    //found test
+                    return (robotTestArray[i]);
+                }
+            }
+
         }
         //we have not found the record, return null.
         return null;
@@ -65,20 +65,42 @@ public class vv_DiagLib {
 
     public void runAllTests(vv_OpMode aOpMode) throws InterruptedException {
         for (int i = 0; i < robotTestArray.length; i++) {
-            if (robotTestArray[i].getTestValidity(aOpMode))
+            if (robotTestArray[i].getTestValidity(aOpMode)) {
                 //runnable test, it has been initialized
                 //lets run and store the test.
-                aOpMode.telemetryAddData("Running Test:", "Named:", robotTestArray[i].getTestName(aOpMode));
-            aOpMode.telemetryUpdate();
-            robotTestArray[i].getTestRunnableTest(aOpMode).runTest(aOpMode, robotTestArray[i]); //we expect the runTest itself will
-            //set all the values of the record properly.
+                aOpMode.telemetryAddData("Running Test:", "Named:",
+                        robotTestArray[i].getTestName(aOpMode) +
+                                robotTestArray[i].getTestShortDescription(aOpMode));
+                aOpMode.telemetryUpdate();
+                robotTestArray[i].getTestRunnableTest(aOpMode).
+                        runTest(aOpMode, robotTestArray[i]); //we expect the runTest itself will
+                //set all the values of the record properly.
+            }
+        }
+
+    }
+
+    public void runAllAutomaticTests(vv_OpMode aOpMode) throws InterruptedException {
+        for (int i = 0; i < robotTestArray.length; i++) {
+            if ((robotTestArray[i].getTestValidity(aOpMode)) &&
+                    (robotTestArray[i].getTestType(aOpMode) == TestType.AUTOMATIC)) {
+                //runnable test, it has been initialized and it is an automatic test
+
+                //lets run and store the test.
+                aOpMode.telemetryAddData("Running Test:", "Named:",
+                        robotTestArray[i].getTestName(aOpMode) +
+                                robotTestArray[i].getTestShortDescription(aOpMode));
+                aOpMode.telemetryUpdate();
+                robotTestArray[i].getTestRunnableTest(aOpMode).
+                        runTest(aOpMode, robotTestArray[i]); //we expect the runTest itself will
+                //set all the values of the record properly.
+            }
         }
 
     }
 
     public void initializeAllTests(vv_OpMode aOpMode) {
         for (int i = 0; i < robotTestArray.length; i++) {
-            robotTestArray[i].initializeTestRecord(aOpMode);
             robotTestArray[i].setTestValidity(aOpMode, false); //invalidate each test
             robotTestArray[i].setTestResultValidity(aOpMode, false); //invalidate each test result
         }
@@ -86,9 +108,7 @@ public class vv_DiagLib {
 
     public void invalidateAllTests(vv_OpMode aOpMode) {
         for (int i = 0; i < robotTestArray.length; i++) {
-            if (robotTestArray[i].testRecordEntry != null) {
-                robotTestArray[i].setTestValidity(aOpMode, false); //invalidate each test
-            }
+            robotTestArray[i].setTestValidity(aOpMode, false); //invalidate each test
         }
     }
 
@@ -97,11 +117,97 @@ public class vv_DiagLib {
 
     public void invalidateAllTestResults(vv_OpMode aOpMode) {
         for (int i = 0; i < robotTestArray.length; i++) {
-            if (robotTestArray[i].testRecordEntry != null) {
-                robotTestArray[i].setTestResultValidity(aOpMode, false); //invalidate each test result
-            }
+            robotTestArray[i].setTestResultValidity(aOpMode, false); //invalidate each test result
         }
     }
+
+    private void createTestEntries(vv_OpMode aOpMode) {
+        robotTestArray[0].createTest(aOpMode, "testFrontLeftMotor", 0, "Test Front Left Motor",
+                "Tests the front left motor by running it for a small duration",
+                TestType.AUTOMATIC, new TestFrontLeftWheel());
+
+        robotTestArray[1].createTest(aOpMode, "testFrontRightMotor", 1, "Test Front Right Motor",
+                "Tests the front right motor by running it for a small duration",
+                TestType.AUTOMATIC, new TestFrontRightWheel());
+
+        robotTestArray[2].createTest(aOpMode, "testBackLeftMotor", 2, "Test Back Left Motor",
+                "Tests the back left motor by running it for a small duration",
+                TestType.AUTOMATIC, new TestBackLeftWheel());
+
+        robotTestArray[3].createTest(aOpMode, "testBackRightMotor", 3, "Test Back Right Motor",
+                "Tests the back right motor by running it for a small duration",
+                TestType.AUTOMATIC, new TestBackRightWheel());
+
+    }
+
+    public void analyzeTestResults(vv_OpMode aOpMode) throws InterruptedException {
+        boolean noErrorsFound = true;
+
+        for (int i = 0; i < robotTestArray.length; i++) {
+            //list all tests and results.
+            if (robotTestArray[i].getTestValidity(aOpMode)) {
+                //its a valid test
+                if (robotTestArray[i].getTestResultValidity(aOpMode)) {
+
+                    //its a valid result
+                    if (robotTestArray[i].getTestResult(aOpMode)) {
+                        //this test passed.
+                        //lets print this message out.
+                        aOpMode.telemetryAddData("Test Result:",
+                                robotTestArray[i].getTestName(aOpMode),
+                                ":" + "Test Passed");
+                        aOpMode.telemetryUpdate();
+
+                    } else {
+                        //this test failed.
+                        //lets print out the message.
+                        //flag the error in the boolean tracker
+                        noErrorsFound = false;
+                        //raise the flag.
+                        robot.setBallFlagServoPosition(aOpMode,
+                                vv_Constants.BALL_FLAG_SERVO_ALARM);
+
+                        aOpMode.telemetryAddData("Test Result:",
+                                robotTestArray[i].getTestName(aOpMode),
+                                ":" + "Test Failed");
+                        switch (robotTestArray[i].getTestSeverity(aOpMode)) {
+                            case CRITICAL:
+                                aOpMode.telemetryAddData("Test Result:",
+                                        "This is a CRITICAL SEVERITY ERROR",
+                                        "Error");
+                                break;
+
+                            case HIGH:
+                                aOpMode.telemetryAddData("Test Result:",
+                                        "This is a HIGH SEVERITY",
+                                        "Error");
+                                break;
+                            case MEDIUM:
+                                aOpMode.telemetryAddData("Test Result:",
+                                        "This is a MEDIUM SEVERITY ERROR",
+                                        "Error");
+                                break;
+                            case LOW:
+                                break;
+                            case INFO:
+                                break;
+                        }
+
+                        aOpMode.telemetryAddData("Recommendation:", "try this:",
+                                robotTestArray[i].getTestRecommendation(aOpMode));
+                        aOpMode.telemetryUpdate();
+                        //wait and display our errors if any
+                        Thread.sleep(2000);
+
+                    }
+
+                }
+
+            }
+
+        }
+    }
+
 
     enum ResultSeverity {CRITICAL, HIGH, MEDIUM, LOW, INFO}
 
@@ -113,106 +219,117 @@ public class vv_DiagLib {
     }
 
     protected class RobotTest {
-        TestRecord testRecordEntry = null;
+        String testElementName;
+        int testElementId;
+        String testShortDescription;
+        String testLongDescription;
+        boolean testResult;
+        ResultSeverity testResultSeverity;
+        String testRecommendation;
+        long testTimeStamp;
+        boolean testValidity; //validity of the test itself, set true if test initialized
+        boolean testResultValidity; //validity of the results of the test, reset when running a new cycle.
+        TestType testType;
+        RunnableTest testRunMethod;
 
         public void setTestElementId(vv_OpMode aOpMode, int id) {
-            testRecordEntry.testElementId = id;
+            testElementId = id;
         }
 
-        public void setTestElementName(vv_OpMode aOpMode, String testName) {
-            testRecordEntry.testElementName = testName;
+        public void setTestElementName(vv_OpMode aOpMode, String name) {
+            testElementName = name;
         }
 
         public void setTestShortDescription(vv_OpMode aOpMode, String shortDescription) {
-            testRecordEntry.testShortDescription = shortDescription;
+            testShortDescription = shortDescription;
         }
 
         public void setTestLongDescription(vv_OpMode aOpMode, String longDescription) {
-            testRecordEntry.testShortDescription = longDescription;
+            testLongDescription = longDescription;
         }
 
-        public void setTestValidity(vv_OpMode aOpMode, boolean testValidity) {
-            testRecordEntry.testValidity = testValidity;
+        public void setTestValidity(vv_OpMode aOpMode, boolean validity) {
+            testValidity = validity;
         }
 
-        public void setTestResultValidity(vv_OpMode aOpMode, boolean testResultValidity) {
-            testRecordEntry.testResultValidity = testResultValidity;
+        public void setTestResultValidity(vv_OpMode aOpMode, boolean resultValidity) {
+            testResultValidity = resultValidity;
         }
 
         public void setTestTimeStamp(vv_OpMode aOpMode, long timeStampMilliseconds) {
-            testRecordEntry.testTimeStamp = timeStampMilliseconds;
+            testTimeStamp = timeStampMilliseconds;
         }
 
-        public void setTestResult(vv_OpMode aOpMode, boolean testResult) {
-            testRecordEntry.testResult = testResult;
+        public void setTestResult(vv_OpMode aOpMode, boolean result) {
+            testResult = result;
         }
 
         public void setTestSeverity(vv_OpMode aOpMode, ResultSeverity resultSeverity) {
-            testRecordEntry.testResultSeverity = resultSeverity;
+            testResultSeverity = resultSeverity;
         }
 
-        public void setTestRecommendation(vv_OpMode aOpMode, String testRecommendation) {
-            testRecordEntry.testRecommendation = testRecommendation;
+        public void setTestRecommendation(vv_OpMode aOpMode, String recommendation) {
+            testRecommendation = recommendation;
         }
 
-        public void setTestType(vv_OpMode aOpMode, TestType testType) {
-            testRecordEntry.testType = testType;
+        public void setTestType(vv_OpMode aOpMode, TestType type) {
+            testType = type;
         }
 
         public void setRunnableTest(vv_OpMode aOpMode, RunnableTest runnableTest) {
-            testRecordEntry.testRunMethod = runnableTest;
+            testRunMethod = runnableTest;
         }
 
         public int getTestElementId(vv_OpMode aOpMode) {
-            return testRecordEntry.testElementId;
+            return testElementId;
         }
 
         public String getTestName(vv_OpMode aOpMode) {
-            return testRecordEntry.testElementName;
+            return testElementName;
         }
 
         public int getTestId(vv_OpMode aOpMode) {
-            return testRecordEntry.testElementId;
+            return testElementId;
         }
 
         public String getTestShortDescription(vv_OpMode aOpMode) {
-            return testRecordEntry.testShortDescription;
+            return testShortDescription;
         }
 
         public String getTestLongDescription(vv_OpMode aOpMode) {
-            return testRecordEntry.testLongDescription;
+            return testLongDescription;
         }
 
         public boolean getTestValidity(vv_OpMode aOpMode) {
-            return testRecordEntry.testValidity;
+            return testValidity;
         }
 
         public boolean getTestResultValidity(vv_OpMode aOpMode) {
-            return testRecordEntry.testResultValidity;
+            return testResultValidity;
         }
 
         public long getTestTimeStamp(vv_OpMode aOpMode) {
-            return testRecordEntry.testTimeStamp;
+            return testTimeStamp;
         }
 
         public boolean getTestResult(vv_OpMode aOpMode) {
-            return testRecordEntry.testResult;
+            return testResult;
         }
 
         public ResultSeverity getTestSeverity(vv_OpMode aOpMode) {
-            return testRecordEntry.testResultSeverity;
+            return testResultSeverity;
         }
 
         public String getTestRecommendation(vv_OpMode aOpMode) {
-            return testRecordEntry.testRecommendation;
+            return testRecommendation;
         }
 
         public TestType getTestType(vv_OpMode aOpMode) {
-            return testRecordEntry.testType;
+            return testType;
         }
 
         public RunnableTest getTestRunnableTest(vv_OpMode aOpMode) {
-            return testRecordEntry.testRunMethod;
+            return testRunMethod;
         }
 
         public void createTest(vv_OpMode aOpMode, String name, int id, String shortDescription,
@@ -227,25 +344,6 @@ public class vv_DiagLib {
             setRunnableTest(aOpMode, runnableTest);
             setTestValidity(aOpMode, true);
             setTestResultValidity(aOpMode, false);
-        }
-
-        public void initializeTestRecord(vv_OpMode aOpMode) {
-            testRecordEntry = new TestRecord();
-        }
-
-        private class TestRecord {
-            String testElementName;
-            int testElementId;
-            String testShortDescription;
-            String testLongDescription;
-            boolean testResult;
-            ResultSeverity testResultSeverity;
-            String testRecommendation;
-            long testTimeStamp;
-            boolean testValidity; //validity of the test itself, set true if test initialized
-            boolean testResultValidity; //validity of the results of the test, reset when running a new cycle.
-            TestType testType;
-            RunnableTest testRunMethod;
         }
 
 
