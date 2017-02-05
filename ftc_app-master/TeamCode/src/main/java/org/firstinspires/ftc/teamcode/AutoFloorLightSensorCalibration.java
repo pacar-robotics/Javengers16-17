@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.widget.VideoView;
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import java.io.IOException;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum;
@@ -15,6 +19,8 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Sideways
 public class AutoFloorLightSensorCalibration extends vv_OpMode {
 
     vv_Lib vvLib;
+    CalibFileIO floorWhiteThresholdFileIO;
+    boolean didWrite = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -38,27 +44,49 @@ public class AutoFloorLightSensorCalibration extends vv_OpMode {
 
         waitForStart();
 
+            double maxFloorLightCalibValue = 0;
+            double minFloorLightCalibValue = 1;
 
-        while (opModeIsActive()) {
+            vvLib.moveForward(this, .3f);
 
-            int comparisonFloorLightIntensity = 0;
- 
-            vvLib.moveWheels(this, 5, .2f, Forward, false);
+            reset_timer();
 
-            while(vvLib.getFloorLightIntensity(this) > comparisonFloorLightIntensity)
-            {
-                double floorMinThreshold = vvLib.getFloorLightIntensity(this);
+            while(time_elapsed() <= 6000) {
+                maxFloorLightCalibValue = (vvLib.getFloorLightIntensity(this) > maxFloorLightCalibValue ? vvLib.getFloorLightIntensity(this) : maxFloorLightCalibValue);
+                minFloorLightCalibValue = (vvLib.getFloorLightIntensity(this) > minFloorLightCalibValue ? vvLib.getFloorLightIntensity(this) : minFloorLightCalibValue);
+
+                if (time_elapsed() > 3000) {
+                    vvLib.moveBackward(this, .3f);
+                }
+
+                idle();
             }
 
+        float floorWhiteThreshold = (float)(maxFloorLightCalibValue + minFloorLightCalibValue) / 2;
+
+        floorWhiteThresholdFileIO = new CalibFileIO("floorWhiteThreshold");
+
+        try {
+            floorWhiteThresholdFileIO.writeTextFile(floorWhiteThreshold);
+            telemetryAddData("Wrote File Successfully ", "Floor White Threshold: ", String.valueOf(floorWhiteThreshold));
+            telemetryUpdate();
+            didWrite = true;
+        } catch (IOException e) {
+            telemetryAddData("Problem: ", e.getMessage(), "");
+            telemetryUpdate();
         }
 
     }
 
+
+
+
+/*
     public void processDrive()
             throws InterruptedException, vv_Robot.MotorNameNotKnownException {
         vvLib.driveRobotWithPowerFactor(this, 0.4f);
     }
-
+*/
 
     /**
      * Changes the state of the Beacon Button Mechanism depending on the D-PAD Button Pressed

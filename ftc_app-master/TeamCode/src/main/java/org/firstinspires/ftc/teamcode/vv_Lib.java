@@ -55,7 +55,6 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.TurnDirectionEnum;
 
 public class vv_Lib {
 
-
     protected falseCondition falseStop;
     protected eopdProximityCondition eopdProximityStop;
     protected RangeSensorProximityOrColorVerifiedCondition rangeSensorProximityOrColorVerifiedStop;
@@ -67,8 +66,26 @@ public class vv_Lib {
     protected lineDetectCondition lineDectectStop;
     protected vv_Robot robot;
 
+    float floorWhiteThreshold;
+
     public vv_Lib(vv_OpMode aOpMode)
             throws InterruptedException {
+
+        CalibFileIO floorWhiteThresholdFileIO;
+        floorWhiteThresholdFileIO = new CalibFileIO("Floor Light Threshold Factor");
+        try {
+            floorWhiteThreshold = floorWhiteThresholdFileIO.getCalibrationValue();
+            aOpMode.telemetryAddData("Floor White Threshold: ", String.valueOf(floorWhiteThreshold), "");
+        } catch (IOException e) {
+            aOpMode.telemetryAddData("Problem: ", e.getMessage(), "");
+            floorWhiteThreshold = vv_Constants.FLOOR_WHITE_THRESHOLD;
+            aOpMode.telemetryAddData("Floor White Threshold: ", String.valueOf(floorWhiteThreshold), "");
+        } catch (NumberFormatException e) {
+            aOpMode.telemetryAddData("Problem: ", e.getMessage(), "");
+            floorWhiteThreshold = vv_Constants.STANDARD_DRIVE_POWER_FACTOR;
+            aOpMode.telemetryAddData("Floor White Threshold: ", String.valueOf(floorWhiteThreshold), "");
+        }
+
         robot = new vv_Robot();
         robot.init(aOpMode, aOpMode.hardwareMap);
 
@@ -1323,8 +1340,9 @@ public class vv_Lib {
 
 
     public class lineDetectCondition implements vv_OpMode.StopCondition {
+
         public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
-            return ((getFloorLightIntensity(aOpMode) >= FLOOR_WHITE_THRESHOLD));
+            return ((getFloorLightIntensity(aOpMode) >= floorWhiteThreshold));
         }
     }
 
