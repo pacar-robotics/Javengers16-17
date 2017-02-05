@@ -40,7 +40,7 @@ public abstract class vv_OpMode extends LinearOpMode
     }
 
     public interface StopCondition {
-        boolean StopCondition(vv_OpMode aOpMode) throws InterruptedException;
+        boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException;
     }
 
 
