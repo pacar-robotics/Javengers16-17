@@ -12,7 +12,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cAddr;
-import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -106,7 +105,7 @@ public class vv_Robot {
     private ColorSensor beaconLeftColorSensor;
     private ColorSensor beaconRightColorSensor;
     private TouchSensor armSensor;
-    private LightSensor floorLightSensor;
+    //private LightSensor floorLightSensor;
     private ModernRoboticsI2cGyro baseGyroSensor;
     private OpticalDistanceSensor baseEopdSensor;
     //**
@@ -149,7 +148,7 @@ public class vv_Robot {
         beaconServoArray[LEFT_BEACON_BUTTON_SERVO] = hwMap.servo.get("servo_beacon_left");
         beaconServoArray[RIGHT_BEACON_BUTTON_SERVO] = hwMap.servo.get("servo_beacon_right");
 
-        floorLightSensor = hwMap.lightSensor.get("floor_light_sensor");
+        //floorLightSensor = hwMap.lightSensor.get("floor_light_sensor");
         beaconLeftColorSensor = hwMap.colorSensor.get("beacon_left_color_sensor");
         beaconRightColorSensor = hwMap.colorSensor.get("beacon_right_color_sensor");
 
@@ -169,7 +168,7 @@ public class vv_Robot {
 
         //turn the LED on the floor color sensor off at the start.
         //used for compatibility with older SDK code.
-        floorLightSensor.enableLed(false);
+        //floorLightSensor.enableLed(false);
         //wait for it to turn off.
         Thread.sleep(300);
 
@@ -631,14 +630,14 @@ public class vv_Robot {
 
     //turn the color sensor LED on the floor of the robot on
     public void enableFloorLightSensorLed(vv_OpMode aOpMode) throws InterruptedException {
-        floorLightSensor.enableLed(true);
+        //floorLightSensor.enableLed(true);
         //wait for it to turn on.
         Thread.sleep(300);
     }
 
     //turn the color sensor LED on the floor of the robot off
     public void disableFloorLightSensorLed(vv_OpMode aOPMode) throws InterruptedException {
-        floorLightSensor.enableLed(false);
+        //floorLightSensor.enableLed(false);
         //wait for it to turn off.
         Thread.sleep(300);
     }
@@ -1069,11 +1068,10 @@ public class vv_Robot {
     }
 
 
+    // public double getFloorLightIntensity(vv_OpMode aOpMode) {
+    //return floorLightSensor.getLightDetected();
 
-    public double getFloorLightIntensity(vv_OpMode aOpMode) {
-        return floorLightSensor.getLightDetected();
-
-    }
+    //}
 
     public void openFrontLauncherGate() throws InterruptedException {
         launcherFrontGateServo.setPosition(LAUNCH_FRONT_GATE_SERVO_OPEN);

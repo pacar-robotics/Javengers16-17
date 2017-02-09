@@ -1,13 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.os.Environment;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
@@ -27,7 +20,6 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
 import static org.firstinspires.ftc.teamcode.vv_Constants.EOPD_PROXIMITY_THRESHOLD;
-import static org.firstinspires.ftc.teamcode.vv_Constants.FLOOR_WHITE_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.GYRO_OFFSET;
@@ -64,7 +56,7 @@ public class vv_Lib {
     protected colorPressVerifiedCondition colorPressVerifiedConditionStop;
     protected RangeSensorUltraSonicCornerPositioningCondition rangeSensorUltraSonicCornerPositioningStop;
 
-    protected lineDetectCondition lineDectectStop;
+    //protected lineDetectCondition lineDectectStop;
     protected vv_Robot robot;
 
     public vv_Lib(vv_OpMode aOpMode)
@@ -81,7 +73,7 @@ public class vv_Lib {
         rangeSensorOpticalProximityStop = new RangeSensorOpticalProximityCondition();
         rangeSensorUltraSonicProximityStop = new RangeSensorUltraSonicProximityCondition();
         rangeSensorUltraSonicCornerPositioningStop = new RangeSensorUltraSonicCornerPositioningCondition();
-        lineDectectStop = new lineDetectCondition();
+        //lineDectectStop = new lineDetectCondition();
         colorPressVerifiedConditionStop = new colorPressVerifiedCondition();
     }
 
@@ -205,7 +197,7 @@ public class vv_Lib {
             throws InterruptedException {
 
 
-        aOpMode.telemetryAddData("Floor Sensor", "Light Intensity", ":" + robot.getFloorLightIntensity(aOpMode));
+        //aOpMode.telemetryAddData("Floor Sensor", "Light Intensity", ":" + robot.getFloorLightIntensity(aOpMode));
         if (updateTheDisplay) {
             aOpMode.telemetryUpdate();
         }
@@ -890,9 +882,9 @@ public class vv_Lib {
     }
 
 
-    public double getFloorLightIntensity(vv_OpMode aOpMode) throws InterruptedException {
-        return robot.getFloorLightIntensity(aOpMode);
-    }
+    //public double getFloorLightIntensity(vv_OpMode aOpMode) throws InterruptedException {
+    //    return robot.getFloorLightIntensity(aOpMode);
+    //}
 
 
     public double getUltrasonicDistance(vv_OpMode aOpMode)
@@ -1055,7 +1047,7 @@ public class vv_Lib {
         //for first beacon
 
 
-        universalMoveRobot(aOpMode, 0, 0.25, 0.0, 3000, lineDectectStop, false, 0, 0);
+        //  universalMoveRobot(aOpMode, 0, 0.25, 0.0, 3000, lineDectectStop, false, 0, 0);
         //now detect the line but at right angles
 
         Thread.sleep(25);
@@ -1089,7 +1081,7 @@ public class vv_Lib {
         //for first beacon
 
 
-        universalMoveRobot(aOpMode, 180, 0.25, 0.0, 3000, lineDectectStop, false, 0, 0);
+        // universalMoveRobot(aOpMode, 180, 0.25, 0.0, 3000, lineDectectStop, false, 0, 0);
         //now detect the line but at right angles
 
         Thread.sleep(25);
@@ -1322,11 +1314,11 @@ public class vv_Lib {
     //conditions that can stop the robot.
 
 
-    public class lineDetectCondition implements vv_OpMode.StopCondition {
-        public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
-            return ((getFloorLightIntensity(aOpMode) >= FLOOR_WHITE_THRESHOLD));
-        }
-    }
+    // public class lineDetectCondition implements vv_OpMode.StopCondition {
+    // public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
+    //   return ((getFloorLightIntensity(aOpMode) >= FLOOR_WHITE_THRESHOLD));
+    // }
+    //  }
 
     public class falseCondition implements vv_OpMode.StopCondition {
         //can be used as an empty condition, so the robot keeps running in universal movement

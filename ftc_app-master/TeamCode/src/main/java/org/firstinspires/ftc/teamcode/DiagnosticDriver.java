@@ -53,7 +53,7 @@ public class DiagnosticDriver extends vv_OpMode {
             telemetryUpdate();
         } else {
             robotTest.getTestRunnableTest(this).runTest(this, robotTest);
-            
+
         }
         Thread.sleep(5000);
 

@@ -48,9 +48,12 @@ public class AutoOpRedLeftNoDelayWithBeacon extends vv_OpMode {
         vvLib.shootBallsAutonomousCommonAction(this);
 
 
-        //move robot diagonally in prep for first beacon
+        //rotate robot 90 degrees so the range sensor is facing beacon side wall
+        //this enables the ultrasonic range sensors being correctly set.
 
-        vvLib.universalMoveRobot(this, 50, 0.45, 0.0, 2900,
+        vvLib.turnAbsoluteMxpGyroDegrees(this, -90);
+        //move robot diagonally in prep for first beacon
+        vvLib.universalMoveRobot(this, 140, 0.45, 0.0, 2900,
                 vvLib.rangeSensorUltraSonicCornerPositioningStop, false, 0, 0);
 
         //perform actions common to both red positions

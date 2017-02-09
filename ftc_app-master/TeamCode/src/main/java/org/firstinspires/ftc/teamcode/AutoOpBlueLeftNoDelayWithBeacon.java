@@ -40,9 +40,13 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
         //first shoot two balls.
         vvLib.shootBallsAutonomousCommonAction(this);
 
+        //rotate robot 90 degrees so the range sensor is facing beacon side wall
+        //this enables the ultrasonic range sensors being correctly set.
+
+        vvLib.turnAbsoluteMxpGyroDegrees(this, 90);
 
         //move robot diagonally to corner in prep for scoring beacon
-        vvLib.universalMoveRobot(this, 138, 0.99f, 0.0, 3700,
+        vvLib.universalMoveRobot(this, 48, 0.99f, 0.0, 3700,
                 vvLib.rangeSensorUltraSonicCornerPositioningStop, false, 0, 0);
 
         vvLib.blueBeaconAutonomousCommonAction(this);

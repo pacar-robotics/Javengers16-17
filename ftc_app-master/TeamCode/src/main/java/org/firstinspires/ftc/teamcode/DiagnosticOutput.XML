@@ -1,0 +1,28 @@
+<Velocity Diagnostic Results Vortex>
+    <Automatic>
+        <RobotTest>
+            <TestName>
+                testFrontLeftMotor
+            </TestName>
+            <TimeStamp>
+                2017.02.05.17.12.23
+            </TimeStamp>
+            <ShortDescription>
+                "Short Description"
+            </ShortDescription>
+            <LongDescription>
+                "Long Description"
+            </LongDescription>
+            <Result>
+                Pass
+            </Result>
+            <ResultSeverity>
+                WARNING
+            </ResultSeverity>
+            <Recommendation>
+                "Recommendation"
+            </Recommendation>
+        </RobotTest>
+    </Automatic>
+    <Manual></Manual>
+</Velocity Vortex Diagnostic Results>
