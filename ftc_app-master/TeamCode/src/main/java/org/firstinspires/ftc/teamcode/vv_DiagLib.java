@@ -2,10 +2,15 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import static org.firstinspires.ftc.teamcode.vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DEBUG;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_DIAMETER;
+import static org.firstinspires.ftc.teamcode.vv_Constants.ROBOT_TRACK_DISTANCE;
+import static org.firstinspires.ftc.teamcode.vv_Constants.TURN_POWER;
 
 /**
  * Created by thomas on 9/25/2016.
@@ -138,6 +143,30 @@ public class vv_DiagLib {
                 "Tests the back right motor by running it for a small duration",
                 TestType.AUTOMATIC, new TestBackRightWheel());
 
+        robotTestArray[4].createTest(aOpMode, "testPlatformLeft", 4, "Test Platform Left",
+                "Tests the Platform by moving it left for a small duration",
+                TestType.AUTOMATIC, new TestPlatformLeft());
+
+        robotTestArray[5].createTest(aOpMode, "testPlatformRight", 5, "Test Platform Right",
+                "Tests the Platform by moving it right for a small duration",
+                TestType.AUTOMATIC, new TestPlatformRight());
+
+        robotTestArray[6].createTest(aOpMode, "testPlatformForward", 6, "Test Platform Forward",
+                "Tests the Platform by moving it forward for a small duration",
+                TestType.AUTOMATIC, new TestPlatformForward());
+
+        robotTestArray[7].createTest(aOpMode, "testPlatformBackward", 7, "Test Platform Backward",
+                "Tests the Platform by moving it backward for a small duration",
+                TestType.AUTOMATIC, new TestPlatformBackward());
+
+        robotTestArray[8].createTest(aOpMode, "testPlatformRotation", 8, "Test Platform Rotation",
+                "Tests the Platform by rotating it for a fixed angle",
+                TestType.AUTOMATIC, new TestPlatformRotation());
+
+        robotTestArray[9].createTest(aOpMode, "testRangeSensor", 9, "Test Ultrasonic Range Sensor",
+                "Tests the Range sensing by rotating the platform and checking for change in Range",
+                TestType.AUTOMATIC, new TestRangeSensor());
+
     }
 
     public void analyzeTestResults(vv_OpMode aOpMode) throws InterruptedException {
@@ -170,6 +199,9 @@ public class vv_DiagLib {
                         aOpMode.telemetryAddData("Test Result:",
                                 robotTestArray[i].getTestName(aOpMode),
                                 ":" + "Test Failed");
+                        aOpMode.telemetryAddData("Test Result Message:", "",
+                                robotTestArray[i].getTestResultMessage(aOpMode));
+
                         switch (robotTestArray[i].getTestSeverity(aOpMode)) {
                             case CRITICAL:
                                 aOpMode.telemetryAddData("Test Result:",
@@ -197,7 +229,7 @@ public class vv_DiagLib {
                                 robotTestArray[i].getTestRecommendation(aOpMode));
                         aOpMode.telemetryUpdate();
                         //wait and display our errors if any
-                        Thread.sleep(2000);
+                        Thread.sleep(5000);
 
                     }
 
@@ -208,9 +240,85 @@ public class vv_DiagLib {
         }
     }
 
+    public void turnAbsoluteMxpGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
+        //clockwise is represented by clockwise numbers.
+        //counterclockwise by negative angle numbers in degrees.
+        //the fieldReferenceDegrees parameters measures degrees off the initial reference frame when the robot is started and the gyro is
+        //calibrated.
+        // >> IMPORTANT: This depends on the zIntegratedHeading not being altered by relative turns !!!
+
+        //first take the absolute degrees and modulus down to 0 and 359.
+
+        float targetDegrees = fieldReferenceDegrees % 360;
+
+        //compare to the current gyro zIntegrated heading and store the result.
+        //the Integrated zValue returned is positive for clockwise turns
+        //read the heading and store it.
+
+        float startingHeading = robot.getMxpGyroSensorHeading(aOpMode);
+        float turnDegrees = targetDegrees - startingHeading;
+
+        //make the turn using encoders
+
+        if (DEBUG) {
+            aOpMode.telemetryAddData("targetDegrees", "Value",
+                    ":" + targetDegrees);
+            aOpMode.telemetryAddData("Starting Z", "Value",
+                    ":" + startingHeading);
+            aOpMode.telemetryAddData("Turn Degrees", "Value",
+                    ":" + turnDegrees);
+
+            aOpMode.telemetryUpdate();
+        }
+
+        //optimize the turn, so that direction of turn results in smallest turn needed.
+
+        if (Math.abs(turnDegrees) > 180) {
+            turnDegrees = Math.signum(turnDegrees) * -1 * (360 - Math.abs(turnDegrees));
+        }
+
+        turnUsingEncoders(aOpMode, TURN_POWER, Math.abs(turnDegrees),
+                turnDegrees > 0 ? vv_Constants.TurnDirectionEnum.Clockwise :
+                        vv_Constants.TurnDirectionEnum.Counterclockwise);
+
+        float finalDegrees = robot.getMxpGyroSensorHeading(aOpMode);
+        Thread.sleep(50); //cooling off after gyro read to prevent error in next run.
+
+        if (DEBUG) {
+            aOpMode.telemetryAddData("New Bearing Degrees", "Value:",
+                    ":" + finalDegrees);
+            aOpMode.telemetryAddData("Turn Error Degrees", "Value:",
+                    ":" + (targetDegrees - finalDegrees));
+            aOpMode.telemetryUpdate();
+        }
+
+    }
+
+    public void turnUsingEncoders(vv_OpMode aOpMode, float power, float angle, vv_Constants.TurnDirectionEnum TurnDirection)
+            throws InterruptedException {
+
+        //calculate the turn distance to be used in terms of encoder clicks.
+        //for Andymark encoders.
+
+        int turnDistance = (int) (2 * ((ROBOT_TRACK_DISTANCE) * angle
+                * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION) /
+                (MECCANUM_WHEEL_DIAMETER * 360));
+
+
+        switch (TurnDirection) {
+            case Clockwise:
+                robot.runRobotToPosition(aOpMode, power, power, power, power, turnDistance, -turnDistance, turnDistance, -turnDistance, true);
+                break;
+            case Counterclockwise:
+                robot.runRobotToPosition(aOpMode, power, power, power, power, -turnDistance, turnDistance, -turnDistance, turnDistance, true);
+                break;
+        }
+
+        //wait just a bit for the commands to complete
+        Thread.sleep(50);
+    }
 
     enum ResultSeverity {CRITICAL, HIGH, MEDIUM, LOW, INFO}
-
 
     enum TestType {AUTOMATIC, MANUAL}
 
@@ -225,6 +333,7 @@ public class vv_DiagLib {
         String testLongDescription;
         boolean testResult;
         ResultSeverity testResultSeverity;
+        String testResultMessage;
         String testRecommendation;
         long testTimeStamp;
         boolean testValidity; //validity of the test itself, set true if test initialized
@@ -316,6 +425,10 @@ public class vv_DiagLib {
             return testResult;
         }
 
+        public String getTestResultMessage(vv_OpMode aOpMode) {
+            return testResultMessage;
+        }
+
         public ResultSeverity getTestSeverity(vv_OpMode aOpMode) {
             return testResultSeverity;
         }
@@ -352,7 +465,6 @@ public class vv_DiagLib {
     class TestFrontLeftWheel implements RunnableTest {
         public boolean runTest(vv_OpMode aOpMode, RobotTest robotTest) throws InterruptedException {
             robot.setMotorMode(aOpMode, FRONT_LEFT_MOTOR, DcMotor.RunMode.RUN_USING_ENCODER);
-            Thread.sleep(50); //to complete action.
             int motorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR);
             robot.testMotor(aOpMode, FRONT_LEFT_MOTOR, 0.5f, 1000);
             int newMotorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR);
@@ -378,7 +490,6 @@ public class vv_DiagLib {
     class TestFrontRightWheel implements RunnableTest {
         public boolean runTest(vv_OpMode aOpMode, RobotTest robotTest) throws InterruptedException {
             robot.setMotorMode(aOpMode, FRONT_RIGHT_MOTOR, DcMotor.RunMode.RUN_USING_ENCODER);
-            Thread.sleep(50); //to complete action.
             int motorPosition = robot.getMotorPosition(aOpMode, FRONT_RIGHT_MOTOR);
             robot.testMotor(aOpMode, FRONT_RIGHT_MOTOR, 0.5f, 1000);
             int newMotorPosition = robot.getMotorPosition(aOpMode, FRONT_RIGHT_MOTOR);
@@ -404,7 +515,6 @@ public class vv_DiagLib {
     class TestBackLeftWheel implements RunnableTest {
         public boolean runTest(vv_OpMode aOpMode, RobotTest robotTest) throws InterruptedException {
             robot.setMotorMode(aOpMode, BACK_LEFT_MOTOR, DcMotor.RunMode.RUN_USING_ENCODER);
-            Thread.sleep(50); //to complete action.
             int motorPosition = robot.getMotorPosition(aOpMode, BACK_LEFT_MOTOR);
             robot.testMotor(aOpMode, BACK_LEFT_MOTOR, 0.5f, 1000);
             int newMotorPosition = robot.getMotorPosition(aOpMode, BACK_LEFT_MOTOR);
@@ -430,10 +540,9 @@ public class vv_DiagLib {
     class TestBackRightWheel implements RunnableTest {
         public boolean runTest(vv_OpMode aOpMode, RobotTest robotTest) throws InterruptedException {
             robot.setMotorMode(aOpMode, BACK_RIGHT_MOTOR, DcMotor.RunMode.RUN_USING_ENCODER);
-            Thread.sleep(50); //to complete action.
             int motorPosition = robot.getMotorPosition(aOpMode, BACK_RIGHT_MOTOR);
             robot.testMotor(aOpMode, BACK_RIGHT_MOTOR, 0.5f, 1000);
-            int newMotorPosition = robot.getMotorPosition(aOpMode, BACK_LEFT_MOTOR);
+            int newMotorPosition = robot.getMotorPosition(aOpMode, BACK_RIGHT_MOTOR);
             if (newMotorPosition == motorPosition) {
                 //the motor encoder has not moved. we have a problem.
                 robotTest.setTestResult(aOpMode, false);
@@ -447,6 +556,192 @@ public class vv_DiagLib {
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
             robotTest.setTestRecommendation(aOpMode, "No problem with Back Right Wheel");
+            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            return true;
+
+        }
+    }
+
+    class TestPlatformLeft implements RunnableTest {
+        public boolean runTest(vv_OpMode aOpMode, RobotTest robotTest) throws InterruptedException {
+
+            int motorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR); //representative motor
+            float startingAngle = robot.getMxpGyroSensorHeading(aOpMode); //save starting angle.
+            robot.universalMoveRobotForDuration(aOpMode, -0.5f, 0.0f, 0.0f, 0); //move robot to left
+            int newMotorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR);
+            float endingAngle = robot.getMxpGyroSensorHeading(aOpMode);
+            if ((newMotorPosition == motorPosition) || (Math.abs(startingAngle - endingAngle) > 3)) {
+                //the motor encoder has not moved. we have a problem.
+                //or the platform has moved, but there is too much rotation
+                robotTest.setTestResult(aOpMode, false);
+                robotTest.setTestResultValidity(aOpMode, true);
+                robotTest.setTestRecommendation(aOpMode, "Please examine electrical connections and encoder failure");
+                robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                return false;
+
+            }
+            //there is no problem.
+            robotTest.setTestResult(aOpMode, true);
+            robotTest.setTestResultValidity(aOpMode, true);
+            robotTest.setTestRecommendation(aOpMode, "No problem with Platform Left");
+            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            return true;
+
+        }
+    }
+
+    class TestPlatformRight implements RunnableTest {
+        public boolean runTest(vv_OpMode aOpMode, RobotTest robotTest) throws InterruptedException {
+
+            int motorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR); //representative motor
+            float startingAngle = robot.getMxpGyroSensorHeading(aOpMode); //save starting angle.
+            robot.universalMoveRobotForDuration(aOpMode, 0.5f, 0.0f, 0.0f, 0); //move robot to left
+            int newMotorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR);
+            float endingAngle = robot.getMxpGyroSensorHeading(aOpMode);
+            if ((newMotorPosition == motorPosition) || (Math.abs(startingAngle - endingAngle) > 3)) {
+                //the motor encoder has not moved. we have a problem.
+                //or the platform has moved, but there is too much rotation
+                robotTest.setTestResult(aOpMode, false);
+                robotTest.setTestResultValidity(aOpMode, true);
+                robotTest.setTestRecommendation(aOpMode,
+                        "Please examine electrical connections and encoder failure");
+                robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                return false;
+
+            }
+            //there is no problem.
+            robotTest.setTestResult(aOpMode, true);
+            robotTest.setTestResultValidity(aOpMode, true);
+            robotTest.setTestRecommendation(aOpMode, "No problem with Platform Right");
+            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            return true;
+
+        }
+    }
+
+    class TestPlatformForward implements RunnableTest {
+        public boolean runTest(vv_OpMode aOpMode, RobotTest robotTest) throws InterruptedException {
+
+            int motorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR); //representative motor
+            float startingAngle = robot.getMxpGyroSensorHeading(aOpMode); //save starting angle.
+            robot.universalMoveRobotForDuration(aOpMode, 0.0f, 0.5f, 0.0f, 0); //move robot to left
+            int newMotorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR);
+            float endingAngle = robot.getMxpGyroSensorHeading(aOpMode);
+            if ((newMotorPosition == motorPosition) || (Math.abs(startingAngle - endingAngle) > 3)) {
+                //the motor encoder has not moved. we have a problem.
+                //or the platform has moved, but there is too much rotation
+                robotTest.setTestResult(aOpMode, false);
+                robotTest.setTestResultValidity(aOpMode, true);
+                robotTest.setTestRecommendation(aOpMode,
+                        "Please examine electrical connections and encoder failure");
+                robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                return false;
+
+            }
+            //there is no problem.
+            robotTest.setTestResult(aOpMode, true);
+            robotTest.setTestResultValidity(aOpMode, true);
+            robotTest.setTestRecommendation(aOpMode, "No problem with Platform Forward");
+            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            return true;
+
+        }
+    }
+
+    class TestPlatformBackward implements RunnableTest {
+        public boolean runTest(vv_OpMode aOpMode, RobotTest robotTest) throws InterruptedException {
+
+            int motorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR); //representative motor
+            float startingAngle = robot.getMxpGyroSensorHeading(aOpMode); //save starting angle.
+            robot.universalMoveRobotForDuration(aOpMode, 0.0f, -0.5f, 0.0f, 0); //move robot to left
+            int newMotorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR);
+            float endingAngle = robot.getMxpGyroSensorHeading(aOpMode);
+            if ((newMotorPosition == motorPosition) || (Math.abs(startingAngle - endingAngle) > 3)) {
+                //the motor encoder has not moved. we have a problem.
+                //or the platform has moved, but there is too much rotation
+                robotTest.setTestResult(aOpMode, false);
+                robotTest.setTestResultValidity(aOpMode, true);
+                robotTest.setTestRecommendation(aOpMode,
+                        "Please examine electrical connections and encoder failure");
+                robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                return false;
+
+            }
+            //there is no problem.
+            robotTest.setTestResult(aOpMode, true);
+            robotTest.setTestResultValidity(aOpMode, true);
+            robotTest.setTestRecommendation(aOpMode, "No problem with Platform Backward");
+            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            return true;
+
+        }
+    }
+
+
+    //== utility programs copied over from vvLib.
+
+    class TestPlatformRotation implements RunnableTest {
+        public boolean runTest(vv_OpMode aOpMode, RobotTest robotTest) throws InterruptedException {
+
+
+            float startingAngle = robot.getMxpGyroSensorHeading(aOpMode); //save starting angle.
+            turnAbsoluteMxpGyroDegrees(aOpMode, 90);
+            float endingAngle = robot.getMxpGyroSensorHeading(aOpMode);
+            float error = Math.abs((Math.abs(startingAngle - endingAngle) - 90));
+            if (error > 3) {
+
+                //We are off by more than 3 degrees in our gyro rotation
+                robotTest.setTestResult(aOpMode, false);
+                robotTest.setTestResultValidity(aOpMode, true);
+                if (error < 5) {
+                    robotTest.setTestRecommendation(aOpMode,
+                            "Please check MXP gyro and calibration, error >3&<5 degrees");
+                    robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                }
+                if (error >= 5) {
+                    robotTest.setTestRecommendation(aOpMode,
+                            "Please check MXP gyro and calibration, error >5 degrees");
+                    robotTest.setTestSeverity(aOpMode, ResultSeverity.CRITICAL);
+                }
+                return false;
+
+            }
+            //there is no problem.
+            robotTest.setTestResult(aOpMode, true);
+            robotTest.setTestResultValidity(aOpMode, true);
+            robotTest.setTestRecommendation(aOpMode, "No problem with Gyro turns");
+            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            return true;
+
+        }
+    }
+
+    class TestRangeSensor implements RunnableTest {
+        public boolean runTest(vv_OpMode aOpMode, RobotTest robotTest) throws InterruptedException {
+
+
+            boolean rangeHasChanged = false;
+            for (int degrees = 0; degrees < 360; degrees += 20) {
+                double startingRange = robot.getUltrasonicDistance(aOpMode);
+                turnAbsoluteMxpGyroDegrees(aOpMode, degrees);
+                Thread.sleep(100);
+                double endingRange = robot.getUltrasonicDistance(aOpMode);
+                if (startingRange != endingRange) {
+                    //Range has changed. The ultrasonic sensor is working
+                    rangeHasChanged = true;
+                    break;
+                }
+            }
+            if (!rangeHasChanged) {
+                robotTest.setTestRecommendation(aOpMode,
+                        "Please check Ultrasonic sensor and calibration, no range changes read");
+                robotTest.setTestSeverity(aOpMode, ResultSeverity.CRITICAL);
+                return false;
+            }
+            //there is no problem.
+            robotTest.setTestResult(aOpMode, true);
+            robotTest.setTestResultValidity(aOpMode, true);
+            robotTest.setTestRecommendation(aOpMode, "No problem with Range Sensors");
             robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
 

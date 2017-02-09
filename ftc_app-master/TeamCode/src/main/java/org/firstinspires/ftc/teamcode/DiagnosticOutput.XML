@@ -1,4 +1,4 @@
-<Velocity Diagnostic Results Vortex>
+<VelocityVortexDiagnosticResults>
     <Automatic>
         <RobotTest>
             <TestName>
@@ -25,4 +25,4 @@
         </RobotTest>
     </Automatic>
     <Manual></Manual>
-</Velocity Vortex Diagnostic Results>
+</VelocityVortexDiagnosticResults>
