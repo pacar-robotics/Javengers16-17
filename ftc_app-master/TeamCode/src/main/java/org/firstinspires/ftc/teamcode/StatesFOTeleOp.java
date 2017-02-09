@@ -11,7 +11,7 @@ public class StatesFOTeleOp extends vv_OpMode {
 
     vv_Lib vvLib;
     vv_TeleLib vvTeleLib;
-    LightCalibFileIO powerFactorFileIO;
+    CalibFileIO powerFactorFileIO;
 
     float drivePowerFactor;
 
@@ -28,7 +28,7 @@ public class StatesFOTeleOp extends vv_OpMode {
 
         vvLib = new vv_Lib(this);
         vvTeleLib = new vv_TeleLib();
-        powerFactorFileIO = new LightCalibFileIO();
+        powerFactorFileIO = new CalibFileIO("PowerFactor");
 
         try {
             drivePowerFactor = powerFactorFileIO.getCalibrationValue();
