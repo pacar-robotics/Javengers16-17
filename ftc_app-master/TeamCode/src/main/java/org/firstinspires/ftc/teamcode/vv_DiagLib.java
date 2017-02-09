@@ -229,11 +229,11 @@ public class vv_DiagLib {
                                 robotTestArray[i].getTestRecommendation(aOpMode));
                         aOpMode.telemetryUpdate();
                         //wait and display our errors if any
-                        Thread.sleep(5000);
 
                     }
 
                 }
+                Thread.sleep(60000); //wait on display
 
             }
 
