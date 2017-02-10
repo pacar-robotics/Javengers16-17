@@ -66,9 +66,9 @@ public class vv_Lib {
             throws InterruptedException {
 
         CalibFileIO floorWhiteThresholdFileIO;
-        floorWhiteThresholdFileIO = new CalibFileIO("Floor Light Threshold Factor");
+        floorWhiteThresholdFileIO = new CalibFileIO(aOpMode, "floorWhiteThreshold");
         try {
-            floorWhiteThreshold = floorWhiteThresholdFileIO.getCalibrationValue();
+            floorWhiteThreshold = floorWhiteThresholdFileIO.getCalibrationValue(aOpMode);
             aOpMode.telemetryAddData("Floor White Threshold: ", String.valueOf(floorWhiteThreshold), "");
         } catch (IOException e) {
             aOpMode.telemetryAddData("Problem: ", e.getMessage(), "");
@@ -76,7 +76,7 @@ public class vv_Lib {
             aOpMode.telemetryAddData("Floor White Threshold: ", String.valueOf(floorWhiteThreshold), "");
         } catch (NumberFormatException e) {
             aOpMode.telemetryAddData("Problem: ", e.getMessage(), "");
-            floorWhiteThreshold = vv_Constants.STANDARD_DRIVE_POWER_FACTOR;
+            floorWhiteThreshold = vv_Constants.FLOOR_WHITE_THRESHOLD;
             aOpMode.telemetryAddData("Floor White Threshold: ", String.valueOf(floorWhiteThreshold), "");
         }
 

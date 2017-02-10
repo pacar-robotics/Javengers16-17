@@ -37,6 +37,7 @@ public class FloorLightSensorCalibration extends vv_OpMode {
         while (opModeIsActive()) {
 
             vvLib.showFloorColorSensorIntensityOnTelemetry(this, true);
+            telemetryUpdate();
             idle();
 
         }

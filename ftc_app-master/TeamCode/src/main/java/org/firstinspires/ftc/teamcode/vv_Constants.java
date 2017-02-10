@@ -37,10 +37,6 @@ public class vv_Constants
     final static float MOTOR_ULTRASONIC_SIDEWAYS_POWER_UPPER_LIMIT = 0.78f;
 
 
-    final static float MOTOR_SLOW_START_THRESHOLD = 0.30f;
-
-    final static float COLOR_SENSOR_WHITE_LIMIT = 2.0f;
-
 	final static int GYRO_ERROR = 8;
 
 
@@ -160,8 +156,15 @@ public class vv_Constants
     final static float WORM_DRIVE_ENCODER_MARGIN = 20;
     final static int BEACON_RED_THRESHOLD = 0;
     final static int BEACON_BLUE_THRESHOLD = 0;
-    // Average of values is .26f. Half on, Half off is .23f to .24f
-    final static float FLOOR_WHITE_THRESHOLD = 0.26f; //may need to calibrate
+
+    //the value below for floor color sensor is the fallback value.
+    //it needs to be adjusted if the height of the floor color sensor
+    //is changed.
+    //normally Floor sensor calibration automatically sets values in
+    //an XML file adjusting for the light in the competition venue.
+
+    final static float FLOOR_WHITE_THRESHOLD = 20f; //may need to calibrate
+
     final static boolean TEAM_RED = false;
 
 

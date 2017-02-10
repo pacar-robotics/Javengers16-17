@@ -28,10 +28,10 @@ public class StatesFOTeleOp extends vv_OpMode {
 
         vvLib = new vv_Lib(this);
         vvTeleLib = new vv_TeleLib();
-        powerFactorFileIO = new CalibFileIO("PowerFactor");
+        powerFactorFileIO = new CalibFileIO(this, "PowerFactor");
 
         try {
-            drivePowerFactor = powerFactorFileIO.getCalibrationValue();
+            drivePowerFactor = powerFactorFileIO.getCalibrationValue(this);
             telemetryAddData("Power Factor: ", String.valueOf(drivePowerFactor), "");
         } catch (IOException e) {
             telemetryAddData("Problem: ", e.getMessage(), "");

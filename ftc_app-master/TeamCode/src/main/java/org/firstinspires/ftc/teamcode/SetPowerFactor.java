@@ -24,7 +24,7 @@ public class SetPowerFactor extends vv_OpMode {
 
         vvLib = new vv_Lib(this);
         //run init
-        powerFactorFileIO = new CalibFileIO("PowerFactor");
+        powerFactorFileIO = new CalibFileIO(this, "PowerFactor");
 
         //tell driver the robot is ready
         telemetryAddData("Hello Driver: ", "I am ready", "");
@@ -69,7 +69,7 @@ public class SetPowerFactor extends vv_OpMode {
 //                Thread.sleep(1000);
 //            }
                 try {
-                    powerFactorFileIO.writeTextFile(drivePowerFactor);
+                    powerFactorFileIO.writeTextFile(this, drivePowerFactor);
                     telemetryAddData("Wrote File Successfully ", "Power Factor: ", String.valueOf(drivePowerFactor));
                     telemetryUpdate();
                     didWrite = true;

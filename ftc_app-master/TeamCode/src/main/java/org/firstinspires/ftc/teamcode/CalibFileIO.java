@@ -30,15 +30,16 @@ import javax.xml.xpath.XPathFactory;
  */
 
 public class CalibFileIO {
+	private static final String LOG_TAG = "CalibFileIO";
 	private String filePath = Environment.getExternalStorageDirectory().getPath() +
 			"/PACAR/Calib.xml";
-	private static final String LOG_TAG = "CalibFileIO";
 
-	public CalibFileIO(String fileName) {
+	public CalibFileIO(vv_OpMode aOpMode, String fileName) {
 		filePath = filePath.replace("Calib", fileName);
 	}
 
-	public void writeTextFile(float automaticFloorLightCalibrationValue) throws IOException {
+	public void writeTextFile(vv_OpMode aOpMode, float automaticFloorLightCalibrationValue)
+			throws IOException, InterruptedException {
 		File file = new File(filePath);
 
 		if (file.delete()) {
@@ -75,12 +76,17 @@ public class CalibFileIO {
 			transformer.transform(source, result);
 		} catch (Exception e) {
 			Log.e(LOG_TAG, "File creation failed: " + e.getMessage());
+			aOpMode.telemetryAddData("File Creation Failed:", "Reason:", e.getMessage());
+			aOpMode.telemetryUpdate();
+			Thread.sleep(4000);
+
 			throw new IOException("Didn't write file or something");
 		}
 	}
 
 
-	public float getCalibrationValue() throws IOException, NumberFormatException {
+	public float getCalibrationValue(vv_OpMode aOpMode)
+			throws IOException, NumberFormatException, InterruptedException {
 		String result = "null";
 
 		try {
@@ -105,14 +111,29 @@ public class CalibFileIO {
 
 			return Float.parseFloat(result);
 		} catch (NumberFormatException e) {
+			aOpMode.telemetryAddData("File Read Failed:", "Reason:", e.getMessage());
+			aOpMode.telemetryUpdate();
+			Thread.sleep(4000);
 			throw new NumberFormatException("Float Parsing of Node Item failed:" + result);
 		} catch (SAXException e) {
+			aOpMode.telemetryAddData("File Read Failed:", "Reason:", e.getMessage());
+			aOpMode.telemetryUpdate();
+			Thread.sleep(4000);
 			throw new IOException("Something with file reading went wrong");
 		} catch (XPathExpressionException e) {
+			aOpMode.telemetryAddData("File Read Failed:", "Reason:", e.getMessage());
+			aOpMode.telemetryUpdate();
+			Thread.sleep(4000);
 			throw new IOException("Something with file reading went wrong");
 		} catch (ParserConfigurationException e) {
+			aOpMode.telemetryAddData("File Read Failed:", "Reason:", e.getMessage());
+			aOpMode.telemetryUpdate();
+			Thread.sleep(4000);
 			throw new IOException("Something with file reading went wrong");
 		} catch (IOException e) {
+			aOpMode.telemetryAddData("File Read Failed:", "Reason:", e.getMessage());
+			aOpMode.telemetryUpdate();
+			Thread.sleep(4000);
 			throw new IOException("Something with file reading went wrong");
 		}
 	}
