@@ -22,7 +22,7 @@ public class AutoOpRedAlternateWithDelay extends vv_OpMode {
         telemetryUpdate();
 
         //Turn the LED on the Color Sensor mounted on the floor of the Robot on
-        vvLib.turnFloorLightSensorLedOn(this);
+        vvLib.turnFloorColorSensorLedOn(this);
 
         waitForStart();
 

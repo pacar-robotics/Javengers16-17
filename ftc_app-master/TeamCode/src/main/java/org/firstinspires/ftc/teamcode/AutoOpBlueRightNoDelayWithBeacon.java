@@ -26,7 +26,7 @@ public class AutoOpBlueRightNoDelayWithBeacon extends vv_OpMode {
         telemetryAddData("<< BLUE ALLIANCE : RIGHT TILE >>Ready to go!", "", "");
         telemetryUpdate();
         //Turn the LED on the Color Sensor mounted on the floor of the Robot on
-        vvLib.turnFloorLightSensorLedOn(this);
+        vvLib.turnFloorColorSensorLedOn(this);
 
 
         waitForStart();

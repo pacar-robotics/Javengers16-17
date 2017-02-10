@@ -1,12 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.os.Environment;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION;
@@ -27,7 +22,6 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
 import static org.firstinspires.ftc.teamcode.vv_Constants.EOPD_PROXIMITY_THRESHOLD;
-import static org.firstinspires.ftc.teamcode.vv_Constants.FLOOR_WHITE_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.GYRO_OFFSET;
@@ -199,34 +193,18 @@ public class vv_Lib {
         // absolute vs. relative turns
     }
 
-    /*
 
-    public void moveTillTouch(vv_OpMode aOpMode) throws InterruptedException {
-        aOpMode.reset_timer();
-        while (!senseTouch(aOpMode) && aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
-            robot.runMotorsSidewaysRight(aOpMode, TOUCH_SENSE_POWER);
-            aOpMode.idle();
-        }
-        robot.stopBaseMotors(aOpMode);
-        if (senseTouch(aOpMode)) {
-            aOpMode.DBG("Touched Sensor");
-        }
-    }
-
-*/
-
-
-
-    public void showFloorLightSensorIntensityOnTelemetry(vv_OpMode aOpMode,
+    public void showFloorColorSensorIntensityOnTelemetry(vv_OpMode aOpMode,
                                                          boolean updateTheDisplay)
             throws InterruptedException {
 
 
-        aOpMode.telemetryAddData("Floor Sensor", "Light Intensity", ":" + robot.getFloorLightIntensity(aOpMode));
+        aOpMode.telemetryAddData("Floor Color Sensor", "Light Intensity", ":" + robot.getFloorColorIntensity(aOpMode));
         if (updateTheDisplay) {
             aOpMode.telemetryUpdate();
         }
     }
+
 
     public void showBeaconLeftColorValuesOnTelemetry(vv_OpMode aOpMode,
                                                      boolean updateTheDisplay)
@@ -331,12 +309,12 @@ public class vv_Lib {
     }
 
 
-    public void turnFloorLightSensorLedOn(vv_OpMode aOpMode) throws InterruptedException {
-        robot.enableFloorLightSensorLed(aOpMode);
+    public void turnFloorColorSensorLedOn(vv_OpMode aOpMode) throws InterruptedException {
+        robot.enableFloorColorSensorLed(aOpMode);
     }
 
     public void turnFloorColorSensorLedOff(vv_OpMode aOpMode) throws InterruptedException {
-        robot.disableFloorLightSensorLed(aOpMode);
+        robot.disableFloorColorSensorLed(aOpMode);
     }
 
     public void turnBeaconColorSensorLedOn(vv_OpMode aOpMode) throws InterruptedException {
@@ -355,6 +333,10 @@ public class vv_Lib {
     public vv_Constants.BeaconColorEnum getBeaconRightColor(vv_OpMode aOpMode)
             throws InterruptedException {
         return robot.getBeaconRightColor(aOpMode);
+    }
+
+    public double getFloorColorIntensity(vv_OpMode aOpMode) {
+        return robot.getFloorColorIntensity(aOpMode);
     }
 
 
@@ -906,10 +888,12 @@ public class vv_Lib {
         return robot.getLauncherPowerPosition(aOpMode);
     }
 
+    /*
 
     public double getFloorLightIntensity(vv_OpMode aOpMode) throws InterruptedException {
         return robot.getFloorLightIntensity(aOpMode);
     }
+    */
 
 
     public double getUltrasonicDistance(vv_OpMode aOpMode)
@@ -1342,7 +1326,7 @@ public class vv_Lib {
     public class lineDetectCondition implements vv_OpMode.StopCondition {
 
         public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
-            return ((getFloorLightIntensity(aOpMode) >= floorWhiteThreshold));
+            return ((getFloorColorIntensity(aOpMode) >= floorWhiteThreshold));
         }
     }
 

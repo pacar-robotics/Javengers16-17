@@ -105,16 +105,13 @@ public class vv_Robot {
     private ColorSensor beaconLeftColorSensor;
     private ColorSensor beaconRightColorSensor;
     private TouchSensor armSensor;
-    //private LightSensor floorLightSensor;
+    private ColorSensor floorColorSensor;
     private ModernRoboticsI2cGyro baseGyroSensor;
     private OpticalDistanceSensor baseEopdSensor;
-    //**
-    //**
+
     private AHRS baseMxpGyroSensor; //NavX MXP gyro
 
 
-    //**
-    //private UltrasonicSensor floorUltrasonicSensor; //replaced by MR range sensor.
 
     private ModernRoboticsI2cRangeSensor rangeSensor;
 
@@ -148,7 +145,7 @@ public class vv_Robot {
         beaconServoArray[LEFT_BEACON_BUTTON_SERVO] = hwMap.servo.get("servo_beacon_left");
         beaconServoArray[RIGHT_BEACON_BUTTON_SERVO] = hwMap.servo.get("servo_beacon_right");
 
-        //floorLightSensor = hwMap.lightSensor.get("floor_light_sensor");
+        floorColorSensor = hwMap.colorSensor.get("floor_color_sensor");
         beaconLeftColorSensor = hwMap.colorSensor.get("beacon_left_color_sensor");
         beaconRightColorSensor = hwMap.colorSensor.get("beacon_right_color_sensor");
 
@@ -157,8 +154,6 @@ public class vv_Robot {
         beaconLeftColorSensor.setI2cAddress(I2cAddr.create7bit(0x26));
         beaconRightColorSensor.setI2cAddress(I2cAddr.create7bit(0x2e));
 
-        //floorUltrasonicSensor = hwMap.ultrasonicSensor.get("floor_ultrasonic_sensor");
-        //replaced by mr range sensor.
 
         rangeSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "range_sensor");
 
@@ -168,10 +163,8 @@ public class vv_Robot {
 
         //turn the LED on the floor color sensor off at the start.
         //used for compatibility with older SDK code.
-        //floorLightSensor.enableLed(false);
-        //wait for it to turn off.
-        Thread.sleep(300);
 
+        floorColorSensor.enableLed(false);
         beaconLeftColorSensor.enableLed(false);
         beaconRightColorSensor.enableLed(false);
         //wait for it to turn off.
@@ -629,47 +622,50 @@ public class vv_Robot {
 
 
     //turn the color sensor LED on the floor of the robot on
-    public void enableFloorLightSensorLed(vv_OpMode aOpMode) throws InterruptedException {
-        //floorLightSensor.enableLed(true);
+    public void enableFloorColorSensorLed(vv_OpMode aOpMode) throws InterruptedException {
+        floorColorSensor.enableLed(true);
         //wait for it to turn on.
         Thread.sleep(300);
     }
 
     //turn the color sensor LED on the floor of the robot off
-    public void disableFloorLightSensorLed(vv_OpMode aOPMode) throws InterruptedException {
-        //floorLightSensor.enableLed(false);
+    public void disableFloorColorSensorLed(vv_OpMode aOPMode) throws InterruptedException {
+        floorColorSensor.enableLed(false);
         //wait for it to turn off.
         Thread.sleep(300);
     }
 
-    //turn the color sensor LED on the floor of the robot on
+    //turn the color sensor LED on the Left Beacon of the robot on
     public void enableBeaconLeftColorSensorLed(vv_OpMode aOpMode) throws InterruptedException {
         beaconLeftColorSensor.enableLed(true);
         //wait for it to turn on.
         Thread.sleep(300);
     }
 
-    //turn the color sensor LED on the floor of the robot off
+    //turn the color sensor LED on the Left Beacopn of the robot off
     public void disableBeaconLeftColorSensorLed(vv_OpMode aOPMode) throws InterruptedException {
         beaconLeftColorSensor.enableLed(false);
         //wait for it to turn off.
         Thread.sleep(300);
     }
 
-    //turn the color sensor LED on the floor of the robot on
+    //turn the color sensor LED on the Right Beacon of the robot on
     public void enableBeaconRightColorSensorLed(vv_OpMode aOpMode) throws InterruptedException {
         beaconLeftColorSensor.enableLed(true);
         //wait for it to turn on.
         Thread.sleep(300);
     }
 
-    //turn the color sensor LED on the floor of the robot off
+    //turn the color sensor LED on the Right Beacon of the robot off
     public void disableBeaconRightColorSensorLed(vv_OpMode aOPMode) throws InterruptedException {
         beaconLeftColorSensor.enableLed(false);
         //wait for it to turn off.
         Thread.sleep(300);
     }
 
+    public double getFloorColorIntensity(vv_OpMode aOpMode) {
+        return floorColorSensor.alpha();
+    }
 
     public vv_Constants.BeaconColorEnum getBeaconLeftColor(vv_OpMode aOpMode) throws InterruptedException {
         Thread.sleep(30);
@@ -1069,7 +1065,7 @@ public class vv_Robot {
 
 
     // public double getFloorLightIntensity(vv_OpMode aOpMode) {
-    //return floorLightSensor.getLightDetected();
+    //return floorColorSensor.getLightDetected();
 
     //}
 
