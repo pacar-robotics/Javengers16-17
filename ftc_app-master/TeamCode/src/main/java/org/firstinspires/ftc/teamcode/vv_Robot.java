@@ -1836,6 +1836,44 @@ public class vv_Robot {
         motorArray[ARM_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
+    public int getChooChooArmEncoderPosition(vv_OpMode aOpMode) {
+        return motorArray[ARM_MOTOR].getCurrentPosition();
+    }
+
+    public int getIntakeEncoderPosition(vv_OpMode aOpMode) {
+        return motorArray[INTAKE_MOTOR].getCurrentPosition();
+    }
+
+    public void setIntakeEncoderPosition(vv_OpMode aOpMode, int targetPosition) {
+
+        motorArray[ARM_MOTOR].setPower(0.5f);
+        aOpMode.reset_timer();
+        while (motorArray[INTAKE_MOTOR].isBusy() &&
+                (Math.abs(targetPosition - motorArray[INTAKE_MOTOR].getCurrentPosition())
+                        >= ARM_MOTOR_ENCODER_MARGIN) &&
+                aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
+            //keep rotating till either motor reached target or
+            //motor loop time is exceeded
+        }
+        motorArray[INTAKE_MOTOR].setPower(0.0f);
+
+    }
+
+    public void setChooChooArmEncoderPosition(vv_OpMode aOpMode, int targetPosition) {
+        motorArray[ARM_MOTOR].setTargetPosition(targetPosition);
+
+        motorArray[ARM_MOTOR].setPower(0.5f);
+        aOpMode.reset_timer();
+        while (motorArray[ARM_MOTOR].isBusy() &&
+                (Math.abs(targetPosition - motorArray[ARM_MOTOR].getCurrentPosition())
+                        >= ARM_MOTOR_ENCODER_MARGIN) &&
+                aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
+            //keep rotating till either motor reached target or
+            //motor loop time is exceeded
+        }
+        motorArray[ARM_MOTOR].setPower(0.0f);
+    }
+
 
     class MotorNameNotKnownException extends Exception {
 

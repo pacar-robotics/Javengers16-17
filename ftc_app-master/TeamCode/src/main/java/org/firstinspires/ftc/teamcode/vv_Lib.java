@@ -49,16 +49,23 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.TurnDirectionEnum;
 
 public class vv_Lib {
 
-    protected falseCondition falseStop;
-    protected eopdProximityCondition eopdProximityStop;
-    protected RangeSensorProximityOrColorVerifiedCondition rangeSensorProximityOrColorVerifiedStop;
-    protected RangeSensorOpticalProximityCondition rangeSensorOpticalProximityStop;
-    protected RangeSensorUltraSonicProximityCondition rangeSensorUltraSonicProximityStop;
-    protected colorPressVerifiedCondition colorPressVerifiedConditionStop;
-    protected RangeSensorUltraSonicCornerPositioningCondition rangeSensorUltraSonicCornerPositioningStop;
-
-    protected lineDetectCondition lineDectectStop;
     protected vv_Robot robot;
+
+    protected LineDetectCondition lineDetectStop = new LineDetectCondition();
+    protected FalseCondition falseStop = new FalseCondition();
+    protected EopdProximityCondition eopdProximityStop = new EopdProximityCondition();
+    protected RangeSensorProximityOrColorVerifiedCondition rangeSensorProximityOrColorVerifiedStop =
+            new RangeSensorProximityOrColorVerifiedCondition();
+    protected RangeSensorOpticalProximityCondition rangeSensorOpticalProximityStop =
+            new RangeSensorOpticalProximityCondition();
+    protected RangeSensorUltraSonicProximityCondition rangeSensorUltraSonicProximityStop =
+            new RangeSensorUltraSonicProximityCondition();
+    protected RangeSensorUltraSonicCornerPositioningCondition rangeSensorUltraSonicCornerPositioningStop =
+            new RangeSensorUltraSonicCornerPositioningCondition();
+    protected colorPressVerifiedCondition colorPressVerifiedStop = new colorPressVerifiedCondition();
+
+
+
 
     float floorWhiteThreshold;
 
@@ -86,14 +93,6 @@ public class vv_Lib {
         //initialize stop conditions.
 
         float drivePowerFactor;
-        falseStop = new falseCondition();
-        eopdProximityStop = new eopdProximityCondition();
-        rangeSensorProximityOrColorVerifiedStop = new RangeSensorProximityOrColorVerifiedCondition();
-        rangeSensorOpticalProximityStop = new RangeSensorOpticalProximityCondition();
-        rangeSensorUltraSonicProximityStop = new RangeSensorUltraSonicProximityCondition();
-        rangeSensorUltraSonicCornerPositioningStop = new RangeSensorUltraSonicCornerPositioningCondition();
-        lineDectectStop = new lineDetectCondition();
-        colorPressVerifiedConditionStop = new colorPressVerifiedCondition();
     }
 
 
@@ -1031,8 +1030,8 @@ public class vv_Lib {
         //lets keep pulsing forward until the color changes or time runs out or proximity limits
         //are reached
 
-        universalMoveRobot(aOpMode, 90, 0.3, 0.0, 2000,
-                rangeSensorProximityOrColorVerifiedStop, true, 200, 10);
+        universalMoveRobot(aOpMode, 90, 0.3, 0.0, 2000, new
+                RangeSensorProximityOrColorVerifiedCondition(), true, 200, 10);
 
 
         //now retract both beacon presses
@@ -1056,7 +1055,7 @@ public class vv_Lib {
         //for first beacon
 
 
-        universalMoveRobot(aOpMode, 0, 0.25, 0.0, 3000, lineDectectStop, false, 0, 0);
+        universalMoveRobot(aOpMode, 0, 0.25, 0.0, 3000, lineDetectStop, false, 0, 0);
         //now detect the line but at right angles
 
         Thread.sleep(25);
@@ -1090,7 +1089,7 @@ public class vv_Lib {
         //for first beacon
 
 
-        universalMoveRobot(aOpMode, 180, 0.25, 0.0, 3000, lineDectectStop, false, 0, 0);
+        universalMoveRobot(aOpMode, 180, 0.25, 0.0, 3000, lineDetectStop, false, 0, 0);
         //now detect the line but at right angles
 
         Thread.sleep(25);
@@ -1323,14 +1322,14 @@ public class vv_Lib {
     //conditions that can stop the robot.
 
 
-    public class lineDetectCondition implements vv_OpMode.StopCondition {
+    public class LineDetectCondition implements vv_OpMode.StopCondition {
 
         public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
             return ((getFloorColorIntensity(aOpMode) >= floorWhiteThreshold));
         }
     }
 
-    public class falseCondition implements vv_OpMode.StopCondition {
+    public class FalseCondition implements vv_OpMode.StopCondition {
         //can be used as an empty condition, so the robot keeps running in universal movement
         public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
             return (false);
@@ -1338,7 +1337,7 @@ public class vv_Lib {
     }
 
 
-    public class eopdProximityCondition implements vv_OpMode.StopCondition {
+    public class EopdProximityCondition implements vv_OpMode.StopCondition {
         public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
             return (getEopdRawValue(aOpMode) > EOPD_PROXIMITY_THRESHOLD);
         }
