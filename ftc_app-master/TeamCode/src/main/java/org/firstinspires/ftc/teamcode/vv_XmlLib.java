@@ -28,6 +28,8 @@ public class vv_XmlLib {
     DocumentBuilder docBuilder;
     Document diagResultsDoc;
     Element diagResultsRoot;
+    Element diagResultsAutomaticRoot;
+    Element diagResultsManualRoot;
 
     DOMSource diagResultsSource;
     StreamResult diagResultsResult;
@@ -77,13 +79,26 @@ public class vv_XmlLib {
         //add the timestamp element into the XML tree
         diagResultsRoot.appendChild(timeStamp);
 
+        diagResultsAutomaticRoot = diagResultsDoc.createElement("Automatic");
+        diagResultsManualRoot = diagResultsDoc.createElement("Manual");
+
+        diagResultsRoot.appendChild(diagResultsAutomaticRoot);
+        diagResultsRoot.appendChild(diagResultsManualRoot);
+
+
     }
 
     protected void addRobotTestResultXML(vv_OpMode aOpMode, vv_DiagLib.RobotTest robotTest) {
         //add the RobotTest result into the Results XML File.
         //first add a node for this robot test
         Element robotTestElement = diagResultsDoc.createElement("Robot Test");
-        diagResultsRoot.appendChild(robotTestElement);
+        //attach to either the Automatic or Manual Results tree.
+
+        if (robotTest.getTestType(aOpMode) == vv_DiagLib.TestType.AUTOMATIC) {
+            diagResultsAutomaticRoot.appendChild(robotTestElement);
+        } else {
+            diagResultsManualRoot.appendChild(robotTestElement);
+        }
 
         //now add all the robot test elements under the Robot test element.
 
