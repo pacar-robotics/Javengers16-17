@@ -180,6 +180,8 @@ public class vv_Constants
     //motor adjustments.
 
 
+    final static String DIAG_RESULTS_RELATIVE_FILE_PATH = "/PACAR/DiaqResults.xml";
+
     BeaconColorEnum BeaconColor;
     DirectionEnum Direction;
     TurnDirectionEnum TurnDirection;

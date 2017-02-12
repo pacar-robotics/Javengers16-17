@@ -1282,42 +1282,6 @@ public class vv_Lib {
 
     }
 
-    /*public boolean createFile (vv_OpMode aOpMode, String fileName) {
-        try {
-            File file = new File(Environment.getExternalStorageDirectory().getPath() + fileName + ".txt" );
-
-            if (file.exists()) {
-                file.delete();
-                file.createNewFile();
-                return true;
-            } else {
-                file.createNewFile();
-                return true;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean writeOneStringOntoFile (vv_OpMode aOpMode, String fileName, float value) {
-
-        fileName = fileName + ".txt";
-
-        try {
-            FileWriter fileWriter = new FileWriter(fileName);
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(String.valueOf(value));
-            bufferedWriter.close();
-            return true;
-        } catch(IOException ex) {
-            ex.printStackTrace();
-            return false;
-        }
-    }*/
-
-
-
 
     //conditions that can stop the robot.
 

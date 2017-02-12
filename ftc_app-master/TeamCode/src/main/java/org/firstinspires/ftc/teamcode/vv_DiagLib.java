@@ -277,6 +277,29 @@ public class vv_DiagLib {
         }
     }
 
+    public void writeAllResults(vv_OpMode aOpMode) throws InterruptedException {
+        vv_XmlLib vvXmlLib = new vv_XmlLib(aOpMode);
+        //initialize the XML tree for the Diagnostic Results.
+        vvXmlLib.initDiagResultsXML(aOpMode);
+
+        for (int i = 0; i < robotTestArray.length; i++) {
+            //list all tests and results.
+            if (robotTestArray[i].getTestValidity(aOpMode)) {
+                //its a valid test
+                if (robotTestArray[i].getTestResultValidity(aOpMode)) {
+                    //its a valid result
+                    //lets add it to the XML file
+                    vvXmlLib.addRobotTestResultXML(aOpMode, robotTestArray[i]);
+                }
+
+            }
+        }
+        //We have completed writing of all the entries that have valid results.
+        //lets write out the XML file.
+        vvXmlLib.writeDiagResultsXML(aOpMode);
+    }
+
+
     //== utility programs copied over from vvLib.
     public void turnAbsoluteMxpGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
         //clockwise is represented by clockwise numbers.

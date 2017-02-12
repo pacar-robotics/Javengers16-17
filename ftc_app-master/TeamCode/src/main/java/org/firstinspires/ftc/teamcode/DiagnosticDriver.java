@@ -36,25 +36,7 @@ public class DiagnosticDriver extends vv_OpMode {
         vvDiagLib.runAllAutomaticTests(this);
         //now walk through the tests and process them.
         vvDiagLib.analyzeTestResults(this);
-
-        vv_DiagLib.RobotTest robotTest;
-
-        if ((robotTest = vvDiagLib.findTestByName(this, "testBackLeftMotor")) == null) {
-            //could not find the test
-            telemetryAddData("Error", "Could not find test!:", "testBackLeftMotor");
-            telemetryUpdate();
-        } else {
-            robotTest.getTestRunnableTest(this).runTest(this, robotTest);
-        }
-
-        if ((robotTest = vvDiagLib.findTestByName(this, "thisIsNoTest")) == null) {
-            //could not find the test
-            telemetryAddData("Error", "Could not find test!:", "thisIsNoTest");
-            telemetryUpdate();
-        } else {
-            robotTest.getTestRunnableTest(this).runTest(this, robotTest);
-
-        }
+        vvDiagLib.writeAllResults(this);
         Thread.sleep(5000);
 
     }
