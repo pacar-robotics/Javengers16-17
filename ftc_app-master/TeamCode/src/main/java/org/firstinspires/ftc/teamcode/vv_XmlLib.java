@@ -6,8 +6,12 @@ import android.os.Environment;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,6 +19,7 @@ import java.util.Date;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -44,11 +49,11 @@ public class vv_XmlLib {
     public vv_XmlLib(vv_OpMode aOpMode)
             throws InterruptedException {
         try {
-            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            docFactory = DocumentBuilderFactory.newInstance();
+            docBuilder = docFactory.newDocumentBuilder();
 
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
+            transformerFactory = TransformerFactory.newInstance();
+            transformer = transformerFactory.newTransformer();
 
 
         } catch (ParserConfigurationException PCE) {
@@ -66,21 +71,22 @@ public class vv_XmlLib {
 
     }
 
-    protected void initDiagResultsXML(vv_OpMode aOpMode) {
+    protected void initDiagResultsXmlForWrite(vv_OpMode aOpMode) {
         diagResultsDoc = docBuilder.newDocument();
-        diagResultsRoot = diagResultsDoc.createElement("Velocity Vortex Results");
+        diagResultsRoot = diagResultsDoc.createElement("VelocityVortexResults");
         diagResultsDoc.appendChild(diagResultsRoot);
+
+
+        diagResultsAutomaticRoot = diagResultsDoc.createElement("Automatic");
+        diagResultsManualRoot = diagResultsDoc.createElement("Manual");
+        //add the timestamp element into the XML tree
 
         //get the current date and format it the way we want it.
 
         DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-        Element timeStamp = diagResultsDoc.createElement(df.format(new Date()));
 
-        //add the timestamp element into the XML tree
-        diagResultsRoot.appendChild(timeStamp);
-
-        diagResultsAutomaticRoot = diagResultsDoc.createElement("Automatic");
-        diagResultsManualRoot = diagResultsDoc.createElement("Manual");
+        diagResultsDoc.appendChild(diagResultsDoc.createElement("TimeStamp").
+                appendChild(diagResultsDoc.createTextNode(df.format(new Date()))));
 
         diagResultsRoot.appendChild(diagResultsAutomaticRoot);
         diagResultsRoot.appendChild(diagResultsManualRoot);
@@ -88,10 +94,46 @@ public class vv_XmlLib {
 
     }
 
+    protected void initDiagResultsXmlForRead(vv_OpMode aOpMode) throws InterruptedException {
+
+        try {
+            //get the file handle to the results file.
+
+            File xmlFile = new File(Environment.getExternalStorageDirectory().getPath() +
+                    vv_Constants.DIAG_RESULTS_RELATIVE_FILE_PATH);
+            //create a XML DOM document from file
+            //and attach it to the results doc handle that is in the class.
+            diagResultsDoc = docBuilder.parse(xmlFile);
+
+        } catch (UnsupportedEncodingException UEE) {
+            aOpMode.telemetryAddData("Encoding Not Supported Error", "Parser", UEE.getMessage());
+            aOpMode.telemetryUpdate();
+            Thread.sleep(2000);
+
+        } catch (SAXException SE) {
+            aOpMode.telemetryAddData("SAX Exception Error", "Parser", SE.getMessage());
+            aOpMode.telemetryUpdate();
+            Thread.sleep(2000);
+        } catch (IOException IE) {
+            aOpMode.telemetryAddData("IO Exception Error", "Parser", IE.getMessage());
+            aOpMode.telemetryUpdate();
+            Thread.sleep(2000);
+        }
+
+    }
+
+    protected NodeList getRobotTestNodesFromDom(vv_OpMode aOpmode) {
+        //get and return list of Robot Test nodes
+        //if these tags are not matched this may return null!
+
+        return diagResultsDoc.getElementsByTagName("RobotTest");
+    }
+
+
     protected void addRobotTestResultXML(vv_OpMode aOpMode, vv_DiagLib.RobotTest robotTest) {
         //add the RobotTest result into the Results XML File.
         //first add a node for this robot test
-        Element robotTestElement = diagResultsDoc.createElement("Robot Test");
+        Element robotTestElement = diagResultsDoc.createElement("RobotTest");
         //attach to either the Automatic or Manual Results tree.
 
         if (robotTest.getTestType(aOpMode) == vv_DiagLib.TestType.AUTOMATIC) {
@@ -105,19 +147,31 @@ public class vv_XmlLib {
         //each element needs a new "XML Element" which creates the open and closed named tags
         //each element also needs a text node, which creates the actual values beween tags
 
-        robotTestElement.appendChild(diagResultsDoc.createElement("TestId").
-                appendChild(diagResultsDoc.createTextNode(String.valueOf(robotTest.getTestId(aOpMode)))));
+        Element TestId = diagResultsDoc.createElement("TestId");
+        TestId.appendChild(diagResultsDoc.createTextNode(String.valueOf(robotTest.getTestId(aOpMode))));
+        robotTestElement.appendChild(TestId);
 
-        robotTestElement.appendChild(diagResultsDoc.createElement("TestName").
-                appendChild(diagResultsDoc.createTextNode(robotTest.getTestName(aOpMode))));
-        robotTestElement.appendChild(diagResultsDoc.createElement("TestShortDescription").
-                appendChild(diagResultsDoc.createTextNode(robotTest.getTestShortDescription(aOpMode))));
-        robotTestElement.appendChild(diagResultsDoc.createElement("TestLongDescription").
-                appendChild(diagResultsDoc.createTextNode(robotTest.getTestLongDescription(aOpMode))));
-        robotTestElement.appendChild(diagResultsDoc.createElement("TestResult").
-                appendChild(diagResultsDoc.createTextNode(String.valueOf(robotTest.getTestResult(aOpMode)))));
-        robotTestElement.appendChild(diagResultsDoc.createElement("TestResultMessage").
-                appendChild(diagResultsDoc.createTextNode(robotTest.getTestResultMessage(aOpMode))));
+        Element TestName = diagResultsDoc.createElement("TestName");
+        TestName.appendChild(diagResultsDoc.createTextNode(robotTest.getTestName(aOpMode)));
+        robotTestElement.appendChild(TestName);
+
+        Element TestShortDescription = diagResultsDoc.createElement("TestShortDescription");
+        TestShortDescription.appendChild(diagResultsDoc.createTextNode(robotTest.getTestShortDescription(aOpMode)));
+        robotTestElement.appendChild(TestShortDescription);
+
+        Element TestLongDescription = diagResultsDoc.createElement("TestLongDescription");
+        TestLongDescription.appendChild(diagResultsDoc.createTextNode(robotTest.getTestLongDescription(aOpMode)));
+        robotTestElement.appendChild(TestLongDescription);
+
+        Element TestResult = diagResultsDoc.createElement("TestResult");
+        TestResult.appendChild(diagResultsDoc.
+                createTextNode(robotTest.getTestResult(aOpMode) ? "Passed" : "Failed"));
+        robotTestElement.appendChild(TestResult);
+
+        Element TestResultMessage = diagResultsDoc.createElement("TestResultMessage");
+        TestResultMessage.appendChild(diagResultsDoc.createTextNode(robotTest.getTestResultMessage(aOpMode)));
+        robotTestElement.appendChild(TestResultMessage);
+
 
         String Severity = null;
         switch (robotTest.getTestSeverity(aOpMode)) {
@@ -139,11 +193,15 @@ public class vv_XmlLib {
             default:
                 Severity = "UNKNOWN";
         }
-        robotTestElement.appendChild(diagResultsDoc.createElement("TestSeverity").
-                appendChild(diagResultsDoc.createTextNode(Severity)));
 
-        robotTestElement.appendChild(diagResultsDoc.createElement("TestRecommendation").
-                appendChild(diagResultsDoc.createTextNode(String.valueOf(robotTest.getTestRecommendation(aOpMode)))));
+        Element TestResultSeverity = diagResultsDoc.createElement("TestResultSeverity");
+        TestResultSeverity.appendChild(diagResultsDoc.createTextNode(Severity));
+        robotTestElement.appendChild(TestResultSeverity);
+
+        Element TestRecommendation = diagResultsDoc.createElement("TestRecommendation");
+        TestRecommendation.appendChild(diagResultsDoc.createTextNode(robotTest.getTestRecommendation(aOpMode)));
+        robotTestElement.appendChild(TestRecommendation);
+
     }
 
 
@@ -153,11 +211,22 @@ public class vv_XmlLib {
 
         diagResultsSource = new DOMSource(diagResultsDoc);
 
+        File xmlFile = new File(Environment.getExternalStorageDirectory().getPath() +
+                vv_Constants.DIAG_RESULTS_RELATIVE_FILE_PATH);
+
+        xmlFile.delete();
+
         diagResultsResult =
-                new StreamResult(new File(Environment.getExternalStorageDirectory().getPath() +
-                        vv_Constants.DIAG_RESULTS_RELATIVE_FILE_PATH));
+                new StreamResult(xmlFile);
         try {
+            // Fix XML formatting
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             transformer.transform(diagResultsSource, diagResultsResult);
+
+            aOpMode.telemetryAddData("Wrote File:", "Successfully:", xmlFile.toString());
+            aOpMode.telemetryUpdate();
+            Thread.sleep(5000);
         } catch (TransformerException TE) {
             aOpMode.telemetryAddData("XML Transformation Error", "Parser", TE.getMessage());
             aOpMode.telemetryUpdate();

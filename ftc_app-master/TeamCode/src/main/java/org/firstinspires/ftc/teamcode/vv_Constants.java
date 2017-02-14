@@ -14,6 +14,11 @@ package org.firstinspires.ftc.teamcode;
  */
 public class vv_Constants
 {
+
+    //diagnostic constants
+
+    final static int MAX_ROBOT_DIAGNOSTIC_TESTS = 20;
+
     // Encoder constants
 	final static int TETRIX_MOTOR_ENCODER_COUNTS_PER_REVOLUTION = 1440;
 	final static int ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION = 1120;
@@ -180,7 +185,7 @@ public class vv_Constants
     //motor adjustments.
 
 
-    final static String DIAG_RESULTS_RELATIVE_FILE_PATH = "/PACAR/DiaqResults.xml";
+    final static String DIAG_RESULTS_RELATIVE_FILE_PATH = "/PACAR/DiagResults.xml";
 
     BeaconColorEnum BeaconColor;
     DirectionEnum Direction;
@@ -223,15 +228,6 @@ public class vv_Constants
     //Ball Collector States
     enum IntakeStateEnum {
         Off, In, Out
-    }
-
-    //Spring Motor States used to score in different positions
-    //Position 1 = 1 Tile Away
-    //Position 2 = 2 Tiles Away
-    //Position 3 = 3 Tiles Away
-    //Position 4 = 4 Tiles Away
-    enum SpringPositionsEnum {
-        Rest, Position1, Position2, Position3, Position4
     }
 
 

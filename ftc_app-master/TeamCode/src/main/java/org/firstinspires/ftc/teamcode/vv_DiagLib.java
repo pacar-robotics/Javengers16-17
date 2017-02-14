@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.w3c.dom.NodeList;
+
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
@@ -11,6 +13,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_INCREMENT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_ROBOT_DIAGNOSTIC_TESTS;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_DIAMETER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ROBOT_TRACK_DISTANCE;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TURN_POWER;
@@ -32,7 +35,7 @@ public class vv_DiagLib {
         //initialize the array of tests
 
         //first lets create the space for the tests
-        robotTestArray = new RobotTest[20];
+        robotTestArray = new RobotTest[MAX_ROBOT_DIAGNOSTIC_TESTS];
 
         //now lets actually initialize the array with class instances.
 
@@ -89,13 +92,14 @@ public class vv_DiagLib {
     }
 
     public void runAllAutomaticTests(vv_OpMode aOpMode) throws InterruptedException {
+        int validTestCount = getValidTestCount(aOpMode);
         for (int i = 0; i < robotTestArray.length; i++) {
             if ((robotTestArray[i].getTestValidity(aOpMode)) &&
                     (robotTestArray[i].getTestType(aOpMode) == TestType.AUTOMATIC)) {
                 //runnable test, it has been initialized and it is an automatic test
 
                 //lets run and store the test.
-                aOpMode.telemetryAddData("Running Test:", "Named:",
+                aOpMode.telemetryAddData("Running:", "Test Number:" + i + "/" + validTestCount + ":",
                         robotTestArray[i].getTestName(aOpMode) +
                                 robotTestArray[i].getTestShortDescription(aOpMode));
                 aOpMode.telemetryUpdate();
@@ -105,6 +109,16 @@ public class vv_DiagLib {
             }
         }
 
+    }
+
+    public int getValidTestCount(vv_OpMode aOpMode) {
+        int validTestCount = 0;
+        for (int i = 0; i < robotTestArray.length; i++) {
+            if (robotTestArray[i].getTestValidity(aOpMode)) {
+                validTestCount++;
+            }
+        }
+        return validTestCount;
     }
 
     public void initializeAllTests(vv_OpMode aOpMode) {
@@ -178,21 +192,24 @@ public class vv_DiagLib {
                 "Tests the Floor Color sensing by rotating the platform and checking for change in Color Value",
                 TestType.AUTOMATIC, new TestFloorSensor());
 
-        robotTestArray[12].createTest(aOpMode, "testCapBall", 12, "Test Cap Ball Lift",
-                "Tests the Cap Ball Lift by Moving Lift and checking for change in Encoder Value",
-                TestType.AUTOMATIC, new TestCapBall());
+        robotTestArray[12].createTest(aOpMode, "testIntake", 12, "Test Intake",
+                "Tests the Intake by checking for change in Encoder Value",
+                TestType.AUTOMATIC, new TestIntake());
 
-        robotTestArray[13].createTest(aOpMode, "testChooChooTension", 13, "Test Choo Choo Tensioning",
-                "Tests the Choo Choo Tensioning Mechanism by checking for change in Encoder Value",
-                TestType.AUTOMATIC, new TestChooChooTension());
-
-        robotTestArray[14].createTest(aOpMode, "testChooChooLaunch", 14, "Test Choo Choo Launch Arm",
+        robotTestArray[13].createTest(aOpMode, "testChooChooLaunch", 13, "Test Choo Choo Launch Arm",
                 "Tests the Choo Choo Launch by checking for change in Encoder Value",
                 TestType.AUTOMATIC, new TestChooChooLaunch());
 
-        robotTestArray[15].createTest(aOpMode, "testIntake", 15, "Test Intake",
-                "Tests the Intake by checking for change in Encoder Value",
-                TestType.AUTOMATIC, new TestIntake());
+        robotTestArray[14].createTest(aOpMode, "testCapBall", 14, "Test Cap Ball Lift",
+                "Tests the Cap Ball Lift by Moving Lift and checking for change in Encoder Value",
+                TestType.AUTOMATIC, new TestCapBall());
+
+        robotTestArray[15].createTest(aOpMode, "testChooChooTension", 15, "Test Choo Choo Tensioning",
+                "Tests the Choo Choo Tensioning Mechanism by checking for change in Encoder Value",
+                TestType.AUTOMATIC, new TestChooChooTension());
+
+
+
 
 
 
@@ -281,8 +298,9 @@ public class vv_DiagLib {
 
     public void writeAllResults(vv_OpMode aOpMode) throws InterruptedException {
         vv_XmlLib vvXmlLib = new vv_XmlLib(aOpMode);
-        //initialize the XML tree for the Diagnostic Results.
-        vvXmlLib.initDiagResultsXML(aOpMode);
+
+        //initialize the XML tree for writing Diagnostic Results.
+        vvXmlLib.initDiagResultsXmlForWrite(aOpMode);
 
         for (int i = 0; i < robotTestArray.length; i++) {
             //list all tests and results.
@@ -296,7 +314,110 @@ public class vv_DiagLib {
 
             }
         }
-        //We have completed writing of all the entries that have valid results.
+        //We have completed writing of all the tags in the XML DOM that have valid results.
+        //lets write out the XML file.
+        vvXmlLib.writeDiagResultsXML(aOpMode);
+    }
+
+    public void readAllResults(vv_OpMode aOpMode) throws InterruptedException {
+        vv_XmlLib vvXmlLib = new vv_XmlLib(aOpMode);
+
+        //initialize the XML tree for reading Diagnostic Results.
+        //this opens the DiagResults xml file and reads in the DOM.
+        vvXmlLib.initDiagResultsXmlForRead(aOpMode);
+
+        //read the Robot Test NodesList
+        NodeList robotTestNodes = vvXmlLib.getRobotTestNodesFromDom(aOpMode);
+
+        //now step through the list of RobotTestNodes and load the robotTestArray
+        //but first initialize all tests to have clean data
+
+        initializeAllTests(aOpMode);
+
+        for (int i = 0; i < robotTestNodes.getLength() && i < robotTestArray.length; i++) {
+            //lets step through each node.
+            //first get a list of all child nodes of the test
+            NodeList detailsNodeList = robotTestNodes.item(i).getChildNodes();
+            for (int j = 0; i < detailsNodeList.getLength(); j++) {
+                //depending on the type of node we need to assign it to the right Array
+                switch (detailsNodeList.item(j).getNodeName()) {
+                    case "testId":
+                        robotTestArray[i].
+                                setTestElementId(aOpMode, Integer.valueOf(detailsNodeList.item(j).getTextContent()));
+                        break;
+
+                    case "testName":
+                        robotTestArray[i].
+                                setTestElementName(aOpMode, detailsNodeList.item(j).getTextContent());
+                        break;
+                    case "shortDescription":
+                        robotTestArray[i].
+                                setTestShortDescription(aOpMode, detailsNodeList.item(j).getTextContent());
+                        break;
+                    case "longDescription":
+                        robotTestArray[i].
+                                setTestLongDescription(aOpMode, detailsNodeList.item(j).getTextContent());
+                        break;
+                    case "testResult":
+                        if (detailsNodeList.item(j).getTextContent().equals("Passed")) {
+                            robotTestArray[i].
+                                    setTestResult(aOpMode, true);
+                        } else {
+                            robotTestArray[i].
+                                    setTestResult(aOpMode, false);
+                        }
+                        break;
+                    case "testResultMessage":
+                        robotTestArray[i].
+                                setTestResultMessage(aOpMode, detailsNodeList.item(j).getTextContent());
+                        break;
+                    case "testResultSeverity":
+                        switch (detailsNodeList.item(j).getTextContent()) {
+                            case "CRITICAL":
+                                robotTestArray[i].
+                                        setTestResultSeverity(aOpMode, ResultSeverity.CRITICAL);
+                                break;
+
+                            case "HIGH":
+                                robotTestArray[i].
+                                        setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
+                                break;
+                            case "MEDIUM":
+                                robotTestArray[i].
+                                        setTestResultSeverity(aOpMode, ResultSeverity.MEDIUM);
+                                break;
+                            case "LOW":
+                                robotTestArray[i].
+                                        setTestResultSeverity(aOpMode, ResultSeverity.LOW);
+                                break;
+                            case "INFO":
+                                robotTestArray[i].
+                                        setTestResultSeverity(aOpMode, ResultSeverity.INFO);
+                                break;
+                            case "UNKNOWN":
+                                robotTestArray[i].
+                                        setTestResultSeverity(aOpMode, ResultSeverity.UNKNOWN);
+                                break;
+                            default:
+                                robotTestArray[i].
+                                        setTestResultSeverity(aOpMode, ResultSeverity.UNKNOWN);
+                                break;
+                        }
+
+                    case "testRecommendation":
+                        robotTestArray[i].
+                                setTestRecommendation(aOpMode, detailsNodeList.item(j).getTextContent());
+                    default:
+                        aOpMode.telemetryAddData("Unknown text in node name:",
+                                "Value:", detailsNodeList.item(j).getNodeName());
+                        aOpMode.telemetryUpdate();
+                        Thread.sleep(2000);
+                }
+            }
+        }
+
+        
+        //We have completed writing of all the tags in the XML DOM that have valid results.
         //lets write out the XML file.
         vvXmlLib.writeDiagResultsXML(aOpMode);
     }
@@ -392,7 +513,7 @@ public class vv_DiagLib {
                 polarVelocity * Math.cos(Math.toRadians(polarAngle)), rotationalVelocity, duration, condition, isPulsed, pulseWidthDuration, pulseRestDuration);
     }
 
-    enum ResultSeverity {CRITICAL, HIGH, MEDIUM, LOW, INFO}
+    enum ResultSeverity {CRITICAL, HIGH, MEDIUM, LOW, INFO, UNKNOWN}
 
     enum TestType {AUTOMATIC, MANUAL}
 
@@ -451,7 +572,7 @@ public class vv_DiagLib {
             testResultMessage = ResultMessage;
         }
 
-        public void setTestSeverity(vv_OpMode aOpMode, ResultSeverity resultSeverity) {
+        public void setTestResultSeverity(vv_OpMode aOpMode, ResultSeverity resultSeverity) {
             testResultSeverity = resultSeverity;
         }
 
@@ -546,21 +667,23 @@ public class vv_DiagLib {
             int motorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR);
             robot.testMotor(aOpMode, FRONT_LEFT_MOTOR, 0.5f, 1000);
             int newMotorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR);
+
             if (newMotorPosition == motorPosition) {
                 //the motor encoder has not moved. we have a problem.
                 robotTest.setTestResult(aOpMode, false);
                 robotTest.setTestResultValidity(aOpMode, true);
                 robotTest.setTestResultMessage(aOpMode, "Failed To Detect Front Left Wheel Rotation");
                 robotTest.setTestRecommendation(aOpMode, "Please examine electrical and encoder connections");
-                robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
                 return false;
 
             }
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
-            robotTest.setTestRecommendation(aOpMode, "No problem with Front Left Wheel");
-            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            robotTest.setTestResultMessage(aOpMode, "No Problem with Front Left Wheel");
+            robotTest.setTestRecommendation(aOpMode, "No Recommendation");
+            robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
 
         }
@@ -578,15 +701,16 @@ public class vv_DiagLib {
                 robotTest.setTestResultValidity(aOpMode, true);
                 robotTest.setTestResultMessage(aOpMode, "Failed To Detect Front Right Wheel Rotation");
                 robotTest.setTestRecommendation(aOpMode, "Please examine electrical and encoder connections");
-                robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
                 return false;
 
             }
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
-            robotTest.setTestRecommendation(aOpMode, "No problem with Front Right Wheel");
-            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            robotTest.setTestResultMessage(aOpMode, "No Problem with Front Right Wheel");
+            robotTest.setTestRecommendation(aOpMode, "No Recommendation");
+            robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
 
         }
@@ -604,15 +728,16 @@ public class vv_DiagLib {
                 robotTest.setTestResultValidity(aOpMode, true);
                 robotTest.setTestResultMessage(aOpMode, "Failed To Detect Back Left Wheel Rotation");
                 robotTest.setTestRecommendation(aOpMode, "Please examine electrical and encoder connections");
-                robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
                 return false;
 
             }
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
-            robotTest.setTestRecommendation(aOpMode, "No problem with Back Left Wheel");
-            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            robotTest.setTestResultMessage(aOpMode, "No Problem with Back Left Wheel");
+            robotTest.setTestRecommendation(aOpMode, "No Recommendation");
+            robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
 
         }
@@ -630,15 +755,16 @@ public class vv_DiagLib {
                 robotTest.setTestResultValidity(aOpMode, true);
                 robotTest.setTestResultMessage(aOpMode, "Failed To Detect Back Right Wheel Rotation");
                 robotTest.setTestRecommendation(aOpMode, "Please examine electrical and encoder");
-                robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
                 return false;
 
             }
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
-            robotTest.setTestRecommendation(aOpMode, "No problem with Back Right Wheel");
-            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            robotTest.setTestResultMessage(aOpMode, "No Problem with Back Right Wheel");
+            robotTest.setTestRecommendation(aOpMode, "No Recommendation");
+            robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
 
         }
@@ -659,15 +785,16 @@ public class vv_DiagLib {
                 robotTest.setTestResultValidity(aOpMode, true);
                 robotTest.setTestResultMessage(aOpMode, "Failed To Detect Platform Left Movement");
                 robotTest.setTestRecommendation(aOpMode, "Please examine electrical and encoder connections");
-                robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
                 return false;
 
             }
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
-            robotTest.setTestRecommendation(aOpMode, "No problem with Platform Left");
-            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            robotTest.setTestResultMessage(aOpMode, "No Problem with Platform Left");
+            robotTest.setTestRecommendation(aOpMode, "No Recommendation");
+            robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
 
         }
@@ -689,15 +816,16 @@ public class vv_DiagLib {
                 robotTest.setTestResultMessage(aOpMode, "Failed To Detect Platform Right Movement");
                 robotTest.setTestRecommendation(aOpMode, "Please examine electrical and encoder connections");
 
-                robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
                 return false;
 
             }
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
-            robotTest.setTestRecommendation(aOpMode, "No problem with Platform Right");
-            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            robotTest.setTestResultMessage(aOpMode, "No Problem with Platform Right");
+            robotTest.setTestRecommendation(aOpMode, "No Recommendation");
+            robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
 
         }
@@ -718,15 +846,16 @@ public class vv_DiagLib {
                 robotTest.setTestResultValidity(aOpMode, true);
                 robotTest.setTestResultMessage(aOpMode, "Failed To Detect Platform Forward Movement");
                 robotTest.setTestRecommendation(aOpMode, "Please examine electrical and encoder connections");
-                robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
                 return false;
 
             }
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
-            robotTest.setTestRecommendation(aOpMode, "No problem with Platform Forward");
-            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            robotTest.setTestResultMessage(aOpMode, "No Problem with Platform Forward");
+            robotTest.setTestRecommendation(aOpMode, "No Recommendation");
+            robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
 
         }
@@ -747,15 +876,16 @@ public class vv_DiagLib {
                 robotTest.setTestResultValidity(aOpMode, true);
                 robotTest.setTestResultMessage(aOpMode, "Failed To Detect Platform Backward Movement");
                 robotTest.setTestRecommendation(aOpMode, "Please examine electrical and encoder connections");
-                robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
                 return false;
 
             }
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
-            robotTest.setTestRecommendation(aOpMode, "No problem with Platform Backward");
-            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            robotTest.setTestResultMessage(aOpMode, "No Problem with Platform Backward");
+            robotTest.setTestRecommendation(aOpMode, "No Recommendation");
+            robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
 
         }
@@ -778,12 +908,12 @@ public class vv_DiagLib {
                 if (error < 5) {
                     robotTest.setTestRecommendation(aOpMode,
                             "Please check MXP gyro and calibration, error >3&<5 degrees");
-                    robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                    robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
                 }
                 if (error >= 5) {
                     robotTest.setTestRecommendation(aOpMode,
                             "Please check MXP gyro and calibration, error >5 degrees");
-                    robotTest.setTestSeverity(aOpMode, ResultSeverity.CRITICAL);
+                    robotTest.setTestResultSeverity(aOpMode, ResultSeverity.CRITICAL);
                 }
                 return false;
 
@@ -791,8 +921,9 @@ public class vv_DiagLib {
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
-            robotTest.setTestRecommendation(aOpMode, "No problem with Gyro turns");
-            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            robotTest.setTestResultMessage(aOpMode, "No Problem with Gyro Turns");
+            robotTest.setTestRecommendation(aOpMode, "No Recommendation");
+            robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
 
         }
@@ -818,14 +949,15 @@ public class vv_DiagLib {
                 robotTest.setTestResultMessage(aOpMode, "Failed to detect change in Range Test");
                 robotTest.setTestRecommendation(aOpMode,
                         "Please check Ultrasonic sensor and calibration, are there objects close by ?");
-                robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
                 return false;
             }
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
-            robotTest.setTestRecommendation(aOpMode, "No problem with Range Sensors");
-            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            robotTest.setTestResultMessage(aOpMode, "No Problem with Range Sensors");
+            robotTest.setTestRecommendation(aOpMode, "No Recommendation");
+            robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
 
         }
@@ -854,21 +986,22 @@ public class vv_DiagLib {
                     robotTest.setTestResultMessage(aOpMode, "Failed to detect change in floor color sensor");
                     robotTest.setTestRecommendation(aOpMode,
                             "Please check Floor Color Sensor connections and calibration");
-                    robotTest.setTestSeverity(aOpMode, ResultSeverity.MEDIUM);
+                    robotTest.setTestResultSeverity(aOpMode, ResultSeverity.MEDIUM);
                     return false;
                 } else {
                     robotTest.setTestResultMessage(aOpMode, "Failed to detect non-zero Color Sensor Values");
                     robotTest.setTestRecommendation(aOpMode,
                             "Please check Floor Color Sensor connections and calibration");
-                    robotTest.setTestSeverity(aOpMode, ResultSeverity.CRITICAL);
+                    robotTest.setTestResultSeverity(aOpMode, ResultSeverity.CRITICAL);
                     return false;
                 }
             }
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
-            robotTest.setTestRecommendation(aOpMode, "No problem with Floor Color Sensor");
-            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            robotTest.setTestResultMessage(aOpMode, "No Problem with Floor Color Sensor");
+            robotTest.setTestRecommendation(aOpMode, "No Recommendation");
+            robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
 
         }
@@ -902,15 +1035,16 @@ public class vv_DiagLib {
                 robotTest.setTestResultMessage(aOpMode, "Failed to detect Cap Ball Lift Movement");
                 robotTest.setTestRecommendation(aOpMode,
                         "Please check CapBall Lift and calibration");
-                robotTest.setTestSeverity(aOpMode, ResultSeverity.CRITICAL);
+                robotTest.setTestResultSeverity(aOpMode, ResultSeverity.CRITICAL);
                 return false;
 
             }
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
-            robotTest.setTestRecommendation(aOpMode, "No problem with Cap Ball Lift");
-            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            robotTest.setTestResultMessage(aOpMode, "No Problem with Cap Ball Lift");
+            robotTest.setTestRecommendation(aOpMode, "No Recommendation");
+            robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
 
         }
@@ -944,15 +1078,16 @@ public class vv_DiagLib {
                 robotTest.setTestResultMessage(aOpMode, "Failed to detect Choo Choo Arm Tension changes");
                 robotTest.setTestRecommendation(aOpMode,
                         "Please check Choo Choo Tension and calibration");
-                robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
                 return false;
 
             }
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
-            robotTest.setTestRecommendation(aOpMode, "No problem with Choo Choo Tension");
-            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            robotTest.setTestResultMessage(aOpMode, "No Problem with Choo Choo Tension");
+            robotTest.setTestRecommendation(aOpMode, "No Recommendation");
+            robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
 
         }
@@ -979,15 +1114,16 @@ public class vv_DiagLib {
                 robotTest.setTestResultMessage(aOpMode, "Failed to detect Choo Choo Launch Encoder Changes");
                 robotTest.setTestRecommendation(aOpMode,
                         "Please check Choo Choo Launcher Arm and calibration");
-                robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
                 return false;
 
             }
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
-            robotTest.setTestRecommendation(aOpMode, "No problem with Choo Choo Launch Arm");
-            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            robotTest.setTestResultMessage(aOpMode, "No Problem with Choo Choo Launch Arm");
+            robotTest.setTestRecommendation(aOpMode, "No Recommendation");
+            robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
 
         }
@@ -1014,15 +1150,16 @@ public class vv_DiagLib {
                 robotTest.setTestResultMessage(aOpMode, "Failed to detect Intake Encoder Changes");
                 robotTest.setTestRecommendation(aOpMode,
                         "Please check Intake connections and calibration");
-                robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+                robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
                 return false;
 
             }
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
-            robotTest.setTestRecommendation(aOpMode, "No problem with Intake");
-            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            robotTest.setTestResultMessage(aOpMode, "No Problem with Intake");
+            robotTest.setTestRecommendation(aOpMode, "No Recommendation");
+            robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
         }
     }
@@ -1123,7 +1260,7 @@ public class vv_DiagLib {
                 robotTest.setTestResultValidity(aOpMode, true);
                 robotTest.setTestResultMessage(aOpMode, "Failed to detect Platform Diagonal movement");
                 robotTest.setTestRecommendation(aOpMode, "Please check Electrical and Encoder connections to wheel motors");
-                robotTest.setTestSeverity(aOpMode, ResultSeverity.CRITICAL);
+                robotTest.setTestResultSeverity(aOpMode, ResultSeverity.CRITICAL);
                 return false;
             }
 
@@ -1136,7 +1273,7 @@ public class vv_DiagLib {
                 robotTest.setTestResultValidity(aOpMode, true);
                 robotTest.setTestResultMessage(aOpMode, "Detected too much rotation when performing platform diagonal movements");
                 robotTest.setTestRecommendation(aOpMode, "Check weight distribution or wheel coplanarity");
-                robotTest.setTestSeverity(aOpMode, ResultSeverity.MEDIUM);
+                robotTest.setTestResultSeverity(aOpMode, ResultSeverity.MEDIUM);
                 return false;
             }
 
@@ -1144,8 +1281,9 @@ public class vv_DiagLib {
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
-            robotTest.setTestRecommendation(aOpMode, "No problem with Platform Right");
-            robotTest.setTestSeverity(aOpMode, ResultSeverity.HIGH);
+            robotTest.setTestResultMessage(aOpMode, "No Problem with Platform Diagonals");
+            robotTest.setTestRecommendation(aOpMode, "No Recommendation");
+            robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
             return true;
 
         }
