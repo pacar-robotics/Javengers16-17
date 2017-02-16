@@ -240,7 +240,7 @@ public class vv_DiagLib {
                                 robotTestArray[i].getTestName(aOpMode),
                                 ":" + "Test Passed");
                         aOpMode.telemetryUpdate();
-                        Thread.sleep(2000); //wait on display
+                        Thread.sleep(500); //wait on display
 
                     } else {
                         //this test failed.
@@ -284,7 +284,7 @@ public class vv_DiagLib {
                                 robotTestArray[i].getTestRecommendation(aOpMode));
                         aOpMode.telemetryUpdate();
                         //wait and display our errors if any
-                        Thread.sleep(2000); //wait on display
+                        Thread.sleep(500); //wait on display
 
                     }
 

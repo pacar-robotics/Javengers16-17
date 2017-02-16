@@ -35,6 +35,7 @@ public class vv_XmlLib {
     Element diagResultsRoot;
     Element diagResultsAutomaticRoot;
     Element diagResultsManualRoot;
+    Element timeStamp;
 
     DOMSource diagResultsSource;
     StreamResult diagResultsResult;
@@ -85,11 +86,15 @@ public class vv_XmlLib {
 
         DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
 
-        diagResultsDoc.appendChild(diagResultsDoc.createElement("TimeStamp").
-                appendChild(diagResultsDoc.createTextNode(df.format(new Date()))));
+        timeStamp = diagResultsDoc.createElement("TimeStamp");
+        timeStamp.appendChild(diagResultsDoc.createTextNode(df.format(new Date())));
+
+
+        //attach the elements created.
 
         diagResultsRoot.appendChild(diagResultsAutomaticRoot);
         diagResultsRoot.appendChild(diagResultsManualRoot);
+        diagResultsRoot.appendChild(timeStamp);
 
 
     }
