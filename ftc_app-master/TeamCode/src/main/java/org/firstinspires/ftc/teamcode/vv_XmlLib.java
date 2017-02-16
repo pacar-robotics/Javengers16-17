@@ -216,7 +216,7 @@ public class vv_XmlLib {
 
         diagResultsSource = new DOMSource(diagResultsDoc);
 
-        File xmlFile = new File(Environment.getExternalStorageDirectory().getPath() +
+        File xmlFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) +
                 vv_Constants.DIAG_RESULTS_RELATIVE_FILE_PATH);
 
         xmlFile.delete();

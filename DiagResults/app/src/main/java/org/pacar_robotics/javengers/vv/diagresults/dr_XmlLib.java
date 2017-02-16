@@ -97,7 +97,7 @@ public class dr_XmlLib {
         try {
             //get the file handle to the results file.
 
-            File xmlFile = new File(Environment.getExternalStorageDirectory().getPath() +
+            File xmlFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) +
                     dr_Constants.DIAG_RESULTS_RELATIVE_FILE_PATH);
             //create a XML DOM document from file
             //and attach it to the results doc handle that is in the class.
