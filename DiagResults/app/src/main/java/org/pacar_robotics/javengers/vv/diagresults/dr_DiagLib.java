@@ -1,5 +1,6 @@
 package org.pacar_robotics.javengers.vv.diagresults;
 
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 
@@ -161,86 +162,87 @@ public class dr_DiagLib {
             //lets step through each node.
             //first get a list of all child nodes of the test
             NodeList detailsNodeList = robotTestNodes.item(i).getChildNodes();
-            for (int j = 0; i < detailsNodeList.getLength(); j++) {
+            for (int j = 0; j < detailsNodeList.getLength(); j++) {
                 //depending on the type of node we need to assign it to the right Array
-                switch (detailsNodeList.item(j).getNodeName()) {
-                    case "testId":
-                        robotTestArray[i].
-                                setTestElementId( Integer.valueOf(detailsNodeList.item(j).getTextContent()));
-                        break;
-
-                    case "testName":
-                        robotTestArray[i].
-                                setTestElementName( detailsNodeList.item(j).getTextContent());
-                        break;
-                    case "shortDescription":
-                        robotTestArray[i].
-                                setTestShortDescription( detailsNodeList.item(j).getTextContent());
-                        break;
-                    case "longDescription":
-                        robotTestArray[i].
-                                setTestLongDescription( detailsNodeList.item(j).getTextContent());
-                        break;
-                    case "testResult":
-                        if (detailsNodeList.item(j).getTextContent().equals("Passed")) {
+                if(detailsNodeList.item(j).getNodeType()== Node.ELEMENT_NODE) {
+                    switch (detailsNodeList.item(j).getNodeName()) {
+                        case "TestId":
                             robotTestArray[i].
-                                    setTestResult( true);
-                        } else {
+                                    setTestElementId(Integer.valueOf(detailsNodeList.item(j).getTextContent()));
+                            break;
+
+                        case "TestName":
                             robotTestArray[i].
-                                    setTestResult( false);
-                        }
-                        break;
-                    case "testResultMessage":
-                        robotTestArray[i].
-                                setTestResultMessage( detailsNodeList.item(j).getTextContent());
-                        break;
-                    case "testResultSeverity":
-                        switch (detailsNodeList.item(j).getTextContent()) {
-                            case "CRITICAL":
+                                    setTestElementName(detailsNodeList.item(j).getTextContent());
+                            break;
+                        case "TestShortDescription":
+                            robotTestArray[i].
+                                    setTestShortDescription(detailsNodeList.item(j).getTextContent());
+                            break;
+                        case "TestLongDescription":
+                            robotTestArray[i].
+                                    setTestLongDescription(detailsNodeList.item(j).getTextContent());
+                            break;
+                        case "TestResult":
+                            if (detailsNodeList.item(j).getTextContent().equals("Passed")) {
                                 robotTestArray[i].
-                                        setTestResultSeverity( ResultSeverity.CRITICAL);
-                                break;
+                                        setTestResult(true);
+                            } else {
+                                robotTestArray[i].
+                                        setTestResult(false);
+                            }
+                            break;
+                        case "TestResultMessage":
+                            robotTestArray[i].
+                                    setTestResultMessage(detailsNodeList.item(j).getTextContent());
+                            break;
+                        case "TestResultSeverity":
+                            switch (detailsNodeList.item(j).getTextContent()) {
+                                case "CRITICAL":
+                                    robotTestArray[i].
+                                            setTestResultSeverity(ResultSeverity.CRITICAL);
+                                    break;
 
-                            case "HIGH":
-                                robotTestArray[i].
-                                        setTestResultSeverity( ResultSeverity.HIGH);
-                                break;
-                            case "MEDIUM":
-                                robotTestArray[i].
-                                        setTestResultSeverity( ResultSeverity.MEDIUM);
-                                break;
-                            case "LOW":
-                                robotTestArray[i].
-                                        setTestResultSeverity( ResultSeverity.LOW);
-                                break;
-                            case "INFO":
-                                robotTestArray[i].
-                                        setTestResultSeverity( ResultSeverity.INFO);
-                                break;
-                            case "UNKNOWN":
-                                robotTestArray[i].
-                                        setTestResultSeverity( ResultSeverity.UNKNOWN);
-                                break;
-                            default:
-                                robotTestArray[i].
-                                        setTestResultSeverity( ResultSeverity.UNKNOWN);
-                                break;
-                        }
+                                case "HIGH":
+                                    robotTestArray[i].
+                                            setTestResultSeverity(ResultSeverity.HIGH);
+                                    break;
+                                case "MEDIUM":
+                                    robotTestArray[i].
+                                            setTestResultSeverity(ResultSeverity.MEDIUM);
+                                    break;
+                                case "LOW":
+                                    robotTestArray[i].
+                                            setTestResultSeverity(ResultSeverity.LOW);
+                                    break;
+                                case "INFO":
+                                    robotTestArray[i].
+                                            setTestResultSeverity(ResultSeverity.INFO);
+                                    break;
+                                case "UNKNOWN":
+                                    robotTestArray[i].
+                                            setTestResultSeverity(ResultSeverity.UNKNOWN);
+                                    break;
+                                default:
+                                    robotTestArray[i].
+                                            setTestResultSeverity(ResultSeverity.UNKNOWN);
+                                    break;
+                            }
 
-                    case "testRecommendation":
-                        robotTestArray[i].
-                                setTestRecommendation( detailsNodeList.item(j).getTextContent());
-                    default:
-                       
-                        Thread.sleep(2000);
+                        case "TestRecommendation":
+                            robotTestArray[i].
+                                    setTestRecommendation(detailsNodeList.item(j).getTextContent());
+                        default:
+
+                    }
                 }
             }
+            //mark the test as valid
+            robotTestArray[i].testResultValidity=true;
+            robotTestArray[i].testValidity=true;
+
         }
 
-
-        //We have completed writing of all the tags in the XML DOM that have valid results.
-        //lets write out the XML file.
-        vvXmlLib.writeDiagResultsXML();
     }
 
 
