@@ -42,6 +42,8 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.RIGHT_BEACON_BUTTON_SE
 import static org.firstinspires.ftc.teamcode.vv_Constants.ROBOT_TRACK_DISTANCE;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TURN_POWER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TurnDirectionEnum;
+import static org.firstinspires.ftc.teamcode.vv_Constants.GENERIC_TIMER;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DPAD_TIMER;
 
 /**
  * Created by thomas on 9/25/2016.
@@ -749,8 +751,8 @@ public class vv_Lib {
         robot.setPower(aOpMode, BACK_LEFT_MOTOR, 0.4f);
         robot.setPower(aOpMode, BACK_RIGHT_MOTOR, -0.4f);
 
-        aOpMode.reset_timer();
-        while (aOpMode.time_elapsed() < duration) {
+        aOpMode.reset_timer_array(GENERIC_TIMER);
+        while (aOpMode.time_elapsed_array(GENERIC_TIMER) < duration) {
             //run till duration
             aOpMode.idle();
         }
@@ -1265,13 +1267,13 @@ public class vv_Lib {
         shootBall(aOpMode);
         //spin intake
         robot.openRearLauncherGate();
-        aOpMode.reset_timer();
+        aOpMode.reset_timer_array(GENERIC_TIMER);
 
         robot.setPower(aOpMode, INTAKE_MOTOR,
                 -vv_Constants.INTAKE_POWER);
         setupShot(aOpMode);
         //stop intake
-        while (aOpMode.time_elapsed() < 2750 && getEopdRawValue(aOpMode) < EOPD_PROXIMITY_THRESHOLD) {
+        while (aOpMode.time_elapsed_array(GENERIC_TIMER) < 2750 && getEopdRawValue(aOpMode) < EOPD_PROXIMITY_THRESHOLD) {
             //spin till we are past time limit or ball is detected in launch tube.
         }
 
@@ -1282,6 +1284,14 @@ public class vv_Lib {
 
     }
 
+
+    public boolean isRobotAtAngle(vv_OpMode aOpMode, int angle) {
+        if(Math.abs(robot.getMxpGyroSensorHeading(aOpMode) - angle) < vv_Constants.ROBOT_ANGLE_THRESHOLD) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     //conditions that can stop the robot.
 

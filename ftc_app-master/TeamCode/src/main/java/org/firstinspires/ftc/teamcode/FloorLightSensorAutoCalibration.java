@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import static org.firstinspires.ftc.teamcode.vv_Constants.GENERIC_TIMER;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DPAD_TIMER;
 
 import java.io.IOException;
 
@@ -44,9 +46,9 @@ public class FloorLightSensorAutoCalibration extends vv_OpMode {
 
         vvLib.moveForward(this, .2f);
 
-        reset_timer();
+        reset_timer_array(vv_Constants.GENERIC_TIMER);
 
-        while (time_elapsed() <= 3000) {
+        while (time_elapsed_array(vv_Constants.GENERIC_TIMER) <= 3000) {
             currentFloorLightCalibValue = vvLib.getFloorColorIntensity(this); //read value only once to avoid race or
             //side effects, because robot is moving at the same time, each call to getFloorColorIntensity in the ternary
             //operator below will return new values.
@@ -57,7 +59,7 @@ public class FloorLightSensorAutoCalibration extends vv_OpMode {
             minFloorLightCalibValue = (currentFloorLightCalibValue < minFloorLightCalibValue ?
                     currentFloorLightCalibValue : minFloorLightCalibValue);
 
-            if (time_elapsed() > 1500) {
+            if (time_elapsed_array(vv_Constants.GENERIC_TIMER) > 1500) {
                 vvLib.moveBackward(this, .2f);
             }
 

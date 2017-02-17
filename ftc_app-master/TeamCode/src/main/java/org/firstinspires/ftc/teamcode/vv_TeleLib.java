@@ -5,12 +5,20 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_POSITION_INCR
 import static org.firstinspires.ftc.teamcode.vv_Constants.EOPD_PROXIMITY_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.PRE_INIT_LAUNCH_POSITION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
+import static org.firstinspires.ftc.teamcode.vv_Constants.GENERIC_TIMER;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DPAD_TIMER;
 
 /**
  * Created by thomas on 9/25/2016.
  */
 
 public class vv_TeleLib {
+
+    boolean isDPADDownPressed = false;
+    boolean isDPADUpPressed = false;
+    boolean isDPADLeftPressed = false;
+    boolean isDPADRightPressed = false;
+
 
     protected void processIntake(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
         //Changes state of Ball Collection mechanism to Outtake [Toggles On or Off]
@@ -171,7 +179,9 @@ public class vv_TeleLib {
                 Math.abs(aOpMode.gamepad1.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
                 (Math.abs(aOpMode.gamepad2.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
                         Math.abs(aOpMode.gamepad2.left_stick_y) < vv_Constants.ANALOG_STICK_THRESHOLD) &&
-                Math.abs(aOpMode.gamepad2.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD) {
+                Math.abs(aOpMode.gamepad2.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD && !aOpMode.gamepad1.dpad_down
+            && !aOpMode.gamepad1.dpad_left && !aOpMode.gamepad1.dpad_up && !aOpMode.gamepad2.dpad_right)
+        {
             //both joysticks on both gamepads are at rest, stop the robot.
 
             vvLib.stopAllMotors(aOpMode);
@@ -219,7 +229,8 @@ public class vv_TeleLib {
                 Math.abs(aOpMode.gamepad1.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
                 (Math.abs(aOpMode.gamepad2.left_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD &&
                         Math.abs(aOpMode.gamepad2.left_stick_y) < vv_Constants.ANALOG_STICK_THRESHOLD) &&
-                Math.abs(aOpMode.gamepad2.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD) {
+                Math.abs(aOpMode.gamepad2.right_stick_x) < vv_Constants.ANALOG_STICK_THRESHOLD&& !aOpMode.gamepad1.dpad_down
+                && !aOpMode.gamepad1.dpad_left && !aOpMode.gamepad1.dpad_up && !aOpMode.gamepad2.dpad_right) {
             //both joysticks on both gamepads are at rest, stop the robot.
 
             vvLib.stopAllMotors(aOpMode);
@@ -231,14 +242,56 @@ public class vv_TeleLib {
 
     protected void processBeaconOrientationControls(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
         //process dpads
-        if (aOpMode.gamepad1.dpad_down) {
-            vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, 0);
-        } else if (aOpMode.gamepad1.dpad_up) {
-            vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, +180);
-        } else if (aOpMode.gamepad1.dpad_left) {
-            vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, +90);
-        } else if (aOpMode.gamepad1.dpad_right) {
-            vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, -90);
+//        if (aOpMode.gamepad1.dpad_down) {
+//            if (!isDPADDownPressed) {
+//                isDPADDownPressed = true;
+//                aOpMode.reset_timer_array(DPAD_TIMER);
+//                vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, 0);
+//            }
+//        } else {
+//            isDPADDownPressed = false;
+//        }
+//
+//        if (aOpMode.gamepad1.dpad_up) {
+//            if (!isDPADUpPressed) {
+//                isDPADUpPressed = true;
+//                aOpMode.reset_timer_array(DPAD_TIMER);
+//                vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, +180);
+//            }
+//        } else{
+//            isDPADUpPressed = false;
+//        }
+        if (aOpMode.gamepad1.dpad_right) {
+            if (!isDPADRightPressed) {
+                Thread.sleep(100);
+                isDPADRightPressed = true;
+                aOpMode.reset_timer_array(DPAD_TIMER);
+                vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, -90);
+            }
+        } else {
+            isDPADRightPressed = false;
+        }
+        if (aOpMode.gamepad1.dpad_left) {
+            if (!isDPADLeftPressed) {
+                Thread.sleep(100);
+                isDPADLeftPressed = true;
+                aOpMode.reset_timer_array(DPAD_TIMER);
+                vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, +90);
+            }
+        } else {
+            isDPADLeftPressed = false;
+        }
+    }
+
+    protected void processLongBeaconControls (vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
+        if (isDPADRightPressed && aOpMode.time_elapsed_array(DPAD_TIMER) > 750) {
+            vvLib.moveSidewaysLeft(aOpMode, .25f);
+        } else if (isDPADUpPressed && aOpMode.time_elapsed_array(DPAD_TIMER) > 750) {
+            vvLib.moveSidewaysLeft(aOpMode, .25f);
+        } else if (isDPADDownPressed && aOpMode.time_elapsed_array(DPAD_TIMER) > 750) {
+            vvLib.moveSidewaysLeft(aOpMode, .25f);
+        } else if (isDPADLeftPressed && aOpMode.time_elapsed_array(DPAD_TIMER) > 750) {
+            vvLib.moveSidewaysLeft(aOpMode, .25f);
         }
 
     }
@@ -421,6 +474,8 @@ public class vv_TeleLib {
 
     }
 
-
+//    public boolean isButtonLongPressed(vv_OpMode anOp, vv_Lib vvLib, boolean button_press) throws InterruptedException {
+//
+//    }
 }
 

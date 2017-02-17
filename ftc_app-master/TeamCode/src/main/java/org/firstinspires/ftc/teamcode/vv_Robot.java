@@ -66,6 +66,8 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_DURATION_MA
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_ENCODER_MARGIN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_POWER;
+import static org.firstinspires.ftc.teamcode.vv_Constants.GENERIC_TIMER;
+import static org.firstinspires.ftc.teamcode.vv_Constants.DPAD_TIMER;
 
 
 
@@ -392,8 +394,8 @@ public class vv_Robot {
         }
 
 
-        aOpMode.reset_timer();
-        while (baseMotorsAreBusy() && (aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) &&
+        aOpMode.reset_timer_array(GENERIC_TIMER);
+        while (baseMotorsAreBusy() && (aOpMode.time_elapsed_array(GENERIC_TIMER) < MAX_MOTOR_LOOP_TIME) &&
                 (Math.abs(fl_Position - motorArray[FRONT_LEFT_MOTOR].getCurrentPosition())
                         >= MECCANUM_WHEEL_ENCODER_MARGIN)) {
             //wait until motors havce completed movement or timed out.
@@ -760,8 +762,8 @@ public class vv_Robot {
         aOpMode.DBG("after power set in vv_robot");
 
         //reset the timer
-        aOpMode.reset_timer();
-        while (aOpMode.time_elapsed() < duration) {
+        aOpMode.reset_timer_array(GENERIC_TIMER);
+        while (aOpMode.time_elapsed_array(GENERIC_TIMER) < duration) {
             //wait till duration is complete.
             aOpMode.DBG("In motor loop in vv_robot");
             aOpMode.idle();
@@ -801,7 +803,7 @@ public class vv_Robot {
         motorArray[motorName].setPower(power);
 
         //reset the timer
-        aOpMode.reset_timer();
+        aOpMode.reset_timer_array(GENERIC_TIMER);
 
         //variable for stall tests
         long stallTimeStart = 0;
@@ -816,15 +818,15 @@ public class vv_Robot {
 
         while ((motorArray[motorName].isBusy()) &&
                 ((Math.abs(motorArray[motorName].getCurrentPosition() - targetPosition)) > MECCANUM_WHEEL_ENCODER_MARGIN) &&
-                (aOpMode.time_elapsed() < maxDuration)) {
+                (aOpMode.time_elapsed_array(GENERIC_TIMER) < maxDuration)) {
             stallPositionStart = motorArray[motorName].getCurrentPosition();
-            stallTimeStart = aOpMode.time_elapsed();
+            stallTimeStart = aOpMode.time_elapsed_array(GENERIC_TIMER);
             //wait till the run is complete or the time runs out.
             Thread.sleep(50);
             aOpMode.idle();
             //stall code
             stallPositionDelta = Math.abs(motorArray[motorName].getCurrentPosition()) - Math.abs(stallPositionStart);
-            stallTimeDelta = aOpMode.time_elapsed() - stallTimeStart;
+            stallTimeDelta = aOpMode.time_elapsed_array(GENERIC_TIMER) - stallTimeStart;
             stallVelocity = ((stallPositionDelta * 1.0f) / stallTimeDelta);
 
             //TODO: Stall code must be tested!!
@@ -874,7 +876,7 @@ public class vv_Robot {
                 ENCODED_MOTOR_STALL_TIME_DELTA);
 
         //reset clock;
-        aOpMode.reset_timer();
+        aOpMode.reset_timer_array(GENERIC_TIMER);
 
         //initialize the variables we need.
         int newStallPosition = 0;
@@ -886,7 +888,7 @@ public class vv_Robot {
         float stallVelocity = 0;
 
         while (motorArray[WORM_DRIVE_MOTOR].isBusy() &&
-                (aOpMode.time_elapsed() < WORM_DRIVE_DURATION_MAX) &&
+                (aOpMode.time_elapsed_array(GENERIC_TIMER) < WORM_DRIVE_DURATION_MAX) &&
                 (!wormDriveTouchSensor.isPressed())) {
 
             //save old stall time and position.
@@ -895,7 +897,7 @@ public class vv_Robot {
 
             //read the current position only once.
             newStallPosition = motorArray[WORM_DRIVE_MOTOR].getCurrentPosition();
-            newStallTime = aOpMode.time_elapsed();
+            newStallTime = aOpMode.time_elapsed_array(GENERIC_TIMER);
 
             stallPositionDelta = Math.abs(Math.abs(newStallPosition) - Math.abs(oldStallPosition));
             stallTimeDelta = newStallTime - oldStallTime;
@@ -964,7 +966,7 @@ public class vv_Robot {
                 ENCODED_MOTOR_STALL_TIME_DELTA);
 
         //reset clock;
-        aOpMode.reset_timer();
+        aOpMode.reset_timer_array(GENERIC_TIMER);
 
         //initialize the variables we need.
         int newStallPosition = 0;
@@ -976,7 +978,7 @@ public class vv_Robot {
         float stallVelocity = 0;
 
         while (motorArray[CAP_BALL_MOTOR].isBusy() &&
-                (aOpMode.time_elapsed() < CAP_BALL_DURATION_MAX)) {
+                (aOpMode.time_elapsed_array(GENERIC_TIMER) < CAP_BALL_DURATION_MAX)) {
 
             //save old stall time and position.
             oldStallPosition = newStallPosition;
@@ -984,7 +986,7 @@ public class vv_Robot {
 
             //read the current position only once.
             newStallPosition = motorArray[CAP_BALL_MOTOR].getCurrentPosition();
-            newStallTime = aOpMode.time_elapsed();
+            newStallTime = aOpMode.time_elapsed_array(GENERIC_TIMER);
 
             stallPositionDelta = Math.abs(Math.abs(newStallPosition) - Math.abs(oldStallPosition));
             stallTimeDelta = newStallTime - oldStallTime;
@@ -1051,11 +1053,11 @@ public class vv_Robot {
 
 
         //reset clock;
-        aOpMode.reset_timer();
+        aOpMode.reset_timer_array(GENERIC_TIMER);
 
 
         while (motorArray[CAP_BALL_MOTOR].isBusy() &&
-                (aOpMode.time_elapsed() < CAP_BALL_DURATION_MAX)) {
+                (aOpMode.time_elapsed_array(GENERIC_TIMER) < CAP_BALL_DURATION_MAX)) {
             aOpMode.idle();
         }
         //stop the motor
@@ -1222,9 +1224,9 @@ public class vv_Robot {
 
         //
 
-        aOpMode.reset_timer();
+        aOpMode.reset_timer_array(GENERIC_TIMER);
         //stop 100 ms before end
-        while (aOpMode.time_elapsed() < duration - 100) {
+        while (aOpMode.time_elapsed_array(GENERIC_TIMER) < duration - 100) {
 
             //apply specific powers to motors to get desired movement
             //wait till duration is complete.
@@ -1245,9 +1247,9 @@ public class vv_Robot {
         motorArray[BACK_RIGHT_MOTOR].setPower(Math.abs(br_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
                 Math.signum(br_velocity) * MOTOR_LOWER_POWER_THRESHOLD : br_velocity);
 
-        aOpMode.reset_timer();
+        aOpMode.reset_timer_array(GENERIC_TIMER);
         //stop 100 ms before end
-        while (aOpMode.time_elapsed() < 100) {
+        while (aOpMode.time_elapsed_array(GENERIC_TIMER) < 100) {
             aOpMode.idle();
         }
 
@@ -1336,8 +1338,8 @@ public class vv_Robot {
 
         navXPIDController.PIDResult mxpPIDResult = new navXPIDController.PIDResult();
 
-        aOpMode.reset_timer();
-        while ((aOpMode.time_elapsed() < duration) &&
+        aOpMode.reset_timer_array(GENERIC_TIMER);
+        while ((aOpMode.time_elapsed_array(GENERIC_TIMER) < duration) &&
                 (!condition.stopCondition(aOpMode))) {
             if (mxpPidController.waitForNewUpdate(mxpPIDResult, DEVICE_TIMEOUT_MS)) {
                 if (mxpPIDResult.isOnTarget()) {
@@ -1439,9 +1441,9 @@ public class vv_Robot {
 
         //
 
-        aOpMode.reset_timer();
+        aOpMode.reset_timer_array(GENERIC_TIMER);
         //stop 100 ms before end
-        while ((aOpMode.time_elapsed() < (duration - 100)) &&
+        while ((aOpMode.time_elapsed_array(GENERIC_TIMER) < (duration - 100)) &&
                 (!condition.stopCondition(aOpMode))) {
 
             //condition will return true when it reaches state meant to stop movement
@@ -1477,9 +1479,9 @@ public class vv_Robot {
         motorArray[BACK_RIGHT_MOTOR].setPower(Math.abs(br_velocity) > MOTOR_LOWER_POWER_THRESHOLD ?
                 Math.signum(br_velocity) * MOTOR_LOWER_POWER_THRESHOLD : br_velocity * RIGHT_MOTOR_TRIM_FACTOR);
 
-        aOpMode.reset_timer();
+        aOpMode.reset_timer_array(GENERIC_TIMER);
         //stop 100 ms before end
-        while (aOpMode.time_elapsed() < 100) {
+        while (aOpMode.time_elapsed_array(GENERIC_TIMER) < 100) {
             aOpMode.idle();
         }
 
@@ -1589,9 +1591,9 @@ public class vv_Robot {
 
         DecimalFormat df = new DecimalFormat("#.##");
 
-        aOpMode.reset_timer();
+        aOpMode.reset_timer_array(GENERIC_TIMER);
 
-        while ((aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) &&
+        while ((aOpMode.time_elapsed_array(GENERIC_TIMER) < MAX_MOTOR_LOOP_TIME) &&
                 !Thread.currentThread().isInterrupted()) {
             if (yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS)) {
                 if (yawPIDResult.isOnTarget()) {
@@ -1772,11 +1774,11 @@ public class vv_Robot {
                     (ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION - partialRev);
             motorArray[ARM_MOTOR].setTargetPosition(targetPosition);
             motorArray[ARM_MOTOR].setPower(0.9f);
-            aOpMode.reset_timer();
+            aOpMode.reset_timer_array(GENERIC_TIMER);
             while (motorArray[ARM_MOTOR].isBusy() &&
                     (Math.abs(targetPosition - motorArray[ARM_MOTOR].getCurrentPosition())
                             >= ARM_MOTOR_ENCODER_MARGIN) &&
-                    (aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME)) {
+                    (aOpMode.time_elapsed_array(GENERIC_TIMER) < MAX_MOTOR_LOOP_TIME)) {
                 //keep rotating till either motor reached target or
                 //motor loop time is exceeded
             }
@@ -1796,11 +1798,11 @@ public class vv_Robot {
                 (increment);
         motorArray[ARM_MOTOR].setTargetPosition(targetPosition);
         motorArray[ARM_MOTOR].setPower(0.9f);
-        aOpMode.reset_timer();
+        aOpMode.reset_timer_array(GENERIC_TIMER);
         while (motorArray[ARM_MOTOR].isBusy() &&
                 (Math.abs(targetPosition - motorArray[ARM_MOTOR].getCurrentPosition())
                         >= ARM_MOTOR_ENCODER_MARGIN) &&
-                (aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME)) {
+                (aOpMode.time_elapsed_array(GENERIC_TIMER) < MAX_MOTOR_LOOP_TIME)) {
             //keep rotating till either motor reached target, the touch sensor is pressed or
             //motor loop time is exceeded
         }
@@ -1819,11 +1821,11 @@ public class vv_Robot {
         motorArray[ARM_MOTOR].setTargetPosition(targetPosition);
 
         motorArray[ARM_MOTOR].setPower(0.9f);
-        aOpMode.reset_timer();
+        aOpMode.reset_timer_array(GENERIC_TIMER);
         while (motorArray[ARM_MOTOR].isBusy() &&
                 (Math.abs(targetPosition - motorArray[ARM_MOTOR].getCurrentPosition())
                         >= ARM_MOTOR_ENCODER_MARGIN) &&
-                aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
+                aOpMode.time_elapsed_array(GENERIC_TIMER) < MAX_MOTOR_LOOP_TIME) {
             //keep rotating till either motor reached target or
             //motor loop time is exceeded
         }
@@ -1847,11 +1849,11 @@ public class vv_Robot {
     public void setIntakeEncoderPosition(vv_OpMode aOpMode, int targetPosition) {
 
         motorArray[ARM_MOTOR].setPower(0.5f);
-        aOpMode.reset_timer();
+        aOpMode.reset_timer_array(GENERIC_TIMER);
         while (motorArray[INTAKE_MOTOR].isBusy() &&
                 (Math.abs(targetPosition - motorArray[INTAKE_MOTOR].getCurrentPosition())
                         >= ARM_MOTOR_ENCODER_MARGIN) &&
-                aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
+                aOpMode.time_elapsed_array(GENERIC_TIMER) < MAX_MOTOR_LOOP_TIME) {
             //keep rotating till either motor reached target or
             //motor loop time is exceeded
         }
@@ -1863,11 +1865,11 @@ public class vv_Robot {
         motorArray[ARM_MOTOR].setTargetPosition(targetPosition);
 
         motorArray[ARM_MOTOR].setPower(0.5f);
-        aOpMode.reset_timer();
+        aOpMode.reset_timer_array(GENERIC_TIMER);
         while (motorArray[ARM_MOTOR].isBusy() &&
                 (Math.abs(targetPosition - motorArray[ARM_MOTOR].getCurrentPosition())
                         >= ARM_MOTOR_ENCODER_MARGIN) &&
-                aOpMode.time_elapsed() < MAX_MOTOR_LOOP_TIME) {
+                aOpMode.time_elapsed_array(GENERIC_TIMER) < MAX_MOTOR_LOOP_TIME) {
             //keep rotating till either motor reached target or
             //motor loop time is exceeded
         }

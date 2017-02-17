@@ -9,7 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 public abstract class vv_OpMode extends LinearOpMode
 {
-    long clock_start_time = 0;
+
+    public static long timer_array[] = new long[5];
 
     public void DBG(String message) throws InterruptedException {
         if (vv_Constants.DEBUG) {
@@ -30,13 +31,13 @@ public abstract class vv_OpMode extends LinearOpMode
         telemetry.addLine(caption).addData(key, number);
     }
 
-    public void reset_timer() {
-        clock_start_time = System.currentTimeMillis();
+    public void reset_timer_array(int index) {
+        timer_array[index] = System.currentTimeMillis();
     }
 
-    public long time_elapsed() {
+    public long time_elapsed_array(int index) {
         //return the time elapsed in milliseconds
-        return System.currentTimeMillis() - clock_start_time;
+        return System.currentTimeMillis() - timer_array[index];
     }
 
     public interface StopCondition {
