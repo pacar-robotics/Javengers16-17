@@ -77,6 +77,7 @@ public class vv_Constants
     static final double CAP_BALL_SERVO_RELEASED = 0.2f;
 
 
+    static final int ROBOT_ANGLE_THRESHOLD = 3;
 
     //distance between wheels left to right of the Robot in inches.
     final static float ROBOT_TRACK_DISTANCE = 13.7f; //adjusted from observation.
@@ -139,6 +140,8 @@ public class vv_Constants
     final static int LEFT_BEACON_BUTTON_SERVO = 0;
     final static int RIGHT_BEACON_BUTTON_SERVO = 1;
 
+    final static float BEACON_TELEOP_SCORE_POWER = .25f;
+
 
     final static int LAUNCH_POWER_INCREMENT = 75;
 
@@ -186,6 +189,9 @@ public class vv_Constants
 
 
     final static String DIAG_RESULTS_RELATIVE_FILE_PATH = "/PACAR/DiagResults.xml";
+
+    public static final int GENERIC_TIMER = 0;
+    public static final int DPAD_TIMER = 1;
 
     BeaconColorEnum BeaconColor;
     DirectionEnum Direction;

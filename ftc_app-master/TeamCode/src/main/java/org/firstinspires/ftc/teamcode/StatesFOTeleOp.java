@@ -74,7 +74,11 @@ public class StatesFOTeleOp extends vv_OpMode {
 
                 vvTeleLib.processBeaconOrientationControls(this, vvLib);
 
+                vvTeleLib.processLongBeaconControls(this, vvLib);
+
                 vvTeleLib.processChooChooPosition(this, vvLib);
+
+
 
             } catch (vv_Robot.MotorStalledException MSE) {
                 telemetryAddData("Motor Stalled!", "Name", MSE.getMessage());
