@@ -252,7 +252,7 @@ public class vv_TeleLib {
             vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, +90);
         }
     }
-    
+
 
     protected void processYawReset(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
 
@@ -294,7 +294,7 @@ public class vv_TeleLib {
                     lowerCapBallToMinHeight(aOpMode, vvLib);
                 } else {
                     decreaseCapBallHeight(aOpMode, vvLib,
-                            (int) aOpMode.gamepad2.left_trigger * CAP_BALL_POSITION_INCREMENT);
+                            CAP_BALL_POSITION_INCREMENT);
                 }
             }
         }
@@ -315,7 +315,7 @@ public class vv_TeleLib {
                 } else {
 
                     increaseCapBallHeight(aOpMode, vvLib,
-                            (int) aOpMode.gamepad2.right_trigger * CAP_BALL_POSITION_INCREMENT);
+                           CAP_BALL_POSITION_INCREMENT);
                 }
             }
         }
@@ -323,6 +323,11 @@ public class vv_TeleLib {
         if (aOpMode.gamepad2.a) {
             lowerCapBallToMinHeight(aOpMode, vvLib);
         }
+
+        if (aOpMode.gamepad2.x) {
+            scoreCapBall(aOpMode, vvLib);
+        }
+
 
         if (aOpMode.gamepad2.y) {
             raiseCapBallToMaxHeight(aOpMode, vvLib);
@@ -337,12 +342,12 @@ public class vv_TeleLib {
 
         if (aOpMode.gamepad2.left_trigger > TRIGGER_THRESHOLD) {
             decreaseCapBallHeight(aOpMode, vvLib,
-                    (int) aOpMode.gamepad2.left_trigger * CAP_BALL_POSITION_INCREMENT);
+                    CAP_BALL_POSITION_INCREMENT);
         }
 
         if (aOpMode.gamepad2.right_trigger > TRIGGER_THRESHOLD) {
             increaseCapBallHeight(aOpMode, vvLib,
-                    (int) aOpMode.gamepad2.right_trigger * CAP_BALL_POSITION_INCREMENT);
+                     CAP_BALL_POSITION_INCREMENT);
         }
         aOpMode.telemetryAddData("Cap Ball Height:", "Encoder:", "Value:" +
                 vvLib.robot.getCapBallMotorEncoderPosition(aOpMode));
@@ -357,12 +362,12 @@ public class vv_TeleLib {
 
         if (aOpMode.gamepad2.left_trigger > TRIGGER_THRESHOLD) {
             decreaseCapBallHeightNoStall(aOpMode, vvLib,
-                    (int) aOpMode.gamepad2.left_trigger * CAP_BALL_POSITION_INCREMENT);
+                     CAP_BALL_POSITION_INCREMENT);
         }
 
         if (aOpMode.gamepad2.right_trigger > TRIGGER_THRESHOLD) {
             increaseCapBallHeightNoStall(aOpMode, vvLib,
-                    (int) aOpMode.gamepad2.right_trigger * CAP_BALL_POSITION_INCREMENT);
+                   CAP_BALL_POSITION_INCREMENT);
         }
         aOpMode.telemetryAddData("Cap Ball Height:", "Encoder:", "Value:" +
                 vvLib.robot.getCapBallMotorEncoderPosition(aOpMode));
@@ -411,6 +416,13 @@ public class vv_TeleLib {
 
     public int getCapBallPosition(vv_OpMode aOpMode, vv_Lib vvLib) {
         return vvLib.robot.getCapBallMotorEncoderPosition(aOpMode);
+    }
+
+    public void scoreCapBall(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException{
+        //move forward gently
+        vvLib.moveWheels(aOpMode, 6, 0.5f, vv_Constants.DirectionEnum.Forward, true);
+        //pull back suddenly
+        vvLib.moveWheels(aOpMode, 4, 0.9f, vv_Constants.DirectionEnum.Backward, false);
     }
 
     protected void processChooChooPosition(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
