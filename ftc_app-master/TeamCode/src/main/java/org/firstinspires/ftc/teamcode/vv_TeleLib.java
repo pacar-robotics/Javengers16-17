@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_ENCODER_UPPER_LIMIT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_POSITION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.EOPD_PROXIMITY_THRESHOLD;
-import static org.firstinspires.ftc.teamcode.vv_Constants.PRE_INIT_LAUNCH_POSITION_INCREMENT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POSITION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.GENERIC_TIMER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DPAD_TIMER;
@@ -242,31 +242,34 @@ public class vv_TeleLib {
 
     protected void processBeaconOrientationControls(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
         //process dpads
-//        if (aOpMode.gamepad1.dpad_down) {
-//            if (!isDPADDownPressed) {
-//                isDPADDownPressed = true;
-//                aOpMode.reset_timer_array(DPAD_TIMER);
-//                vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, 0);
-//            }
-//        } else {
-//            isDPADDownPressed = false;
-//        }
-//
-//        if (aOpMode.gamepad1.dpad_up) {
-//            if (!isDPADUpPressed) {
-//                isDPADUpPressed = true;
-//                aOpMode.reset_timer_array(DPAD_TIMER);
-//                vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, +180);
-//            }
-//        } else{
-//            isDPADUpPressed = false;
-//        }
+        if (aOpMode.gamepad1.dpad_down) {
+            if (!isDPADDownPressed) {
+                isDPADDownPressed = true;
+                aOpMode.reset_timer_array(DPAD_TIMER);
+                vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, 0);
+            }
+
+        } else {
+            isDPADDownPressed = false;
+        }
+
+        if (aOpMode.gamepad1.dpad_up) {
+            if (!isDPADUpPressed) {
+                isDPADUpPressed = true;
+                aOpMode.reset_timer_array(DPAD_TIMER);
+                vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, +180);
+                return;
+            }
+        } else{
+            isDPADUpPressed = false;
+        }
         if (aOpMode.gamepad1.dpad_right) {
             if (!isDPADRightPressed) {
                 Thread.sleep(100);
                 isDPADRightPressed = true;
                 aOpMode.reset_timer_array(DPAD_TIMER);
                 vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, -90);
+                return;
             }
         } else {
             isDPADRightPressed = false;
@@ -277,6 +280,7 @@ public class vv_TeleLib {
                 isDPADLeftPressed = true;
                 aOpMode.reset_timer_array(DPAD_TIMER);
                 vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, +90);
+                return;
             }
         } else {
             isDPADLeftPressed = false;
@@ -458,11 +462,11 @@ public class vv_TeleLib {
     protected void processChooChooPosition(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
 
         if (aOpMode.gamepad1.left_stick_button) {
-            vvLib.robot.rotateChooChoo(aOpMode, PRE_INIT_LAUNCH_POSITION_INCREMENT);
+            vvLib.robot.rotateChooChoo(aOpMode, LAUNCH_POSITION_INCREMENT);
             Thread.sleep(100); // to absorb extra button presses
         }
         if (aOpMode.gamepad1.right_stick_button) {
-            vvLib.robot.rotateChooChoo(aOpMode, -PRE_INIT_LAUNCH_POSITION_INCREMENT);
+            vvLib.robot.rotateChooChoo(aOpMode, -LAUNCH_POSITION_INCREMENT);
             Thread.sleep(100); // to absorb extra button presses
         }
         if (aOpMode.gamepad1.start) {

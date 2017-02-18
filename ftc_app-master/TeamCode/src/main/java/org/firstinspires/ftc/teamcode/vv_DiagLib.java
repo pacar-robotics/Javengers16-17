@@ -5,16 +5,21 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.w3c.dom.NodeList;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION;
+import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR_ENCODER_MARGIN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_ENCODER_MARGIN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_POSITION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DEBUG;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_INCREMENT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_ROBOT_DIAGNOSTIC_TESTS;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_DIAMETER;
+import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ROBOT_TRACK_DISTANCE;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TURN_POWER;
 
@@ -668,7 +673,7 @@ public class vv_DiagLib {
             robot.testMotor(aOpMode, FRONT_LEFT_MOTOR, 0.5f, 1000);
             int newMotorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR);
 
-            if (newMotorPosition == motorPosition) {
+            if (Math.abs(newMotorPosition - motorPosition)<MECCANUM_WHEEL_ENCODER_MARGIN) {
                 //the motor encoder has not moved. we have a problem.
                 robotTest.setTestResult(aOpMode, false);
                 robotTest.setTestResultValidity(aOpMode, true);
@@ -695,7 +700,7 @@ public class vv_DiagLib {
             int motorPosition = robot.getMotorPosition(aOpMode, FRONT_RIGHT_MOTOR);
             robot.testMotor(aOpMode, FRONT_RIGHT_MOTOR, 0.5f, 1000);
             int newMotorPosition = robot.getMotorPosition(aOpMode, FRONT_RIGHT_MOTOR);
-            if (newMotorPosition == motorPosition) {
+            if (Math.abs(newMotorPosition - motorPosition)<MECCANUM_WHEEL_ENCODER_MARGIN) {
                 //the motor encoder has not moved. we have a problem.
                 robotTest.setTestResult(aOpMode, false);
                 robotTest.setTestResultValidity(aOpMode, true);
@@ -722,7 +727,7 @@ public class vv_DiagLib {
             int motorPosition = robot.getMotorPosition(aOpMode, BACK_LEFT_MOTOR);
             robot.testMotor(aOpMode, BACK_LEFT_MOTOR, 0.5f, 1000);
             int newMotorPosition = robot.getMotorPosition(aOpMode, BACK_LEFT_MOTOR);
-            if (newMotorPosition == motorPosition) {
+            if (Math.abs(newMotorPosition - motorPosition)<MECCANUM_WHEEL_ENCODER_MARGIN) {
                 //the motor encoder has not moved. we have a problem.
                 robotTest.setTestResult(aOpMode, false);
                 robotTest.setTestResultValidity(aOpMode, true);
@@ -749,7 +754,7 @@ public class vv_DiagLib {
             int motorPosition = robot.getMotorPosition(aOpMode, BACK_RIGHT_MOTOR);
             robot.testMotor(aOpMode, BACK_RIGHT_MOTOR, 0.5f, 1000);
             int newMotorPosition = robot.getMotorPosition(aOpMode, BACK_RIGHT_MOTOR);
-            if (newMotorPosition == motorPosition) {
+            if (Math.abs(newMotorPosition - motorPosition)<MECCANUM_WHEEL_ENCODER_MARGIN) {
                 //the motor encoder has not moved. we have a problem.
                 robotTest.setTestResult(aOpMode, false);
                 robotTest.setTestResultValidity(aOpMode, true);
@@ -778,7 +783,7 @@ public class vv_DiagLib {
             robot.universalMoveRobotForDuration(aOpMode, -0.5f, 0.0f, 0.0f, 0); //move robot to left
             int newMotorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR);
             float endingAngle = robot.getMxpGyroSensorHeading(aOpMode);
-            if ((newMotorPosition == motorPosition) || (Math.abs(startingAngle - endingAngle) > 3)) {
+            if ((Math.abs(newMotorPosition-motorPosition)<MECCANUM_WHEEL_ENCODER_MARGIN) || (Math.abs(startingAngle - endingAngle) > 3)) {
                 //the motor encoder has not moved. we have a problem.
                 //or the platform has moved, but there is too much rotation
                 robotTest.setTestResult(aOpMode, false);
@@ -808,7 +813,7 @@ public class vv_DiagLib {
             robot.universalMoveRobotForDuration(aOpMode, 0.5f, 0.0f, 0.0f, 0); //move robot to left
             int newMotorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR);
             float endingAngle = robot.getMxpGyroSensorHeading(aOpMode);
-            if ((newMotorPosition == motorPosition) || (Math.abs(startingAngle - endingAngle) > 3)) {
+            if ((Math.abs(newMotorPosition-motorPosition)<MECCANUM_WHEEL_ENCODER_MARGIN)|| (Math.abs(startingAngle - endingAngle) > 3)) {
                 //the motor encoder has not moved. we have a problem.
                 //or the platform has moved, but there is too much rotation
                 robotTest.setTestResult(aOpMode, false);
@@ -839,7 +844,7 @@ public class vv_DiagLib {
             robot.universalMoveRobotForDuration(aOpMode, 0.0f, 0.5f, 0.0f, 0); //move robot to left
             int newMotorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR);
             float endingAngle = robot.getMxpGyroSensorHeading(aOpMode);
-            if ((newMotorPosition == motorPosition) || (Math.abs(startingAngle - endingAngle) > 3)) {
+            if ((Math.abs(newMotorPosition-motorPosition)<MECCANUM_WHEEL_ENCODER_MARGIN) || (Math.abs(startingAngle - endingAngle) > 3)) {
                 //the motor encoder has not moved. we have a problem.
                 //or the platform has moved, but there is too much rotation
                 robotTest.setTestResult(aOpMode, false);
@@ -869,7 +874,7 @@ public class vv_DiagLib {
             robot.universalMoveRobotForDuration(aOpMode, 0.0f, -0.5f, 0.0f, 0); //move robot to left
             int newMotorPosition = robot.getMotorPosition(aOpMode, FRONT_LEFT_MOTOR);
             float endingAngle = robot.getMxpGyroSensorHeading(aOpMode);
-            if ((newMotorPosition == motorPosition) || (Math.abs(startingAngle - endingAngle) > 3)) {
+            if ((Math.abs(newMotorPosition-motorPosition)<MECCANUM_WHEEL_ENCODER_MARGIN) || (Math.abs(startingAngle - endingAngle) > 3)) {
                 //the motor encoder has not moved. we have a problem.
                 //or the platform has moved, but there is too much rotation
                 robotTest.setTestResult(aOpMode, false);
@@ -904,17 +909,27 @@ public class vv_DiagLib {
                 //We are off by more than 3 degrees in our gyro rotation
                 robotTest.setTestResult(aOpMode, false);
                 robotTest.setTestResultValidity(aOpMode, true);
-                robotTest.setTestResultMessage(aOpMode, "Failed Platform Rotation Test");
+                robotTest.setTestResultMessage(aOpMode, "Failed Platform Rotation Test"+"[Error:"+error+"]");
                 if (error < 5) {
+
                     robotTest.setTestRecommendation(aOpMode,
-                            "Please check MXP gyro and calibration, error >3&<5 degrees");
+                            "Please check MXP gyro and calibration, error >3 but <5 degrees");
+                    robotTest.setTestResultSeverity(aOpMode, ResultSeverity.MEDIUM);
+                }
+                if ((error >= 5)&&(error<7)) {
+
+                    robotTest.setTestRecommendation(aOpMode,
+                            "Please check MXP gyro and calibration, error >5 degrees");
                     robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
                 }
-                if (error >= 5) {
+
+                if (error >= 7) {
+
                     robotTest.setTestRecommendation(aOpMode,
                             "Please check MXP gyro and calibration, error >5 degrees");
                     robotTest.setTestResultSeverity(aOpMode, ResultSeverity.CRITICAL);
                 }
+
                 return false;
 
             }
@@ -946,6 +961,8 @@ public class vv_DiagLib {
                 }
             }
             if (!rangeHasChanged) {
+                robotTest.setTestResult(aOpMode, false);
+                robotTest.setTestResultValidity(aOpMode, true);
                 robotTest.setTestResultMessage(aOpMode, "Failed to detect change in Range Test");
                 robotTest.setTestRecommendation(aOpMode,
                         "Please check Ultrasonic sensor and calibration, are there objects close by ?");
@@ -983,12 +1000,16 @@ public class vv_DiagLib {
             }
             if (!colorIntensityHasChanged) {
                 if (startingColorIntensity != 0) {
+                    robotTest.setTestResult(aOpMode, false);
+                    robotTest.setTestResultValidity(aOpMode, true);
                     robotTest.setTestResultMessage(aOpMode, "Failed to detect change in floor color sensor");
                     robotTest.setTestRecommendation(aOpMode,
                             "Please check Floor Color Sensor connections and calibration");
                     robotTest.setTestResultSeverity(aOpMode, ResultSeverity.MEDIUM);
                     return false;
                 } else {
+                    robotTest.setTestResult(aOpMode, false);
+                    robotTest.setTestResultValidity(aOpMode, true);
                     robotTest.setTestResultMessage(aOpMode, "Failed to detect non-zero Color Sensor Values");
                     robotTest.setTestRecommendation(aOpMode,
                             "Please check Floor Color Sensor connections and calibration");
@@ -999,6 +1020,7 @@ public class vv_DiagLib {
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
             robotTest.setTestResultValidity(aOpMode, true);
+
             robotTest.setTestResultMessage(aOpMode, "No Problem with Floor Color Sensor");
             robotTest.setTestRecommendation(aOpMode, "No Recommendation");
             robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
@@ -1029,9 +1051,11 @@ public class vv_DiagLib {
                 aOpMode.telemetryUpdate();
             }
 
+
             if (startingCapBallEncoderValue == endingCapBallEncoderValue) {
                 //capBallHas not moved.
-
+                robotTest.setTestResult(aOpMode, false);
+                robotTest.setTestResultValidity(aOpMode, true);
                 robotTest.setTestResultMessage(aOpMode, "Failed to detect Cap Ball Lift Movement");
                 robotTest.setTestRecommendation(aOpMode,
                         "Please check CapBall Lift and calibration");
@@ -1072,9 +1096,11 @@ public class vv_DiagLib {
                 aOpMode.telemetryUpdate();
             }
 
+
             if (startingChooChooTensionEncoderValue == endingChooChooTensionEncoderValue) {
                 //Choo Choo Tension Has not moved.
-
+                robotTest.setTestResult(aOpMode, false);
+                robotTest.setTestResultValidity(aOpMode, true);
                 robotTest.setTestResultMessage(aOpMode, "Failed to detect Choo Choo Arm Tension changes");
                 robotTest.setTestRecommendation(aOpMode,
                         "Please check Choo Choo Tension and calibration");
@@ -1084,7 +1110,6 @@ public class vv_DiagLib {
             }
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);
-            robotTest.setTestResultValidity(aOpMode, true);
             robotTest.setTestResultMessage(aOpMode, "No Problem with Choo Choo Tension");
             robotTest.setTestRecommendation(aOpMode, "No Recommendation");
             robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
@@ -1102,15 +1127,18 @@ public class vv_DiagLib {
             startingChooChooLaunchEncoderValue = robot.getChooChooArmEncoderPosition(aOpMode);
             //move the Choo Choo Tension by a small amount.
 
-            robot.setChooChooArmEncoderPosition(aOpMode, startingChooChooLaunchEncoderValue + (LAUNCH_POWER_INCREMENT / 5));
+            robot.setChooChooArmEncoderPosition(aOpMode, startingChooChooLaunchEncoderValue + LAUNCH_POWER_INCREMENT);
             endingChooChooLaunchEncoderValue = robot.getChooChooArmEncoderPosition(aOpMode);
 
             //return the Choo Choo Tension to starting position
             robot.setChooChooArmEncoderPosition(aOpMode, startingChooChooLaunchEncoderValue);
 
-            if (startingChooChooLaunchEncoderValue == endingChooChooLaunchEncoderValue) {
-                //Choo Choo Launcher Has not moved.
 
+
+            if (Math.abs(startingChooChooLaunchEncoderValue - endingChooChooLaunchEncoderValue)<ARM_MOTOR_ENCODER_MARGIN ){
+                //Choo Choo Launcher Has not moved.
+                robotTest.setTestResult(aOpMode, false);
+                robotTest.setTestResultValidity(aOpMode, true);
                 robotTest.setTestResultMessage(aOpMode, "Failed to detect Choo Choo Launch Encoder Changes");
                 robotTest.setTestRecommendation(aOpMode,
                         "Please check Choo Choo Launcher Arm and calibration");
@@ -1135,6 +1163,8 @@ public class vv_DiagLib {
             int startingIntakeEncoderValue = 0;
             int endingIntakeEncoderValue = 0;
 
+
+            robot.setMotorMode(aOpMode, INTAKE_MOTOR, DcMotor.RunMode.RUN_TO_POSITION);
             startingIntakeEncoderValue = robot.getIntakeEncoderPosition(aOpMode);
             //move the Intake rotation by a small amount.
 
@@ -1144,9 +1174,12 @@ public class vv_DiagLib {
             //return the Intake to starting position
             robot.setIntakeEncoderPosition(aOpMode, startingIntakeEncoderValue);
 
-            if (startingIntakeEncoderValue == endingIntakeEncoderValue) {
-                //Intake Has not moved.
+            robot.setMotorMode(aOpMode, INTAKE_MOTOR, DcMotor.RunMode.RUN_USING_ENCODER);
 
+            if (Math.abs(startingIntakeEncoderValue - endingIntakeEncoderValue)<CAP_BALL_ENCODER_MARGIN) {
+                //Intake Has not moved.
+                robotTest.setTestResult(aOpMode, false);
+                robotTest.setTestResultValidity(aOpMode, true);
                 robotTest.setTestResultMessage(aOpMode, "Failed to detect Intake Encoder Changes");
                 robotTest.setTestRecommendation(aOpMode,
                         "Please check Intake connections and calibration");
@@ -1245,6 +1278,9 @@ public class vv_DiagLib {
             endingAngle = robot.getMxpGyroSensorHeading(aOpMode);
             float rotationDiagBottomLeftAngle = Math.abs(startingAngle - endingAngle);
 
+
+
+
             if (newMotorPosition == motorPosition) {
                 //the motor encoder has not moved. we have a problem.
                 failedDiagBottomLeft = true;
@@ -1253,6 +1289,8 @@ public class vv_DiagLib {
             if (rotationDiagBottomLeftAngle > 3) {
                 failedDiagBottomLeftRotation = true;
             }
+
+
 
             if (failedDiagTopLeft || failedDiagTopRight || failedDiagBottomLeft || failedDiagBottomRight) {
                 //failed these tests
@@ -1271,12 +1309,16 @@ public class vv_DiagLib {
                 //we have too much rotation
                 robotTest.setTestResult(aOpMode, false);
                 robotTest.setTestResultValidity(aOpMode, true);
-                robotTest.setTestResultMessage(aOpMode, "Detected too much rotation when performing platform diagonal movements");
+                robotTest.setTestResultMessage(aOpMode,
+                        "Detected too much rotation when performing platform diagonal movements"+
+                "[TDLR:"+rotationDiagTopLeftAngle+"]"+
+                "[TDRR:"+rotationDiagTopRightAngle+"]"+
+                "[BDLR:"+rotationDiagBottomLeftAngle+"]"+
+                "[BDRR:"+rotationDiagBottomRightAngle+"]");
                 robotTest.setTestRecommendation(aOpMode, "Check weight distribution or wheel coplanarity");
                 robotTest.setTestResultSeverity(aOpMode, ResultSeverity.MEDIUM);
                 return false;
             }
-
 
             //there is no problem.
             robotTest.setTestResult(aOpMode, true);

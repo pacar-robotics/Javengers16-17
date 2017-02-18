@@ -256,6 +256,7 @@ public class vv_Robot {
         motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[ARM_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArray[INTAKE_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //set the run mode to run_to_position for the worm drive
         //since we will not be using it in any other mode.
@@ -1848,7 +1849,8 @@ public class vv_Robot {
 
     public void setIntakeEncoderPosition(vv_OpMode aOpMode, int targetPosition) {
 
-        motorArray[ARM_MOTOR].setPower(0.5f);
+        motorArray[INTAKE_MOTOR].setTargetPosition(targetPosition);
+        motorArray[INTAKE_MOTOR].setPower(0.5f);
         aOpMode.reset_timer_array(GENERIC_TIMER);
         while (motorArray[INTAKE_MOTOR].isBusy() &&
                 (Math.abs(targetPosition - motorArray[INTAKE_MOTOR].getCurrentPosition())
