@@ -14,10 +14,6 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.DPAD_TIMER;
 
 public class vv_TeleLib {
 
-    boolean isDPADDownPressed = false;
-    boolean isDPADUpPressed = false;
-    boolean isDPADLeftPressed = false;
-    boolean isDPADRightPressed = false;
 
 
     protected void processIntake(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
@@ -243,62 +239,20 @@ public class vv_TeleLib {
     protected void processBeaconOrientationControls(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
         //process dpads
         if (aOpMode.gamepad1.dpad_down) {
-            if (!isDPADDownPressed) {
-                isDPADDownPressed = true;
-                aOpMode.reset_timer_array(DPAD_TIMER);
                 vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, 0);
-            }
-
-        } else {
-            isDPADDownPressed = false;
         }
 
         if (aOpMode.gamepad1.dpad_up) {
-            if (!isDPADUpPressed) {
-                isDPADUpPressed = true;
-                aOpMode.reset_timer_array(DPAD_TIMER);
                 vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, +180);
-                return;
-            }
-        } else{
-            isDPADUpPressed = false;
         }
         if (aOpMode.gamepad1.dpad_right) {
-            if (!isDPADRightPressed) {
-                Thread.sleep(100);
-                isDPADRightPressed = true;
-                aOpMode.reset_timer_array(DPAD_TIMER);
-                vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, -90);
-                return;
-            }
-        } else {
-            isDPADRightPressed = false;
+
         }
         if (aOpMode.gamepad1.dpad_left) {
-            if (!isDPADLeftPressed) {
-                Thread.sleep(100);
-                isDPADLeftPressed = true;
-                aOpMode.reset_timer_array(DPAD_TIMER);
-                vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, +90);
-                return;
-            }
-        } else {
-            isDPADLeftPressed = false;
+            vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, +90);
         }
     }
-
-    protected void processLongBeaconControls (vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
-        if (isDPADRightPressed && aOpMode.time_elapsed_array(DPAD_TIMER) > 750) {
-            vvLib.moveSidewaysLeft(aOpMode, .25f);
-        } else if (isDPADUpPressed && aOpMode.time_elapsed_array(DPAD_TIMER) > 750) {
-            vvLib.moveSidewaysLeft(aOpMode, .25f);
-        } else if (isDPADDownPressed && aOpMode.time_elapsed_array(DPAD_TIMER) > 750) {
-            vvLib.moveSidewaysLeft(aOpMode, .25f);
-        } else if (isDPADLeftPressed && aOpMode.time_elapsed_array(DPAD_TIMER) > 750) {
-            vvLib.moveSidewaysLeft(aOpMode, .25f);
-        }
-
-    }
+    
 
     protected void processYawReset(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
 
