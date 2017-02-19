@@ -31,7 +31,7 @@ import javax.xml.xpath.XPathFactory;
 
 public class CalibFileIO {
 	private static final String LOG_TAG = "CalibFileIO";
-	private String filePath = Environment.getExternalStorageDirectory().getPath() +
+	private String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) +
 			"/PACAR/Calib.xml";
 
 	public CalibFileIO(vv_OpMode aOpMode, String fileName) {

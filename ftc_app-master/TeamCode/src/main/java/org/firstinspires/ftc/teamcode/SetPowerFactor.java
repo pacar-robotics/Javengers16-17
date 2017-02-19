@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 /**
  * Using gamepad controls, the user can set the power factor for Teleop.
@@ -16,6 +18,7 @@ public class SetPowerFactor extends vv_OpMode {
     CalibFileIO powerFactorFileIO;
 
     float drivePowerFactor = 0.5f;
+    DecimalFormat df = new DecimalFormat("0.##");
     boolean powerFactorConfirmed = false;
     boolean didWrite = false;
 
@@ -40,7 +43,7 @@ public class SetPowerFactor extends vv_OpMode {
 
             while (!powerFactorConfirmed) {
                 telemetryAddData("Change the Power Factor", " using up and down on DPAD", "");
-                telemetryAddData(String.valueOf(drivePowerFactor), " Press A to Confirm", "");
+                telemetryAddData(String.valueOf(df.format(drivePowerFactor)), " Press A to Confirm", "");
                 telemetryUpdate();
 
 
