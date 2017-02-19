@@ -207,7 +207,8 @@ public class vv_TeleLib {
         if (Math.abs(aOpMode.gamepad2.right_stick_x) > vv_Constants.ANALOG_STICK_THRESHOLD) {
 
             //we are not in deadzone. Driver is pushing right joystick, sideways
-            float turnVelocity = (float) vvLib.robot.getGamePad2RightJoystickPolarMagnitude(aOpMode) * powerFactor;
+            //scale the powerfactor by another factor to adjust for observed slow turns.
+            float turnVelocity = (float) vvLib.robot.getGamePad2RightJoystickPolarMagnitude(aOpMode) * powerFactor*2.5f;
 
             if (aOpMode.gamepad2.right_stick_x > 0) {
                 //turn clockwise to correct magnitude

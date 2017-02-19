@@ -16,12 +16,14 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POSITION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_ROBOT_DIAGNOSTIC_TESTS;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_DIAMETER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_ENCODER_MARGIN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ROBOT_TRACK_DISTANCE;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TURN_POWER;
+import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_ENCODER_MARGIN;
 
 /**
  * Created by thomas on 9/25/2016.
@@ -104,7 +106,7 @@ public class vv_DiagLib {
                 //runnable test, it has been initialized and it is an automatic test
 
                 //lets run and store the test.
-                aOpMode.telemetryAddData("Running:", "Test Number:" + i + "/" + validTestCount + ":",
+                aOpMode.telemetryAddData("Running:", "Test Number:" + i+1 + "/" + validTestCount + ":",
                         robotTestArray[i].getTestName(aOpMode) +
                                 robotTestArray[i].getTestShortDescription(aOpMode));
                 aOpMode.telemetryUpdate();
@@ -1052,7 +1054,7 @@ public class vv_DiagLib {
             }
 
 
-            if (startingCapBallEncoderValue == endingCapBallEncoderValue) {
+            if (Math.abs(startingCapBallEncoderValue - endingCapBallEncoderValue)<CAP_BALL_ENCODER_MARGIN){
                 //capBallHas not moved.
                 robotTest.setTestResult(aOpMode, false);
                 robotTest.setTestResultValidity(aOpMode, true);
@@ -1076,6 +1078,7 @@ public class vv_DiagLib {
 
     class TestChooChooTension implements RunnableTest {
         public boolean runTest(vv_OpMode aOpMode, RobotTest robotTest) throws InterruptedException {
+            String failureReason=null;
 
             int startingChooChooTensionEncoderValue = 0;
             int endingChooChooTensionEncoderValue = 0;
@@ -1084,7 +1087,7 @@ public class vv_DiagLib {
                 startingChooChooTensionEncoderValue = robot.getLauncherPowerPosition(aOpMode);
                 //move the Choo Choo Tension by a small amount.
 
-                robot.setLauncherPowerPosition(aOpMode, startingChooChooTensionEncoderValue + (LAUNCH_POWER_INCREMENT / 5));
+                robot.setLauncherPowerPosition(aOpMode, startingChooChooTensionEncoderValue + (LAUNCH_POWER_INCREMENT));
                 endingChooChooTensionEncoderValue = robot.getLauncherPowerPosition(aOpMode);
 
                 //return the Choo Choo Tension to starting position
@@ -1093,15 +1096,24 @@ public class vv_DiagLib {
 
             } catch (vv_Robot.MotorStalledException MSE) {
                 aOpMode.telemetryAddData("Stalled During Test", "Choo Choo Tensioner", " Choo Choo Arm");
+                failureReason="Stalled During Test";
+
                 aOpMode.telemetryUpdate();
             }
 
 
-            if (startingChooChooTensionEncoderValue == endingChooChooTensionEncoderValue) {
+            if (Math.abs(startingChooChooTensionEncoderValue - endingChooChooTensionEncoderValue)<WORM_DRIVE_ENCODER_MARGIN ) {
                 //Choo Choo Tension Has not moved.
                 robotTest.setTestResult(aOpMode, false);
                 robotTest.setTestResultValidity(aOpMode, true);
-                robotTest.setTestResultMessage(aOpMode, "Failed to detect Choo Choo Arm Tension changes");
+                robotTest.setTestResultMessage(aOpMode,
+                        "Failed to detect Choo Choo Arm Tension changes"+
+                                "[Failure Reason:"+ failureReason+"]"+
+                                "["+"Start E Val:"+startingChooChooTensionEncoderValue+"]"+
+                                "["+"Ending E Val:"+endingChooChooTensionEncoderValue+"]");
+
+
+
                 robotTest.setTestRecommendation(aOpMode,
                         "Please check Choo Choo Tension and calibration");
                 robotTest.setTestResultSeverity(aOpMode, ResultSeverity.HIGH);
@@ -1127,7 +1139,7 @@ public class vv_DiagLib {
             startingChooChooLaunchEncoderValue = robot.getChooChooArmEncoderPosition(aOpMode);
             //move the Choo Choo Tension by a small amount.
 
-            robot.setChooChooArmEncoderPosition(aOpMode, startingChooChooLaunchEncoderValue + LAUNCH_POWER_INCREMENT);
+            robot.setChooChooArmEncoderPosition(aOpMode, startingChooChooLaunchEncoderValue + LAUNCH_POSITION_INCREMENT);
             endingChooChooLaunchEncoderValue = robot.getChooChooArmEncoderPosition(aOpMode);
 
             //return the Choo Choo Tension to starting position

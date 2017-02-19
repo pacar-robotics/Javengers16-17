@@ -91,8 +91,6 @@ public class vv_Constants
     final static int GYRO_OFFSET = 10;
 
     final static float TURN_POWER = 0.95f;
-    final static float TOUCH_SENSE_POWER = 0.2f;
-    //turn this one for debugging messages.
 
     final static boolean DEBUG = false;
     //time to flash DEBUG message on telemtry
@@ -117,7 +115,7 @@ public class vv_Constants
     final static float CAP_BALL_POWER = 0.8f;
     //define the motors as constants instead of enumerations for speed.
 
-    final static int CAP_BALL_DURATION_MAX = 17000;
+    final static int CAP_BALL_DURATION_MAX = 26000;
 
     final static int CAP_BALL_ENCODER_MARGIN = 50;
 
@@ -144,8 +142,11 @@ public class vv_Constants
 
 
     final static int LAUNCH_POWER_INCREMENT = 75;
+    final static int LAUNCH_POSITION_INCREMENT = 200;
+
 
     final static int CAP_BALL_POSITION_INCREMENT = 5000;
+
 
     // Autonomous position = 425
     // Max position = 575
@@ -156,7 +157,6 @@ public class vv_Constants
     final static int LAUNCH_POWER_POSITION_MAX = 575;
     final static int LAUNCH_POWER_POSITION_MIN = -135;
 
-    final static int LAUNCH_POSITION_INCREMENT = 200;
 
     final static int INTAKE_INCREMENT = 1000;
     final static float PRE_INIT_LAUNCH_POWER = 0.5f;
@@ -175,17 +175,13 @@ public class vv_Constants
 
     final static float FLOOR_WHITE_THRESHOLD = 20f; //may need to calibrate
 
-    final static boolean TEAM_RED = false;
-
 
     final static double EOPD_PROXIMITY_THRESHOLD = 0.00d;
     final static double RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD = 1.2d;
     final static double RANGESENSOR_OPTICAL_PROXIMITY_THRESHOLD = 1.0d;
 
-    final static int CAP_BALL_ENCODER_UPPER_LIMIT = Math.round((45000 /
-            TETRIX_MOTOR_ENCODER_COUNTS_PER_REVOLUTION) *
-            MATRIX_MOTOR_ENCODER_COUNTS_PER_REVOLUTION); //for matrix
-    //motor adjustments.
+    final static int CAP_BALL_ENCODER_UPPER_LIMIT = 75000; //for matrix motor adustments.
+    //including the gear ratio
 
 
     final static String DIAG_RESULTS_RELATIVE_FILE_PATH = "/PACAR/DiagResults.xml";

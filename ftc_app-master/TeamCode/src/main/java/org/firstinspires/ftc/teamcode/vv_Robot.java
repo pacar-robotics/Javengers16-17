@@ -37,6 +37,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_POWER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_SERVO_RELEASED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_SERVO_SECURED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DEBUG;
+import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_CLICKS_ANDYMARK;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_CLICKS_TETRIX;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_TIME_DELTA;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
@@ -873,7 +874,7 @@ public class vv_Robot {
         //now set the power
         motorArray[WORM_DRIVE_MOTOR].setPower(WORM_DRIVE_POWER);
 
-        float stallVelocityThreshold = (ENCODED_MOTOR_STALL_CLICKS_TETRIX * 1.0f /
+        float stallVelocityThreshold = (ENCODED_MOTOR_STALL_CLICKS_ANDYMARK * 1.0f /
                 ENCODED_MOTOR_STALL_TIME_DELTA);
 
         //reset clock;
@@ -889,8 +890,7 @@ public class vv_Robot {
         float stallVelocity = 0;
 
         while (motorArray[WORM_DRIVE_MOTOR].isBusy() &&
-                (aOpMode.time_elapsed_array(GENERIC_TIMER) < WORM_DRIVE_DURATION_MAX) &&
-                (!wormDriveTouchSensor.isPressed())) {
+                (aOpMode.time_elapsed_array(GENERIC_TIMER) < WORM_DRIVE_DURATION_MAX)) {
 
             //save old stall time and position.
             oldStallPosition = newStallPosition;
@@ -900,7 +900,7 @@ public class vv_Robot {
             newStallPosition = motorArray[WORM_DRIVE_MOTOR].getCurrentPosition();
             newStallTime = aOpMode.time_elapsed_array(GENERIC_TIMER);
 
-            stallPositionDelta = Math.abs(Math.abs(newStallPosition) - Math.abs(oldStallPosition));
+            stallPositionDelta = Math.abs(newStallPosition - oldStallPosition);
             stallTimeDelta = newStallTime - oldStallTime;
 
             stallVelocity = ((stallPositionDelta * 1.0f) / stallTimeDelta);
@@ -921,6 +921,7 @@ public class vv_Robot {
                     aOpMode.DBG("in stall code throw testEncodedMotor");
                     aOpMode.telemetryAddData("Stall Data", "", stallMessage);
                     aOpMode.telemetryUpdate();
+                    Thread.sleep(500);
                 }
                 throw new MotorStalledException("MotorName" + ":WormDriveMotor" + stallMessage);
             }
@@ -931,10 +932,6 @@ public class vv_Robot {
                 //stop the motor
                 motorArray[WORM_DRIVE_MOTOR].setPower(0.0f);
                 //break out of loop, as we have reached target within margin.
-                aOpMode.telemetryAddData("Break out of loop, margin", "", "margin");
-                aOpMode.telemetryUpdate();
-                Thread.sleep(500);
-
                 break;
             }
 

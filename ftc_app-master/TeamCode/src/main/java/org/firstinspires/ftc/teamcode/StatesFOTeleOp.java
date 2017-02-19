@@ -68,13 +68,11 @@ public class StatesFOTeleOp extends vv_OpMode {
 
                 vvTeleLib.processCapBallControls(this, vvLib);
 
-                vvTeleLib.processFieldOrientedCapBallDrive(this, vvLib, 0.2f);
+                vvTeleLib.processFieldOrientedCapBallDrive(this, vvLib, 0.3f);
 
                 vvTeleLib.processYawReset(this, vvLib);
 
                 vvTeleLib.processBeaconOrientationControls(this, vvLib);
-
-                vvTeleLib.processLongBeaconControls(this, vvLib);
 
                 vvTeleLib.processChooChooPosition(this, vvLib);
 
