@@ -48,7 +48,6 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
         //move robot diagonally to corner in prep for scoring beacon
         vvLib.universalMoveRobot(this, 48, 0.99f, 0.0, 3700,
                 vvLib.rangeSensorUltraSonicCornerPositioningStop, false, 0, 0);
-
         vvLib.blueBeaconAutonomousCommonAction(this);
 
     }

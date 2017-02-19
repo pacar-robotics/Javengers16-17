@@ -1062,7 +1062,7 @@ public class vv_Lib {
 
         Thread.sleep(25);
 
-        moveWheels(aOpMode, 3.5f, 0.20f, Backward, false); // adjust face position to match beacons
+        moveWheels(aOpMode, 4.5f, 0.20f, Backward, false); // adjust face position to match beacons
 
         Thread.sleep(25);
 
