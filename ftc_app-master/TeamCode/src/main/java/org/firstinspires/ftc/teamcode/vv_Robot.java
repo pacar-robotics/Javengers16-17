@@ -38,6 +38,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_SERVO_RELEASE
 import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_SERVO_SECURED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DEBUG;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_CLICKS_ANDYMARK;
+import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_CLICKS_MATRIX;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_CLICKS_TETRIX;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_TIME_DELTA;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
@@ -874,7 +875,7 @@ public class vv_Robot {
         //now set the power
         motorArray[WORM_DRIVE_MOTOR].setPower(WORM_DRIVE_POWER);
 
-        float stallVelocityThreshold = (ENCODED_MOTOR_STALL_CLICKS_ANDYMARK * 1.0f /
+        float stallVelocityThreshold = (ENCODED_MOTOR_STALL_CLICKS_MATRIX * 1.0f /
                 ENCODED_MOTOR_STALL_TIME_DELTA);
 
         //reset clock;
@@ -960,7 +961,7 @@ public class vv_Robot {
         //now set the power
         motorArray[CAP_BALL_MOTOR].setPower(CAP_BALL_POWER);
 
-        float stallVelocityThreshold = (ENCODED_MOTOR_STALL_CLICKS_TETRIX * 1.0f /
+        float stallVelocityThreshold = (ENCODED_MOTOR_STALL_CLICKS_MATRIX * 1.0f /
                 ENCODED_MOTOR_STALL_TIME_DELTA);
 
         //reset clock;
@@ -1771,7 +1772,7 @@ public class vv_Robot {
             int targetPosition = currentChooChooPosition +
                     (ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION - partialRev);
             motorArray[ARM_MOTOR].setTargetPosition(targetPosition);
-            motorArray[ARM_MOTOR].setPower(0.9f);
+            motorArray[ARM_MOTOR].setPower(0.95f);
             aOpMode.reset_timer_array(GENERIC_TIMER);
             while (motorArray[ARM_MOTOR].isBusy() &&
                     (Math.abs(targetPosition - motorArray[ARM_MOTOR].getCurrentPosition())
@@ -1795,7 +1796,7 @@ public class vv_Robot {
         int targetPosition = currentChooChooPosition +
                 (increment);
         motorArray[ARM_MOTOR].setTargetPosition(targetPosition);
-        motorArray[ARM_MOTOR].setPower(0.9f);
+        motorArray[ARM_MOTOR].setPower(0.95f);
         aOpMode.reset_timer_array(GENERIC_TIMER);
         while (motorArray[ARM_MOTOR].isBusy() &&
                 (Math.abs(targetPosition - motorArray[ARM_MOTOR].getCurrentPosition())
@@ -1818,7 +1819,7 @@ public class vv_Robot {
 
         motorArray[ARM_MOTOR].setTargetPosition(targetPosition);
 
-        motorArray[ARM_MOTOR].setPower(0.9f);
+        motorArray[ARM_MOTOR].setPower(0.95f);
         aOpMode.reset_timer_array(GENERIC_TIMER);
         while (motorArray[ARM_MOTOR].isBusy() &&
                 (Math.abs(targetPosition - motorArray[ARM_MOTOR].getCurrentPosition())

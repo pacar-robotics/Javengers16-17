@@ -57,8 +57,8 @@ public class vv_Constants
     final static float TRIGGER_THRESHOLD = .10f;
 
     // Extremes for servo that pushes beacon buttons
-    static final double BEACON_SERVO_LEFT_REST = 0.5f;     // Maximum rotational position
-    static final double BEACON_SERVO_RIGHT_REST = 0.5f;
+    static final double BEACON_SERVO_LEFT_REST = 0.45f;     // Maximum rotational position
+    static final double BEACON_SERVO_RIGHT_REST = 0.45f;
     static final double BEACON_SERVO_LEFT_PRESSED = 0.15f;
     static final double BEACON_SERVO_RIGHT_PRESSED = 0.23f;
 
@@ -73,8 +73,8 @@ public class vv_Constants
     static final double BALL_FLAG_SERVO_RAISED = 0.8f;
     static final double BALL_FLAG_SERVO_ALARM = 0.9f;
 
-    static final double CAP_BALL_SERVO_SECURED = 0.75f;
-    static final double CAP_BALL_SERVO_RELEASED = 0.2f;
+    static final double CAP_BALL_SERVO_SECURED = 0.60f;
+    static final double CAP_BALL_SERVO_RELEASED = 0.05f;
 
 
     static final int ROBOT_ANGLE_THRESHOLD = 3;
@@ -106,6 +106,8 @@ public class vv_Constants
     final static int ENCODED_MOTOR_STALL_CLICKS_ANDYMARK = 10;
     //encoder clicks to check for Andymark motors for stall
     final static int ENCODED_MOTOR_STALL_CLICKS_TETRIX = 10;
+    //encoder clicks to check for Andymark motors for stall
+    final static int ENCODED_MOTOR_STALL_CLICKS_MATRIX = 5;
 
     //power used to rotate intake
     final static float INTAKE_POWER = 0.8f;
@@ -161,7 +163,7 @@ public class vv_Constants
     final static int INTAKE_INCREMENT = 1000;
     final static float PRE_INIT_LAUNCH_POWER = 0.5f;
 
-    final static float WORM_DRIVE_POWER = 0.8f;
+    final static float WORM_DRIVE_POWER = 0.95f;
     final static float WORM_DRIVE_DURATION_MAX = 3000;
     final static float WORM_DRIVE_ENCODER_MARGIN = 20;
     final static int BEACON_RED_THRESHOLD = 0;
@@ -180,7 +182,7 @@ public class vv_Constants
     final static double RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD = 1.2d;
     final static double RANGESENSOR_OPTICAL_PROXIMITY_THRESHOLD = 1.0d;
 
-    final static int CAP_BALL_ENCODER_UPPER_LIMIT = 75000; //for matrix motor adustments.
+    final static int CAP_BALL_ENCODER_UPPER_LIMIT = 72000; //for matrix motor adustments.
     //including the gear ratio
 
 
