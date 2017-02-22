@@ -66,7 +66,7 @@ public class StatesFOTeleOp extends vv_OpMode {
 
                 vvTeleLib.processBallFlag(this, vvLib);
 
-                vvTeleLib.processCapBallControls(this, vvLib);
+                vvTeleLib.processCapBallControls(this, vvLib, vvTeleLib );
 
                 vvTeleLib.processFieldOrientedCapBallDrive(this, vvLib, 0.3f);
 

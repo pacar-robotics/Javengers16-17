@@ -1036,17 +1036,19 @@ public class vv_DiagLib {
 
             int startingCapBallEncoderValue = 0;
             int endingCapBallEncoderValue = 0;
+            vv_TeleLib vvTeleLib=new vv_TeleLib();
+            vv_Lib vvLib = new vv_Lib();
 
             try {
                 startingCapBallEncoderValue = robot.getCapBallMotorEncoderPosition(aOpMode);
                 //move the Cap Ball Lift by a small amount.
 
-                robot.setCapBallPosition(aOpMode, startingCapBallEncoderValue + (CAP_BALL_POSITION_INCREMENT / 10));
+                robot.setCapBallPosition(aOpMode, startingCapBallEncoderValue + (CAP_BALL_POSITION_INCREMENT / 10),vvLib, vvTeleLib);
 
                 endingCapBallEncoderValue = robot.getCapBallMotorEncoderPosition(aOpMode);
 
                 //return the lift to starting position
-                robot.setCapBallPosition(aOpMode, startingCapBallEncoderValue);
+                robot.setCapBallPosition(aOpMode, startingCapBallEncoderValue, vvLib, vvTeleLib);
 
             } catch (vv_Robot.MotorStalledException MSE) {
                 aOpMode.telemetryAddData("Stalled During Test", "CapBall", "Lift");

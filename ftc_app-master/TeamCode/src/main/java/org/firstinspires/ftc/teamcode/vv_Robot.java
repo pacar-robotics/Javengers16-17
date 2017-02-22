@@ -267,7 +267,7 @@ public class vv_Robot {
         motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorArray[ARM_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-
+        motorArray[INTAKE_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
         // Set all base motors to zero power
@@ -947,7 +947,7 @@ public class vv_Robot {
 
     }
 
-    public void setCapBallPosition(vv_OpMode aOpMode, int capBallPosition)
+    public void setCapBallPosition(vv_OpMode aOpMode, int capBallPosition, vv_Lib vvLib, vv_TeleLib vvTeleLib)
             throws InterruptedException, MotorStalledException {
         //set the mode to be RUN_TO_POSITION
         //we dont have to save previous state because we will never run the WORM DRIVE motor
@@ -978,6 +978,7 @@ public class vv_Robot {
 
         while (motorArray[CAP_BALL_MOTOR].isBusy() &&
                 (aOpMode.time_elapsed_array(GENERIC_TIMER) < CAP_BALL_DURATION_MAX)) {
+
 
             //save old stall time and position.
             oldStallPosition = newStallPosition;
@@ -1027,6 +1028,10 @@ public class vv_Robot {
 
             //wait for a bit of time to test for stall
             Thread.sleep(ENCODED_MOTOR_STALL_TIME_DELTA);
+
+            //process cap ball based drive controls
+
+            vvTeleLib.processFieldOrientedCapBallDrive(aOpMode,vvLib, 0.2f );
 
 
             aOpMode.idle();

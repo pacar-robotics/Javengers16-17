@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_ENCODER_UPPER_LIMIT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_POSITION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.EOPD_PROXIMITY_THRESHOLD;
+import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POSITION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TRIGGER_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.GENERIC_TIMER;
@@ -270,7 +273,7 @@ public class vv_TeleLib {
     }
 
 
-    public void processCapBallControls(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException,
+    public void processCapBallControls(vv_OpMode aOpMode, vv_Lib vvLib, vv_TeleLib vvTeleLib) throws InterruptedException,
             vv_Robot.MotorStalledException {
 
         if (aOpMode.gamepad2.right_bumper) {
@@ -288,14 +291,14 @@ public class vv_TeleLib {
                 //warn and set the robot to min
                 aOpMode.telemetryAddData("WARNING", "CAP BALL LIMIT:", "at " +
                         vvLib.robot.getCapBallMotorEncoderPosition(aOpMode));
-                lowerCapBallToMinHeight(aOpMode, vvLib);
+                lowerCapBallToMinHeight(aOpMode, vvLib, vvTeleLib);
             } else {
                 if (vvLib.robot.getCapBallMotorEncoderPosition(aOpMode) <= CAP_BALL_POSITION_INCREMENT) {
                     //not enough space left to go a full increment.
-                    lowerCapBallToMinHeight(aOpMode, vvLib);
+                    lowerCapBallToMinHeight(aOpMode, vvLib, vvTeleLib);
                 } else {
                     decreaseCapBallHeight(aOpMode, vvLib,
-                            CAP_BALL_POSITION_INCREMENT);
+                            CAP_BALL_POSITION_INCREMENT, vvTeleLib);
                 }
             }
         }
@@ -307,12 +310,12 @@ public class vv_TeleLib {
                 //do nothing but warn on screen.
                 aOpMode.telemetryAddData("WARNING", "CAP BALL LIMIT:", "at " +
                         vvLib.robot.getCapBallMotorEncoderPosition(aOpMode));
-                raiseCapBallToMaxHeight(aOpMode, vvLib);
+                raiseCapBallToMaxHeight(aOpMode, vvLib, vvTeleLib);
             } else {
                 if (vvLib.robot.getCapBallMotorEncoderPosition(aOpMode) >=
                         (CAP_BALL_ENCODER_UPPER_LIMIT - CAP_BALL_POSITION_INCREMENT)) {
                     //not enough space left to go a full increment.
-                    raiseCapBallToMaxHeight(aOpMode, vvLib);
+                    raiseCapBallToMaxHeight(aOpMode, vvLib, vvTeleLib);
                 } else {
 
                     increaseCapBallHeight(aOpMode, vvLib,
@@ -322,28 +325,32 @@ public class vv_TeleLib {
         }
 
         if (aOpMode.gamepad2.a) {
-            lowerCapBallToMinHeight(aOpMode, vvLib);
+            lowerCapBallToMinHeight(aOpMode, vvLib, vvTeleLib);
         }
 
         if (aOpMode.gamepad2.x) {
             scoreCapBall(aOpMode, vvLib);
         }
 
+        if (aOpMode.gamepad2.b) {
+            scoopCapBall(aOpMode, vvLib);
+        }
+
 
         if (aOpMode.gamepad2.y) {
-            raiseCapBallToMaxHeight(aOpMode, vvLib);
+            raiseCapBallToMaxHeight(aOpMode, vvLib, vvTeleLib);
         }
 
     }
 
-    public void processCapBallControlsWithoutLimits(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException,
+    public void processCapBallControlsWithoutLimits(vv_OpMode aOpMode, vv_Lib vvLib, vv_TeleLib vvTeleLib) throws InterruptedException,
             vv_Robot.MotorStalledException {
 
         //be very careful, the cable may break.
 
         if (aOpMode.gamepad2.left_trigger > TRIGGER_THRESHOLD) {
             decreaseCapBallHeight(aOpMode, vvLib,
-                    CAP_BALL_POSITION_INCREMENT);
+                    CAP_BALL_POSITION_INCREMENT, vvTeleLib);
         }
 
         if (aOpMode.gamepad2.right_trigger > TRIGGER_THRESHOLD) {
@@ -356,7 +363,7 @@ public class vv_TeleLib {
 
     }
 
-    public void processCapBallControlsWithoutStall(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException,
+    public void processCapBallControlsWithoutStall(vv_OpMode aOpMode, vv_Lib vvLib, vv_TeleLib vvTeleLib) throws InterruptedException,
             vv_Robot.MotorStalledException {
 
         //be very careful, the cable may break.
@@ -368,7 +375,7 @@ public class vv_TeleLib {
 
         if (aOpMode.gamepad2.right_trigger > TRIGGER_THRESHOLD) {
             increaseCapBallHeightNoStall(aOpMode, vvLib,
-                   CAP_BALL_POSITION_INCREMENT);
+                   CAP_BALL_POSITION_INCREMENT, vvTeleLib);
         }
         aOpMode.telemetryAddData("Cap Ball Height:", "Encoder:", "Value:" +
                 vvLib.robot.getCapBallMotorEncoderPosition(aOpMode));
@@ -376,14 +383,14 @@ public class vv_TeleLib {
 
     }
 
-    public void raiseCapBallToMaxHeight(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException,
+    public void raiseCapBallToMaxHeight(vv_OpMode aOpMode, vv_Lib vvLib, vv_TeleLib vvTeleLib) throws InterruptedException,
             vv_Robot.MotorStalledException {
-        vvLib.robot.setCapBallPosition(aOpMode, Math.round(CAP_BALL_ENCODER_UPPER_LIMIT));
+        vvLib.robot.setCapBallPosition(aOpMode, Math.round(CAP_BALL_ENCODER_UPPER_LIMIT), vvLib, vvTeleLib);
     }
 
-    public void lowerCapBallToMinHeight(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException,
+    public void lowerCapBallToMinHeight(vv_OpMode aOpMode, vv_Lib vvLib, vv_TeleLib vvTeleLib) throws InterruptedException,
             vv_Robot.MotorStalledException {
-        vvLib.robot.setCapBallPosition(aOpMode, 0);
+        vvLib.robot.setCapBallPosition(aOpMode, 0, vvLib, vvTeleLib);
     }
 
     public void setCapBallReleaseServoPosition(vv_OpMode aOpMode, vv_Lib vvLib, double servoPosition) {
@@ -394,14 +401,14 @@ public class vv_TeleLib {
         return vvLib.robot.getCapBallReleaseServoPosition(aOpMode);
     }
 
-    public void decreaseCapBallHeight(vv_OpMode aOpMode, vv_Lib vvLib, int increment) throws InterruptedException,
+    public void decreaseCapBallHeight(vv_OpMode aOpMode, vv_Lib vvLib, int increment, vv_TeleLib vvTeleLib) throws InterruptedException,
             vv_Robot.MotorStalledException {
-        vvLib.robot.setCapBallPosition(aOpMode, vvLib.robot.getCapBallMotorEncoderPosition(aOpMode) - increment);
+        vvLib.robot.setCapBallPosition(aOpMode, vvLib.robot.getCapBallMotorEncoderPosition(aOpMode) - increment, vvLib, vvTeleLib);
     }
 
-    public void increaseCapBallHeightNoStall(vv_OpMode aOpMode, vv_Lib vvLib, int increment) throws InterruptedException,
+    public void increaseCapBallHeightNoStall(vv_OpMode aOpMode, vv_Lib vvLib, int increment, vv_TeleLib vvTeleLib) throws InterruptedException,
             vv_Robot.MotorStalledException {
-        vvLib.robot.setCapBallPosition(aOpMode, vvLib.robot.getCapBallMotorEncoderPosition(aOpMode) + increment);
+        vvLib.robot.setCapBallPosition(aOpMode, vvLib.robot.getCapBallMotorEncoderPosition(aOpMode) + increment, vvLib, vvTeleLib);
     }
 
     public void decreaseCapBallHeightNoStall(vv_OpMode aOpMode, vv_Lib vvLib, int increment) throws InterruptedException,
@@ -425,6 +432,15 @@ public class vv_TeleLib {
         //pull back suddenly
         vvLib.moveWheels(aOpMode, 4, 0.9f, vv_Constants.DirectionEnum.Backward, false);
     }
+
+    public void scoopCapBall(vv_OpMode aOpMode, vv_Lib vvLib)
+            throws InterruptedException, vv_Robot.MotorStalledException{
+        //move forward gently
+        vvLib.moveWheels(aOpMode, 6, 0.95f, vv_Constants.DirectionEnum.Forward, true);
+        //now lift off ground a bit
+        increaseCapBallHeight(aOpMode,vvLib,1000);
+    }
+
 
     protected void processChooChooPosition(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
 

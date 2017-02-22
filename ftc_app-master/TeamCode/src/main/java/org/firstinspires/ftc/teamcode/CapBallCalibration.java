@@ -34,7 +34,7 @@ public class CapBallCalibration extends vv_OpMode {
 
         while (opModeIsActive()) {
             try {
-                vvTeleLib.processCapBallControlsWithoutLimits(this, vvLib);
+                vvTeleLib.processCapBallControlsWithoutLimits(this, vvLib, vvTeleLib);
                 telemetry.addData("Cap Ball Encoder:", "Value:",
                         "Is:" + vvTeleLib.getCapBallPosition(this, vvLib));
             } catch (vv_Robot.MotorStalledException MSE) {

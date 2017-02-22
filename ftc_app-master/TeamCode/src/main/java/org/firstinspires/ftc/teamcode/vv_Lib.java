@@ -97,6 +97,14 @@ public class vv_Lib {
         float drivePowerFactor;
     }
 
+    public vv_Lib()
+            throws InterruptedException {
+
+    //empty constructor used for some calls in TeleOp.
+        //DO NOT USE unless you understand the use case.
+
+    }
+
 
     /**
      * moveWheels method
