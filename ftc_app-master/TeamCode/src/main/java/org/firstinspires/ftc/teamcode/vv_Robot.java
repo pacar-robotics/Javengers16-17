@@ -43,6 +43,8 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_CL
 import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_TIME_DELTA;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
+import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_INCREMENT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_LIMIT_SEARCH_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.IntakeStateEnum.Off;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_FRONT_GATE_SERVO_CLOSED;
@@ -104,8 +106,7 @@ public class vv_Robot {
     private Servo capBallReleaseServo = null;
 
 
-    private TouchSensor beaconTouchSensor;
-    private TouchSensor wormDriveTouchSensor;
+
     private ColorSensor beaconLeftColorSensor;
     private ColorSensor beaconRightColorSensor;
     private TouchSensor armSensor;
@@ -161,8 +162,7 @@ public class vv_Robot {
 
         rangeSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "range_sensor");
 
-        wormDriveTouchSensor = hwMap.touchSensor.get("touch_worm_sensor");
-        beaconTouchSensor = hwMap.touchSensor.get("touch_beacon_sensor");
+
         baseEopdSensor = hwMap.opticalDistanceSensor.get("base_eopd_sensor");
 
         //turn the LED on the floor color sensor off at the start.
@@ -210,7 +210,7 @@ public class vv_Robot {
         baseMxpGyroSensor.zeroYaw();
 
 
-        armSensor = hwMap.touchSensor.get("touch_arm_sensor");
+        armSensor = hwMap.touchSensor.get("arm_touch_sensor");
 
 
         //initialize to the rest position.
@@ -269,6 +269,10 @@ public class vv_Robot {
 
         motorArray[INTAKE_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        //set the choo choo arnm to its limit.
+
+        setChooChooToLimit(aOpMode);
+
 
         // Set all base motors to zero power
         stopBaseMotors(aOpMode);
@@ -311,7 +315,6 @@ public class vv_Robot {
 
     public boolean isArmAtLimit(vv_OpMode aOpMode) {
         return armSensor.isPressed();
-        //TODO: Finish this method up
     }
 
     public void runRobotToPositionFB(vv_OpMode aOpMode, int position,
@@ -1162,9 +1165,7 @@ public class vv_Robot {
         return ballFlagServo.getPosition();
     }
 
-    public boolean isBeaconTouchSensorPressed(vv_OpMode aOpMode) {
-        return beaconTouchSensor.isPressed();
-    }
+
 
     public double getUltrasonicDistance(vv_OpMode aOpMode) {
         return rangeSensor.cmUltrasonic() / 2.54; //in inches
@@ -1790,6 +1791,17 @@ public class vv_Robot {
         } else {
             //do nothing because we are already where we need to be
         }
+
+    }
+
+    public void setChooChooToLimit(vv_OpMode aOpMode) throws InterruptedException{
+        //lets rotate the choo choo arm till we are at the limit.
+        while(!isArmAtLimit(aOpMode)) {
+            rotateChooChoo(aOpMode, INTAKE_LIMIT_SEARCH_INCREMENT);
+            Thread.sleep(500);
+        }
+        //at limit, now reset the encoder to this position
+        resetChooChooEncoder(aOpMode);
 
     }
 

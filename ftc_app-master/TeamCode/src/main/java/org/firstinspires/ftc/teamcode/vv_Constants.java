@@ -73,8 +73,8 @@ public class vv_Constants
     static final double BALL_FLAG_SERVO_RAISED = 0.8f;
     static final double BALL_FLAG_SERVO_ALARM = 0.9f;
 
-    static final double CAP_BALL_SERVO_SECURED = 0.60f;
-    static final double CAP_BALL_SERVO_RELEASED = 0.05f;
+    static final double CAP_BALL_SERVO_SECURED = 0.52f;
+    static final double CAP_BALL_SERVO_RELEASED = 0.0f;
 
 
     static final int ROBOT_ANGLE_THRESHOLD = 3;
@@ -161,6 +161,7 @@ public class vv_Constants
 
 
     final static int INTAKE_INCREMENT = 1000;
+    final static int INTAKE_LIMIT_SEARCH_INCREMENT = 250;
     final static float PRE_INIT_LAUNCH_POWER = 0.5f;
 
     final static float WORM_DRIVE_POWER = 0.95f;

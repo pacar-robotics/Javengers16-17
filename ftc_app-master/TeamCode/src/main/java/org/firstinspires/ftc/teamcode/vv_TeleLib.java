@@ -250,7 +250,7 @@ public class vv_TeleLib {
                 vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, +180);
         }
         if (aOpMode.gamepad1.dpad_right) {
-
+            vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, -90);
         }
         if (aOpMode.gamepad1.dpad_left) {
             vvLib.turnAbsoluteMxpGyroDegrees(aOpMode, +90);
@@ -286,6 +286,7 @@ public class vv_TeleLib {
 
         if (aOpMode.gamepad2.left_trigger > TRIGGER_THRESHOLD) {
             //we want to move cap ball to go down
+            vvLib.robot.releaseCapbBallHolder(aOpMode);
             if (vvLib.robot.getCapBallMotorEncoderPosition(aOpMode) <= 0) {
                 //at limit
                 //warn and set the robot to min
@@ -305,6 +306,7 @@ public class vv_TeleLib {
 
         if (aOpMode.gamepad2.right_trigger > TRIGGER_THRESHOLD) {
             //we want to move cap ball to go up
+            vvLib.robot.releaseCapbBallHolder(aOpMode);
             if (vvLib.robot.getCapBallMotorEncoderPosition(aOpMode) >= CAP_BALL_ENCODER_UPPER_LIMIT) {
                 //at limit
                 //do nothing but warn on screen.
@@ -325,6 +327,7 @@ public class vv_TeleLib {
         }
 
         if (aOpMode.gamepad2.a) {
+            vvLib.robot.releaseCapbBallHolder(aOpMode);
             lowerCapBallToMinHeight(aOpMode, vvLib, vvTeleLib);
         }
 
@@ -332,12 +335,8 @@ public class vv_TeleLib {
             scoreCapBall(aOpMode, vvLib);
         }
 
-        if (aOpMode.gamepad2.b) {
-            scoopCapBall(aOpMode, vvLib);
-        }
-
-
         if (aOpMode.gamepad2.y) {
+            vvLib.robot.releaseCapbBallHolder(aOpMode);
             raiseCapBallToMaxHeight(aOpMode, vvLib, vvTeleLib);
         }
 
@@ -349,14 +348,26 @@ public class vv_TeleLib {
         //be very careful, the cable may break.
 
         if (aOpMode.gamepad2.left_trigger > TRIGGER_THRESHOLD) {
+            vvLib.robot.releaseCapbBallHolder(aOpMode);
             decreaseCapBallHeight(aOpMode, vvLib,
                     CAP_BALL_POSITION_INCREMENT, vvTeleLib);
         }
 
         if (aOpMode.gamepad2.right_trigger > TRIGGER_THRESHOLD) {
+            vvLib.robot.releaseCapbBallHolder(aOpMode);
             increaseCapBallHeight(aOpMode, vvLib,
                      CAP_BALL_POSITION_INCREMENT);
         }
+
+        if (aOpMode.gamepad2.right_bumper) {
+            vvLib.robot.releaseCapbBallHolder(aOpMode);
+        }
+
+        if (aOpMode.gamepad2.left_bumper) {
+            vvLib.robot.secureCapbBallHolder(aOpMode);
+        }
+
+
         aOpMode.telemetryAddData("Cap Ball Height:", "Encoder:", "Value:" +
                 vvLib.robot.getCapBallMotorEncoderPosition(aOpMode));
         aOpMode.telemetryUpdate();
@@ -433,13 +444,6 @@ public class vv_TeleLib {
         vvLib.moveWheels(aOpMode, 4, 0.9f, vv_Constants.DirectionEnum.Backward, false);
     }
 
-    public void scoopCapBall(vv_OpMode aOpMode, vv_Lib vvLib)
-            throws InterruptedException, vv_Robot.MotorStalledException{
-        //move forward gently
-        vvLib.moveWheels(aOpMode, 6, 0.95f, vv_Constants.DirectionEnum.Forward, true);
-        //now lift off ground a bit
-        increaseCapBallHeight(aOpMode,vvLib,1000);
-    }
 
 
     protected void processChooChooPosition(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
