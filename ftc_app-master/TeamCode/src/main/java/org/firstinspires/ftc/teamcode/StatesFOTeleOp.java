@@ -68,7 +68,7 @@ public class StatesFOTeleOp extends vv_OpMode {
 
                 vvTeleLib.processCapBallControls(this, vvLib, vvTeleLib );
 
-                vvTeleLib.processFieldOrientedCapBallDrive(this, vvLib, 0.3f);
+                vvTeleLib.processFieldOrientedCapBallDrive(this, vvLib, 0.5f);
 
                 vvTeleLib.processYawReset(this, vvLib);
 

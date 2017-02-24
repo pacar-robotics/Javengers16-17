@@ -73,8 +73,8 @@ public class vv_Constants
     static final double BALL_FLAG_SERVO_RAISED = 0.8f;
     static final double BALL_FLAG_SERVO_ALARM = 0.9f;
 
-    static final double CAP_BALL_SERVO_SECURED = 0.52f;
-    static final double CAP_BALL_SERVO_RELEASED = 0.0f;
+    static final double CAP_BALL_SERVO_SECURED = .13f;
+    static final double CAP_BALL_SERVO_RELEASED = 0.9f;
 
 
     static final int ROBOT_ANGLE_THRESHOLD = 3;
