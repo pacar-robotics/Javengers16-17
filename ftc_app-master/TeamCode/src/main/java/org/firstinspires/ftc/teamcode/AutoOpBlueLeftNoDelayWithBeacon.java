@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
+
 
 /**
  * Created by Rachael_ on 10/23/2016.
@@ -36,6 +38,11 @@ public class AutoOpBlueLeftNoDelayWithBeacon extends vv_OpMode {
     }
 
     public void basic_auto_strategy() throws InterruptedException {
+
+        //orient robot to shoot the first ball from right tile.
+
+        vvLib.moveWheels(this, 4.0f, 0.5f, SidewaysRight, false);
+        vvLib.turnAbsoluteMxpGyroDegrees(this, 18f);
 
         //first shoot two balls.
         vvLib.shootBallsAutonomousCommonAction(this);

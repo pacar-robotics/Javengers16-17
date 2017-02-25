@@ -259,6 +259,7 @@ public class vv_Robot {
         motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[ARM_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[INTAKE_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Thread.sleep(50);
 
         //set the run mode to run_to_position for the worm drive
         //since we will not be using it in any other mode.
@@ -269,9 +270,7 @@ public class vv_Robot {
 
         motorArray[INTAKE_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        //set the choo choo arnm to its limit.
 
-        setChooChooToLimit(aOpMode);
 
 
         // Set all base motors to zero power
@@ -282,7 +281,17 @@ public class vv_Robot {
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
 
-        //final initialization countdown to ensure gyro stability if not Field Oriented
+
+        //lets check if the Choo Choo arm is at limit.
+
+        if(!isArmAtLimit(aOpMode)){
+            //the choo choo arm is not properly set.
+            //warn the user.
+            aOpMode.telemetryAddData(">>>>CHOO CHOO IS NOT AT LIMIT!, RUN PRE INIT!<<<<", " ", "");
+            aOpMode.telemetryUpdate();
+            Thread.sleep(30000);
+
+        }
 
         for (int i = 3; i > 0; i--) {
             aOpMode.telemetryAddData("Completing ", " Initialization Countdown->", "[[ " + i + " ]]");
@@ -368,7 +377,7 @@ public class vv_Robot {
         motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
+        Thread.sleep(50);
 
         //sets all motors to run to a position
         motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -377,11 +386,13 @@ public class vv_Robot {
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
+
         //set targets
         motorArray[FRONT_LEFT_MOTOR].setTargetPosition(fl_Position);
         motorArray[FRONT_RIGHT_MOTOR].setTargetPosition(fr_Position);
         motorArray[BACK_LEFT_MOTOR].setTargetPosition(bl_Position);
         motorArray[BACK_RIGHT_MOTOR].setTargetPosition(br_Position);
+        Thread.sleep(50);
 
 
         if (isRampedPower) {
@@ -483,69 +494,6 @@ public class vv_Robot {
 
     }
 
-    public void runRobotToPositionWithAngle(vv_OpMode aOpMode, float fl_Power, float fr_Power,
-                                            float bl_Power, float br_Power, int fl_Position,
-                                            int fr_Position, int bl_Position, int br_Position, float angle)
-            throws InterruptedException {
-
-        //reset motor encoders
-        motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        //sets all motors to run to a position
-
-        setMotorMode(aOpMode, FRONT_LEFT_MOTOR, DcMotor.RunMode.RUN_TO_POSITION);
-        setMotorMode(aOpMode, FRONT_RIGHT_MOTOR, DcMotor.RunMode.RUN_TO_POSITION);
-        setMotorMode(aOpMode, BACK_LEFT_MOTOR, DcMotor.RunMode.RUN_TO_POSITION);
-        setMotorMode(aOpMode, BACK_RIGHT_MOTOR, DcMotor.RunMode.RUN_TO_POSITION);
-        while (motorArray[FRONT_LEFT_MOTOR].isBusy() || motorArray[FRONT_RIGHT_MOTOR].isBusy() ||
-                motorArray[BACK_LEFT_MOTOR].isBusy() || motorArray[BACK_RIGHT_MOTOR].isBusy()) {
-            //wait until the motors have finished these tasks
-            aOpMode.idle();
-        }
-
-
-        //reset encoders
-        motorArray[FRONT_LEFT_MOTOR].setTargetPosition(fl_Position);
-        motorArray[FRONT_RIGHT_MOTOR].setTargetPosition(fr_Position);
-        motorArray[BACK_LEFT_MOTOR].setTargetPosition(bl_Position);
-        motorArray[BACK_RIGHT_MOTOR].setTargetPosition(br_Position);
-
-        //sets the the power of all motors
-        setPower(aOpMode, FRONT_LEFT_MOTOR, fl_Power);
-        setPower(aOpMode, FRONT_RIGHT_MOTOR, fr_Power);
-        setPower(aOpMode, BACK_LEFT_MOTOR, bl_Power);
-        setPower(aOpMode, BACK_RIGHT_MOTOR, br_Power);
-
-
-        //wait until robot reaches target position
-        //testing the wheels on the opposite sides of the robot because each might have a different position for sideways movements
-
-        long startTime = System.currentTimeMillis();
-        while (baseMotorsAreBusy() && ((System.currentTimeMillis() - startTime) < MAX_MOTOR_LOOP_TIME) &&
-                (Math.abs(motorArray[FRONT_LEFT_MOTOR].getCurrentPosition() - fl_Position) > MECCANUM_WHEEL_ENCODER_MARGIN)) {
-            //wait while motors reach targets or we time out.
-            //report motor positions for debugging
-            aOpMode.telemetryAddData("Motor FL", "Values", "" + motorArray[FRONT_LEFT_MOTOR].getCurrentPosition());
-            aOpMode.telemetryAddData("Motor FR", "Values", "" + motorArray[FRONT_RIGHT_MOTOR].getCurrentPosition());
-            aOpMode.telemetryAddData("Motor BL", "Values", "" + motorArray[BACK_LEFT_MOTOR].getCurrentPosition());
-            aOpMode.telemetryAddData("Motor BR", "Values", "" + motorArray[BACK_RIGHT_MOTOR].getCurrentPosition());
-            aOpMode.telemetryUpdate();
-            aOpMode.idle();
-
-        }
-        stopBaseMotors(aOpMode);
-        //final value display
-        aOpMode.telemetryAddData("Motor FL", "Values", "" + motorArray[FRONT_LEFT_MOTOR].getCurrentPosition());
-        aOpMode.telemetryAddData("Motor FR", "Values", "" + motorArray[FRONT_RIGHT_MOTOR].getCurrentPosition());
-        aOpMode.telemetryAddData("Motor BL", "Values", "" + motorArray[BACK_LEFT_MOTOR].getCurrentPosition());
-        aOpMode.telemetryAddData("Motor BR", "Values", "" + motorArray[BACK_RIGHT_MOTOR].getCurrentPosition());
-        aOpMode.telemetryUpdate();
-
-        Thread.sleep(100);
-    }
 
     /**
      * Runs motors forwards and backwards.
@@ -575,6 +523,45 @@ public class vv_Robot {
         runMotors(aOpMode, -Power, Power, Power, -Power);
     }
 
+    public void testMotor(vv_OpMode aOpMode, int motorName, float power, long duration) throws InterruptedException {
+        aOpMode.DBG("In test motor in vv_robot");
+
+        aOpMode.DBG("after checkname assertion in vv_robot");
+
+        //save the old run mode
+        DcMotor.RunMode oldRunMode = motorArray[motorName].getMode();
+        aOpMode.DBG("after getmode in vv_robot");
+
+        //change mode to run without encoders
+
+        motorArray[motorName].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
+        aOpMode.DBG("after runmode set in vv_robot");
+
+        //set the power to motor
+        motorArray[motorName].setPower(power);
+
+        aOpMode.DBG("after power set in vv_robot");
+
+        //reset the timer
+        aOpMode.reset_timer_array(GENERIC_TIMER);
+        while (aOpMode.time_elapsed_array(GENERIC_TIMER) < duration) {
+            //wait till duration is complete.
+            aOpMode.DBG("In motor loop in vv_robot");
+            aOpMode.idle();
+        }
+        //stop the motor
+
+        motorArray[motorName].setPower(0.0f);
+
+        //restore old motor mode
+        motorArray[motorName].setMode(oldRunMode);
+
+
+    }
+
+
 
     /**
      * Runs motors. Can be called by a more specific method to move forwards and backwards or sideways.
@@ -593,6 +580,8 @@ public class vv_Robot {
         motorArray[1].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorArray[2].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorArray[3].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Thread.sleep(50);
+
 
 
         //sets the the power of all motors
@@ -609,12 +598,16 @@ public class vv_Robot {
         motorArray[1].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorArray[2].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorArray[3].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Thread.sleep(50);
+
 
         //sets the the power of all motors
         setPower(aOpMode, FRONT_LEFT_MOTOR, limit_power(aOpMode, fl_Power));
         setPower(aOpMode, FRONT_RIGHT_MOTOR, limit_power(aOpMode, fr_Power));
         setPower(aOpMode, BACK_LEFT_MOTOR, limit_power(aOpMode, bl_Power));
         setPower(aOpMode, BACK_RIGHT_MOTOR, limit_power(aOpMode, br_Power));
+
+        Thread.sleep(50);
     }
 
     public void stopBaseMotors(vv_OpMode aOpMode) throws InterruptedException {
@@ -746,119 +739,6 @@ public class vv_Robot {
                 motorArray[BACK_LEFT_MOTOR].isBusy() || motorArray[BACK_RIGHT_MOTOR].isBusy());
     }
 
-    public void testMotor(vv_OpMode aOpMode, int motorName, float power, long duration) throws InterruptedException {
-        aOpMode.DBG("In test motor in vv_robot");
-
-        aOpMode.DBG("after checkname assertion in vv_robot");
-
-        //save the old run mode
-        DcMotor.RunMode oldRunMode = motorArray[motorName].getMode();
-        aOpMode.DBG("after getmode in vv_robot");
-
-        //change mode to run without encoders
-
-        motorArray[motorName].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-
-        aOpMode.DBG("after runmode set in vv_robot");
-
-        //set the power to motor
-        motorArray[motorName].setPower(power);
-
-        aOpMode.DBG("after power set in vv_robot");
-
-        //reset the timer
-        aOpMode.reset_timer_array(GENERIC_TIMER);
-        while (aOpMode.time_elapsed_array(GENERIC_TIMER) < duration) {
-            //wait till duration is complete.
-            aOpMode.DBG("In motor loop in vv_robot");
-            aOpMode.idle();
-        }
-        //stop the motor
-
-        motorArray[motorName].setPower(0.0f);
-
-        //restore old motor mode
-        motorArray[motorName].setMode(oldRunMode);
-
-
-    }
-
-    public void testEncodedMotor(vv_OpMode aOpMode, int motorName, float power, int maxDuration, int targetPosition) throws InterruptedException,
-            MotorStalledException {
-
-        aOpMode.DBG("in testEncodedMotor");
-
-
-        aOpMode.DBG("after checkname in testEncodedMotor");
-
-        //translate the enumeration to a dc motor
-        //save the old run mode
-        DcMotor.RunMode oldRunMode = motorArray[motorName].getMode();
-
-        //change the run mode
-
-        motorArray[motorName].setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
-        //set the motor target
-
-        motorArray[motorName].setTargetPosition(targetPosition);
-
-        //set the power to motor
-        motorArray[motorName].setPower(power);
-
-        //reset the timer
-        aOpMode.reset_timer_array(GENERIC_TIMER);
-
-        //variable for stall tests
-        long stallTimeStart = 0;
-        long stallTimeDelta = 0;
-        long stallPositionStart = 0;
-        long stallPositionDelta = 0;
-        float stallVelocity = 0;
-        float stallVelocityThreshold = (ENCODED_MOTOR_STALL_CLICKS_TETRIX * 1.0f /
-                ENCODED_MOTOR_STALL_TIME_DELTA);
-
-        aOpMode.DBG("before move loop in testEncodedMotor");
-
-        while ((motorArray[motorName].isBusy()) &&
-                ((Math.abs(motorArray[motorName].getCurrentPosition() - targetPosition)) > MECCANUM_WHEEL_ENCODER_MARGIN) &&
-                (aOpMode.time_elapsed_array(GENERIC_TIMER) < maxDuration)) {
-            stallPositionStart = motorArray[motorName].getCurrentPosition();
-            stallTimeStart = aOpMode.time_elapsed_array(GENERIC_TIMER);
-            //wait till the run is complete or the time runs out.
-            Thread.sleep(50);
-            aOpMode.idle();
-            //stall code
-            stallPositionDelta = Math.abs(motorArray[motorName].getCurrentPosition()) - Math.abs(stallPositionStart);
-            stallTimeDelta = aOpMode.time_elapsed_array(GENERIC_TIMER) - stallTimeStart;
-            stallVelocity = ((stallPositionDelta * 1.0f) / stallTimeDelta);
-
-            //TODO: Stall code must be tested!!
-            if (stallTimeDelta > 0) {
-                if (stallVelocity < stallVelocityThreshold) {
-                    //motor stalling ?
-                    //stop motor first
-                    aOpMode.DBG("in stall code throw testEncodedMotor");
-                    motorArray[motorName].setPower(0.0f);
-                    //throw exception indicating the problem.
-                    String stallMessage = "MotorName" + motorName + "StallV:[" +
-                            stallVelocity + "]" + "Stall Velocity Threshold:{" +
-                            stallVelocityThreshold + "]";
-                    throw new MotorStalledException(stallMessage);
-                }
-            }
-
-
-        }
-        //stop the motor
-        motorArray[motorName].setPower(0.0f);
-
-        //restore old motor mode
-        motorArray[motorName].setMode(oldRunMode);
-
-    }
 
     public int getLauncherPowerPosition(vv_OpMode aOpMode) {
         return motorArray[WORM_DRIVE_MOTOR].getCurrentPosition();
@@ -871,6 +751,7 @@ public class vv_Robot {
         //in any other mode.
 
         motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Thread.sleep(50);
 
         //Now set the target
         motorArray[WORM_DRIVE_MOTOR].setTargetPosition(launcherPowerPosition);
@@ -957,9 +838,11 @@ public class vv_Robot {
         //in any other mode.
 
         motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Thread.sleep(50);
 
         //Now set the target
         motorArray[CAP_BALL_MOTOR].setTargetPosition(capBallPosition);
+
 
         //now set the power
         motorArray[CAP_BALL_MOTOR].setPower(CAP_BALL_POWER);
@@ -1034,7 +917,10 @@ public class vv_Robot {
 
             //process cap ball based drive controls
 
-            vvTeleLib.processFieldOrientedCapBallDrive(aOpMode,vvLib, 0.2f );
+            vvTeleLib.processFieldOrientedCapBallDrive(aOpMode,vvLib, 0.3f );
+            if (aOpMode.gamepad2.x) {
+                vvTeleLib.scoreCapBall(aOpMode, vvLib);
+            }
 
 
             aOpMode.idle();
@@ -1051,6 +937,7 @@ public class vv_Robot {
         //in any other mode.
 
         motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Thread.sleep(50);
 
         //Now set the target
         motorArray[CAP_BALL_MOTOR].setTargetPosition(capBallPosition);
@@ -1206,6 +1093,7 @@ public class vv_Robot {
         motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Thread.sleep(50);
 
         //switch to RUN_WITH_ENCODERS to normalize for speed.
 
@@ -1311,6 +1199,7 @@ public class vv_Robot {
         motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Thread.sleep(50);
 
         while (motorArray[FRONT_LEFT_MOTOR].getCurrentPosition() != 0) {
             //wait for switch to happen.
@@ -1322,6 +1211,7 @@ public class vv_Robot {
         motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
 
         //we want to go straight, from this point
@@ -1423,6 +1313,7 @@ public class vv_Robot {
         motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Thread.sleep(50);
 
         //switch to RUN_WITH_ENCODERS to normalize for speed.
 
@@ -1532,6 +1423,7 @@ public class vv_Robot {
         motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Thread.sleep(50);
 
         //apply specific powers to motors to get desired movement
         //wait till duration is complete.
@@ -1848,10 +1740,14 @@ public class vv_Robot {
         motorArray[ARM_MOTOR].setPower(0.0f);
     }
 
-    public void resetChooChooEncoder(vv_OpMode aOpMode) {
+    public void resetChooChooEncoder(vv_OpMode aOpMode) throws InterruptedException{
         //reset the encoder on the choo choo arm
         motorArray[ARM_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Thread.sleep(50);
+
         motorArray[ARM_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
     }
 
     public int getChooChooArmEncoderPosition(vv_OpMode aOpMode) {

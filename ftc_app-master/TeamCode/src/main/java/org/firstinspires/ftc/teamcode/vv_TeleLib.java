@@ -33,7 +33,7 @@ public class vv_TeleLib {
     }
 
     protected void processParticleBallLaunch(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException {
-        if (aOpMode.gamepad1.a) {
+        if ((aOpMode.gamepad1.a)&&(!aOpMode.gamepad1.start)) {
             //shoot a ball
             //then setup for next shot.
             //launch where we are.
@@ -43,7 +43,7 @@ public class vv_TeleLib {
             //absorb any extra button presses
             Thread.sleep(150);
         }
-        if (aOpMode.gamepad1.b) {
+        if ((aOpMode.gamepad1.b)&&(!aOpMode.gamepad1.start)) {
             //drop the ball but do not shoot.
             vvLib.dropBall(aOpMode);
             Thread.sleep(150);

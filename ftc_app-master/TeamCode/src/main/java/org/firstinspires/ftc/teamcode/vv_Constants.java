@@ -73,7 +73,7 @@ public class vv_Constants
     static final double BALL_FLAG_SERVO_RAISED = 0.8f;
     static final double BALL_FLAG_SERVO_ALARM = 0.9f;
 
-    static final double CAP_BALL_SERVO_SECURED = .13f;
+    static final double CAP_BALL_SERVO_SECURED = .05f;
     static final double CAP_BALL_SERVO_RELEASED = 0.9f;
 
 

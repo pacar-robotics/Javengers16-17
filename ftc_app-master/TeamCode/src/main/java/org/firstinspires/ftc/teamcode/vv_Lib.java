@@ -723,18 +723,6 @@ public class vv_Lib {
     }
 
 
-    public void testMotor(vv_OpMode aOpMode, int motorName, float power, long duration)
-            throws InterruptedException {
-        aOpMode.DBG("in vvLib test Motor");
-        robot.testMotor(aOpMode, motorName, power, duration);
-    }
-
-    public void testEncodedMotor(vv_OpMode aOpMode, int motorName, float power, int duration, int targetPosition)
-            throws InterruptedException, vv_Robot.MotorStalledException {
-        aOpMode.DBG("in testEncodedMotor");
-        robot.testEncodedMotor(aOpMode, motorName, power, duration, targetPosition);
-    }
-
     public void testSidewaysRight(vv_OpMode aOpMode, int duration)
             throws InterruptedException {
 
@@ -1070,7 +1058,7 @@ public class vv_Lib {
 
         Thread.sleep(25);
 
-        moveWheels(aOpMode, 4.5f, 0.20f, Backward, false); // adjust face position to match beacons
+        moveWheels(aOpMode, 5.5f, 0.20f, Backward, false); // adjust face position to match beacons
 
         Thread.sleep(25);
 
@@ -1203,6 +1191,10 @@ public class vv_Lib {
             throws InterruptedException {
 
 
+        //lets check for the choo choo arm being in the right position
+        //if not move into the right position.
+
+        robot.setChooChooToLimit(aOpMode);
         // Shoot the first ball
         shootBall(aOpMode);
         setupShot(aOpMode);
