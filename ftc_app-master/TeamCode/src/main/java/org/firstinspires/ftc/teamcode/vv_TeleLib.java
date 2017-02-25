@@ -211,7 +211,7 @@ public class vv_TeleLib {
 
             //we are not in deadzone. Driver is pushing right joystick, sideways
             //scale the powerfactor by another factor to adjust for observed slow turns.
-            float turnVelocity = (float) vvLib.robot.getGamePad2RightJoystickPolarMagnitude(aOpMode) * powerFactor*1.5f;
+            float turnVelocity = (float) vvLib.robot.getGamePad2RightJoystickPolarMagnitude(aOpMode) * powerFactor;
 
             if (aOpMode.gamepad2.right_stick_x > 0) {
                 //turn clockwise to correct magnitude
@@ -321,7 +321,7 @@ public class vv_TeleLib {
                 } else {
 
                     increaseCapBallHeight(aOpMode, vvLib,
-                           CAP_BALL_POSITION_INCREMENT);
+                           CAP_BALL_POSITION_INCREMENT, vvTeleLib);
                 }
             }
         }
@@ -356,7 +356,7 @@ public class vv_TeleLib {
         if (aOpMode.gamepad2.right_trigger > TRIGGER_THRESHOLD) {
             vvLib.robot.releaseCapbBallHolder(aOpMode);
             increaseCapBallHeight(aOpMode, vvLib,
-                     CAP_BALL_POSITION_INCREMENT);
+                     CAP_BALL_POSITION_INCREMENT, vvTeleLib);
         }
 
         if (aOpMode.gamepad2.right_bumper) {
@@ -419,7 +419,7 @@ public class vv_TeleLib {
 
     public void increaseCapBallHeightNoStall(vv_OpMode aOpMode, vv_Lib vvLib, int increment, vv_TeleLib vvTeleLib) throws InterruptedException,
             vv_Robot.MotorStalledException {
-        vvLib.robot.setCapBallPosition(aOpMode, vvLib.robot.getCapBallMotorEncoderPosition(aOpMode) + increment, vvLib, vvTeleLib);
+        vvLib.robot.setCapBallPositionNoStall(aOpMode, vvLib.robot.getCapBallMotorEncoderPosition(aOpMode) + increment);
     }
 
     public void decreaseCapBallHeightNoStall(vv_OpMode aOpMode, vv_Lib vvLib, int increment) throws InterruptedException,
@@ -427,9 +427,9 @@ public class vv_TeleLib {
         vvLib.robot.setCapBallPositionNoStall(aOpMode, vvLib.robot.getCapBallMotorEncoderPosition(aOpMode) - increment);
     }
 
-    public void increaseCapBallHeight(vv_OpMode aOpMode, vv_Lib vvLib, int increment) throws InterruptedException,
+    public void increaseCapBallHeight(vv_OpMode aOpMode, vv_Lib vvLib, int increment, vv_TeleLib vvTeleLib) throws InterruptedException,
             vv_Robot.MotorStalledException {
-        vvLib.robot.setCapBallPositionNoStall(aOpMode, vvLib.robot.getCapBallMotorEncoderPosition(aOpMode) + increment);
+        vvLib.robot.setCapBallPosition(aOpMode, vvLib.robot.getCapBallMotorEncoderPosition(aOpMode) + increment, vvLib, vvTeleLib);
     }
 
 
@@ -442,6 +442,11 @@ public class vv_TeleLib {
         vvLib.moveWheels(aOpMode, 6, 0.5f, vv_Constants.DirectionEnum.Forward, true);
         //pull back suddenly
         vvLib.moveWheels(aOpMode, 4, 0.9f, vv_Constants.DirectionEnum.Backward, false);
+    }
+
+    public void pullBackCapBall(vv_OpMode aOpMode, vv_Lib vvLib) throws InterruptedException{
+        //move backward gently
+        vvLib.moveWheels(aOpMode, 6, 0.4f, vv_Constants.DirectionEnum.Backward, true);
     }
 
 

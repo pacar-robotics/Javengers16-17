@@ -42,7 +42,7 @@ public class AutoOpBlueRightNoDelayWithBeacon extends vv_OpMode {
         //orient robot to shoot the first ball from right tile.
 
         vvLib.moveWheels(this, 4.0f, 0.5f, SidewaysRight, false);
-        vvLib.turnAbsoluteMxpGyroDegrees(this, -15f);
+        vvLib.turnAbsoluteMxpGyroDegrees(this, -12f);
 
         //first shoot two balls.
         vvLib.shootBallsAutonomousCommonAction(this);

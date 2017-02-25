@@ -22,6 +22,8 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Forward;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysLeft;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
 import static org.firstinspires.ftc.teamcode.vv_Constants.EOPD_PROXIMITY_THRESHOLD;
+import static org.firstinspires.ftc.teamcode.vv_Constants.FLOOR_WHITE_MARGIN;
+import static org.firstinspires.ftc.teamcode.vv_Constants.FLOOR_WHITE_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.GYRO_OFFSET;
@@ -159,6 +161,7 @@ public class vv_Lib {
 
 
     public void shootBall(vv_OpMode aOpMode) throws InterruptedException {
+        setupShot(aOpMode);
         robot.shootChooChoo(aOpMode);
     }
 
@@ -605,7 +608,7 @@ public class vv_Lib {
                         TurnDirectionEnum.Counterclockwise);
 
         float finalDegrees = robot.getMxpGyroSensorHeading(aOpMode);
-        Thread.sleep(50); //cooling off after gyro read to prevent error in next run.
+        Thread.sleep(25); //cooling off after gyro read to prevent error in next run.
 
         if (DEBUG) {
             aOpMode.telemetryAddData("New Bearing Degrees", "Value:",
@@ -1058,7 +1061,7 @@ public class vv_Lib {
 
         Thread.sleep(25);
 
-        moveWheels(aOpMode, 5.5f, 0.20f, Backward, false); // adjust face position to match beacons
+        moveWheels(aOpMode, 5.5f, 0.4f, Backward, false); // adjust face position to match beacons
 
         Thread.sleep(25);
 
@@ -1115,9 +1118,6 @@ public class vv_Lib {
         //detect the line and score beacon.
 
         ScoreBeaconFromTheRight(aOpMode);
-        Thread.sleep(25);
-        //now to work on second beacon.
-
 
         //now move to second beacon
 
@@ -1204,9 +1204,6 @@ public class vv_Lib {
 
         //Shoot the second ball.
         shootBall(aOpMode);
-        shootBall(aOpMode);
-
-        setupShot(aOpMode);
 
         //rotate back for reference before proceeding
         turnAbsoluteMxpGyroDegrees(aOpMode, 0f);
@@ -1263,6 +1260,7 @@ public class vv_Lib {
 
 
     public void shootBallAndSpinIntake(vv_OpMode aOpMode) throws InterruptedException {
+        setupShot(aOpMode);
         dropBall(aOpMode);
         shootBall(aOpMode);
         //spin intake
@@ -1299,7 +1297,7 @@ public class vv_Lib {
     public class LineDetectCondition implements vv_OpMode.StopCondition {
 
         public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
-            return ((getFloorColorIntensity(aOpMode) >= floorWhiteThreshold));
+            return ((getFloorColorIntensity(aOpMode) >= (floorWhiteThreshold-FLOOR_WHITE_MARGIN)));
         }
     }
 
