@@ -148,7 +148,7 @@ public class vv_Lib {
         //open the launcher gate
         robot.openFrontLauncherGate();
 
-        Thread.sleep(550);
+        Thread.sleep(750);
 
 
         //wait for a ball to fall.

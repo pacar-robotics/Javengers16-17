@@ -207,13 +207,13 @@ public class vv_DiagLib {
                 "Tests the Choo Choo Launch by checking for change in Encoder Value",
                 TestType.AUTOMATIC, new TestChooChooLaunch());
 
-        robotTestArray[14].createTest(aOpMode, "testCapBall", 14, "Test Cap Ball Lift",
-                "Tests the Cap Ball Lift by Moving Lift and checking for change in Encoder Value",
-                TestType.AUTOMATIC, new TestCapBall());
+        //robotTestArray[14].createTest(aOpMode, "testCapBall", 14, "Test Cap Ball Lift",
+                //"Tests the Cap Ball Lift by Moving Lift and checking for change in Encoder Value",
+               // TestType.AUTOMATIC, new TestCapBall());
 
-        robotTestArray[15].createTest(aOpMode, "testChooChooTension", 15, "Test Choo Choo Tensioning",
-                "Tests the Choo Choo Tensioning Mechanism by checking for change in Encoder Value",
-                TestType.AUTOMATIC, new TestChooChooTension());
+        //robotTestArray[15].createTest(aOpMode, "testChooChooTension", 15, "Test Choo Choo Tensioning",
+               // "Tests the Choo Choo Tensioning Mechanism by checking for change in Encoder Value",
+                //TestType.AUTOMATIC, new TestChooChooTension());
 
 
 
