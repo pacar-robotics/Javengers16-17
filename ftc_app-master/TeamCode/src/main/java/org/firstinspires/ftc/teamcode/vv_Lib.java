@@ -1090,7 +1090,7 @@ public class vv_Lib {
         //for first beacon
 
 
-        universalMoveRobot(aOpMode, 180, 0.25, 0.0, 3000, lineDetectStop, false, 0, 0);
+        universalMoveRobot(aOpMode, 180, 0.20, 0.0, 3000, lineDetectStop, false, 0, 0);
         //now detect the line but at right angles
 
         Thread.sleep(25);
@@ -1171,7 +1171,7 @@ public class vv_Lib {
 
         //lets move over the first beacon line, to prevent stopping at wrong line.
 
-        moveWheels(aOpMode, 40.0f, 0.99f, Backward, true);
+        moveWheels(aOpMode, 35.0f, 0.99f, Backward, true);
 
         turnAbsoluteMxpGyroDegrees(aOpMode, -90); //with trim
         Thread.sleep(25);
