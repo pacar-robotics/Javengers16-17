@@ -114,7 +114,7 @@ public class vv_Constants
     //define the motors as constants instead of enumerations for speed.
 
     //power used to power cap ball movements
-    final static float CAP_BALL_POWER = 0.8f;
+    final static float CAP_BALL_POWER = 0.95f;
     //define the motors as constants instead of enumerations for speed.
 
     final static int CAP_BALL_DURATION_MAX = 26000;
@@ -176,7 +176,7 @@ public class vv_Constants
     //normally Floor sensor calibration automatically sets values in
     //an XML file adjusting for the light in the competition venue.
 
-    final static float FLOOR_WHITE_THRESHOLD = 20f; //may need to calibrate
+    final static float FLOOR_WHITE_THRESHOLD = 30f; //may need to calibrate
     final static float FLOOR_WHITE_MARGIN = 3f; //may need to calibrate
 
 
@@ -184,7 +184,7 @@ public class vv_Constants
     final static double RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD = 1.2d;
     final static double RANGESENSOR_OPTICAL_PROXIMITY_THRESHOLD = 1.0d;
 
-    final static int CAP_BALL_ENCODER_UPPER_LIMIT = 33750; //for matrix motor adustments.
+    final static int CAP_BALL_ENCODER_UPPER_LIMIT = 34500; //for matrix motor adustments.
     //including the gear ratio
 
 
