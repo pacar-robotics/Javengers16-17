@@ -47,6 +47,7 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.IntakeStateEnum.Off;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_FRONT_GATE_SERVO_CLOSED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_FRONT_GATE_SERVO_OPEN;
+import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POSITION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_REAR_GATE_SERVO_CLOSED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_REAR_GATE_SERVO_OPEN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LEFT_BEACON_BUTTON_SERVO;
@@ -280,7 +281,7 @@ public class vv_Robot {
             //warn the user.
             aOpMode.telemetryAddData(">>>>CHOO CHOO IS NOT AT LIMIT!, RUN PRE INIT!<<<<", " ", "");
             aOpMode.telemetryUpdate();
-            Thread.sleep(30000);
+            Thread.sleep(5000);
 
         }
 
@@ -908,6 +909,10 @@ public class vv_Robot {
             vvTeleLib.processFieldOrientedCapBallDrive(aOpMode, vvLib, 0.3f);
             if (aOpMode.gamepad2.x) {
                 vvTeleLib.scoreCapBall(aOpMode, vvLib);
+            }
+
+            if (aOpMode.gamepad2.b) {
+                vvTeleLib.pullBackCapBall(aOpMode, vvLib);
             }
 
 
@@ -1630,12 +1635,14 @@ public class vv_Robot {
     }
 
 
-    public void setupChooChoo(vv_OpMode aOpMode) {
+    public void setupChooChoo(vv_OpMode aOpMode) throws InterruptedException{
 
+        motorArray[ARM_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Thread.sleep(100);
         //we are always running to position, so wont change mode
         int currentChooChooPosition = motorArray[ARM_MOTOR].getCurrentPosition();
         //we have to move the arm to nearest multiple of revs needed
-        if ((Math.abs(currentChooChooPosition) % ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION) != 0) {
+        if ((Math.abs(currentChooChooPosition) % ARM_MOTOR_ENCODER_COUNTS_PER_REVOLUTION) > ARM_MOTOR_ENCODER_MARGIN) {
             //this means that we have moved beyond a reset or we are past the setpoint in
             //cycle
             //we have to watch for negative position.
@@ -1666,10 +1673,11 @@ public class vv_Robot {
 
     public void setChooChooToLimit(vv_OpMode aOpMode) throws InterruptedException {
         //lets rotate the choo choo arm till we are at the limit.
-        while (!isArmAtLimit(aOpMode)) {
-            rotateChooChoo(aOpMode, INTAKE_LIMIT_SEARCH_INCREMENT);
-            Thread.sleep(500);
+       while(!isArmAtLimit(aOpMode)) {
+            rotateChooChoo(aOpMode, LAUNCH_POSITION_INCREMENT);
+            Thread.sleep(250);
         }
+
         //at limit, now reset the encoder to this position
         resetChooChooEncoder(aOpMode);
 

@@ -53,7 +53,7 @@ public class AutoOpRedLeftNoDelayWithBeacon extends vv_OpMode {
 
         vvLib.turnAbsoluteMxpGyroDegrees(this, -90);
         //move robot diagonally in prep for first beacon
-        vvLib.universalMoveRobot(this, 140, 0.45, 0.0, 2900,
+        vvLib.universalMoveRobot(this, 135, 0.45, 0.0, 2950,
                 vvLib.rangeSensorUltraSonicCornerPositioningStop, false, 0, 0);
 
         //perform actions common to both red positions

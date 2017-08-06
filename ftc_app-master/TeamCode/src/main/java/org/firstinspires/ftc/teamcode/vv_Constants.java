@@ -47,7 +47,7 @@ public class vv_Constants
 
     // Mecanum wheel properties
     final static float MECCANUM_WHEEL_DIAMETER = 4f;   //in inches
-    final static float MECCANUM_WHEEL_ENCODER_MARGIN = 10;
+    final static float MECCANUM_WHEEL_ENCODER_MARGIN = 50;
     final static float MECCANUM_WHEEL_SIDE_TRACK_DISTANCE = 13.0f;
     final static float MECCANUM_WHEEL_FRONT_TRACK_DISTANCE = 14.5f;
 
@@ -73,7 +73,7 @@ public class vv_Constants
     static final double BALL_FLAG_SERVO_RAISED = 0.8f;
     static final double BALL_FLAG_SERVO_ALARM = 0.9f;
 
-    static final double CAP_BALL_SERVO_SECURED = .05f;
+    static final double CAP_BALL_SERVO_SECURED = .025f;
     static final double CAP_BALL_SERVO_RELEASED = 0.9f;
 
 
@@ -114,7 +114,7 @@ public class vv_Constants
     //define the motors as constants instead of enumerations for speed.
 
     //power used to power cap ball movements
-    final static float CAP_BALL_POWER = 0.8f;
+    final static float CAP_BALL_POWER = 0.95f;
     //define the motors as constants instead of enumerations for speed.
 
     final static int CAP_BALL_DURATION_MAX = 26000;
@@ -176,14 +176,15 @@ public class vv_Constants
     //normally Floor sensor calibration automatically sets values in
     //an XML file adjusting for the light in the competition venue.
 
-    final static float FLOOR_WHITE_THRESHOLD = 20f; //may need to calibrate
+    final static float FLOOR_WHITE_THRESHOLD = 30f; //may need to calibrate
+    final static float FLOOR_WHITE_MARGIN = 3f; //may need to calibrate
 
 
     final static double EOPD_PROXIMITY_THRESHOLD = 0.00d;
     final static double RANGESENSOR_ULTRASONIC_PROXIMITY_THRESHOLD = 1.2d;
     final static double RANGESENSOR_OPTICAL_PROXIMITY_THRESHOLD = 1.0d;
 
-    final static int CAP_BALL_ENCODER_UPPER_LIMIT = 72000; //for matrix motor adustments.
+    final static int CAP_BALL_ENCODER_UPPER_LIMIT = 34500; //for matrix motor adustments.
     //including the gear ratio
 
 
