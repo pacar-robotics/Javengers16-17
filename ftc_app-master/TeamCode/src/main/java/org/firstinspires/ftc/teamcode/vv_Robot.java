@@ -37,13 +37,11 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_POWER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_SERVO_RELEASED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.CAP_BALL_SERVO_SECURED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.DEBUG;
-import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_CLICKS_ANDYMARK;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_CLICKS_MATRIX;
-import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_CLICKS_TETRIX;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_TIME_DELTA;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
-import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_INCREMENT;
+import static org.firstinspires.ftc.teamcode.vv_Constants.GENERIC_TIMER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_LIMIT_SEARCH_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.IntakeStateEnum.Off;
@@ -70,9 +68,6 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_DURATION_MA
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_ENCODER_MARGIN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.WORM_DRIVE_POWER;
-import static org.firstinspires.ftc.teamcode.vv_Constants.GENERIC_TIMER;
-import static org.firstinspires.ftc.teamcode.vv_Constants.DPAD_TIMER;
-
 
 
 /**
@@ -106,7 +101,6 @@ public class vv_Robot {
     private Servo capBallReleaseServo = null;
 
 
-
     private ColorSensor beaconLeftColorSensor;
     private ColorSensor beaconRightColorSensor;
     private TouchSensor armSensor;
@@ -115,7 +109,6 @@ public class vv_Robot {
     private OpticalDistanceSensor baseEopdSensor;
 
     private AHRS baseMxpGyroSensor; //NavX MXP gyro
-
 
 
     private ModernRoboticsI2cRangeSensor rangeSensor;
@@ -271,8 +264,6 @@ public class vv_Robot {
         motorArray[INTAKE_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
-
-
         // Set all base motors to zero power
         stopBaseMotors(aOpMode);
 
@@ -284,7 +275,7 @@ public class vv_Robot {
 
         //lets check if the Choo Choo arm is at limit.
 
-        if(!isArmAtLimit(aOpMode)){
+        if (!isArmAtLimit(aOpMode)) {
             //the choo choo arm is not properly set.
             //warn the user.
             aOpMode.telemetryAddData(">>>>CHOO CHOO IS NOT AT LIMIT!, RUN PRE INIT!<<<<", " ", "");
@@ -384,7 +375,6 @@ public class vv_Robot {
         motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
 
 
         //set targets
@@ -562,7 +552,6 @@ public class vv_Robot {
     }
 
 
-
     /**
      * Runs motors. Can be called by a more specific method to move forwards and backwards or sideways.
      *
@@ -581,7 +570,6 @@ public class vv_Robot {
         motorArray[2].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorArray[3].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Thread.sleep(50);
-
 
 
         //sets the the power of all motors
@@ -917,7 +905,7 @@ public class vv_Robot {
 
             //process cap ball based drive controls
 
-            vvTeleLib.processFieldOrientedCapBallDrive(aOpMode,vvLib, 0.3f );
+            vvTeleLib.processFieldOrientedCapBallDrive(aOpMode, vvLib, 0.3f);
             if (aOpMode.gamepad2.x) {
                 vvTeleLib.scoreCapBall(aOpMode, vvLib);
             }
@@ -1022,7 +1010,6 @@ public class vv_Robot {
     }
 
 
-
     public vv_Constants.IntakeStateEnum getIntakeState() {
         return IntakeState;
     }
@@ -1051,7 +1038,6 @@ public class vv_Robot {
             throws InterruptedException {
         return ballFlagServo.getPosition();
     }
-
 
 
     public double getUltrasonicDistance(vv_OpMode aOpMode) {
@@ -1169,11 +1155,6 @@ public class vv_Robot {
                 navXPIDController.navXTimestampedDataSource.YAW);
 
 
-
-
-
-
-
         double fl_velocity = 0;
         double fr_velocity = 0;
         double bl_velocity = 0;
@@ -1211,7 +1192,6 @@ public class vv_Robot {
         motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
 
 
         //we want to go straight, from this point
@@ -1271,7 +1251,6 @@ public class vv_Robot {
             Thread.sleep(25); //sleep for loop control to Android and update from mxp gyro
             aOpMode.idle();
         }
-
 
 
         //stop all motors
@@ -1436,7 +1415,6 @@ public class vv_Robot {
 
 
     }
-
 
 
     public float limit_power(vv_OpMode aOpMode, float power) {
@@ -1686,9 +1664,9 @@ public class vv_Robot {
 
     }
 
-    public void setChooChooToLimit(vv_OpMode aOpMode) throws InterruptedException{
+    public void setChooChooToLimit(vv_OpMode aOpMode) throws InterruptedException {
         //lets rotate the choo choo arm till we are at the limit.
-        while(!isArmAtLimit(aOpMode)) {
+        while (!isArmAtLimit(aOpMode)) {
             rotateChooChoo(aOpMode, INTAKE_LIMIT_SEARCH_INCREMENT);
             Thread.sleep(500);
         }
@@ -1740,7 +1718,7 @@ public class vv_Robot {
         motorArray[ARM_MOTOR].setPower(0.0f);
     }
 
-    public void resetChooChooEncoder(vv_OpMode aOpMode) throws InterruptedException{
+    public void resetChooChooEncoder(vv_OpMode aOpMode) throws InterruptedException {
         //reset the encoder on the choo choo arm
         motorArray[ARM_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Thread.sleep(50);

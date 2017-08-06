@@ -94,6 +94,7 @@ public class vv_TeleLib {
         }
     }
 
+    @Deprecated
     public void processNonFieldOrientedDrive(vv_OpMode aOpMode, vv_Lib vvLib, float powerFactor)
             throws InterruptedException {
 //non field oriented
