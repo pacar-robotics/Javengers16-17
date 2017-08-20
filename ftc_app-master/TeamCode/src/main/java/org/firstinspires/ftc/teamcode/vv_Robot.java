@@ -498,22 +498,6 @@ public class vv_Robot {
         runMotors(aOpMode, Power, Power, Power, Power);
     }
 
-    /**
-     * Runs motors sideways (right and left).
-     *
-     * @param Power each motor will run at the same float value
-     * @return void
-     */
-    public void runMotorsSidewaysRight(vv_OpMode aOpMode, float Power) throws InterruptedException {
-
-        runMotors(aOpMode, Power, -Power, -Power, Power);
-    }
-
-    public void runMotorsSidewaysLeft(vv_OpMode aOpMode, float Power) throws InterruptedException {
-
-        runMotors(aOpMode, -Power, Power, Power, -Power);
-    }
-
     public void testMotor(vv_OpMode aOpMode, int motorName, float power, long duration) throws InterruptedException {
         aOpMode.DBG("In test motor in vv_robot");
 
@@ -697,19 +681,8 @@ public class vv_Robot {
     }
 
 
-    //get the alpha (luminosity being read in reflected light from LED)
-    //high luminosity will be found with a white surface.
-
-    public int getBaseGyroSensorHeading(vv_OpMode aOpMode) {
-        return baseGyroSensor.getHeading();
-    }
-
     public float getMxpGyroSensorHeading(vv_OpMode aOpMode) {
         return baseMxpGyroSensor.getYaw();
-    }
-
-    public float getMxpFusedGyroSensorHeading(vv_OpMode aOpMode) {
-        return baseMxpGyroSensor.getFusedHeading();
     }
 
 
@@ -1039,12 +1012,6 @@ public class vv_Robot {
         Thread.sleep(100);
     }
 
-    public double getBallFlagServoPosition(vv_OpMode aOpMode)
-            throws InterruptedException {
-        return ballFlagServo.getPosition();
-    }
-
-
     public double getUltrasonicDistance(vv_OpMode aOpMode) {
         return rangeSensor.cmUltrasonic() / 2.54; //in inches
     }
@@ -1143,127 +1110,7 @@ public class vv_Robot {
 
 
     }
-
-    public void universalGyroStabilizedMoveRobot(vv_OpMode aOpMode, double xAxisVelocity,
-                                                 double yAxisVelocity,
-                                                 long duration, vv_OpMode.StopCondition condition)
-            throws InterruptedException {
-
-
-        //PID constants
-        final double YAW_PID_P = 0.01;
-        final double YAW_PID_I = 0.0;
-        final double YAW_PID_D = 0.0;
-
-        //create a PID controller that uses YAW data.
-        navXPIDController mxpPidController = new navXPIDController(baseMxpGyroSensor,
-                navXPIDController.navXTimestampedDataSource.YAW);
-
-
-        double fl_velocity = 0;
-        double fr_velocity = 0;
-        double bl_velocity = 0;
-        double br_velocity = 0;
-        double trackDistanceAverage = (MECCANUM_WHEEL_FRONT_TRACK_DISTANCE +
-                MECCANUM_WHEEL_SIDE_TRACK_DISTANCE) / 2.0f;
-
-
-        //calculate velocities at each wheel.
-        //no rotation components
-
-        fl_velocity = yAxisVelocity + xAxisVelocity;
-
-        fr_velocity = yAxisVelocity - xAxisVelocity;
-
-        bl_velocity = yAxisVelocity - xAxisVelocity;
-
-        br_velocity = yAxisVelocity + xAxisVelocity;
-
-        //reset all encoders.
-
-        motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        Thread.sleep(50);
-
-        while (motorArray[FRONT_LEFT_MOTOR].getCurrentPosition() != 0) {
-            //wait for switch to happen.
-            aOpMode.idle();
-        }
-        //switch to RUN_WITH_ENCODERS to normalize for speed.
-
-        motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorArray[FRONT_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorArray[BACK_LEFT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorArray[BACK_RIGHT_MOTOR].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-
-        //we want to go straight, from this point
-
-
-        //set the target angle to be the current angle.
-        //we will try to stay on this path, while trimming to maintain the angle.
-
-
-        mxpPidController.setSetpoint(baseMxpGyroSensor.getYaw());
-        mxpPidController.setOutputRange(-1.0, 1.0);
-        mxpPidController.setContinuous(true);
-        mxpPidController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, 1.0f);
-        mxpPidController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
-
-        //lets enable the PIDController
-
-        mxpPidController.enable(true);
-
-        navXPIDController.PIDResult mxpPIDResult = new navXPIDController.PIDResult();
-
-        aOpMode.reset_timer_array(GENERIC_TIMER);
-        while ((aOpMode.time_elapsed_array(GENERIC_TIMER) < duration) &&
-                (!condition.stopCondition(aOpMode))) {
-            if (mxpPidController.waitForNewUpdate(mxpPIDResult, DEVICE_TIMEOUT_MS)) {
-                if (mxpPIDResult.isOnTarget()) {
-
-                    motorArray[FRONT_RIGHT_MOTOR].setPower(fr_velocity);
-                    motorArray[FRONT_LEFT_MOTOR].setPower(fl_velocity * 0.95);
-                    motorArray[BACK_RIGHT_MOTOR].setPower(br_velocity);
-                    motorArray[BACK_LEFT_MOTOR].setPower(bl_velocity * 0.95);
-
-                    aOpMode.telemetryAddData("PID:", "Value:", "On track");
-                    aOpMode.telemetryUpdate();
-
-                } else {
-                    double output = mxpPIDResult.getOutput();
-                    motorArray[FRONT_LEFT_MOTOR].setPower(limit_power(aOpMode, (float) (fl_velocity + output)));
-                    motorArray[FRONT_RIGHT_MOTOR].setPower(limit_power(aOpMode, (float) (fr_velocity - output)));
-                    motorArray[BACK_LEFT_MOTOR].setPower(limit_power(aOpMode, (float) (bl_velocity + output)));
-                    motorArray[BACK_RIGHT_MOTOR].setPower(limit_power(aOpMode, (float) (br_velocity - output)));
-                    aOpMode.telemetryAddData("PID:", "Value:", "Output degrees:" + output);
-                    aOpMode.telemetryUpdate();
-
-                }
-            } else {
-                    /* A timeout occurred */
-                Log.w("navXDriveStraightOp", "Yaw PID waitForNewUpdate() TIMEOUT.");
-            }
-
-            //condition will return true when it reaches state meant to stop movement
-
-            //apply specific powers to motors to get desired movement
-            //wait till duration is complete.
-
-
-            Thread.sleep(25); //sleep for loop control to Android and update from mxp gyro
-            aOpMode.idle();
-        }
-
-
-        //stop all motors
-        stopBaseMotors(aOpMode);
-
-
-    }
-
+    
     public void universalMoveRobot(vv_OpMode aOpMode, double xAxisVelocity,
                                    double yAxisVelocity, double rotationalVelocity,
                                    long duration, vv_OpMode.StopCondition condition,

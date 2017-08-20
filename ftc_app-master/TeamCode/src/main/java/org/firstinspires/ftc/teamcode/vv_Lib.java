@@ -281,32 +281,8 @@ public class vv_Lib {
     }
 
 
-
-    public void showBaseGyroSensorHeadingOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
-        aOpMode.telemetryAddData("Gyro Sensor", "Heading", ":" + robot.getBaseGyroSensorHeading(aOpMode));
-        if (updateTheDisplay) {
-            aOpMode.telemetryUpdate();
-        }
-    }
-
     public void showMxpGyroSensorHeadingOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
         aOpMode.telemetryAddData("MXP Gyro Sensor", "Heading", ":" + robot.getMxpGyroSensorHeading(aOpMode));
-        if (updateTheDisplay) {
-            aOpMode.telemetryUpdate();
-        }
-    }
-
-    public void showMxpFusedGyroSensorHeadingOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
-        aOpMode.telemetryAddData("MXP Gyro Sensor", "Heading", ":" + robot.getMxpFusedGyroSensorHeading(aOpMode));
-        if (updateTheDisplay) {
-            aOpMode.telemetryUpdate();
-        }
-    }
-
-
-    public void showBaseGyroSensorIntegratedZValueOnTelemetry(vv_OpMode aOpMode, boolean updateTheDisplay) {
-
-        aOpMode.telemetryAddData("Gyro Sensor", "Integrated Z", ":" + robot.getBaseGyroSensorIntegratedZValue(aOpMode));
         if (updateTheDisplay) {
             aOpMode.telemetryUpdate();
         }
@@ -427,10 +403,6 @@ public class vv_Lib {
         robot.runMotorsFB(aOpMode, -Power);
     }
 
-    public void moveSidewaysLeft(vv_OpMode aOpMode, float Power) throws InterruptedException {
-        robot.runMotorsSidewaysLeft(aOpMode, Power);
-    }
-
     public double scalePowerForUltrasonicTravel(vv_OpMode aOpMode,
                                                 double distanceToWall,//in inches
                                                 double proximityDistance)
@@ -443,10 +415,6 @@ public class vv_Lib {
         }
 
         return scaledPower;
-    }
-
-    public void moveSidewaysRight(vv_OpMode aOpMode, float Power) throws InterruptedException {
-        robot.runMotorsSidewaysRight(aOpMode, Power);
     }
 
     public void turnGyroDegrees(vv_OpMode aOpMode, int turnDegrees) throws InterruptedException {
@@ -529,41 +497,6 @@ public class vv_Lib {
 
 
     }
-/*
-    public void turnAbsoluteGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
-        //clockwise is represented by clockwise numbers.
-        //counterclockwise by negative angle numbers in degrees.
-        //the fieldReferenceDegrees parameters measures degrees off the initial reference frame when the robot is started and the gyro is
-        //calibrated.
-        // >> IMPORTANT: This depends on the zIntegratedHeading not being altered by relative turns !!!
-
-        //first take the absolute degrees and modulus down to 0 and 359.
-
-        float targetDegrees = fieldReferenceDegrees % 360;
-
-        //compare to the current gyro zIntegrated heading and store the result.
-        //the Integrated zValue returned is negative for clockwise turns
-        float turnDegrees = targetDegrees - (-1) * robot.getBaseGyroSensorIntegratedZValue(aOpMode);
-
-        //make the turn using encoders
-
-        aOpMode.telemetryAddData("targetDegrees", "Value",
-                ":" + targetDegrees);
-        aOpMode.telemetryAddData("Starting Z", "Value",
-                ":" + robot.getBaseGyroSensorIntegratedZValue(aOpMode));
-        aOpMode.telemetryAddData("Turn Degrees", "Value",
-                ":" + turnDegrees);
-
-        aOpMode.telemetryUpdate();
-
-        turnUsingEncoders(aOpMode, TURN_POWER, Math.abs(turnDegrees),
-                turnDegrees > 0 ? TurnDirectionEnum.Clockwise :
-                        TurnDirectionEnum.Counterclockwise);
-
-
-    }
-    */
-
 
 
     public void turnAbsoluteMxpGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
@@ -620,56 +553,6 @@ public class vv_Lib {
 
     }
 
-    public void turnAbsoluteMxpFusedGyroDegrees(vv_OpMode aOpMode, float fieldReferenceDegrees) throws InterruptedException {
-        //clockwise is represented by clockwise numbers.
-        //counterclockwise by negative angle numbers in degrees.
-        //the fieldReferenceDegrees parameters measures degrees off the initial reference frame when the robot is started and the gyro is
-        //calibrated.
-        // >> IMPORTANT: This depends on the zIntegratedHeading not being altered by relative turns !!!
-
-        //first take the absolute degrees and modulus down to 0 and 359.
-
-        float targetDegrees = fieldReferenceDegrees % 360;
-
-        //compare to the current gyro zIntegrated heading and store the result.
-        //the Integrated zValue returned is positive for clockwise turns
-        //read the heading and store it.
-
-        float startingHeading = robot.getMxpFusedGyroSensorHeading(aOpMode);
-        //convert to low angles.
-
-        if (startingHeading > 180) {
-            startingHeading = startingHeading - 360;
-        }
-
-        float turnDegrees = targetDegrees - startingHeading;
-
-        //make the turn using encoders
-
-        aOpMode.telemetryAddData("targetDegrees", "Value",
-                ":" + targetDegrees);
-        aOpMode.telemetryAddData("Fused Starting Heading", "Value",
-                ":" + startingHeading);
-        aOpMode.telemetryAddData("Turn Degrees", "Value",
-                ":" + turnDegrees);
-
-        aOpMode.telemetryUpdate();
-
-        turnUsingEncoders(aOpMode, TURN_POWER, Math.abs(turnDegrees),
-                turnDegrees > 0 ? TurnDirectionEnum.Clockwise :
-                        TurnDirectionEnum.Counterclockwise);
-
-        float finalDegrees = robot.getMxpFusedGyroSensorHeading(aOpMode);
-        Thread.sleep(100); //cooling off after gyro read to prevent error in next run.
-
-
-        aOpMode.telemetryAddData("New Fused Heading Degrees", "Value:",
-                ":" + finalDegrees);
-        aOpMode.telemetryAddData("Turn Error Degrees", "Value:",
-                ":" + (targetDegrees - finalDegrees));
-        aOpMode.telemetryUpdate();
-
-    }
 
 
     public void turnPidMxpAbsoluteDegrees(vv_OpMode aOpMode, float turndegrees, float toleranceDegrees)
@@ -678,8 +561,6 @@ public class vv_Lib {
         robot.turnPidMxpAbsoluteDegrees(aOpMode, turndegrees, toleranceDegrees);
 
     }
-
-
 
 
     /**
@@ -792,14 +673,6 @@ public class vv_Lib {
     }
 
 
-
-    public void universalMoveRobotForTeleOp(vv_OpMode aOpMode, double xAxisVelocity,
-                                            double yAxisVelocity)
-            throws InterruptedException {
-
-        robot.universalMoveRobotForTeleOp(aOpMode, xAxisVelocity, yAxisVelocity);
-    }
-
     public void universalMoveRobotForFieldOrientedTeleOp(vv_OpMode aOpMode, double polarMagnitude,
                                                          double polarAngle)
             throws InterruptedException {
@@ -810,46 +683,6 @@ public class vv_Lib {
     }
 
 
-
-    public void universalGyroStabilizedMoveRobotByAxisVelocity(vv_OpMode aOpMode, double xAxisVelocity,
-                                                               double yAxisVelocity,
-                                                               long duration, vv_OpMode.StopCondition condition
-    )
-            throws InterruptedException {
-
-        robot.universalGyroStabilizedMoveRobot(aOpMode, xAxisVelocity,
-                yAxisVelocity, duration, condition);
-    }
-
-
-    public void decreaseLauncherPowerWithLimits(vv_OpMode aOpMode) throws InterruptedException,
-            vv_Robot.MotorStalledException {
-        int launcherPowerPosition = robot.getLauncherPowerPosition(aOpMode);
-        if (launcherPowerPosition > LAUNCH_POWER_POSITION_MIN) {
-            //decrement power.
-            if ((launcherPowerPosition - LAUNCH_POWER_INCREMENT) > LAUNCH_POWER_POSITION_MIN) {
-                launcherPowerPosition -= LAUNCH_POWER_INCREMENT;
-            } else {
-                launcherPowerPosition = LAUNCH_POWER_POSITION_MIN;
-            }
-
-            robot.setLauncherPowerPosition(aOpMode, launcherPowerPosition);
-        }
-    }
-
-    public void increaseLauncherPowerWithLimits(vv_OpMode aOpMode) throws InterruptedException,
-            vv_Robot.MotorStalledException {
-        int launcherPowerPosition = robot.getLauncherPowerPosition(aOpMode);
-        if (launcherPowerPosition < LAUNCH_POWER_POSITION_MAX) {
-            //increment power.
-            if ((launcherPowerPosition + LAUNCH_POWER_INCREMENT) < LAUNCH_POWER_POSITION_MAX) {
-                launcherPowerPosition += LAUNCH_POWER_INCREMENT;
-            } else {
-                launcherPowerPosition = LAUNCH_POWER_POSITION_MAX;
-            }
-            robot.setLauncherPowerPosition(aOpMode, launcherPowerPosition);
-        }
-    }
 
     public void decreaseLauncherPower(vv_OpMode aOpMode) throws InterruptedException,
             vv_Robot.MotorStalledException {
@@ -887,13 +720,6 @@ public class vv_Lib {
     public int getLauncherPowerPosition(vv_OpMode aOpMode) {
         return robot.getLauncherPowerPosition(aOpMode);
     }
-
-    /*
-
-    public double getFloorLightIntensity(vv_OpMode aOpMode) throws InterruptedException {
-        return robot.getFloorLightIntensity(aOpMode);
-    }
-    */
 
 
     public double getUltrasonicDistance(vv_OpMode aOpMode)
@@ -951,15 +777,6 @@ public class vv_Lib {
     public void lowerBallFlagServo(vv_OpMode aOpMode) throws InterruptedException {
         robot.setBallFlagServoPosition(aOpMode, BALL_FLAG_SERVO_LOWERED);
     }
-
-    public void alarmBallFlagServo(vv_OpMode aOpMode) throws InterruptedException {
-        robot.setBallFlagServoPosition(aOpMode, BALL_FLAG_SERVO_ALARM);
-    }
-
-    public double getBallFlagServoState(vv_OpMode aOpMode) throws InterruptedException {
-        return robot.getBallFlagServoPosition(aOpMode);
-    }
-
 
     public void showRangeSensorDistanceOnTelemetry(vv_OpMode aOpMode) {
         aOpMode.telemetryAddData("MR Range Ultrasonic Distance",
@@ -1215,7 +1032,7 @@ public class vv_Lib {
         Thread.sleep(10000);
 
         moveWheels(aOpMode, 20, .99f, DirectionEnum.SidewaysRight, false);
-        turnAbsoluteMxpFusedGyroDegrees(aOpMode, -15);
+        turnAbsoluteMxpGyroDegrees(aOpMode, -15);
 
         // Shoot the first ball
         shootBall(aOpMode);
@@ -1230,7 +1047,7 @@ public class vv_Lib {
 
         setupShot(aOpMode);
 
-        turnAbsoluteMxpFusedGyroDegrees(aOpMode, -90);
+        turnAbsoluteMxpGyroDegrees(aOpMode, -90);
         moveWheels(aOpMode, 43, .99f, DirectionEnum.Backward, true);
     }
 
@@ -1239,7 +1056,7 @@ public class vv_Lib {
         //delay
         Thread.sleep(10000);
         moveWheels(aOpMode, 14, .99f, DirectionEnum.SidewaysRight, false);
-        turnAbsoluteMxpFusedGyroDegrees(aOpMode, -15);
+        turnAbsoluteMxpGyroDegrees(aOpMode, -15);
 
         // Shoot the first ball
         shootBall(aOpMode);
@@ -1254,7 +1071,7 @@ public class vv_Lib {
 
         setupShot(aOpMode);
 
-        turnAbsoluteMxpFusedGyroDegrees(aOpMode, -86);
+        turnAbsoluteMxpGyroDegrees(aOpMode, -86);
         moveWheels(aOpMode, 53, .99f, DirectionEnum.Backward, true);
     }
 
