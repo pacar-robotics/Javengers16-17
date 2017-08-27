@@ -42,7 +42,6 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.ENCODED_MOTOR_STALL_TI
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.GENERIC_TIMER;
-import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_LIMIT_SEARCH_INCREMENT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.IntakeStateEnum.Off;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_FRONT_GATE_SERVO_CLOSED;
@@ -298,13 +297,6 @@ public class vv_Robot {
             throws InterruptedException {
 
         motorArray[motorName].setPower(power);
-    }
-
-    public DcMotor.RunMode getMotorMode(vv_OpMode aOpMode, int motorName
-    ) throws InterruptedException {
-
-        return motorArray[motorName].getMode();
-
     }
 
     public void setMotorMode(vv_OpMode aOpMode, int motorName,
@@ -684,17 +676,6 @@ public class vv_Robot {
     public float getMxpGyroSensorHeading(vv_OpMode aOpMode) {
         return baseMxpGyroSensor.getYaw();
     }
-
-
-    public int getBaseGyroSensorIntegratedZValue(vv_OpMode aOpMode) {
-        return baseGyroSensor.getIntegratedZValue();
-    }
-
-    public void resetBaseGyroZIntegrator(vv_OpMode aOpMode) throws InterruptedException {
-        baseGyroSensor.resetZAxisIntegrator();
-        Thread.sleep(1000);
-    }
-
 
     public boolean baseMotorsAreBusy() {
         return (motorArray[FRONT_LEFT_MOTOR].isBusy() || motorArray[FRONT_RIGHT_MOTOR].isBusy() ||
@@ -1110,7 +1091,7 @@ public class vv_Robot {
 
 
     }
-    
+
     public void universalMoveRobot(vv_OpMode aOpMode, double xAxisVelocity,
                                    double yAxisVelocity, double rotationalVelocity,
                                    long duration, vv_OpMode.StopCondition condition,
@@ -1482,7 +1463,7 @@ public class vv_Robot {
     }
 
 
-    public void setupChooChoo(vv_OpMode aOpMode) throws InterruptedException{
+    public void setupChooChoo(vv_OpMode aOpMode) throws InterruptedException {
 
         motorArray[ARM_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Thread.sleep(100);
@@ -1520,7 +1501,7 @@ public class vv_Robot {
 
     public void setChooChooToLimit(vv_OpMode aOpMode) throws InterruptedException {
         //lets rotate the choo choo arm till we are at the limit.
-       while(!isArmAtLimit(aOpMode)) {
+        while (!isArmAtLimit(aOpMode)) {
             rotateChooChoo(aOpMode, LAUNCH_POSITION_INCREMENT);
             Thread.sleep(250);
         }
