@@ -1,14 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
-
 import java.io.IOException;
 
 import static org.firstinspires.ftc.teamcode.vv_Constants.ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION;
 import static org.firstinspires.ftc.teamcode.vv_Constants.ARM_MOTOR;
-import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_LEFT_MOTOR;
-import static org.firstinspires.ftc.teamcode.vv_Constants.BACK_RIGHT_MOTOR;
-import static org.firstinspires.ftc.teamcode.vv_Constants.BALL_FLAG_SERVO_ALARM;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BALL_FLAG_SERVO_LOWERED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BALL_FLAG_SERVO_RAISED;
 import static org.firstinspires.ftc.teamcode.vv_Constants.BEACON_SERVO_LEFT_PRESSED;
@@ -23,19 +18,11 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.Sideways
 import static org.firstinspires.ftc.teamcode.vv_Constants.DirectionEnum.SidewaysRight;
 import static org.firstinspires.ftc.teamcode.vv_Constants.EOPD_PROXIMITY_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.vv_Constants.FLOOR_WHITE_MARGIN;
-import static org.firstinspires.ftc.teamcode.vv_Constants.FLOOR_WHITE_THRESHOLD;
-import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_LEFT_MOTOR;
-import static org.firstinspires.ftc.teamcode.vv_Constants.FRONT_RIGHT_MOTOR;
-import static org.firstinspires.ftc.teamcode.vv_Constants.GYRO_OFFSET;
+import static org.firstinspires.ftc.teamcode.vv_Constants.GENERIC_TIMER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_INCREMENT;
-import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_MAX;
-import static org.firstinspires.ftc.teamcode.vv_Constants.LAUNCH_POWER_POSITION_MIN;
 import static org.firstinspires.ftc.teamcode.vv_Constants.LEFT_BEACON_BUTTON_SERVO;
-import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_MOTOR_LOOP_TIME;
-import static org.firstinspires.ftc.teamcode.vv_Constants.MAX_ROBOT_TURN_MOTOR_VELOCITY;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MECCANUM_WHEEL_DIAMETER;
-import static org.firstinspires.ftc.teamcode.vv_Constants.MIN_ROBOT_TURN_MOTOR_VELOCITY;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_ULTRASONIC_SIDEWAYS_POWER_LOWER_LIMIT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.MOTOR_ULTRASONIC_SIDEWAYS_POWER_UPPER_LIMIT;
 import static org.firstinspires.ftc.teamcode.vv_Constants.RANGESENSOR_OPTICAL_PROXIMITY_THRESHOLD;
@@ -44,8 +31,6 @@ import static org.firstinspires.ftc.teamcode.vv_Constants.RIGHT_BEACON_BUTTON_SE
 import static org.firstinspires.ftc.teamcode.vv_Constants.ROBOT_TRACK_DISTANCE;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TURN_POWER;
 import static org.firstinspires.ftc.teamcode.vv_Constants.TurnDirectionEnum;
-import static org.firstinspires.ftc.teamcode.vv_Constants.GENERIC_TIMER;
-import static org.firstinspires.ftc.teamcode.vv_Constants.DPAD_TIMER;
 
 /**
  * Created by thomas on 9/25/2016.
@@ -67,8 +52,6 @@ public class vv_Lib {
     protected RangeSensorUltraSonicCornerPositioningCondition rangeSensorUltraSonicCornerPositioningStop =
             new RangeSensorUltraSonicCornerPositioningCondition();
     protected colorPressVerifiedCondition colorPressVerifiedStop = new colorPressVerifiedCondition();
-
-
 
 
     float floorWhiteThreshold;
@@ -102,7 +85,7 @@ public class vv_Lib {
     public vv_Lib()
             throws InterruptedException {
 
-    //empty constructor used for some calls in TeleOp.
+        //empty constructor used for some calls in TeleOp.
         //DO NOT USE unless you understand the use case.
 
     }
@@ -121,19 +104,14 @@ public class vv_Lib {
                            DirectionEnum Direction, boolean isRampedPower)
             throws InterruptedException {
         if (Direction == Forward) {
-            // moving the robot forward
-            moveForwardToPosition(aOpMode, distance, Power, isRampedPower);
+            moveFBToPosition(aOpMode, distance, Power, isRampedPower);
         } else if (Direction == Backward) {
-            // moving the robot forward
-            moveBackwardToPosition(aOpMode, distance, Power, isRampedPower);
+            moveFBToPosition(aOpMode, -distance, Power, isRampedPower);
         } else if (Direction == SidewaysLeft) {
-            // moving the robot forward
-            moveSidewaysLeftToPosition(aOpMode, distance, Power, isRampedPower);
+            moveSidewaysToPosition(aOpMode, distance, Power, isRampedPower);
         } else if (Direction == SidewaysRight) {
-            // moving the robot forward
-            moveSidewaysRightToPosition(aOpMode, distance, Power, isRampedPower);
+            moveSidewaysToPosition(aOpMode, -distance, Power, isRampedPower);
         }
-        // code for moving forward, backward, sideways
     }
 
     public void setupShot(vv_OpMode aOpMode) throws InterruptedException {
@@ -329,8 +307,8 @@ public class vv_Lib {
 
 
     //Moves robot forward with a distance supplied in centimeters and power between 0 and 1
-    private void moveForwardToPosition(vv_OpMode aOpMode, float distance,
-                                       float Power, boolean isRampedPower)
+    private void moveFBToPosition(vv_OpMode aOpMode, float distance,
+                                  float Power, boolean isRampedPower)
             throws InterruptedException {
         //we need to store the encoder target position
         int targetPosition;
@@ -340,20 +318,8 @@ public class vv_Lib {
         robot.runRobotToPositionFB(aOpMode, targetPosition, Power, isRampedPower);
     }
 
-    //Moves robot backward with a distance supplied in centimeters and power between 0 and 1
-    private void moveBackwardToPosition(vv_OpMode aOpMode,
+    private void moveSidewaysToPosition(vv_OpMode aOpMode,
                                         float distance, float Power, boolean isRampedPower)
-            throws InterruptedException {
-        //we need to store the encoder target position
-        int targetPosition;
-        //calculate target position from the input distance in cm
-        targetPosition = -(int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
-        //runs the robot to position with negative power
-        robot.runRobotToPositionFB(aOpMode, targetPosition, Power, isRampedPower);
-    }
-
-    private void moveSidewaysLeftToPosition(vv_OpMode aOpMode,
-                                            float distance, float Power, boolean isRampedPower)
             throws InterruptedException {
         //we need to store the encoder target position
         int targetPosition;
@@ -365,23 +331,6 @@ public class vv_Lib {
         //runs the robot to position with negative power
         robot.runRobotToPositionSideways(aOpMode, targetPosition, Power, isRampedPower);
     }
-
-    private void moveSidewaysRightToPosition(vv_OpMode aOpMode,
-                                             float distance, float Power, boolean isRampedPower)
-            throws InterruptedException {
-        //we need to store the encoder target position
-        int targetPosition;
-        //calculate target position from the input distance in cm
-        targetPosition = -(int) ((distance / (Math.PI * MECCANUM_WHEEL_DIAMETER)) * ANDYMARK_MOTOR_ENCODER_COUNTS_PER_REVOLUTION);
-        //scale this up by 1.19 (due to sideways movement
-        targetPosition = (int) Math.round(targetPosition * 1.19);
-
-        //runs the robot to position with negative power
-        robot.runRobotToPositionSideways(aOpMode, targetPosition, Power, isRampedPower);
-    }
-
-
-
 
     public void runAllMotors(vv_OpMode aOpMode, float FLPower, float FRPower, float BLPower, float BRPower)
             throws InterruptedException {
@@ -472,7 +421,6 @@ public class vv_Lib {
     }
 
 
-
     public void turnPidMxpAbsoluteDegrees(vv_OpMode aOpMode, float turndegrees, float toleranceDegrees)
             throws InterruptedException {
 
@@ -544,7 +492,6 @@ public class vv_Lib {
                 polarMagnitude * Math.sin(Math.toRadians(polarAngle)), //trig in radians
                 polarMagnitude * Math.cos(Math.toRadians(polarAngle)));
     }
-
 
 
     public void decreaseLauncherPower(vv_OpMode aOpMode) throws InterruptedException,
@@ -914,7 +861,7 @@ public class vv_Lib {
         moveWheels(aOpMode, 43, .99f, DirectionEnum.Backward, true);
     }
 
-    public void redAlternateAutonomous (vv_OpMode aOpMode) throws InterruptedException {
+    public void redAlternateAutonomous(vv_OpMode aOpMode) throws InterruptedException {
 
         //delay
         Thread.sleep(10000);
@@ -964,7 +911,7 @@ public class vv_Lib {
 
 
     public boolean isRobotAtAngle(vv_OpMode aOpMode, int angle) {
-        if(Math.abs(robot.getMxpGyroSensorHeading(aOpMode) - angle) < vv_Constants.ROBOT_ANGLE_THRESHOLD) {
+        if (Math.abs(robot.getMxpGyroSensorHeading(aOpMode) - angle) < vv_Constants.ROBOT_ANGLE_THRESHOLD) {
             return true;
         } else {
             return false;
@@ -977,7 +924,7 @@ public class vv_Lib {
     public class LineDetectCondition implements vv_OpMode.StopCondition {
 
         public boolean stopCondition(vv_OpMode aOpMode) throws InterruptedException {
-            return ((getFloorColorIntensity(aOpMode) >= (floorWhiteThreshold-FLOOR_WHITE_MARGIN)));
+            return ((getFloorColorIntensity(aOpMode) >= (floorWhiteThreshold - FLOOR_WHITE_MARGIN)));
         }
     }
 

@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-
 import android.util.Log;
 
 import com.kauailabs.navx.ftc.AHRS;
@@ -128,7 +127,6 @@ public class vv_Robot {
 
         motorArray = new DcMotor[10];
 
-
         motorArray[FRONT_LEFT_MOTOR] = hwMap.dcMotor.get("motor_front_left");
         motorArray[FRONT_RIGHT_MOTOR] = hwMap.dcMotor.get("motor_front_right");
         motorArray[BACK_LEFT_MOTOR] = hwMap.dcMotor.get("motor_back_left");
@@ -152,15 +150,12 @@ public class vv_Robot {
         beaconLeftColorSensor.setI2cAddress(I2cAddr.create7bit(0x26));
         beaconRightColorSensor.setI2cAddress(I2cAddr.create7bit(0x2e));
 
-
         rangeSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "range_sensor");
-
 
         baseEopdSensor = hwMap.opticalDistanceSensor.get("base_eopd_sensor");
 
         //turn the LED on the floor color sensor off at the start.
         //used for compatibility with older SDK code.
-
         floorColorSensor.enableLed(false);
         beaconLeftColorSensor.enableLed(false);
         beaconRightColorSensor.enableLed(false);
@@ -168,15 +163,11 @@ public class vv_Robot {
         Thread.sleep(300);
 
         aOpMode.DBG("before gyro calib");
-
-
         baseGyroSensor = (ModernRoboticsI2cGyro) hwMap.gyroSensor.get("base_gyro_sensor");
         //allocate the mxp gyro sensor.
-
         baseMxpGyroSensor = AHRS.getInstance(hwMap.deviceInterfaceModule.get("dim"),
                 NAVX_DIM_I2C_PORT,
                 AHRS.DeviceDataType.kProcessedData);
-
 
         baseGyroSensor.calibrate();
         Thread.sleep(100);
@@ -187,7 +178,6 @@ public class vv_Robot {
         }
         aOpMode.DBG("after gyro calib");
 
-
         while (baseMxpGyroSensor.isCalibrating()) {
             aOpMode.idle();
             Thread.sleep(50);
@@ -197,19 +187,15 @@ public class vv_Robot {
             aOpMode.telemetryUpdate();
         }
 
-
         //zero out the yaw value, so this will be the frame of reference for future calls.
         //do not call this for duration of run after this.
         baseMxpGyroSensor.zeroYaw();
 
-
         armSensor = hwMap.touchSensor.get("arm_touch_sensor");
-
 
         //initialize to the rest position.
         beaconServoArray[LEFT_BEACON_BUTTON_SERVO].setPosition(BEACON_SERVO_LEFT_REST);
         beaconServoArray[RIGHT_BEACON_BUTTON_SERVO].setPosition(BEACON_SERVO_RIGHT_REST);
-
 
         launcherFrontGateServo = hwMap.servo.get("servo_launcher_front_gate");
         //initialize to the closed position
@@ -225,27 +211,18 @@ public class vv_Robot {
         capBallReleaseServo = hwMap.servo.get("cap_ball_servo");
         capBallReleaseServo.setPosition(CAP_BALL_SERVO_SECURED);
 
-
         //wait for these servos to reach desired state
         Thread.sleep(100);
 
 
-        //buttonServo.setPosition(0.65);
-
         aOpMode.DBG("before motor dir set");
 
         motorArray[FRONT_LEFT_MOTOR].setDirection(DcMotorSimple.Direction.FORWARD);
-
         motorArray[FRONT_RIGHT_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
-
         motorArray[BACK_LEFT_MOTOR].setDirection(DcMotorSimple.Direction.FORWARD);
-
         motorArray[BACK_RIGHT_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
-
         motorArray[WORM_DRIVE_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
-
         motorArray[ARM_MOTOR].setDirection(DcMotorSimple.Direction.REVERSE);
-
 
         //reset encoders for motors always used in encoded mode
         motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -256,13 +233,11 @@ public class vv_Robot {
 
         //set the run mode to run_to_position for the worm drive
         //since we will not be using it in any other mode.
-
         motorArray[WORM_DRIVE_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorArray[CAP_BALL_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorArray[ARM_MOTOR].setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         motorArray[INTAKE_MOTOR].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
 
         // Set all base motors to zero power
         stopBaseMotors(aOpMode);
@@ -289,16 +264,30 @@ public class vv_Robot {
             aOpMode.telemetryUpdate();
             Thread.sleep(1000);
         }
-
-
     }
 
+    /**
+     * Sets the power of the motor
+     *
+     * @param aOpMode   an object of the vv_OpMode class
+     * @param motorName name of the motor
+     * @param power     desired motor power
+     * @throws InterruptedException
+     */
     public void setPower(vv_OpMode aOpMode, int motorName, float power)
             throws InterruptedException {
 
         motorArray[motorName].setPower(power);
     }
 
+    /**
+     * Sets the runMode of the motor (with or without encoders)
+     *
+     * @param aOpMode   an object of the vv_OpMode class
+     * @param motorName name of the motor
+     * @param runMode   motor mode
+     * @throws InterruptedException
+     */
     public void setMotorMode(vv_OpMode aOpMode, int motorName,
                              DcMotor.RunMode runMode)
             throws InterruptedException {
@@ -306,35 +295,49 @@ public class vv_Robot {
         motorArray[motorName].setMode(runMode);
     }
 
+    /**
+     * Checks whether arm touch sensor is pressed
+     *
+     * @param aOpMode   an object of the vv_OpMode class
+     * @return          armSensor value
+     */
     public boolean isArmAtLimit(vv_OpMode aOpMode) {
         return armSensor.isPressed();
     }
 
+    /**
+     * Runs robot to a specific position while driving forwards or backwards
+     *
+     * @param aOpMode       an object of the vv_OpMode class
+     * @param position      encoder position of each wheel
+     * @param power         desired power of motor
+     * @param isRampedPower ramps power to prevent jerking if true
+     * @throws InterruptedException
+     */
     public void runRobotToPositionFB(vv_OpMode aOpMode, int position,
-                                     float Power, boolean isRampedPower)
+                                     float power, boolean isRampedPower)
             throws InterruptedException {
         //using the generic method with all powers set to the same value and all positions set to the same position
-        runRobotToPosition(aOpMode, Power, Power, Power, Power,
+        runRobotToPosition(aOpMode, power, power, power, power,
                 position, position, position, position, isRampedPower);
     }
 
     /**
-     * Runs robot to a specific position while driving sideways.
+     * Runs robot to a specific position while driving sideways
      *
      * @param aOpMode  an object of the vv_OpMode class
-     * @param position generic position of the motors
-     * @param Power    generic power of the motors
-     * @return void
+     * @param position encoder position of the motors
+     * @param power    generic power of the motors
      */
     public void runRobotToPositionSideways(vv_OpMode aOpMode, int position,
-                                           float Power, boolean isRampedPower)
+                                           float power, boolean isRampedPower)
             throws InterruptedException {
         //using the generic method with all powers set to the same value and all positions set to the same position
-        runRobotToPosition(aOpMode, Power, Power, Power, Power, -position, position, position, -position, isRampedPower);
+        runRobotToPosition(aOpMode, power, power, power, power, -position, position, position, -position, isRampedPower);
     }
 
     /**
-     * Runs robot to a specific position. Can be called by other, more specific methods to move forwards and backwards or sideways.
+     * Runs robot to a specific position. Can be called by other, more specific methods to move forwards, backwards or sideways.
      *
      * @param aOpMode     an object of the vv_OpMode class
      * @param fl_Power    front right motor power
@@ -345,7 +348,6 @@ public class vv_Robot {
      * @param fr_Position front left motor position
      * @param bl_Position back left motor position
      * @param br_Position back right motor position
-     * @return void
      */
     public void runRobotToPosition(vv_OpMode aOpMode, float fl_Power, float fr_Power,
                                    float bl_Power, float br_Power, int fl_Position,
@@ -353,8 +355,6 @@ public class vv_Robot {
                                    boolean isRampedPower)
             throws InterruptedException {
 
-
-        double startingPower;
         double rampedPower;
         //reset motor encoders
         motorArray[FRONT_LEFT_MOTOR].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -403,7 +403,7 @@ public class vv_Robot {
 
             //adjust the motor speeds by adjusting Power proportional to distance that needs to be travelled.
 
-            //
+
             //Ramped Move block formula:
             //RP=PMax(1-4*(0.5-DT/DD)^2)
             //where RP=Ramped Power, PMax is maximum power available, DT=Distance Travelled, DD=Distance to be travelled
@@ -452,8 +452,6 @@ public class vv_Robot {
             motorArray[BACK_LEFT_MOTOR].setPower(rampedPower * LEFT_MOTOR_TRIM_FACTOR);
             motorArray[BACK_RIGHT_MOTOR].setPower(rampedPower * RIGHT_MOTOR_TRIM_FACTOR);
 
-
-            // TODO: UNCOMMENT THIS!!!!
             if (DEBUG) {
                 aOpMode.telemetryAddData("Motor FL", "Values", ":" + motorArray[FRONT_LEFT_MOTOR].getCurrentPosition());
                 aOpMode.telemetryAddData("Motor FR", "Values", ":" + motorArray[FRONT_RIGHT_MOTOR].getCurrentPosition());
@@ -479,17 +477,23 @@ public class vv_Robot {
 
 
     /**
-     * Runs motors forwards and backwards.
+     * Runs motors forwards or backwards.
      *
-     * @param Power each motor will run at the same float value
-     * @return void
+     * @param power each motor will run at the same float value
      */
-    public void runMotorsFB(vv_OpMode aOpMode, float Power)
-            throws InterruptedException {
-
-        runMotors(aOpMode, Power, Power, Power, Power);
+    public void runMotorsFB(vv_OpMode aOpMode, float power) throws InterruptedException {
+        runMotors(aOpMode, power, power, power, power);
     }
 
+    /**
+     * Tests motors using debug statements
+     *
+     * @param aOpMode   an object of the vv_OpMode class
+     * @param motorName name of the motor
+     * @param power     desired motor power
+     * @param duration  duration in seconds
+     * @throws InterruptedException
+     */
     public void testMotor(vv_OpMode aOpMode, int motorName, float power, long duration) throws InterruptedException {
         aOpMode.DBG("In test motor in vv_robot");
 
@@ -524,20 +528,18 @@ public class vv_Robot {
 
         //restore old motor mode
         motorArray[motorName].setMode(oldRunMode);
-
-
     }
 
 
     /**
-     * Runs motors. Can be called by a more specific method to move forwards and backwards or sideways.
+     * Runs motors without a specified duration.
+     * Can be called by a more specific method to move forwards, backwards or sideways.
      *
-     * @param aOpMode  object of vv_OpMode class so we can use telemetry
+     * @param aOpMode  object of vv_OpMode class
      * @param fl_Power power of front left motor
      * @param fr_Power power of front right motor
      * @param bl_Power power of back left motor
      * @param br_Power power of back right motor
-     * @return void
      */
     public void runMotors(vv_OpMode aOpMode, float fl_Power, float fr_Power, float bl_Power, float br_Power)
             throws InterruptedException {
@@ -575,6 +577,12 @@ public class vv_Robot {
         Thread.sleep(50);
     }
 
+    /**
+     * Stops all wheel motors
+     *
+     * @param aOpMode   an object of the vv_OpMode class
+     * @throws InterruptedException
+     */
     public void stopBaseMotors(vv_OpMode aOpMode) throws InterruptedException {
 
         motorArray[FRONT_LEFT_MOTOR].setPower(0);
@@ -586,8 +594,11 @@ public class vv_Robot {
         }
     }
 
-
-    //turn the color sensor LED on the floor of the robot on
+    /**
+     * Turns floor color sensor on
+     * @param aOpMode   an object of the vv_OpMode class
+     * @throws InterruptedException
+     */
     public void enableFloorColorSensorLed(vv_OpMode aOpMode) throws InterruptedException {
         floorColorSensor.enableLed(true);
         //wait for it to turn on.
@@ -1196,8 +1207,6 @@ public class vv_Robot {
 
         //stop all motors
         stopBaseMotors(aOpMode);
-
-
     }
 
     public void universalMoveRobotForTeleOp(vv_OpMode aOpMode, double xAxisVelocity,
@@ -1245,8 +1254,6 @@ public class vv_Robot {
         motorArray[FRONT_RIGHT_MOTOR].setPower(fr_velocity * RIGHT_MOTOR_TRIM_FACTOR);
         motorArray[BACK_LEFT_MOTOR].setPower(bl_velocity * LEFT_MOTOR_TRIM_FACTOR);
         motorArray[BACK_RIGHT_MOTOR].setPower(br_velocity * RIGHT_MOTOR_TRIM_FACTOR);
-
-
     }
 
 
