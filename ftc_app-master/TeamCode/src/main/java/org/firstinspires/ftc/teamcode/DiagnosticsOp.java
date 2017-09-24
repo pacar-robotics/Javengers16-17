@@ -5,8 +5,17 @@ package org.firstinspires.ftc.teamcode;
  */
 
 public class DiagnosticsOp extends vv_OpMode {
+    private vv_Lib robotLibrary;
+
     @Override
     public void runOpMode() throws InterruptedException {
+        telemetryShow("Initializing...", false);
+        robotLibrary = new vv_Lib(this);
+    }
 
+    // Combine telemetryAddData and telemetryUpdate into one method for convenience
+    private void telemetryShow(String s, boolean isInput) {
+        telemetryAddData("DiagnosticsOp", (isInput ? "Input" : "Output"), s);
+        telemetryUpdate();
     }
 }
