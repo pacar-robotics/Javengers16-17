@@ -1,16 +1,24 @@
 package org.firstinspires.ftc.teamcode;
 
+import java.util.ArrayList;
+
 /**
  * Created by jorda on 9/24/2017.
  */
 
 public class DiagnosticsOp extends vv_OpMode {
     private vv_Lib robotLibrary;
+    private ArrayList<String> errorTracker;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        initialize();
+    }
+
+    private void initialize() throws InterruptedException {
         telemetryShow("Initializing...", false);
         robotLibrary = new vv_Lib(this);
+        errorTracker = new ArrayList<>();
     }
 
 
