@@ -21,6 +21,16 @@ public class DiagnosticsOp extends vv_OpMode {
         errorTracker = new ArrayList<>();
     }
 
+    // This method gets user input on whether a test succeeded or not
+    private boolean didItRun(String elementName) {
+        telemetryShow(String.format("Did the %s work? A for yes, B for no", elementName), true);
+
+        // Wait for an input from A or B
+        while (!gamepad1.a && !gamepad2.b) ;
+
+        // If A is pressed, that means the test succeeded
+        return gamepad1.a;
+    }
 
     // TODO: Create actual tests once common class methods are completed
     private boolean vuforiaDetection() {
@@ -28,23 +38,23 @@ public class DiagnosticsOp extends vv_OpMode {
     }
 
     private boolean cubeArm() {
-        return true;
+        return didItRun("cube arm");
     }
 
     private boolean cubeHand() {
-        return true;
+        return didItRun("cube hand");
     }
 
     private boolean cubeHandGyro() {
-        return true;
+        return didItRun("cube hand gyro");
     }
 
     private boolean relicArm() {
-        return true;
+        return didItRun("relic arm");
     }
 
     private boolean relicHand() {
-        return true;
+        return didItRun("relic hand");
     }
 
     // Combine telemetryAddData and telemetryUpdate into one method for convenience
